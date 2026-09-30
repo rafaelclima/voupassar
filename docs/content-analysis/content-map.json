@@ -1,0 +1,403 @@
+{
+  "total": 240,
+  "editions": [
+    "2020",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+    "2026"
+  ],
+  "v11_overrides": [
+    {
+      "edition": "2022",
+      "number": 12,
+      "assunto": "GRAMATICA_NORMA",
+      "subassunto": "ACENTUACAO_GRAFICA"
+    },
+    {
+      "edition": "2023",
+      "number": 12,
+      "assunto": "GRAMATICA_NORMA",
+      "subassunto": "ACENTUACAO_GRAFICA"
+    },
+    {
+      "edition": "2024",
+      "number": 17,
+      "assunto": "GRAMATICA_NORMA",
+      "subassunto": "ACENTUACAO_GRAFICA"
+    },
+    {
+      "edition": "2026",
+      "number": 21,
+      "assunto": "ARITMETICA",
+      "subassunto": "SISTEMAS_NUMERACAO"
+    }
+  ],
+  "assuntos": {
+    "ALGEBRA": {
+      "n": 18,
+      "pct_total": 7.5,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 4,
+        "2022": 1,
+        "2023": 4,
+        "2024": 3,
+        "2025": 2,
+        "2026": 4
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 14,
+        "MEDIA": 4
+      },
+      "n_anuladas": 0,
+      "n_em_revisao": 0,
+      "subassuntos": {
+        "EQUACOES": 8,
+        "FUNCAO_AFIM": 6,
+        "SEQUENCIAS": 2,
+        "SISTEMAS": 2
+      }
+    },
+    "ARITMETICA": {
+      "n": 22,
+      "pct_total": 9.2,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 5,
+        "2022": 5,
+        "2023": 4,
+        "2024": 3,
+        "2025": 1,
+        "2026": 4
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 18,
+        "MEDIA": 3,
+        "BAIXA": 1
+      },
+      "n_anuladas": 1,
+      "n_em_revisao": 1,
+      "subassuntos": {
+        "OPERACOES": 6,
+        "FRACOES": 5,
+        "DIVISIBILIDADE_MMC_MDC": 7,
+        "NOTACAO_CIENTIFICA": 3,
+        "SISTEMAS_NUMERACAO": 1
+      }
+    },
+    "ESTATISTICA_DADOS": {
+      "n": 17,
+      "pct_total": 7.1,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 3,
+        "2022": 3,
+        "2023": 3,
+        "2024": 3,
+        "2025": 3,
+        "2026": 2
+      },
+      "trend": "ESTAVEL",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "BAIXA": 5,
+        "ALTA": 10,
+        "MEDIA": 2
+      },
+      "n_anuladas": 0,
+      "n_em_revisao": 9,
+      "subassuntos": {
+        "LEITURA_GRAFICO_TABELA": 4,
+        "MEDIA": 6,
+        "PROBABILIDADE": 7
+      }
+    },
+    "GEOMETRIA": {
+      "n": 18,
+      "pct_total": 7.5,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 2,
+        "2022": 4,
+        "2023": 3,
+        "2024": 3,
+        "2025": 3,
+        "2026": 3
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 10,
+        "BAIXA": 5,
+        "MEDIA": 3
+      },
+      "n_anuladas": 0,
+      "n_em_revisao": 7,
+      "subassuntos": {
+        "AREA_PLANA": 8,
+        "VOLUME": 1,
+        "POLIGONOS": 4,
+        "PERIMETRO_COMPRIMENTO": 1,
+        "PITAGORAS_DISTANCIA": 3,
+        "UNIDADES_MEDIDA": 1
+      }
+    },
+    "GRAMATICA_NORMA": {
+      "n": 60,
+      "pct_total": 25.0,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 9,
+        "2022": 11,
+        "2023": 12,
+        "2024": 11,
+        "2025": 8,
+        "2026": 9
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "LINGUA_PORTUGUESA"
+      ],
+      "confianca": {
+        "ALTA": 48,
+        "MEDIA": 9,
+        "BAIXA": 3
+      },
+      "n_anuladas": 2,
+      "n_em_revisao": 3,
+      "subassuntos": {
+        "MORFOLOGIA": 11,
+        "SINTAXE_PERIODO": 7,
+        "SINTAXE_FUNCAO": 6,
+        "PONTUACAO": 10,
+        "SEMANTICA_VOCABULARIO": 10,
+        "COESAO_REFERENCIA": 8,
+        "NORMA_PADRAO": 5,
+        "ACENTUACAO_GRAFICA": 3
+      }
+    },
+    "GRANDEZAS_MEDIDAS": {
+      "n": 3,
+      "pct_total": 1.2,
+      "editions_present": [
+        "2023",
+        "2024",
+        "2026"
+      ],
+      "series": {
+        "2020": 0,
+        "2022": 0,
+        "2023": 1,
+        "2024": 1,
+        "2025": 0,
+        "2026": 1
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 2,
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_em_revisao": 0,
+      "subassuntos": {
+        "TEMPO": 2,
+        "VOLUME_CAPACIDADE": 1
+      }
+    },
+    "INTERPRETACAO_TEXTUAL": {
+      "n": 60,
+      "pct_total": 25.0,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 11,
+        "2022": 9,
+        "2023": 8,
+        "2024": 9,
+        "2025": 12,
+        "2026": 11
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "LINGUA_PORTUGUESA"
+      ],
+      "confianca": {
+        "ALTA": 35,
+        "MEDIA": 17,
+        "BAIXA": 8
+      },
+      "n_anuladas": 0,
+      "n_em_revisao": 14,
+      "subassuntos": {
+        "INTENCAO_COMUNICATIVA": 9,
+        "INFORMACAO_EXPLICITA": 15,
+        "INFERENCIA": 20,
+        "TIPO_TEXTUAL": 5,
+        "GENERO_TEXTUAL": 7,
+        "FUNCAO_ELEMENTO_PARAGRAFO": 4
+      }
+    },
+    "MATEMATICA_FINANCEIRA": {
+      "n": 5,
+      "pct_total": 2.1,
+      "editions_present": [
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 0,
+        "2022": 1,
+        "2023": 1,
+        "2024": 1,
+        "2025": 1,
+        "2026": 1
+      },
+      "trend": "BAIXA_RECORRENCIA",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 5
+      },
+      "n_anuladas": 0,
+      "n_em_revisao": 0,
+      "subassuntos": {
+        "JUROS_SIMPLES": 5
+      }
+    },
+    "PORCENTAGEM": {
+      "n": 12,
+      "pct_total": 5.0,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 2,
+        "2022": 1,
+        "2023": 2,
+        "2024": 1,
+        "2025": 4,
+        "2026": 2
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 10,
+        "BAIXA": 1,
+        "MEDIA": 1
+      },
+      "n_anuladas": 1,
+      "n_em_revisao": 3,
+      "subassuntos": {
+        "REPRESENTACAO_FRACAO": 3,
+        "CALCULO_DIRETO": 6,
+        "VARIACAO": 3
+      }
+    },
+    "RAZAO_PROPORCAO": {
+      "n": 25,
+      "pct_total": 10.4,
+      "editions_present": [
+        "2020",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "series": {
+        "2020": 4,
+        "2022": 5,
+        "2023": 2,
+        "2024": 5,
+        "2025": 6,
+        "2026": 3
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "BAIXA": 1,
+        "ALTA": 18,
+        "MEDIA": 6
+      },
+      "n_anuladas": 1,
+      "n_em_revisao": 1,
+      "subassuntos": {
+        "RAZAO": 7,
+        "PROPORCIONALIDADE": 5,
+        "ESCALA": 3,
+        "REGRA_DE_TRES": 10
+      }
+    }
+  }
+}
