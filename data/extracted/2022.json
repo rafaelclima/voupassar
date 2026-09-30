@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "edition": "2022",
+    "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+    "source_sha256": "ffcfa54064c148c026d99c2a73ada3fdfee4a5c78d664ba4db06c7a8ffdf1bfe",
+    "source_pages": 15,
+    "extractor": "scripts/analysis/extract_questions.py",
+    "extractor_version": "1.0.0",
+    "generated_at_utc": "2026-09-30T15:09:38.725583+00:00",
+    "tool_versions": {
+      "pdfinfo": "pdfinfo version 26.08.0",
+      "pdftotext": "pdftotext version 26.08.0"
+    },
+    "note": "Dados intermediarios para auditoria (TASK 1.2). Enunciados/alternativas em texto bruto de pdftotext; figuras/formulas exigem revisao visual. Sem classificacao pedagogica."
+  },
+  "questions": [
+    {
+      "edition": "2022",
+      "number": 1,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "A leitura do Texto 1 permite inferir que",
+      "options": {
+        "A": "o governo tem ouvido as comunidades indígenas envolvidas em conflitos de terra.",
+        "B": "as invasões constantes de terras indígenas interferem na preservação da cultura desses povos.",
+        "C": "as organizações não governamentais desconhecem o problema da invasão de terras indígenas.",
+        "D": "o Ibama, a Polícia Federal e a Funai comprovam as fiscalizações realizadas em terras indígenas."
+      },
+      "raw_block": "01. A leitura do Texto 1 permite inferir que\n\n    A) o governo tem ouvido as comunidades indígenas envolvidas em conflitos de terra.\n    B) as invasões constantes de terras indígenas interferem na preservação da cultura desses povos.\n    C) as organizações não governamentais desconhecem o problema da invasão de terras indígenas.\n    D) o Ibama, a Polícia Federal e a Funai comprovam as fiscalizações realizadas em terras indígenas.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 2,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "O Texto 1",
+      "options": {
+        "A": "noticia, incluindo certa crítica, que o número de invasões em terras indígenas aumentou.",
+        "B": "descreve, de forma imparcial, como as terras indígenas estão sendo desmatadas.",
+        "C": "narra, incluindo opiniões, as ações de invasão que estão ocorrendo nas terras indígenas.",
+        "D": "defende, de forma velada, a posição do governo em relação ao desmatamento das terras indígenas."
+      },
+      "raw_block": "02. O Texto 1\n\n    A) noticia, incluindo certa crítica, que o número de invasões em terras indígenas aumentou.\n    B) descreve, de forma imparcial, como as terras indígenas estão sendo desmatadas.\n    C) narra, incluindo opiniões, as ações de invasão que estão ocorrendo nas terras indígenas.\n    D) defende, de forma velada, a posição do governo em relação ao desmatamento das terras indígenas.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 3,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "No último parágrafo do Texto 1, predomina a",
+      "options": {
+        "A": "narração, devido à presença de verbos no presente.",
+        "B": "argumentação, devido à presença de progressão textual.",
+        "C": "narração, pois há uma relação temporal entre os enunciados.",
+        "D": "argumentação, pois há um posicionamento sobre a temática. Leia o trecho a seguir para responder às questões 04, 05 e 06. Lá, segundo os caciques, os invasores derrubam a mata nativa para retirar madeira, para a criação de gado e até para plantar maconha."
+      },
+      "raw_block": "03. No último parágrafo do Texto 1, predomina a\n\n    A) narração, devido à presença de verbos no presente.\n    B) argumentação, devido à presença de progressão textual.\n    C) narração, pois há uma relação temporal entre os enunciados.\n    D) argumentação, pois há um posicionamento sobre a temática.\n\nLeia o trecho a seguir para responder às questões 04, 05 e 06.\n\n    Lá, segundo os caciques, os invasores derrubam a mata nativa para retirar madeira, para a criação de\n    gado e até para plantar maconha.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 4,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "Considerando sua inserção no Texto 1, o vocábulo LÁ refere-se a",
+      "options": {
+        "A": "“povo Tembé”.",
+        "B": "“terra indígena Alto Rio Guamá”.",
+        "C": "“mata nativa”.",
+        "D": "“caciques”."
+      },
+      "raw_block": "04. Considerando sua inserção no Texto 1, o vocábulo LÁ refere-se a\n\n    A) “povo Tembé”.\n    B) “terra indígena Alto Rio Guamá”.\n    C) “mata nativa”.\n    D) “caciques”.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 5,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "O vocábulo PARA, assinalado no trecho acima, estabelece com a oração seguinte uma relação de",
+      "options": {
+        "A": "condição.",
+        "B": "temporalidade.",
+        "C": "consequência.",
+        "D": "finalidade."
+      },
+      "raw_block": "05. O vocábulo PARA, assinalado no trecho acima, estabelece com a oração seguinte uma relação de\n\n    A) condição.\n    B) temporalidade.\n    C) consequência.\n    D) finalidade.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 6,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 4,
+      "page_end": 5,
+      "statement": "No trecho, o uso do vocábulo ATÉ",
+      "options": {
+        "A": "manifesta a concordância do autor com o fato de se desmatar para plantar maconha.",
+        "B": "indica um limite espacial para a plantação de maconha na mata devastada.",
+        "C": "expressa a indignação do autor em relação ao motivo pelo qual a terra foi devastada.",
+        "D": "limita a três as atividades que provocaram o desmatamento da mata nativa. 4                                              Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "06. No trecho, o uso do vocábulo ATÉ\n\n    A) manifesta a concordância do autor com o fato de se desmatar para plantar maconha.\n    B) indica um limite espacial para a plantação de maconha na mata devastada.\n    C) expressa a indignação do autor em relação ao motivo pelo qual a terra foi devastada.\n    D) limita a três as atividades que provocaram o desmatamento da mata nativa.\n\n\n4                                              Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2022",
+      "number": 7,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "Assinale a opção que apresenta um trecho em que o uso da vírgula se justifica pelo mesmo motivo de “Segundo o levantamento, em 2017, foram 96 invasões em terras indígenas.”.",
+      "options": {
+        "A": "“Pará, Rondônia e Amazonas são os estados onde houve mais invasões no ano passado.”.",
+        "B": "“Lá, segundo os caciques, os invasores derrubam a mata nativa para retirar madeira, [...]",
+        "C": "“O bispo emérito do Xingu, que vai participar do Sínodo no Vaticano, defendeu que os índios precisam ter suas terras protegidas.”",
+        "D": "‘\"A nossa área preservada tem muito fundamento para a questão indígena, porque sem a área preservada nós não temos como mostrar a nossa cultura\"’ [...]. Considere o trecho para responder à questão 8 Segundo o levantamento, em 2017, foram 96 invasões em terras indígenas."
+      },
+      "raw_block": "07. Assinale a opção que apresenta um trecho em que o uso da vírgula se justifica pelo mesmo motivo de\n    “Segundo o levantamento, em 2017, foram 96 invasões em terras indígenas.”.\n\n    A) “Pará, Rondônia e Amazonas são os estados onde houve mais invasões no ano passado.”.\n    B) “Lá, segundo os caciques, os invasores derrubam a mata nativa para retirar madeira, [...]\n    C) “O bispo emérito do Xingu, que vai participar do Sínodo no Vaticano, defendeu que os índios precisam\n       ter suas terras protegidas.”\n    D) ‘\"A nossa área preservada tem muito fundamento para a questão indígena, porque sem a área\n       preservada nós não temos como mostrar a nossa cultura\"’ [...].\n\nConsidere o trecho para responder à questão 8\n\n                    Segundo o levantamento, em 2017, foram 96 invasões em terras indígenas.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 8,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "O termo destacado SEGUNDO, sem prejuízo ao sentido original no trecho, pode ser substituído por",
+      "options": {
+        "A": "de acordo com.",
+        "B": "mesmo com.",
+        "C": "apesar de.",
+        "D": "tal qual. Considere o trecho abaixo retirado do Texto 1 para responder às questões 09, 10, 11 e 12. Pará, Rondônia e Amazonas são os estados onde houve mais invasões no ano passado. Uma das áreas citadas no relatório é a terra indígena Munduruku, no sudoeste do Pará. De acordo com o CIMI, existem mais de 500 garimpos ilegais na região, desmatando e poluindo os rios da bacia do Tapajós."
+      },
+      "raw_block": "08. O termo destacado SEGUNDO, sem prejuízo ao sentido original no trecho, pode ser substituído por\n\n    A) de acordo com.\n    B) mesmo com.\n    C) apesar de.\n    D) tal qual.\n\nConsidere o trecho abaixo retirado do Texto 1 para responder às questões 09, 10, 11 e 12.\n\n Pará, Rondônia e Amazonas são os estados onde houve mais invasões no ano passado. Uma das áreas\n citadas no relatório é a terra indígena Munduruku, no sudoeste do Pará. De acordo com o CIMI, existem\n mais de 500 garimpos ilegais na região, desmatando e poluindo os rios da bacia do Tapajós.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 9,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "Assinale a opção que substitui, respeitando a norma-padrão, a forma verbal HOUVE destacada no trecho.",
+      "options": {
+        "A": "aconteceram.",
+        "B": "aconteciam.",
+        "C": "aconteceu.",
+        "D": "acontecia."
+      },
+      "raw_block": "09. Assinale a opção que substitui, respeitando a norma-padrão, a forma verbal HOUVE destacada no trecho.\n\n    A) aconteceram.\n    B) aconteciam.\n    C) aconteceu.\n    D) acontecia.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 10,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "O trecho possui",
+      "options": {
+        "A": "três períodos e quatro orações.",
+        "B": "três períodos e seis orações.",
+        "C": "dois períodos e cinco orações.",
+        "D": "dois períodos e três orações."
+      },
+      "raw_block": "10. O trecho possui\n\n    A) três períodos e quatro orações.\n    B) três períodos e seis orações.\n    C) dois períodos e cinco orações.\n    D) dois períodos e três orações.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 11,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 5,
+      "page_end": 6,
+      "statement": "O termo destacado DO TAPAJÓS é um",
+      "options": {
+        "A": "complemento nominal e complementa o sentido do termo “bacia”",
+        "B": "aposto explicativo e explica o sentido do termo “rios”.",
+        "C": "adjunto adnominal e especifica o termo “bacia”.",
+        "D": "adjunto adverbial e determina o local dos rios. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 5 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "11. O termo destacado DO TAPAJÓS é um\n\n    A) complemento nominal e complementa o sentido do termo “bacia”\n    B) aposto explicativo e explica o sentido do termo “rios”.\n    C) adjunto adnominal e especifica o termo “bacia”.\n    D) adjunto adverbial e determina o local dos rios.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 5\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                           EDITAL Nº 041/2021 – PROEN/IFRN\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 12,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O vocábulo destacado RELATÓRIO recebeu acento agudo pelo mesmo motivo de",
+      "options": {
+        "A": "polícia.",
+        "B": "indígenas.",
+        "C": "emérito.",
+        "D": "sínodo."
+      },
+      "raw_block": "12. O vocábulo destacado RELATÓRIO recebeu acento agudo pelo mesmo motivo de\n\n    A) polícia.\n    B) indígenas.\n    C) emérito.\n    D) sínodo.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 13,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "A intenção comunicativa prioritária do Texto 2 é",
+      "options": {
+        "A": "convencer as autoridades sobre a necessidade de regulamentar terras indígenas.",
+        "B": "sensibilizar o leitor de cada região sobre a situação de suas terras indígenas.",
+        "C": "destacar a Região Norte pela quantidade de terras indígenas regularizadas.",
+        "D": "informar o percentual de terras indígenas regularizadas por região brasileira."
+      },
+      "raw_block": "13. A intenção comunicativa prioritária do Texto 2 é\n\n    A) convencer as autoridades sobre a necessidade de regulamentar terras indígenas.\n    B) sensibilizar o leitor de cada região sobre a situação de suas terras indígenas.\n    C) destacar a Região Norte pela quantidade de terras indígenas regularizadas.\n    D) informar o percentual de terras indígenas regularizadas por região brasileira.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 14,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "As informações presentes no Texto 2 permitem afirmar que",
+      "options": {
+        "A": "na região Sudeste é onde vive a menor quantidade de índios do país.",
+        "B": "o número de índios que vivem na região Sul é menor do que o número de índios que vivem no Nordeste.",
+        "C": "a região Norte é onde se localiza o maior percentual de terras indígenas regularizadas.",
+        "D": "o percentual de terras indígenas regularizadas no Centro-Oeste é 4 vezes menor do que o percentual de terras regularizadas no Norte."
+      },
+      "raw_block": "14. As informações presentes no Texto 2 permitem afirmar que\n\n\n    A) na região Sudeste é onde vive a menor quantidade de índios do país.\n    B) o número de índios que vivem na região Sul é menor do que o número de índios que vivem no\n       Nordeste.\n    C) a região Norte é onde se localiza o maior percentual de terras indígenas regularizadas.\n    D) o percentual de terras indígenas regularizadas no Centro-Oeste é 4 vezes menor do que o percentual\n       de terras regularizadas no Norte.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 15,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O marco temporal estabelece que só poderão solicitar demarcações os povos que comprovarem que habitavam a área requerida na data de promulgação da Constituição Federal, ou seja, em 5 de outubro de 1988. Considerando essa informação e a leitura da linguagem verbal e da não verbal do Texto 3, o termo jurídico esbulho é o ato de",
+      "options": {
+        "A": "afastamento de um ou de vários indivíduos pertencentes a uma coletividade, por questões políticas, doutrinárias etc.",
+        "B": "remoção das etnias minoritárias de uma área promovendo a superioridade de um determinado grupo étnico dominante.",
+        "C": "usurpação pelo qual uma pessoa é privada, ou espoliada, de coisa de que tenha propriedade ou posse.",
+        "D": "separação mediante a qual indivíduos e grupos perdem o contato físico e social com outros indivíduos e grupos."
+      },
+      "raw_block": "15. O marco temporal estabelece que só poderão solicitar demarcações os povos que comprovarem que\n    habitavam a área requerida na data de promulgação da Constituição Federal, ou seja, em 5 de outubro\n    de 1988. Considerando essa informação e a leitura da linguagem verbal e da não verbal do Texto 3, o\n    termo jurídico esbulho é o ato de\n\n    A) afastamento de um ou de vários indivíduos pertencentes a uma coletividade, por questões políticas,\n       doutrinárias etc.\n    B) remoção das etnias minoritárias de uma área promovendo a superioridade de um determinado grupo\n       étnico dominante.\n    C) usurpação pelo qual uma pessoa é privada, ou espoliada, de coisa de que tenha propriedade ou\n       posse.\n    D) separação mediante a qual indivíduos e grupos perdem o contato físico e social com outros indivíduos\n       e grupos.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 16,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 6,
+      "page_end": 7,
+      "statement": "A linguagem utilizada pelo Juiz no Texto 3",
+      "options": {
+        "A": "expressa a coloquialidade da linguagem oral.",
+        "B": "demonstra o tom autoritário da fala do Juiz.",
+        "C": "caracteriza o uso linguístico de uma região.",
+        "D": "indica a classe social e o gênero do Juiz. 6                                                Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "16. A linguagem utilizada pelo Juiz no Texto 3\n\n    A) expressa a coloquialidade da linguagem oral.\n    B) demonstra o tom autoritário da fala do Juiz.\n    C) caracteriza o uso linguístico de uma região.\n    D) indica a classe social e o gênero do Juiz.\n\n\n\n\n6                                                Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 17,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "O Texto 3 expressa",
+      "options": {
+        "A": "um posicionamento a favor do marco temporal.",
+        "B": "um posicionamento contrário ao marco temporal.",
+        "C": "uma crítica à posse de terras pelos indígenas.",
+        "D": "uma crítica ao uso de tratores em área indígena."
+      },
+      "raw_block": "17. O Texto 3 expressa\n\n    A) um posicionamento a favor do marco temporal.\n    B) um posicionamento contrário ao marco temporal.\n    C) uma crítica à posse de terras pelos indígenas.\n    D) uma crítica ao uso de tratores em área indígena.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 18,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "A expressão na face do Juiz indica",
+      "options": {
+        "A": "hostilidade.",
+        "B": "ousadia.",
+        "C": "avareza.",
+        "D": "pânico."
+      },
+      "raw_block": "18. A expressão na face do Juiz indica\n\n    A) hostilidade.\n    B) ousadia.\n    C) avareza.\n    D) pânico.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 19,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "A leitura do Texto 3 permite inferir que, entre seus personagens, existe",
+      "options": {
+        "A": "amizade.",
+        "B": "respeito.",
+        "C": "confiança.",
+        "D": "cumplicidade."
+      },
+      "raw_block": "19. A leitura do Texto 3 permite inferir que, entre seus personagens, existe\n\n\n    A) amizade.\n    B) respeito.\n    C) confiança.\n    D) cumplicidade.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 20,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 7,
+      "page_end": 8,
+      "statement": "É comum aos três textos desta avaliação",
+      "options": {
+        "A": "o tipo textual.",
+        "B": "a temática.",
+        "C": "o gênero textual.",
+        "D": "a variação linguística. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022         7 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "20. É comum aos três textos desta avaliação\n\n    A) o tipo textual.\n    B) a temática.\n    C) o gênero textual.\n    D) a variação linguística.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022         7\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                           EDITAL Nº 041/2021 – PROEN/IFRN\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 21,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Segundo o texto 1, “Em setembro, os índios já tinham encontrado acampamentos, espingardas e várias pilhas de madeira em uma área a 30 quilômetros da aldeia.” Considerando que um índio o qual foi da sua aldeia a esses acampamentos e, em seguida, retornou à aldeia, levando 12 horas para finalizar o percurso, a velocidade média, em km/h, que esse índio imprimiu foi de",
+      "options": {
+        "A": "6.",
+        "B": "7.",
+        "C": "5.",
+        "D": "8."
+      },
+      "raw_block": "21. Segundo o texto 1, “Em setembro, os índios já tinham encontrado acampamentos, espingardas e várias\n    pilhas de madeira em uma área a 30 quilômetros da aldeia.” Considerando que um índio o qual foi da sua\n    aldeia a esses acampamentos e, em seguida, retornou à aldeia, levando 12 horas para finalizar o\n    percurso, a velocidade média, em km/h, que esse índio imprimiu foi de\n\n    A) 6.\n    B) 7.\n    C) 5.\n    D) 8.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 22,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Um órgão fiscalizador estabeleceu como meta que a média aritmética das invasões em terras indígenas nos anos de 2017, 2018 e 2019 não ultrapassassem um valor predeterminado. Sabendo que, de acordo com o Texto 01, em 2017, foram registradas 96 invasões e, em 2018, foram registradas 111 invasões e se 𝑀 é a média aritmética predeterminada, a expressão que indica o número de invasões 𝐼 ,em 2019, para que a meta não seja ultrapassada, deverá ser",
+      "options": {
+        "A": "𝐼 ≥ 3𝑀 − 207.",
+        "B": "𝐼 ≤ 3𝑀 − 207.",
+        "C": "𝐼 ≤ 𝑀 − 207.",
+        "D": "𝐼 ≥ 𝑀 − 207."
+      },
+      "raw_block": "22. Um órgão fiscalizador estabeleceu como meta que a média aritmética das invasões em terras indígenas\n    nos anos de 2017, 2018 e 2019 não ultrapassassem um valor predeterminado. Sabendo que, de acordo\n    com o Texto 01, em 2017, foram registradas 96 invasões e, em 2018, foram registradas 111 invasões e\n    se 𝑀 é a média aritmética predeterminada, a expressão que indica o número de invasões 𝐼 ,em 2019,\n    para que a meta não seja ultrapassada, deverá ser\n\n    A) 𝐼 ≥ 3𝑀 − 207.\n    B) 𝐼 ≤ 3𝑀 − 207.\n    C) 𝐼 ≤ 𝑀 − 207.\n    D) 𝐼 ≥ 𝑀 − 207.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 23,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "O texto 1 comenta que, de acordo com o Conselho Indigenista Missionário (Cimi), somente na terra indígena (TI) de Munduruku existem mais de 500 garimpos ilegais. Sabendo que a TI de Munduruku tem, aproximadamente, 2.400.000 hectares, se considerarmos o número exato de 500 garimpos ilegais, com 100 garimpeiros em cada garimpo, a densidade demográfica, em habitantes por hectare, dos garimpeiros na terra indígena de Muduruku é de 5",
+      "options": {
+        "A": ". 24 5",
+        "B": ". 2400 5",
+        "C": ". 24000 5",
+        "D": ". 240"
+      },
+      "raw_block": "23. O texto 1 comenta que, de acordo com o Conselho Indigenista Missionário (Cimi), somente na terra\n    indígena (TI) de Munduruku existem mais de 500 garimpos ilegais. Sabendo que a TI de Munduruku tem,\n    aproximadamente, 2.400.000 hectares, se considerarmos o número exato de 500 garimpos ilegais, com\n    100 garimpeiros em cada garimpo, a densidade demográfica, em habitantes por hectare, dos garimpeiros\n    na terra indígena de Muduruku é de\n\n         5\n    A)       .\n         24\n          5\n    B)           .\n         2400\n             5\n    C)               .\n         24000\n         5\n    D)           .\n         240\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 24,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 8,
+      "page_end": 9,
+      "statement": "Segundo o texto 1, o Ibama aplicou R$ 10 milhões em multas contra acampamentos ilegais localizados na terra indígena Alto Rio Guamá. Supondo que os invasores não pagaram as multas e que, sobre elas, sejam cobrados juros mensais, no regime de juros simples, de 2% ao mês, o montante da dívida a ser paga, ao final de 2 anos, será de",
+      "options": {
+        "A": "14.800.000.",
+        "B": "14.400.000.",
+        "C": "15.400.000.",
+        "D": "15.800.000. 8                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "24. Segundo o texto 1, o Ibama aplicou R$ 10 milhões em multas contra acampamentos ilegais localizados\n    na terra indígena Alto Rio Guamá. Supondo que os invasores não pagaram as multas e que, sobre elas,\n    sejam cobrados juros mensais, no regime de juros simples, de 2% ao mês, o montante da dívida a ser\n    paga, ao final de 2 anos, será de\n\n    A) 14.800.000.\n    B) 14.400.000.\n    C) 15.400.000.\n    D) 15.800.000.\n\n\n\n\n8                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2022",
+      "number": 25,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "Ao ler o texto 1, que indica 96 invasões em terras indígenas em 2017 e 111 em 2018, um estudante desejou exprimir uma função afim que determinasse o número de invasões (N) em função do ano (x). Para estimar as invasões esperadas nos anos seguintes, caso o crescimento das invasões fosse linear, a função encontrada foi",
+      "options": {
+        "A": "𝑁(𝑥) = 15𝑥 − 30.300.",
+        "B": "𝑁(𝑥) = 20𝑥 − 30.159.",
+        "C": "𝑁(𝑥) = 20𝑥 − 30.300.",
+        "D": "𝑁(𝑥) = 15𝑥 − 30.159."
+      },
+      "raw_block": "25. Ao ler o texto 1, que indica 96 invasões em terras indígenas em 2017 e 111 em 2018, um estudante\n    desejou exprimir uma função afim que determinasse o número de invasões (N) em função do ano (x).\n    Para estimar as invasões esperadas nos anos seguintes, caso o crescimento das invasões fosse linear,\n    a função encontrada foi\n\n    A) 𝑁(𝑥) = 15𝑥 − 30.300.\n    B) 𝑁(𝑥) = 20𝑥 − 30.159.\n    C) 𝑁(𝑥) = 20𝑥 − 30.300.\n    D) 𝑁(𝑥) = 15𝑥 − 30.159.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 26,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "Objetivando coibir as invasões em terras indígenas, os agentes de fiscalização organizaram três grupos de patrulhamento dessas terras. Considerando que o primeiro grupo passava por determinada aldeia a cada 3 dias, o segundo grupo, a cada 4 dias e o terceiro grupo, a cada 6 dias, se os três grupos passaram nessa aldeia hoje, eles passarão, todos no mesmo dia, novamente, daqui a",
+      "options": {
+        "A": "12 dias.",
+        "B": "14 dias.",
+        "C": "16 dias.",
+        "D": "18 dias."
+      },
+      "raw_block": "26. Objetivando coibir as invasões em terras indígenas, os agentes de fiscalização organizaram três grupos\n    de patrulhamento dessas terras. Considerando que o primeiro grupo passava por determinada aldeia a\n    cada 3 dias, o segundo grupo, a cada 4 dias e o terceiro grupo, a cada 6 dias, se os três grupos passaram\n    nessa aldeia hoje, eles passarão, todos no mesmo dia, novamente, daqui a\n\n    A) 12 dias.\n    B) 14 dias.\n    C) 16 dias.\n    D) 18 dias.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 27,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "Suponha que, por determinação de um juiz, os R$ 10 milhões em multas aplicadas aos acampamentos ilegais devam ser gastos na seguinte proporção: um quarto deverá ser destinado ao Ibama, dois quintos do que sobrou à Polícia Federal e o restante à Funai, o valor repassado à Funai foi de",
+      "options": {
+        "A": "4,0 milhões.",
+        "B": "4,5 milhões.",
+        "C": "3,5 milhões.",
+        "D": "5,0 milhões."
+      },
+      "raw_block": "27. Suponha que, por determinação de um juiz, os R$ 10 milhões em multas aplicadas aos acampamentos\n    ilegais devam ser gastos na seguinte proporção: um quarto deverá ser destinado ao Ibama, dois quintos\n    do que sobrou à Polícia Federal e o restante à Funai, o valor repassado à Funai foi de\n\n    A) 4,0 milhões.\n    B) 4,5 milhões.\n    C) 3,5 milhões.\n    D) 5,0 milhões.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 28,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "Em uma audiência para se discutir a situação dos garimpos ilegais em terras indígenas estavam presentes 50 manifestantes, dentre indígenas e garimpeiros. Como a população indígena era significativamente menor na região, um repórter observou que a razão entre o número de indígenas e o de garimpeiros presentes na audiência era de um para quatro. O total de indígenas que estavam presentes na audiência era de",
+      "options": {
+        "A": "14.",
+        "B": "18.",
+        "C": "22.",
+        "D": "10."
+      },
+      "raw_block": "28. Em uma audiência para se discutir a situação dos garimpos ilegais em terras indígenas estavam presentes\n    50 manifestantes, dentre indígenas e garimpeiros. Como a população indígena era significativamente\n    menor na região, um repórter observou que a razão entre o número de indígenas e o de garimpeiros\n    presentes na audiência era de um para quatro. O total de indígenas que estavam presentes na audiência\n    era de\n\n    A) 14.\n    B) 18.\n    C) 22.\n    D) 10.\n"
+    },
+    {
+      "edition": "2022",
+      "number": 29,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 9,
+      "page_end": 10,
+      "statement": "Um orgão ambientalista observou que um grupo de garimpeiros ilegais estava desmatando o equivalente a 300 campos de futebol em 30 dias e que, após uma campanha de fiscalização, o grupo de garimpeiros se reduziu a dois terços do número original. Admitindo que os garimpeiros restantes, após a campanha de fiscalização, mantiveram o mesmo ritmo de desmatamento de antes, o tempo, em dias, que eles levarão para desmatar o equivalente a 300 campos de futebol será",
+      "options": {
+        "A": "30.",
+        "B": "60.",
+        "C": "45.",
+        "D": "75. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                   9 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "29. Um orgão ambientalista observou que um grupo de garimpeiros ilegais estava desmatando o equivalente\n    a 300 campos de futebol em 30 dias e que, após uma campanha de fiscalização, o grupo de garimpeiros\n    se reduziu a dois terços do número original. Admitindo que os garimpeiros restantes, após a campanha\n    de fiscalização, mantiveram o mesmo ritmo de desmatamento de antes, o tempo, em dias, que eles\n    levarão para desmatar o equivalente a 300 campos de futebol será\n\n    A) 30.\n    B) 60.\n    C) 45.\n    D) 75.\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                   9\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2022",
+      "number": 30,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Um cartógrafo deseja representar a área desmatada por garimpos ilegais em uma terra indígena. Observando que a área tem forma retangular, ele conclui que o comprimento da região desmatada é quatro vezes a largura da mesma e que o total desmatado foi de 256 hectares (ha). Sabendo que 1ha = 10.000 𝑚2 e que a representação será feita na escala 1:10.000, as dimensões representadas no desenho do cartógrafo terão largura e comprimento, em cm, respectivamente, iguais a",
+      "options": {
+        "A": "8m e 32m.",
+        "B": "6cm e 24cm.",
+        "C": "6m e 24m.",
+        "D": "8cm e 32cm."
+      },
+      "raw_block": "30. Um cartógrafo deseja representar a área desmatada por garimpos ilegais em uma terra indígena.\n    Observando que a área tem forma retangular, ele conclui que o comprimento da região desmatada é\n    quatro vezes a largura da mesma e que o total desmatado foi de 256 hectares (ha). Sabendo que 1ha =\n    10.000 𝑚2 e que a representação será feita na escala 1:10.000, as dimensões representadas no desenho\n    do cartógrafo terão largura e comprimento, em cm, respectivamente, iguais a\n\n     A) 8m e 32m.\n     B) 6cm e 24cm.\n     C) 6m e 24m.\n     D) 8cm e 32cm.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 31,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Analisando o gráfico do Texto 2, a única afirmação correta é:",
+      "options": {
+        "A": "em todas as regiões os percentuais são menores que 40%.",
+        "B": "a diferença entre os percentuais referentes às regiões sul e sudeste é maior que 5%.",
+        "C": "o percentual referente à região norte é menor do que a soma dos percentuais das demais regiões.",
+        "D": "o percentual médio de terras indígenas regularizadas nas cinco regiões é de 20%."
+      },
+      "raw_block": "31. Analisando o gráfico do Texto 2, a única afirmação correta é:\n\n\n     A) em todas as regiões os percentuais são menores que 40%.\n     B) a diferença entre os percentuais referentes às regiões sul e sudeste é maior que 5%.\n     C) o percentual referente à região norte é menor do que a soma dos percentuais das demais regiões.\n     D) o percentual médio de terras indígenas regularizadas nas cinco regiões é de 20%.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 32,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Um internauta encontrou no site Fundo Brasil o convite para fazer doações mensais e ajudar os povos indígenas. A Figura 1, mostra o convite com os possíveis valores de doação. O internauta deseja doar um total de R$ 540,00, com a menor mensalidade possível, ao longo do maior número de meses e de modo que não ultrapasse mais de 12 meses. Para atender todas as condições, o internauta deve escolher fazer a doação no valor de Figura 1 Figura adaptada para fins pedagógicos. Disponível em:",
+      "options": {
+        "A": "R$ 30,00.                                             https://doe.fundobrasil.org.br/sos-amazonia-site- institucional/single_step",
+        "B": "R$ 100,00.",
+        "C": "R$ 45,00.",
+        "D": "R$ 60,00."
+      },
+      "raw_block": "32. Um internauta encontrou no site\n    Fundo Brasil o convite para fazer\n    doações mensais e ajudar os\n    povos indígenas. A Figura 1,\n    mostra o convite com os\n    possíveis valores de doação. O\n    internauta deseja doar um total\n    de R$ 540,00, com a menor\n    mensalidade possível, ao longo\n    do maior número de meses e de\n    modo que não ultrapasse mais\n    de 12 meses. Para atender\n    todas as condições, o internauta\n    deve escolher fazer a doação no\n    valor de                                                             Figura 1\n\n                                                                            Figura adaptada para fins pedagógicos.\n                                                                                                    Disponível em:\n     A) R$ 30,00.                                             https://doe.fundobrasil.org.br/sos-amazonia-site-\n                                                                                        institucional/single_step\n     B) R$ 100,00.\n     C) R$ 45,00.\n     D) R$ 60,00.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 33,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 10,
+      "page_end": 11,
+      "statement": "No Texto 1, cerca de dois mil índios vivem na terra indígena Alto Rio Guamá. A representação desse mesmo quantitativo em notação científica é dada por",
+      "options": {
+        "A": "20.10². ᶟ",
+        "B": "2.10 .",
+        "C": "0,2.10⁴.",
+        "D": "0,02.10⁵. 10                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "33. No Texto 1, cerca de dois mil índios vivem na terra indígena Alto Rio Guamá. A representação desse\n    mesmo quantitativo em notação científica é dada por\n\n\n     A) 20.10².\n\n             ᶟ\n     B) 2.10 .\n\n     C) 0,2.10⁴.\n\n     D) 0,02.10⁵.\n\n\n\n\n10                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2022",
+      "number": 34,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "A Tabela 1 mostra o resultado de uma pesquisa de opinião com 35 estudantes sobre qual é o problema mais grave, dentre os destacados no relatório de violência e invasões nas terras indígenas, abordado no Texto 1. Escolhendo-se, ao acaso, uma pessoa desse grupo, a probabilidade que essa pessoa tenha opinado por desmatamento é de 11 Tabela 1- Problemas destacados nas invasões de terras indígenas",
+      "options": {
+        "A": ". 35 3                                         Problemas abordados       Nº de alunas           Nº de alunos",
+        "B": ".                                                                 (meninas)              (meninos) 35 Grilagem de Terra             10                      2 1",
+        "C": ". 35                                              Desmatamento                   3                          8 20",
+        "D": ". 35                                              Garimpo Ilegal                 1                          4 Contaminação dos Rios                1                          6 Total               15                      20"
+      },
+      "raw_block": "34. A Tabela 1 mostra o resultado de uma pesquisa de opinião com 35 estudantes sobre qual é o problema\n    mais grave, dentre os destacados no relatório de violência e invasões nas terras indígenas, abordado no\n    Texto 1. Escolhendo-se, ao acaso, uma pessoa desse grupo, a probabilidade que essa pessoa tenha\n    opinado por desmatamento é de\n\n\n\n\n       11                                        Tabela 1- Problemas destacados nas invasões de terras indígenas\n    A)    .\n       35\n        3                                         Problemas abordados       Nº de alunas           Nº de alunos\n    B)    .                                                                 (meninas)              (meninos)\n       35\n                                                     Grilagem de Terra             10                      2\n        1\n    C)    .\n       35                                              Desmatamento                   3                          8\n       20\n    D)    .\n       35                                              Garimpo Ilegal                 1                          4\n\n                                                 Contaminação dos Rios                1                          6\n\n                                                                 Total               15                      20\n\n\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 35,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "A Figura 2 mostra dez troncos de madeira, hipoteticamente idênticos, em formato de cilindros retos, empilhados, cujas medidas de diâmetro e altura são, respectivamente, 20 centímetros e 1,0 metro. Considerando 𝜋 = 3.14, o volume de madeira, em m3, correspondente a todos os troncos empilhados é de Figura 2",
+      "options": {
+        "A": "628.                                                                     Figura criada pelo elaborador.",
+        "B": "0,314.",
+        "C": "1,26.",
+        "D": "35."
+      },
+      "raw_block": "35. A Figura 2 mostra dez troncos de madeira, hipoteticamente\n    idênticos, em formato de cilindros retos, empilhados, cujas\n    medidas de diâmetro e altura são, respectivamente, 20\n    centímetros e 1,0 metro. Considerando 𝜋 = 3.14, o volume de\n    madeira, em m3, correspondente a todos os troncos empilhados\n    é de\n\n\n                                                                                          Figura 2\n    A) 628.                                                                     Figura criada pelo elaborador.\n\n    B) 0,314.\n    C) 1,26.\n    D) 35.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 36,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 11,
+      "page_end": 12,
+      "statement": "De acordo com o Texto 1, no ano de 2017, houve 96 invasões em terras indígenas, em 2018, o número subiu para 111 e, em 2019, foi para 160, somente no mês de janeiro. Supondo que tivesse sido preservado o mesmo percentual de aumento do ano de 2018, o número aproximado de invasões, para todo o ano de 2019, teria sido igual a",
+      "options": {
+        "A": "146.",
+        "B": "126.",
+        "C": "128.",
+        "D": "138. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                             11 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "36. De acordo com o Texto 1, no ano de 2017, houve 96 invasões em terras indígenas, em 2018, o número\n    subiu para 111 e, em 2019, foi para 160, somente no mês de janeiro. Supondo que tivesse sido preservado\n    o mesmo percentual de aumento do ano de 2018, o número aproximado de invasões, para todo o ano de\n    2019, teria sido igual a\n\n    A) 146.\n    B) 126.\n    C) 128.\n    D) 138.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                             11\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2022",
+      "number": 37,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Um guarda florestal responsável por fiscalizar uma determinada área de preservação ambiental identificou as medidas dos lados 𝐴𝐶 ̅̅̅̅ e 𝐵𝐶 ̅̅̅̅ do triângulo retângulo ABC, como também o ponto A, considerando-o o ponto mais alto 10 m de uma determinada árvore, de acordo com a Figura 3. 10 m Sabendo que o guarda florestal, tem, aproximadamente, 1,68 m de altura, a medida, em metros, da altura da árvore é . de 8m",
+      "options": {
+        "A": "6,0.",
+        "B": "6,86. Figura 3",
+        "C": "7,68.                                                                      Figura adaptada para fins pedagógicos. Disponível em:",
+        "D": "7,0.                                                           https://www.florestal.gov.br/documentos/inform acoes-florestais/inventario-florestal-nacional- ifn/documentos/manual-de-campo-ifn/3202- anexo-6-procedimentos-para-medicao-de- altura/file"
+      },
+      "raw_block": "37. Um guarda florestal responsável por fiscalizar uma\n    determinada área de preservação ambiental identificou as\n    medidas dos lados 𝐴𝐶 ̅̅̅̅ e 𝐵𝐶\n                                ̅̅̅̅ do triângulo retângulo ABC,\n    como também o ponto A, considerando-o o ponto mais alto                                    10 m\n    de uma determinada árvore, de acordo com a Figura 3.                                      10 m\n    Sabendo que o guarda florestal, tem, aproximadamente,\n    1,68 m de altura, a medida, em metros, da altura da árvore é                     .\n    de                                                                                         8m\n\n     A) 6,0.\n     B) 6,86.\n                                                                                           Figura 3\n     C) 7,68.                                                                      Figura adaptada para fins pedagógicos.\n                                                                                                           Disponível em:\n     D) 7,0.                                                           https://www.florestal.gov.br/documentos/inform\n                                                                         acoes-florestais/inventario-florestal-nacional-\n                                                                           ifn/documentos/manual-de-campo-ifn/3202-\n                                                                             anexo-6-procedimentos-para-medicao-de-\n                                                                                                               altura/file\n\n\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 38,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Supondo que a aldeia dos Munduruku, mencionados no Texto1, tem o formato de um círculo de diâmetro igual a 600 metros, a medida da área desse círculo, em m2, é dada por",
+      "options": {
+        "A": "360000𝜋.",
+        "B": "30000𝜋.",
+        "C": "120000𝜋.",
+        "D": "90000𝜋."
+      },
+      "raw_block": "38. Supondo que a aldeia dos Munduruku, mencionados no Texto1, tem o formato de um círculo de diâmetro\n    igual a 600 metros, a medida da área desse círculo, em m2, é dada por\n\n\n\n     A) 360000𝜋.\n     B) 30000𝜋.\n     C) 120000𝜋.\n     D) 90000𝜋.\n\n"
+    },
+    {
+      "edition": "2022",
+      "number": 39,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 12,
+      "page_end": 13,
+      "statement": "Para medir a largura ̅̅̅̅ 𝐷𝐸 de um lago, dentro de um garimpo desativado, foi utilizado o esquema da Figura 4. Observando-se que o ∆𝐴𝐵𝐶~ ∆𝐸𝐷𝐶 , a expressão que determina o valor de ̅̅̅̅ 𝐷𝐸 é dada por ̅̅̅̅ .𝐸𝐶 𝐴𝐶 ̅̅̅̅",
+      "options": {
+        "A": ". ̅̅̅̅ 𝐴𝐵 ̅̅̅̅.𝐴𝐶 𝐴𝐵    ̅̅̅̅",
+        "B": ". ̅̅̅̅ 𝐶𝐸 ̅̅̅̅ 𝐴𝐵 .𝐶𝐷̅̅̅̅",
+        "C": ".                                                                   Figura 4 ̅̅̅̅ 𝐵𝐶                                                                      Figura adaptada para fins pedagógicos. ̅̅̅̅  ̅̅̅̅                                                                                         Disponível em: 𝐵𝐶 .𝐶𝐸",
+        "D": ". ̅̅̅̅ 𝐴𝐶                                                  https://congressoemfoco.uol.com.br/tema/meio- ambiente/governo-estuda-medidas-para-regularizar- garimpo-clandestino/ 12                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "39. Para medir a largura ̅̅̅̅\n                         𝐷𝐸 de um lago, dentro de um\n    garimpo desativado, foi utilizado o esquema da\n    Figura 4. Observando-se que o ∆𝐴𝐵𝐶~ ∆𝐸𝐷𝐶 , a\n    expressão que determina o valor de ̅̅̅̅\n                                       𝐷𝐸 é dada por\n\n\n          ̅̅̅̅ .𝐸𝐶\n          𝐴𝐶    ̅̅̅̅\n     A)              .\n             ̅̅̅̅\n             𝐴𝐵\n          ̅̅̅̅.𝐴𝐶\n          𝐴𝐵    ̅̅̅̅\n     B)              .\n             ̅̅̅̅\n             𝐶𝐸\n          ̅̅̅̅\n          𝐴𝐵 .𝐶𝐷̅̅̅̅\n     C)              .                                                                   Figura 4\n             ̅̅̅̅\n             𝐵𝐶                                                                      Figura adaptada para fins pedagógicos.\n          ̅̅̅̅  ̅̅̅̅                                                                                         Disponível em:\n          𝐵𝐶 .𝐶𝐸\n     D)              .\n             ̅̅̅̅\n             𝐴𝐶                                                  https://congressoemfoco.uol.com.br/tema/meio-\n                                                             ambiente/governo-estuda-medidas-para-regularizar-\n                                                                                          garimpo-clandestino/\n\n\n\n\n12                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2022",
+      "number": 40,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "page_start": 13,
+      "page_end": 14,
+      "statement": "O Texto 1 registra os números de invasões em terras indígenas nos anos de 2017, 2018 e no período de janeiro a setembro de 2019. O valor total de invasões registradas nos três anos tem a sua representação no sistema binário dada por",
+      "options": {
+        "A": "(110101101)2 .",
+        "B": "(101101111)2 .",
+        "C": "(101111010)2 .",
+        "D": "(111100110)2 . Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 13 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+      },
+      "raw_block": "40. O Texto 1 registra os números de invasões em terras indígenas nos anos de 2017, 2018 e no período de\n    janeiro a setembro de 2019. O valor total de invasões registradas nos três anos tem a sua representação\n    no sistema binário dada por\n\n\n    A) (110101101)2 .\n    B) (101101111)2 .\n    C) (101111010)2 .\n    D) (111100110)2 .\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 13\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                           EDITAL Nº 041/2021 – PROEN/IFRN\n"
+    }
+  ],
+  "discursive": {
+    "present": true,
+    "page": 14,
+    "proposal_excerpt": "PRODUÇÃO TEXTUAL Proposta Considerando os textos desta prova, o seu conhecimento prévio e a polêmica levantada pelos textos sobre a posse das terras indígenas, escreva um artigo de opinião, assumindo um ponto de vista sobre a seguinte questão: as terras indígenas devem ser protegidas pelo governo brasileiro? Assine a sua produção textual com o pseudônimo de Potiguar da Silva. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto será avaliado, levando-"
+  },
+  "warnings": []
+}

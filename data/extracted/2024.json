@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "edition": "2024",
+    "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+    "source_sha256": "8bf3f5931abdfb0e07868d061d9c30b877e3dd4869d5e4481f2cf5044b770020",
+    "source_pages": 15,
+    "extractor": "scripts/analysis/extract_questions.py",
+    "extractor_version": "1.0.0",
+    "generated_at_utc": "2026-09-30T15:09:39.140724+00:00",
+    "tool_versions": {
+      "pdfinfo": "pdfinfo version 26.08.0",
+      "pdftotext": "pdftotext version 26.08.0"
+    },
+    "note": "Dados intermediarios para auditoria (TASK 1.2). Enunciados/alternativas em texto bruto de pdftotext; figuras/formulas exigem revisao visual. Sem classificacao pedagogica."
+  },
+  "questions": [
+    {
+      "edition": "2024",
+      "number": 1,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "O propósito comunicativo dominante no Texto 1 é",
+      "options": {
+        "A": "apresentar um quadro do desmatamento da Amazônia brasileira.",
+        "B": "discutir o papel que exercem os países na Cúpula da Amazônia.",
+        "C": "apresentar a programação das atividades da Cúpula da Amazônia.",
+        "D": "informar o leitor sobre um evento cuja temática trata de questões ambientais."
+      },
+      "raw_block": "01. O propósito comunicativo dominante no Texto 1 é\n\n      A) apresentar um quadro do desmatamento da Amazônia brasileira.\n      B) discutir o papel que exercem os países na Cúpula da Amazônia.\n      C) apresentar a programação das atividades da Cúpula da Amazônia.\n      D) informar o leitor sobre um evento cuja temática trata de questões ambientais.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 2,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "No Texto 1, o primeiro parágrafo cumpre o papel de",
+      "options": {
+        "A": "situar o leitor no contexto da discussão, apresentando, sucintamente, o objeto de que tratará o texto.",
+        "B": "defender uma solução pacífica para a problemática do aquecimento global e da mudança climática.",
+        "C": "problematizar a função de cada país signatário de um acordo assumido para preservar o meio ambiente.",
+        "D": "discutir políticas públicas de controle do desmatamento para o desenvolvimento sustentável da Amazônia."
+      },
+      "raw_block": "02. No Texto 1, o primeiro parágrafo cumpre o papel de\n\n      A) situar o leitor no contexto da discussão, apresentando, sucintamente, o objeto de que tratará o texto.\n      B) defender uma solução pacífica para a problemática do aquecimento global e da mudança climática.\n      C) problematizar a função de cada país signatário de um acordo assumido para preservar o meio\n         ambiente.\n      D) discutir políticas públicas de controle do desmatamento para o desenvolvimento sustentável da\n         Amazônia.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 3,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 4,
+      "page_end": 5,
+      "statement": "No parágrafo 3 do Texto 1, o uso dos parênteses se justifica porque assume a função de",
+      "options": {
+        "A": "apresentar o significado de expressões.",
+        "B": "explicar o significado de siglas.",
+        "C": "introduzir explicações acessórias.",
+        "D": "dar destaque às informações. 4                                                     Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "03. No parágrafo 3 do Texto 1, o uso dos parênteses se justifica porque assume a função de\n\n      A) apresentar o significado de expressões.\n      B) explicar o significado de siglas.\n      C) introduzir explicações acessórias.\n      D) dar destaque às informações.\n\n\n4                                                     Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 4,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "De acordo com o Texto 1, é correto afirmar que",
+      "options": {
+        "A": "a mudança climática, nos últimos tempos, provocou o desmatamento de mais da metade da floresta amazônica.",
+        "B": "a pauta principal da Cúpula da Amazônia serão os problemas sociais enfrentados por grupos sociais como os povos originários.",
+        "C": "as pesquisas apontam que o desmatamento de um quarto da floresta amazônica ocasionaria um colapso ambiental.",
+        "D": "a meta estabelecida pelo Brasil para a superação do desmatamento já foi atingida, antes da Cúpula da Amazônia."
+      },
+      "raw_block": "04. De acordo com o Texto 1, é correto afirmar que\n\n\n    A) a mudança climática, nos últimos tempos, provocou o desmatamento de mais da metade da floresta\n       amazônica.\n    B) a pauta principal da Cúpula da Amazônia serão os problemas sociais enfrentados por grupos sociais\n       como os povos originários.\n    C) as pesquisas apontam que o desmatamento de um quarto da floresta amazônica ocasionaria um\n       colapso ambiental.\n    D) a meta estabelecida pelo Brasil para a superação do desmatamento já foi atingida, antes da Cúpula\n       da Amazônia.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 5,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "A leitura do Texto 1 permite inferir que",
+      "options": {
+        "A": "o governo brasileiro demonstra interesse em desenvolver políticas públicas para resolver os problemas ambientais.",
+        "B": "o governo brasileiro se mostra omisso em relação à implementação de políticas para a resolução dos problemas sociais na região.",
+        "C": "a Amazônia brasileira é a responsável pela emissão de cerca de 25% do gás carbônico na região nordeste da floresta.",
+        "D": "a sociedade civil é a responsável direta pela superação do desmatamento por disseminar gás carbônico no ar. Considere o trecho para responder às questões de 06 e 09. Em 2021, um grupo do INPE mostrou, após coletar nove anos de dados, que (1) algumas regiões da Amazônia brasileira já emitem mais gás carbônico para a atmosfera do que capturam, revertendo o papel do ecossistema de sorvedouro para ao menos uma parte do carbono extra (2) lançado pelos seres humanos no ar."
+      },
+      "raw_block": "05. A leitura do Texto 1 permite inferir que\n\n    A) o governo brasileiro demonstra interesse em desenvolver políticas públicas para resolver os\n       problemas ambientais.\n    B) o governo brasileiro se mostra omisso em relação à implementação de políticas para a resolução dos\n       problemas sociais na região.\n    C) a Amazônia brasileira é a responsável pela emissão de cerca de 25% do gás carbônico na região\n       nordeste da floresta.\n    D) a sociedade civil é a responsável direta pela superação do desmatamento por disseminar gás\n       carbônico no ar.\n\n\nConsidere o trecho para responder às questões de 06 e 09.\n\n        Em 2021, um grupo do INPE mostrou, após coletar nove anos de dados, que (1) algumas regiões\n    da Amazônia brasileira já emitem mais gás carbônico para a atmosfera do que capturam, revertendo o\n    papel do ecossistema de sorvedouro para ao menos uma parte do carbono extra (2) lançado pelos seres\n    humanos no ar.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 6,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "A leitura do trecho permite afirmar que",
+      "options": {
+        "A": "dados de pesquisa apontam que os seres humanos já cumprem seu papel e poluem menos o meio ambiente.",
+        "B": "há uma informação implícita: antes, a Amazônia brasileira emitia menos gás carbônico que atualmente.",
+        "C": "A Amazônia brasileira é a maior responsável pela emissão de gás carbônico nos últimos 9 anos no mundo.",
+        "D": "há um papel a ser desenvolvido pelo ecossistema amazônico: emitir mais gás carbono para o meio ambiente."
+      },
+      "raw_block": "06. A leitura do trecho permite afirmar que\n\n    A) dados de pesquisa apontam que os seres humanos já cumprem seu papel e poluem menos o meio\n       ambiente.\n    B) há uma informação implícita: antes, a Amazônia brasileira emitia menos gás carbônico que\n       atualmente.\n    C) A Amazônia brasileira é a maior responsável pela emissão de gás carbônico nos últimos 9 anos no\n       mundo.\n    D) há um papel a ser desenvolvido pelo ecossistema amazônico: emitir mais gás carbono para o meio\n       ambiente.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 7,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 5,
+      "page_end": 6,
+      "statement": "Na sua organização sintática, o trecho apresenta",
+      "options": {
+        "A": "um período simples e uma oração absoluta.",
+        "B": "dois períodos compostos por subordinação e duas orações.",
+        "C": "um período composto por subordinação e seis orações.",
+        "D": "dois períodos: um simples e um composto por coordenação e três orações. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                            5 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "07. Na sua organização sintática, o trecho apresenta\n\n    A) um período simples e uma oração absoluta.\n    B) dois períodos compostos por subordinação e duas orações.\n    C) um período composto por subordinação e seis orações.\n    D) dois períodos: um simples e um composto por coordenação e três orações.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                            5\n\n    PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                       EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 8,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O elemento linguístico que (1) é um(a)",
+      "options": {
+        "A": "pronome relativo.",
+        "B": "conjunção coordenativa.",
+        "C": "pronome demonstrativo.",
+        "D": "conjunção subordinativa."
+      },
+      "raw_block": "08. O elemento linguístico que (1) é um(a)\n\n     A) pronome relativo.\n     B) conjunção coordenativa.\n     C) pronome demonstrativo.\n     D) conjunção subordinativa.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 9,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "Sobre o elemento linguístico extra (2), é correto afirmar que",
+      "options": {
+        "A": "morfologicamente, é um adjetivo.",
+        "B": "morfologicamente, é um substantivo.",
+        "C": "mantém relação de antonímia com “raro”.",
+        "D": "mantém relação de sinonímia com “previsto”. Considere o trecho para resolver às questões de 10 a 13. Apesar dos dados alarmantes, o presidente Lula considera a Cúpula como momento para a organização das políticas e fim do desmatamento. “(1) O Brasil vai cumprir com aquilo que (2) foi prometido, nós vamos chegar ao desmatamento zero em 2030, escrevam e guardem para me cobrar\"(3), disse em café da manhã com correspondentes da imprensa internacional. Além disso (4), um documento elaborado no evento (5) deve ser apresentado na COP28, em dezembro, em Dubai."
+      },
+      "raw_block": "09. Sobre o elemento linguístico extra (2), é correto afirmar que\n\n     A) morfologicamente, é um adjetivo.\n     B) morfologicamente, é um substantivo.\n     C) mantém relação de antonímia com “raro”.\n     D) mantém relação de sinonímia com “previsto”.\n\nConsidere o trecho para resolver às questões de 10 a 13.\n\n          Apesar dos dados alarmantes, o presidente Lula considera a Cúpula como momento para a\n     organização das políticas e fim do desmatamento. “(1) O Brasil vai cumprir com aquilo que (2) foi\n     prometido, nós vamos chegar ao desmatamento zero em 2030, escrevam e guardem para me cobrar\"(3),\n     disse em café da manhã com correspondentes da imprensa internacional. Além disso (4), um documento\n     elaborado no evento (5) deve ser apresentado na COP28, em dezembro, em Dubai.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 10,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "No trecho, o uso das aspas (1 e 3) tem por fim",
+      "options": {
+        "A": "enfatizar uma expressão.",
+        "B": "destacar uma citação direta.",
+        "C": "destacar uma citação indireta.",
+        "D": "marcar uma opinião de autoridade."
+      },
+      "raw_block": "10. No trecho, o uso das aspas (1 e 3) tem por fim\n\n     A) enfatizar uma expressão.\n     B) destacar uma citação direta.\n     C) destacar uma citação indireta.\n     D) marcar uma opinião de autoridade.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 11,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O elemento linguístico QUE (2) refere-se à palavra",
+      "options": {
+        "A": "Brasil.",
+        "B": "aquilo.",
+        "C": "prometido.",
+        "D": "desmatamento."
+      },
+      "raw_block": "11. O elemento linguístico QUE (2) refere-se à palavra\n\n     A) Brasil.\n     B) aquilo.\n     C) prometido.\n     D) desmatamento.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 12,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O elemento linguístico ALÉM DISSO (4) cumpre o papel de",
+      "options": {
+        "A": "antecipar uma informação que deveria vir depois.",
+        "B": "explicitar uma informação suprimida no texto.",
+        "C": "retificar uma informação que foi apresentada antes.",
+        "D": "acrescentar uma informação ao que vem sendo enunciado."
+      },
+      "raw_block": "12. O elemento linguístico ALÉM DISSO (4) cumpre o papel de\n\n     A) antecipar uma informação que deveria vir depois.\n     B) explicitar uma informação suprimida no texto.\n     C) retificar uma informação que foi apresentada antes.\n     D) acrescentar uma informação ao que vem sendo enunciado.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 13,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 6,
+      "page_end": 7,
+      "statement": "O elemento linguístico EVENTO (5) refere-se",
+      "options": {
+        "A": "à Cúpula.",
+        "B": "ao desmatamento zero.",
+        "C": "ao café da manhã.",
+        "D": "à COP28. 6                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "13. O elemento linguístico EVENTO (5) refere-se\n\n     A) à Cúpula.\n     B) ao desmatamento zero.\n     C) ao café da manhã.\n     D) à COP28.\n\n\n6                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 14,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "O Texto 2",
+      "options": {
+        "A": "denuncia a infantilidade do público que prefere programas de auditório.",
+        "B": "compara programas de auditório à reunião da Cúpula da Amazônia.",
+        "C": "critica a desinformação do público em relação à Cúpula da Amazônia.",
+        "D": "mostra que o público prefere programas de auditório a reuniões políticas. Considere o trecho para responder às questões 15 a 17. Eu tava falando da Cúpula da Amazônia (1)! E não da reunião entre a Xuxa, Angélica e a Eliana."
+      },
+      "raw_block": "14. O Texto 2\n\n    A) denuncia a infantilidade do público que prefere programas de auditório.\n    B) compara programas de auditório à reunião da Cúpula da Amazônia.\n    C) critica a desinformação do público em relação à Cúpula da Amazônia.\n    D) mostra que o público prefere programas de auditório a reuniões políticas.\n\n\nConsidere o trecho para responder às questões 15 a 17.\n\n          Eu tava falando da Cúpula da Amazônia (1)! E não da reunião entre a Xuxa, Angélica e a Eliana.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 15,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "A expressão DA AMAZÔNIA (1) classifica-se como",
+      "options": {
+        "A": "locução adjetiva.",
+        "B": "complemento verbal.",
+        "C": "locução adverbial.",
+        "D": "complemento nominal."
+      },
+      "raw_block": "15. A expressão DA AMAZÔNIA (1) classifica-se como\n\n    A) locução adjetiva.\n    B) complemento verbal.\n    C) locução adverbial.\n    D) complemento nominal.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 16,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "O trecho utiliza",
+      "options": {
+        "A": "o registro informal.",
+        "B": "o registro formal.",
+        "C": "a variante social.",
+        "D": "a variante histórica."
+      },
+      "raw_block": "16. O trecho utiliza\n\n    A) o registro informal.\n    B) o registro formal.\n    C) a variante social.\n    D) a variante histórica.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 17,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "No trecho,",
+      "options": {
+        "A": "um vocábulo é proparoxítono.",
+        "B": "três vocábulos são monossílabos átonos.",
+        "C": "quatro vocábulos são monossílabos tônicos.",
+        "D": "dois vocábulos são acentuados pelo mesmo motivo."
+      },
+      "raw_block": "17. No trecho,\n\n    A) um vocábulo é proparoxítono.\n    B) três vocábulos são monossílabos átonos.\n    C) quatro vocábulos são monossílabos tônicos.\n    D) dois vocábulos são acentuados pelo mesmo motivo.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 18,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 7,
+      "page_end": 8,
+      "statement": "Segundo o Texto 3, o desmatamento da Amazônia foi",
+      "options": {
+        "A": "sempre crescente de 2014 a 2017.",
+        "B": "sempre crescente de 2017 a 2022.",
+        "C": "decrescente em 2012 em relação a 2011.",
+        "D": "decrescente em 2022 em relação a 2021. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                                7 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "18. Segundo o Texto 3, o desmatamento da Amazônia foi\n\n    A) sempre crescente de 2014 a 2017.\n    B) sempre crescente de 2017 a 2022.\n    C) decrescente em 2012 em relação a 2011.\n    D) decrescente em 2022 em relação a 2021.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                                7\n\n    PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                     EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 19,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "O elemento que relaciona os textos 1, 2 e 3 entre si é o",
+      "options": {
+        "A": "tipo textual.",
+        "B": "gênero textual.",
+        "C": "recorte temático.",
+        "D": "registro informal."
+      },
+      "raw_block": "19. O elemento que relaciona os textos 1, 2 e 3 entre si é o\n\n     A) tipo textual.\n     B) gênero textual.\n     C) recorte temático.\n     D) registro informal.\n\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 20,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 8,
+      "page_end": 9,
+      "statement": "Sobre os textos 1, 2 e 3, é correto afirmar que o",
+      "options": {
+        "A": "Texto 1 configura-se, quanto ao gênero textual, como um editorial.",
+        "B": "Texto 2 configura-se, predominantemente, como um texto descritivo.",
+        "C": "Texto 3 configura-se, quanto ao gênero textual, como um gráfico.",
+        "D": "Texto 3 configura-se, predominantemente, como um texto argumentativo. 8                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "20. Sobre os textos 1, 2 e 3, é correto afirmar que o\n\n     A) Texto 1 configura-se, quanto ao gênero textual, como um editorial.\n     B) Texto 2 configura-se, predominantemente, como um texto descritivo.\n     C) Texto 3 configura-se, quanto ao gênero textual, como um gráfico.\n     D) Texto 3 configura-se, predominantemente, como um texto argumentativo.\n\n\n\n\n8                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 21,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "De acordo com o Texto 1, a Cúpula da Amazônia receberá os presidentes dos seguintes países: Brasil, Bolívia, Colômbia, Equador, Guiana, Peru, Suriname e Venezuela. Após a abertura do evento, foi realizado um sorteio, retirando um nome dentre esses países. A probabilidade do nome retirado, aleatoriamente, ser de um país cujo nome se inicia com a letra B foi de 1",
+      "options": {
+        "A": ". 4 1",
+        "B": ". 8 2",
+        "C": ". 3 3",
+        "D": ". 5"
+      },
+      "raw_block": "21. De acordo com o Texto 1, a Cúpula da Amazônia receberá os presidentes dos seguintes países: Brasil,\n    Bolívia, Colômbia, Equador, Guiana, Peru, Suriname e Venezuela. Após a abertura do evento, foi\n    realizado um sorteio, retirando um nome dentre esses países. A probabilidade do nome retirado,\n    aleatoriamente, ser de um país cujo nome se inicia com a letra B foi de\n\n\n         1\n    A)    .\n         4\n\n         1\n    B)    .\n         8\n\n         2\n    C)    .\n         3\n\n         3\n    D)    .\n         5\n"
+    },
+    {
+      "edition": "2024",
+      "number": 22,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "Segundo o Texto 1, mais de 60 organizações são signatárias da carta que aponta o que pode ser a contribuição da sociedade civil para a Cúpula da Amazônia. Se o número exato de organizações é múltiplo de 6 e é divisível por um número primo maior que 10, esse número pode ser",
+      "options": {
+        "A": "72.",
+        "B": "84.",
+        "C": "78.",
+        "D": "90."
+      },
+      "raw_block": "22. Segundo o Texto 1, mais de 60 organizações são signatárias da carta que aponta o que pode ser a\n    contribuição da sociedade civil para a Cúpula da Amazônia. Se o número exato de organizações é múltiplo\n    de 6 e é divisível por um número primo maior que 10, esse número pode ser\n\n    A) 72.\n    B) 84.\n    C) 78.\n    D) 90.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 23,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "De acordo com o Texto 1, a expectativa dos organizadores é que 10.000 pessoas participem, de forma presencial, da Cúpula da Amazônia. Uma representação desse número em forma de potência é de",
+      "options": {
+        "A": "1003.",
+        "B": "105.",
+        "C": "104.",
+        "D": "1004."
+      },
+      "raw_block": "23. De acordo com o Texto 1, a expectativa dos organizadores é que 10.000 pessoas participem, de forma\n    presencial, da Cúpula da Amazônia. Uma representação desse número em forma de potência é de\n\n    A) 1003.\n    B) 105.\n    C) 104.\n    D) 1004.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 24,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 9,
+      "page_end": 10,
+      "statement": "Segundo o Texto 1, “[...]Cada uma das plenárias-síntese terá 7 expositores: 4 da sociedade civil e 3 governamentais, sendo pelo menos 1 brasileiro em cada categoria [...]”. Considerando uma plenária que tinha exatamente um brasileiro nos membros da sociedade civil e um nos membros governamentais, a razão entre o número de brasileiros e o número de estrangeiros nessa plenária foi de 2",
+      "options": {
+        "A": ". 5 4",
+        "B": ". 5 2",
+        "C": ". 7 4",
+        "D": ". 7 Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                              9 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN Considere o trecho para resolver as questões 25, 26 e 27. O tamanho dos aparelhos de televisão, em geral, é dado em polegadas e corresponde à medida da diagonal da tela do aparelho. Uma polegada é equivalente a 2,5 cm. No Texto 2, é possível ver uma televisão de formato retangular, sobre uma mesa. Suponha que as dimensões dessa tela plana são 95 cm de largura e 53 cm de altura."
+      },
+      "raw_block": "24. Segundo o Texto 1, “[...]Cada uma das plenárias-síntese terá 7 expositores: 4 da sociedade civil e 3\n    governamentais, sendo pelo menos 1 brasileiro em cada categoria [...]”. Considerando uma plenária que\n    tinha exatamente um brasileiro nos membros da sociedade civil e um nos membros governamentais, a\n    razão entre o número de brasileiros e o número de estrangeiros nessa plenária foi de\n\n         2\n    A)    .\n         5\n\n         4\n    B)    .\n         5\n\n         2\n    C)    .\n         7\n\n         4\n    D)    .\n         7\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                              9\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                    EDITAL Nº 078/2023 – PROEN/RN\n\nConsidere o trecho para resolver as questões 25, 26 e 27.\n\n          O tamanho dos aparelhos de televisão, em geral, é dado em polegadas e corresponde à medida da\n     diagonal da tela do aparelho. Uma polegada é equivalente a 2,5 cm. No Texto 2, é possível ver uma\n     televisão de formato retangular, sobre uma mesa. Suponha que as dimensões dessa tela plana são 95\n     cm de largura e 53 cm de altura.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 25,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "O valor da área, em cm2, da tela dessa televisão é",
+      "options": {
+        "A": "2518.",
+        "B": "4515.",
+        "C": "5035.",
+        "D": "4953."
+      },
+      "raw_block": "25. O valor da área, em cm2, da tela dessa televisão é\n\n     A) 2518.\n     B) 4515.\n     C) 5035.\n     D) 4953.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 26,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "A medida da diagonal da tela, dessa televisão, aproximadamente, é de",
+      "options": {
+        "A": "110 cm.",
+        "B": "109 cm.",
+        "C": "106 cm.",
+        "D": "105 cm."
+      },
+      "raw_block": "26. A medida da diagonal da tela, dessa televisão, aproximadamente, é de\n\n     A) 110 cm.\n     B) 109 cm.\n     C) 106 cm.\n     D) 105 cm.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 27,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "O tamanho da televisão, em polegadas, é mais próximo de",
+      "options": {
+        "A": "43.",
+        "B": "40.",
+        "C": "50.",
+        "D": "55."
+      },
+      "raw_block": "27. O tamanho da televisão, em polegadas, é mais próximo de\n\n     A) 43.\n     B) 40.\n     C) 50.\n     D) 55.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 28,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Um estudo realizado por um engenheiro florestal identificou que para reflorestar uma certa área desmatada da Amazônia, seriam necessários 36 homens, trabalhando no mesmo ritmo durante 25 dias. Para realizar o mesmo trabalho, em apenas 20 dias, aplicando o mesmo ritmo de trabalho, seriam necessários um total de",
+      "options": {
+        "A": "40 homens.",
+        "B": "42 homens.",
+        "C": "43 homens.",
+        "D": "45 homens."
+      },
+      "raw_block": "28. Um estudo realizado por um engenheiro florestal identificou que para reflorestar uma certa área\n    desmatada da Amazônia, seriam necessários 36 homens, trabalhando no mesmo ritmo durante 25 dias.\n    Para realizar o mesmo trabalho, em apenas 20 dias, aplicando o mesmo ritmo de trabalho, seriam\n    necessários um total de\n\n     A) 40 homens.\n     B) 42 homens.\n     C) 43 homens.\n     D) 45 homens.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 29,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 10,
+      "page_end": 11,
+      "statement": "O Ministério do Meio Ambiente e Mudança do Clima enviou uma comissão de 19 pessoas, entre homens e mulheres, para o evento a Cúpula da Amazônia. O dobro do número de homens excede em 5 o número de mulheres. Dessa forma, a comissão foi composta por",
+      "options": {
+        "A": "08 mulheres e 11 homens.",
+        "B": "12 mulheres e 07 homens.",
+        "C": "07 mulheres e 12 homens.",
+        "D": "11 mulheres e 08 homens. 10                                         Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "29. O Ministério do Meio Ambiente e Mudança do Clima enviou uma comissão de 19 pessoas, entre homens\n    e mulheres, para o evento a Cúpula da Amazônia. O dobro do número de homens excede em 5 o número\n    de mulheres. Dessa forma, a comissão foi composta por\n\n     A) 08 mulheres e 11 homens.\n     B) 12 mulheres e 07 homens.\n     C) 07 mulheres e 12 homens.\n     D) 11 mulheres e 08 homens.\n\n\n\n10                                         Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 30,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Em uma reunião com membros dos oitos países que detêm o bioma amazônico estavam presentes 120 pessoas. Sabendo que um quarto delas eram brasileiros, um quinto eram do Equador e que cada um dos outros 6 países estavam com o mesmo número de representantes, o número de representantes de cada um desses 6 países era",
+      "options": {
+        "A": "12.",
+        "B": "13.",
+        "C": "11.",
+        "D": "14. As questões 31, 32 e 33 deverão ser respondidas com base no Texto 3"
+      },
+      "raw_block": "30. Em uma reunião com membros dos oitos países que detêm o bioma amazônico estavam presentes 120\n    pessoas. Sabendo que um quarto delas eram brasileiros, um quinto eram do Equador e que cada um dos\n    outros 6 países estavam com o mesmo número de representantes, o número de representantes de cada\n    um desses 6 países era\n\n    A) 12.\n    B) 13.\n    C) 11.\n    D) 14.\n\nAs questões 31, 32 e 33 deverão ser respondidas com base no Texto 3\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 31,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Com base no Texto 3, é correto afirmar que",
+      "options": {
+        "A": "A área desmatada é crescente de 2015 até 2022.",
+        "B": "A área desmatada é decrescente de 2008 até 2013.",
+        "C": "A área desmata em 2014 é o dobro da área desmatada em 2013.",
+        "D": "A área desmatada acumulada nos últimos quatro anos, entre 2019 e 2022, chegou aos 35.193 km 2."
+      },
+      "raw_block": "31. Com base no Texto 3, é correto afirmar que\n\n    A) A área desmatada é crescente de 2015 até 2022.\n    B) A área desmatada é decrescente de 2008 até 2013.\n    C) A área desmata em 2014 é o dobro da área desmatada em 2013.\n    D) A área desmatada acumulada nos últimos quatro anos, entre 2019 e 2022, chegou aos 35.193 km 2.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 32,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "O desmatamento médio nos últimos dez anos, entre 2013 e 2022, em km 2, aproximadamente, é de",
+      "options": {
+        "A": "5376.",
+        "B": "5787.",
+        "C": "5490.",
+        "D": "5520."
+      },
+      "raw_block": "32. O desmatamento médio nos últimos dez anos, entre 2013 e 2022, em km 2, aproximadamente, é de\n\n    A) 5376.\n    B) 5787.\n    C) 5490.\n    D) 5520.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 33,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "No ano de 2022, o aumento percentual do desmatamento na Amazônia, em relação ao ano 2018, aproximadamente, foi de",
+      "options": {
+        "A": "98,78 %.",
+        "B": "108,21 %.",
+        "C": "102,42 %.",
+        "D": "96,89 %."
+      },
+      "raw_block": "33. No ano de 2022, o aumento percentual do desmatamento na Amazônia, em relação ao ano 2018,\n    aproximadamente, foi de\n\n    A) 98,78 %.\n    B) 108,21 %.\n    C) 102,42 %.\n    D) 96,89 %.\n"
+    },
+    {
+      "edition": "2024",
+      "number": 34,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 11,
+      "page_end": 12,
+      "statement": "Suponha que, para cumprir com a meta de desmatamento zero em 2030, o governo brasileiro aumente o quantitativo de servidores que trabalham na fiscalização em 20 pessoas por ano, a partir de 2025 até 2029. Se, após esses aumentos, a quantidade de servidores no órgão de fiscalização chegou a 300, o número de servidores antes do primeiro aumento foi de",
+      "options": {
+        "A": "220.",
+        "B": "200.",
+        "C": "180.",
+        "D": "160. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                           11 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "34. Suponha que, para cumprir com a meta de desmatamento zero em 2030, o governo brasileiro aumente o\n    quantitativo de servidores que trabalham na fiscalização em 20 pessoas por ano, a partir de 2025 até\n    2029. Se, após esses aumentos, a quantidade de servidores no órgão de fiscalização chegou a 300, o\n    número de servidores antes do primeiro aumento foi de\n\n    A) 220.\n    B) 200.\n    C) 180.\n    D) 160.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                           11\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                     EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 35,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Para montar uma das estruturas da cúpula da Amazônia, uma empresa sabe que se 6 de seus trabalhadores trabalharem 8 horas por dia, durante 5 dias, finalizam a estrutura. Precisando finalizar essa estrutura em 2 dias, se seus funcionários trabalharem 10 horas por dia, mantendo o mesmo ritmo de trabalho, será necessário",
+      "options": {
+        "A": "Contratar mais 4 trabalhadores.",
+        "B": "Contratar mais 8 trabalhadores.",
+        "C": "Contratar mais 2 trabalhadores.",
+        "D": "Contratar mais 6 trabalhadores."
+      },
+      "raw_block": "35. Para montar uma das estruturas da cúpula da Amazônia, uma empresa sabe que se 6 de seus\n    trabalhadores trabalharem 8 horas por dia, durante 5 dias, finalizam a estrutura. Precisando finalizar essa\n    estrutura em 2 dias, se seus funcionários trabalharem 10 horas por dia, mantendo o mesmo ritmo de\n    trabalho, será necessário\n\n     A) Contratar mais 4 trabalhadores.\n     B) Contratar mais 8 trabalhadores.\n     C) Contratar mais 2 trabalhadores.\n     D) Contratar mais 6 trabalhadores.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 36,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Em uma exposição de fotografias sobre o bioma amazônico, 300 pessoas estavam no salão da exposição quando a portaria percebeu que, a cada 2 min, 4 pessoas saíam e 2 entravam. Considerando esse fluxo de pessoas, o tempo para a exposição ficar vazia será de",
+      "options": {
+        "A": "4 horas.",
+        "B": "6 horas.",
+        "C": "5 horas.",
+        "D": "7 horas."
+      },
+      "raw_block": "36. Em uma exposição de fotografias sobre o bioma amazônico, 300 pessoas estavam no salão da exposição\n    quando a portaria percebeu que, a cada 2 min, 4 pessoas saíam e 2 entravam. Considerando esse fluxo\n    de pessoas, o tempo para a exposição ficar vazia será de\n\n     A) 4 horas.\n     B) 6 horas.\n     C) 5 horas.\n     D) 7 horas.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 37,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Um governo deseja veicular uma campanha de conscientização sobre a preservação do meio ambiente em uma emissora de televisão. Se a emissora cobra um valor fixo de R$ 10.000,00 e mais uma taxa de R$ 2.000,00 por cada transmissão, a função que melhor representa o custo total que o governo terá para veicular x propagandas é",
+      "options": {
+        "A": "C(x) = 10.000x.",
+        "B": "C(x) = 12.000x.",
+        "C": "C(x) = 10.000 + 2.000x.",
+        "D": "C(x) = 2.000 + 10.000x."
+      },
+      "raw_block": "37. Um governo deseja veicular uma campanha de conscientização sobre a preservação do meio ambiente\n    em uma emissora de televisão. Se a emissora cobra um valor fixo de R$ 10.000,00 e mais uma taxa de\n    R$ 2.000,00 por cada transmissão, a função que melhor representa o custo total que o governo terá para\n    veicular x propagandas é\n\n     A) C(x) = 10.000x.\n     B) C(x) = 12.000x.\n     C) C(x) = 10.000 + 2.000x.\n     D) C(x) = 2.000 + 10.000x.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 38,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Supondo que uma das sugestões tomadas na reunião da cúpula fosse a abertura de uma conta para financiamento das ações de proteção da Amazônia; sabendo que essa conta tem rendimento a juros simples de 1% ao mês e que foram depositados R$ 100.000.000,00 de reais, o montante disponível para uso após 8 meses é de",
+      "options": {
+        "A": "R$ 108.000.000,00.",
+        "B": "R$ 100.800.000,00.",
+        "C": "R$ 180.000.000,00.",
+        "D": "R$ 100.080.000,00."
+      },
+      "raw_block": "38. Supondo que uma das sugestões tomadas na reunião da cúpula fosse a abertura de uma conta para\n    financiamento das ações de proteção da Amazônia; sabendo que essa conta tem rendimento a juros\n    simples de 1% ao mês e que foram depositados R$ 100.000.000,00 de reais, o montante disponível para\n    uso após 8 meses é de\n\n     A) R$ 108.000.000,00.\n     B) R$ 100.800.000,00.\n     C) R$ 180.000.000,00.\n     D) R$ 100.080.000,00.\n\n"
+    },
+    {
+      "edition": "2024",
+      "number": 39,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 12,
+      "page_end": 13,
+      "statement": "Um membro da comitiva francesa notou que o avião que o traria para a Cúpula da Amazônia , em Belém, levaria 11h36min de voo a uma velocidade média de 625km/h. Dessa forma, ele deduziu que a distância da França a Belém era de",
+      "options": {
+        "A": "7250 km.",
+        "B": "8000 km.",
+        "C": "7750 km.",
+        "D": "8250 km. 12                                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "39. Um membro da comitiva francesa notou que o avião que o traria para a Cúpula da Amazônia , em Belém,\n    levaria 11h36min de voo a uma velocidade média de 625km/h. Dessa forma, ele deduziu que a distância\n    da França a Belém era de\n\n     A) 7250 km.\n     B) 8000 km.\n     C) 7750 km.\n     D) 8250 km.\n\n\n\n12                                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
+    },
+    {
+      "edition": "2024",
+      "number": 40,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "page_start": 13,
+      "page_end": 14,
+      "statement": "Como lembrança da Cúpula da Amazônia, uma empresa entregou uma miniatura retangular do parque estadual Mangal das Garças. Sabendo que essa miniatura tinha dimensões de 2cm de comprimento por 8cm de largura e que foi feita numa escala de 1:5000, a área real do mangal das garças, que foi representada, em m², na miniatura é",
+      "options": {
+        "A": "40.000.",
+        "B": "30.000.",
+        "C": "25.000.",
+        "D": "35.000. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                       13 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+      },
+      "raw_block": "40. Como lembrança da Cúpula da Amazônia, uma empresa entregou uma miniatura retangular do parque\n    estadual Mangal das Garças. Sabendo que essa miniatura tinha dimensões de 2cm de comprimento por\n    8cm de largura e que foi feita numa escala de 1:5000, a área real do mangal das garças, que foi\n    representada, em m², na miniatura é\n\n    A) 40.000.\n    B) 30.000.\n    C) 25.000.\n    D) 35.000.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                       13\n\n     PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                     EDITAL Nº 078/2023 – PROEN/RN\n"
+    }
+  ],
+  "discursive": {
+    "present": true,
+    "page": 14,
+    "proposal_excerpt": "PRODUÇÃO TEXTUAL PROPOSTA Considerando a temática em foco, a leitura dos textos desta prova e seus conhecimentos prévios sobre o tema em discussão, escreva um ARTIGO DE OPINIÃO em que se posicione sobre a seguinte questão: a responsabilidade pela preservação da Amazônia é de todos os países? Assine o seu artigo, exclusivamente, com o pseudônimo Amazonense da Silva. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto será av"
+  },
+  "warnings": []
+}

@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "edition": "2023",
+    "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+    "source_sha256": "99caba7636afdc10163c5e0bfddc0e1adbcf62443173e0196f08672b485772d8",
+    "source_pages": 14,
+    "extractor": "scripts/analysis/extract_questions.py",
+    "extractor_version": "1.0.0",
+    "generated_at_utc": "2026-09-30T15:09:38.930061+00:00",
+    "tool_versions": {
+      "pdfinfo": "pdfinfo version 26.08.0",
+      "pdftotext": "pdftotext version 26.08.0"
+    },
+    "note": "Dados intermediarios para auditoria (TASK 1.2). Enunciados/alternativas em texto bruto de pdftotext; figuras/formulas exigem revisao visual. Sem classificacao pedagogica."
+  },
+  "questions": [
+    {
+      "edition": "2023",
+      "number": 1,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 3,
+      "page_end": 3,
+      "statement": "Quanto à organização tipológica, o Texto 1 é predominantemente",
+      "options": {
+        "A": "argumentativo, por explicitar o quadro dos resultados de uma década da existência da Lei das Cotas no Brasil.",
+        "B": "narrativo, por contar como se deu o processo de instituição da Lei das Cotas no Brasil, há uma década.",
+        "C": "argumentativo, por defender um ponto de vista favorável à manutenção da Lei das Cotas no Brasil.",
+        "D": "narrativo, por informar o leitor sobre os impactos causados pela instituição da Lei das Cotas no Brasil."
+      },
+      "raw_block": "01. Quanto à organização tipológica, o Texto 1 é predominantemente\n\n   A) argumentativo, por explicitar o quadro dos resultados de uma década da existência da Lei das Cotas\n      no Brasil.\n   B) narrativo, por contar como se deu o processo de instituição da Lei das Cotas no Brasil, há uma\n      década.\n   C) argumentativo, por defender um ponto de vista favorável à manutenção da Lei das Cotas no Brasil.\n   D) narrativo, por informar o leitor sobre os impactos causados pela instituição da Lei das Cotas no Brasil.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 2,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 3,
+      "page_end": 3,
+      "statement": "Quanto ao gênero textual, o Texto 1 configura-se como",
+      "options": {
+        "A": "artigo de opinião.",
+        "B": "reportagem.",
+        "C": "editorial.",
+        "D": "notícia."
+      },
+      "raw_block": "02. Quanto ao gênero textual, o Texto 1 configura-se como\n\n   A) artigo de opinião.\n   B) reportagem.\n   C) editorial.\n   D) notícia.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 3,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 3,
+      "page_end": 4,
+      "statement": "De acordo com o Texto 1, a Lei das Cotas",
+      "options": {
+        "A": "foi criada para reparar o mal causado, historicamente, aos índios marginalizados pelo Estado brasileiro.",
+        "B": "cumpriu o papel de rever o crime de lesa-humanidade cometido pelo Estado brasileiro durante a escravidão.",
+        "C": "foi pensada por corporações do setor privado comprometidas com a pluralidade de etnias e de gêneros no país.",
+        "D": "reconfigurou as feições das universidades brasileiras, tornando-as menos elitizadas em dez anos. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                      3 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "03. De acordo com o Texto 1, a Lei das Cotas\n\n\n   A) foi criada para reparar o mal causado, historicamente, aos índios marginalizados pelo Estado\n      brasileiro.\n   B) cumpriu o papel de rever o crime de lesa-humanidade cometido pelo Estado brasileiro durante a\n      escravidão.\n   C) foi pensada por corporações do setor privado comprometidas com a pluralidade de etnias e de\n      gêneros no país.\n   D) reconfigurou as feições das universidades brasileiras, tornando-as menos elitizadas em dez anos.\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                      3\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                                  EDITAL Nº 40/2022 – PROEN/IFRN"
+    },
+    {
+      "edition": "2023",
+      "number": 4,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "O Texto 1 permite inferir que",
+      "options": {
+        "A": "o protagonismo de negros que vivem nas periferias dos grandes centros urbanos é garantido pelas forças de segurança pública.",
+        "B": "a igualdade de direitos previstos constitucionalmente, há muito tempo, vem sendo violada no Brasil.",
+        "C": "o contingente de alunos negros inseridos nas universidades brasileiras, nos últimos dez anos, é superior ao de brancos.",
+        "D": "a presença dos negros nas universidades prova que o parlamento brasileiro tem compromisso com políticas públicas afirmativas."
+      },
+      "raw_block": "04. O Texto 1 permite inferir que\n\n\n    A) o protagonismo de negros que vivem nas periferias dos grandes centros urbanos é garantido pelas\n       forças de segurança pública.\n    B) a igualdade de direitos previstos constitucionalmente, há muito tempo, vem sendo violada no Brasil.\n    C) o contingente de alunos negros inseridos nas universidades brasileiras, nos últimos dez anos, é\n       superior ao de brancos.\n    D) a presença dos negros nas universidades prova que o parlamento brasileiro tem compromisso com\n        políticas públicas afirmativas.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 5,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "De acordo com o Texto 1,",
+      "options": {
+        "A": "o branco, atualmente, ocupa o papel de inferioridade do negro de outrora.",
+        "B": "a sociedade brasileira superou a segregação racial com a Lei das Cotas.",
+        "C": "a legislação brasileira é determinada por grupos ultraconservadores.",
+        "D": "o extermínio de negros foi apenas reconfigurado na contemporaneidade. Considere o trecho para responder às questões de 06 a 12. Entre os argumentos, havia a alegação de que (1) a regra privilegia pretos e pardos em detrimento dos direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades. É puro deboche falar em desigualdade, quando todas as ações do poder público e setor privado sempre mortificaram o artigo da Constituição anterior a de 1988, em que (2) todos (3) \"são iguais perante as leis\" (3). Escárnio (4)."
+      },
+      "raw_block": "05. De acordo com o Texto 1,\n\n\n    A) o branco, atualmente, ocupa o papel de inferioridade do negro de outrora.\n    B) a sociedade brasileira superou a segregação racial com a Lei das Cotas.\n    C) a legislação brasileira é determinada por grupos ultraconservadores.\n    D) o extermínio de negros foi apenas reconfigurado na contemporaneidade.\n\n\nConsidere o trecho para responder às questões de 06 a 12.\n\n          Entre os argumentos, havia a alegação de que (1) a regra privilegia pretos e pardos em detrimento\n    dos direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades. É puro deboche\n    falar em desigualdade, quando todas as ações do poder público e setor privado sempre mortificaram o\n    artigo da Constituição anterior a de 1988, em que (2) todos (3) \"são iguais perante as leis\" (3). Escárnio\n    (4).\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 6,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "Sobre o trecho, é correto afirmar que",
+      "options": {
+        "A": "a segunda oração do primeiro período cumpre a função sintática de completar o sentido de um nome.",
+        "B": "o primeiro período, sintaticamente, organiza-se a partir de quatro orações subordinadas.",
+        "C": "o segundo período é simples e organiza-se, sintaticamente, em torno de uma oração absoluta.",
+        "D": "a primeira oração do segundo período tem a função sintática de um adjunto adverbial, indicando circunstância de tempo."
+      },
+      "raw_block": "06. Sobre o trecho, é correto afirmar que\n\n\n    A) a segunda oração do primeiro período cumpre a função sintática de completar o sentido de um nome.\n    B) o primeiro período, sintaticamente, organiza-se a partir de quatro orações subordinadas.\n    C) o segundo período é simples e organiza-se, sintaticamente, em torno de uma oração absoluta.\n    D) a primeira oração do segundo período tem a função sintática de um adjunto adverbial, indicando\n       circunstância de tempo.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 7,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 4,
+      "page_end": 5,
+      "statement": "Observando a norma-padrão da língua portuguesa, o primeiro período está corretamente reescrito e mantém seu sentido original na opção",
+      "options": {
+        "A": "Entre os argumentos tem a alegação de que a regra privilegia pretos e pardos e prejudica os direitos dos brancos, o que torna desigual, a disputa por uma vaga nas universidades.",
+        "B": "Entre os argumentos, têm a alegação de que a regra favorece pretos e pardos, prejudicando os direitos dos brancos, o qual torna desigual a disputa por uma vaga nas universidades.",
+        "C": "Existia entre os argumentos a alegação de que a regra privilegia pretos e pardos, prejudicando os direitos dos brancos, o que torna desigual a disputa por uma vaga nas universidades.",
+        "D": "Haviam entre os argumentos a alegação de que a regra, privilegia pretos e pardos, e prejudica os direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades. 4                             Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "07. Observando a norma-padrão da língua portuguesa, o primeiro período está corretamente reescrito e\n    mantém seu sentido original na opção\n\n\n    A) Entre os argumentos tem a alegação de que a regra privilegia pretos e pardos e prejudica os direitos\n       dos brancos, o que torna desigual, a disputa por uma vaga nas universidades.\n    B) Entre os argumentos, têm a alegação de que a regra favorece pretos e pardos, prejudicando os\n       direitos dos brancos, o qual torna desigual a disputa por uma vaga nas universidades.\n    C) Existia entre os argumentos a alegação de que a regra privilegia pretos e pardos, prejudicando os\n       direitos dos brancos, o que torna desigual a disputa por uma vaga nas universidades.\n    D) Haviam entre os argumentos a alegação de que a regra, privilegia pretos e pardos, e prejudica os\n       direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades.\n\n\n\n\n4                             Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2023",
+      "number": 8,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "O vocábulo QUE (1) é",
+      "options": {
+        "A": "pronome.",
+        "B": "advérbio.",
+        "C": "conjunção.",
+        "D": "partícula expletiva."
+      },
+      "raw_block": "08. O vocábulo QUE (1) é\n\n   A) pronome.\n   B) advérbio.\n   C) conjunção.\n   D) partícula expletiva.\n\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 9,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "O vocábulo QUE (2) refere-se a",
+      "options": {
+        "A": "ações.",
+        "B": "poder público.",
+        "C": "setor privado.",
+        "D": "artigo da Constituição."
+      },
+      "raw_block": "09. O vocábulo QUE (2) refere-se a\n\n\n   A) ações.\n   B) poder público.\n   C) setor privado.\n   D) artigo da Constituição.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 10,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "No trecho, o uso das aspas (3) tem por fim",
+      "options": {
+        "A": "enfatizar uma expressão.",
+        "B": "destacar uma citação direta.",
+        "C": "destacar uma citação indireta.",
+        "D": "indicar início e fim de um discurso de autoridade."
+      },
+      "raw_block": "10. No trecho, o uso das aspas (3) tem por fim\n\n\n   A) enfatizar uma expressão.\n   B) destacar uma citação direta.\n   C) destacar uma citação indireta.\n   D) indicar início e fim de um discurso de autoridade.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 11,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "No trecho, mantendo seu sentido original, a palavra ESCÁRNIO (4) pode ser substituída por",
+      "options": {
+        "A": "desdém.",
+        "B": "imperícia.",
+        "C": "desleixo.",
+        "D": "arrogância."
+      },
+      "raw_block": "11. No trecho, mantendo seu sentido original, a palavra ESCÁRNIO (4) pode ser substituída por\n\n   A) desdém.\n   B) imperícia.\n   C) desleixo.\n   D) arrogância.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 12,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 5,
+      "page_end": 6,
+      "statement": "O vocábulo ESCÁRNIO (4) é acentuado pelo mesmo motivo de",
+      "options": {
+        "A": "público.",
+        "B": "étnica.",
+        "C": "abomináveis.",
+        "D": "completará. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                     5 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN Considere o trecho para responder às questões 13 a 15. Mesmo com todos os efeitos positivos, (1) a Lei das Cotas tem sido rechaçada por grupos conservadores e neonazistas (2), inconformados com a presença dos negros nas universidades (3) ou em postos de mando em algumas empresas (4)."
+      },
+      "raw_block": "12. O vocábulo ESCÁRNIO (4) é acentuado pelo mesmo motivo de\n\n   A) público.\n   B) étnica.\n   C) abomináveis.\n   D) completará.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                     5\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n\nConsidere o trecho para responder às questões 13 a 15.\n\n        Mesmo com todos os efeitos positivos, (1) a Lei das Cotas tem sido rechaçada por grupos\n    conservadores e neonazistas (2), inconformados com a presença dos negros nas universidades (3)\n    ou em postos de mando em algumas empresas (4).\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 13,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "Em relação ao uso da vírgula assinalada com (1), é correto afirmar que ela",
+      "options": {
+        "A": "separa adjunto adverbial.",
+        "B": "isola uma oração coordenada.",
+        "C": "separa oração subordinada adjetiva.",
+        "D": "isola termos de mesma função sintática."
+      },
+      "raw_block": "13. Em relação ao uso da vírgula assinalada com (1), é correto afirmar que ela\n\n    A) separa adjunto adverbial.\n    B) isola uma oração coordenada.\n    C) separa oração subordinada adjetiva.\n    D) isola termos de mesma função sintática.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 14,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O termo em destaque POR GRUPOS CONSERVADORES E NEONAZISTAS (2) exerce função de",
+      "options": {
+        "A": "partícula apassivadora",
+        "B": "agente da passiva.",
+        "C": "complemento nominal.",
+        "D": "adjunto adnominal."
+      },
+      "raw_block": "14. O termo em destaque POR GRUPOS CONSERVADORES E NEONAZISTAS (2) exerce função de\n\n    A) partícula apassivadora\n    B) agente da passiva.\n    C) complemento nominal.\n    D) adjunto adnominal.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 15,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "Os elementos linguísticos NAS UNIVERSIDADES (3) e EM ALGUMAS EMPRESAS (4) têm, respectivamente, valor de",
+      "options": {
+        "A": "locução adjetiva e locução prepositiva.",
+        "B": "locução conjuntiva e locução verbal.",
+        "C": "locução adverbial e locução adverbial.",
+        "D": "locução adverbial e locução prepositiva."
+      },
+      "raw_block": "15. Os elementos linguísticos NAS UNIVERSIDADES (3) e EM ALGUMAS EMPRESAS (4) têm,\n    respectivamente, valor de\n\n\n    A) locução adjetiva e locução prepositiva.\n    B) locução conjuntiva e locução verbal.\n    C) locução adverbial e locução adverbial.\n    D) locução adverbial e locução prepositiva.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 16,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O primeiro período do último parágrafo do Texto 1 introduz uma ideia de",
+      "options": {
+        "A": "conclusão de ideias previamente discutidas ao longo do texto.",
+        "B": "oposição em relação a algo que ainda será apresentado no texto.",
+        "C": "explicação de dados utilizados no desenvolvimento do texto.",
+        "D": "concessão em relação a algo que foi discutido anteriormente no texto."
+      },
+      "raw_block": "16. O primeiro período do último parágrafo do Texto 1 introduz uma ideia de\n\n\n    A) conclusão de ideias previamente discutidas ao longo do texto.\n    B) oposição em relação a algo que ainda será apresentado no texto.\n    C) explicação de dados utilizados no desenvolvimento do texto.\n    D) concessão em relação a algo que foi discutido anteriormente no texto.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 17,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 6,
+      "page_end": 7,
+      "statement": "Sobre o Texto 2, é correto afirmar que",
+      "options": {
+        "A": "apresenta uma crítica à ideia racista de que negro não precisa estudar em uma universidade.",
+        "B": "tem o propósito de narrar um episódio de preconceito racial cometido contra uma criança negra.",
+        "C": "tem a intenção de informar o leitor sobre a criação da Lei das Cotas para negros nas universidades.",
+        "D": "apresenta uma descrição de como se configura o racismo estrutural no cenário brasileiro. 6                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "17. Sobre o Texto 2, é correto afirmar que\n\n\n    A) apresenta uma crítica à ideia racista de que negro não precisa estudar em uma universidade.\n    B) tem o propósito de narrar um episódio de preconceito racial cometido contra uma criança negra.\n    C) tem a intenção de informar o leitor sobre a criação da Lei das Cotas para negros nas universidades.\n    D) apresenta uma descrição de como se configura o racismo estrutural no cenário brasileiro.\n\n\n\n\n6                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2023",
+      "number": 18,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "No Texto 2, são expressões que têm o mesmo valor e mesma função sintática",
+      "options": {
+        "A": "você e sua.",
+        "B": "bem e toma.",
+        "C": "futebol e cota.",
+        "D": "universidade e tão."
+      },
+      "raw_block": "18. No Texto 2, são expressões que têm o mesmo valor e mesma função sintática\n\n   A) você e sua.\n   B) bem e toma.\n   C) futebol e cota.\n   D) universidade e tão.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 19,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "No Texto 2, o vocábulo COTA foi utilizado de forma",
+      "options": {
+        "A": "denotativa.",
+        "B": "conotativa.",
+        "C": "metonímica.",
+        "D": "pleonástica."
+      },
+      "raw_block": "19. No Texto 2, o vocábulo COTA foi utilizado de forma\n\n\n   A) denotativa.\n   B) conotativa.\n   C) metonímica.\n   D) pleonástica.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 20,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 7,
+      "page_end": 8,
+      "statement": "Os Textos 1 e 2 apresentam em comum",
+      "options": {
+        "A": "a intenção comunicativa.",
+        "B": "o uso da linguagem não verbal.",
+        "C": "o uso da linguagem verbal.",
+        "D": "a variante linguística do registro informal. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023     7 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "20. Os Textos 1 e 2 apresentam em comum\n\n\n   A) a intenção comunicativa.\n   B) o uso da linguagem não verbal.\n   C) o uso da linguagem verbal.\n   D) a variante linguística do registro informal.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023     7\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2023",
+      "number": 21,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Uma universidade brasileira tem 3 mil alunos e mais de 38% deles são negros, logo,",
+      "options": {
+        "A": "menos de 1140 são alunos negros.",
+        "B": "menos de 1860 são alunos não negros.",
+        "C": "mais de 1860 são alunos negros.",
+        "D": "mais de 1860 são alunos não negros."
+      },
+      "raw_block": "21. Uma universidade brasileira tem 3 mil alunos e mais de 38% deles são negros, logo,\n\n    A) menos de 1140 são alunos negros.\n    B) menos de 1860 são alunos não negros.\n    C) mais de 1860 são alunos negros.\n    D) mais de 1860 são alunos não negros.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 22,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Escolhendo aleatoriamente um aluno de uma universidade brasileira com 3 mil alunos e considerando exatamente 38% o percentual de alunos negros matriculados nessa universidade, a probabilidade de que ele não seja negro é aproximadamente de",
+      "options": {
+        "A": "31/50.",
+        "B": "62/50.",
+        "C": "38/50.",
+        "D": "19/50. Considere a Figura 1 para responder às questões 23 e 24. Figura 1"
+      },
+      "raw_block": "22. Escolhendo aleatoriamente um aluno de uma universidade brasileira com 3 mil alunos e considerando\n    exatamente 38% o percentual de alunos negros matriculados nessa universidade, a probabilidade de que\n    ele não seja negro é aproximadamente de\n\n    A) 31/50.\n    B) 62/50.\n    C) 38/50.\n    D) 19/50.\n\nConsidere a Figura 1 para responder às questões 23 e 24.\n\n\n                                                Figura 1\n\n\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 23,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "A bola que aparece no Texto 2 é formada por 12 pentágonos e 20 hexágonos que são polígonos regulares, como representado na Figura 1. O perímetro, em cm, de cada um desses pentágonos corresponde a",
+      "options": {
+        "A": "20.",
+        "B": "25.",
+        "C": "15.",
+        "D": "30."
+      },
+      "raw_block": "23. A bola que aparece no Texto 2 é formada por 12 pentágonos e 20 hexágonos que são polígonos\n    regulares, como representado na Figura 1. O perímetro, em cm, de cada um desses pentágonos\n    corresponde a\n\n    A) 20.\n    B) 25.\n    C) 15.\n    D) 30.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 24,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 8,
+      "page_end": 9,
+      "statement": "A área, em cm2, correspondente a cada um desses hexágonos (Figura 1) é de",
+      "options": {
+        "A": "75√3⁄2.",
+        "B": "75√3⁄5.",
+        "C": "25√3⁄4.",
+        "D": "5√3⁄2. 8                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN Observe, na Figura 2, o organograma de distribuição de vagas de uma universidade. Figura 2 PPI: Pretos, pardos ou indígenas PcD: Pessoas com deficiência"
+      },
+      "raw_block": "24. A área, em cm2, correspondente a cada um desses hexágonos (Figura 1) é de\n\n    A) 75√3⁄2.\n\n    B) 75√3⁄5.\n\n    C) 25√3⁄4.\n\n    D) 5√3⁄2.\n\n\n\n8                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n    PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                                  EDITAL Nº 40/2022 – PROEN/IFRN\nObserve, na Figura 2, o organograma de distribuição de vagas de uma universidade.\n\n                                                     Figura 2\n\n\n\n\n                        PPI: Pretos, pardos ou indígenas\n                        PcD: Pessoas com deficiência\n"
+    },
+    {
+      "edition": "2023",
+      "number": 25,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "A fração da quantidade de vagas reservadas para alunos pretos, pardos ou indígenas em relação ao total de vagas disponibilizadas nessa instituição equivale a",
+      "options": {
+        "A": "26/50.",
+        "B": "13/100.",
+        "C": "13/50.",
+        "D": "1/4."
+      },
+      "raw_block": "25. A fração da quantidade de vagas reservadas para alunos pretos, pardos ou indígenas em relação ao total\n    de vagas disponibilizadas nessa instituição equivale a\n\n    A) 26/50.\n    B) 13/100.\n    C) 13/50.\n    D) 1/4.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 26,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "O número de alunos pretos ou pardos matriculados em instituições de ensino superior demonstra como o acesso ao ensino universitário se modificou ao longo dos anos. Em 2006, em uma universidade, eles eram 15 mil estudantes; em 2020, passaram a ser 36 mil. Se o aumento se mantiver nessa proporção, em 2030, o número de alunos pretos ou pardos matriculados nessa instituição será de",
+      "options": {
+        "A": "15 mil alunos.",
+        "B": "46 mil alunos.",
+        "C": "51 mil alunos.",
+        "D": "56 mil alunos."
+      },
+      "raw_block": "26. O número de alunos pretos ou pardos matriculados em instituições de ensino superior demonstra como\n    o acesso ao ensino universitário se modificou ao longo dos anos. Em 2006, em uma universidade, eles\n    eram 15 mil estudantes; em 2020, passaram a ser 36 mil. Se o aumento se mantiver nessa proporção,\n    em 2030, o número de alunos pretos ou pardos matriculados nessa instituição será de\n\n    A) 15 mil alunos.\n    B) 46 mil alunos.\n    C) 51 mil alunos.\n    D) 56 mil alunos.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 27,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 9,
+      "page_end": 10,
+      "statement": "Após a aprovação de alunos que obtiveram acesso ao ensino superior por meio de reserva de vagas para pessoas com deficiência, uma instituição de ensino realiza uma previsão orçamentária para a contratação dos profissionais que atuarão no apoio a esses estudantes. O custo total é descrito em 𝒚 reais, e equivale a um valor inicial de contratação de R$ 2500,00, acrescido de R$ 830,00 mensais, referentes à remuneração dos profissionais durante 𝒙 meses, estabelecidos de acordo com a necessidade e nível dos estudantes. A lei de formação, que representa o custo total de 𝒚 reais para pagamento dos profissionais, é dada por",
+      "options": {
+        "A": "𝑦 = 830𝑥 + 2500.",
+        "B": "𝑦 = 2500𝑥 + 830.",
+        "C": "𝑦 = 830𝑥 − 2500.",
+        "D": "𝑦 = 2500𝑥 − 830. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                 9 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN Considere o Gráfico 1 para responder às questões 28 e 29. Gráfico 1: Posicionamento em relação à reserva de vagas para negros, por faixa etária, em percentual."
+      },
+      "raw_block": "27. Após a aprovação de alunos que obtiveram acesso ao ensino superior por meio de reserva de vagas para\n    pessoas com deficiência, uma instituição de ensino realiza uma previsão orçamentária para a contratação\n    dos profissionais que atuarão no apoio a esses estudantes. O custo total é descrito em 𝒚 reais, e equivale\n    a um valor inicial de contratação de R$ 2500,00, acrescido de R$ 830,00 mensais, referentes à\n    remuneração dos profissionais durante 𝒙 meses, estabelecidos de acordo com a necessidade e nível dos\n    estudantes. A lei de formação, que representa o custo total de 𝒚 reais para pagamento dos profissionais,\n    é dada por\n    A) 𝑦 = 830𝑥 + 2500.\n    B) 𝑦 = 2500𝑥 + 830.\n    C) 𝑦 = 830𝑥 − 2500.\n    D) 𝑦 = 2500𝑥 − 830.\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                 9\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                            EDITAL Nº 40/2022 – PROEN/IFRN\n\nConsidere o Gráfico 1 para responder às questões 28 e 29.\n\n      Gráfico 1: Posicionamento em relação à reserva de vagas para negros, por faixa etária, em\n                                            percentual.\n\n\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 28,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Considerando as informações do Gráfico 1, a média aritmética do percentual de respondentes que são a favor de reserva de vagas para negros, em todas as faixas etárias, corresponde, aproximadamente, a",
+      "options": {
+        "A": "45,8%.",
+        "B": "63,4%.",
+        "C": "55,3%.",
+        "D": "59,5%."
+      },
+      "raw_block": "28. Considerando as informações do Gráfico 1, a média aritmética do percentual de respondentes que são\n    a favor de reserva de vagas para negros, em todas as faixas etárias, corresponde, aproximadamente, a\n\n     A) 45,8%.\n     B) 63,4%.\n     C) 55,3%.\n     D) 59,5%.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 29,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Os percentuais referentes aos respondentes que não souberam opinar, são, respectivamente",
+      "options": {
+        "A": "7%, 8%, 15% e 7%.",
+        "B": "8%, 20%, 10% e 7%.",
+        "C": "8%, 20%, 12% e 7%.",
+        "D": "7%, 9%, 12% e 8%."
+      },
+      "raw_block": "29. Os percentuais referentes aos respondentes que não souberam opinar, são, respectivamente\n\n     A) 7%, 8%, 15% e 7%.\n     B) 8%, 20%, 10% e 7%.\n     C) 8%, 20%, 12% e 7%.\n     D) 7%, 9%, 12% e 8%.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 30,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 10,
+      "page_end": 11,
+      "statement": "Conforme informações do Índice Folha de Equilíbrio Racial (IFER), para que seja atingido um equilíbrio entre brancos e negros (pretos ou pardos) com ensino superior completo, é preciso que, dentre cada 1500 habitantes de 30 anos ou mais que têm o curso superior completo, 645 sejam pretos ou pardos. Considerando uma população de 23 mil habitantes com ensino superior completo e faixa etária de 30 anos ou mais, o número necessário de indivíduos pretos ou pardos nessa população para que essa proporção seja atingida é",
+      "options": {
+        "A": "9890.",
+        "B": "12432.",
+        "C": "11798.",
+        "D": "9898. 10                          Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "30. Conforme informações do Índice Folha de Equilíbrio Racial (IFER), para que seja atingido um equilíbrio\n    entre brancos e negros (pretos ou pardos) com ensino superior completo, é preciso que, dentre cada 1500\n    habitantes de 30 anos ou mais que têm o curso superior completo, 645 sejam pretos ou pardos.\n    Considerando uma população de 23 mil habitantes com ensino superior completo e faixa etária de 30\n    anos ou mais, o número necessário de indivíduos pretos ou pardos nessa população para que essa\n    proporção seja atingida é\n\n     A) 9890.\n     B) 12432.\n     C) 11798.\n     D) 9898.\n\n\n10                          Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2023",
+      "number": 31,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Uma instituição de ensino ampliará a reserva de vagas para negros (pretos ou pardos) em 1000 vagas nos próximos 3 anos. No primeiro ano, a instituição pretende disponibilizar dois quintos das 1000 vagas planejadas; no segundo ano, pretende aumentar essa disponibilidade em dois quintos do restante de vagas planejadas e ainda não disponibilizadas; e no terceiro ano, aumentará a disponibilidade com as vagas que faltaram para completar as 1000. O número de vagas a mais que serão ofertadas no terceiro ano será",
+      "options": {
+        "A": "300.",
+        "B": "200.",
+        "C": "260.",
+        "D": "360."
+      },
+      "raw_block": "31. Uma instituição de ensino ampliará a reserva de vagas para negros (pretos ou pardos) em 1000 vagas\n    nos próximos 3 anos. No primeiro ano, a instituição pretende disponibilizar dois quintos das 1000 vagas\n    planejadas; no segundo ano, pretende aumentar essa disponibilidade em dois quintos do restante de\n    vagas planejadas e ainda não disponibilizadas; e no terceiro ano, aumentará a disponibilidade com as\n    vagas que faltaram para completar as 1000. O número de vagas a mais que serão ofertadas no terceiro\n    ano será\n\n    A) 300.\n    B) 200.\n    C) 260.\n    D) 360.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 32,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Em 2020, o número de estudantes em universidades federais era de 1,1 milhão. Considerando que a reserva de 50% das vagas para negros (pretos ou pardos) foi integralmente aplicada, o total de estudantes negros em universidades federais no ano de 2020, em notação científica, era",
+      "options": {
+        "A": "5,5 ⋅ 106 .",
+        "B": "5,5 ⋅ 104 .",
+        "C": "5,5 ⋅ 105 .",
+        "D": "5,5 ⋅ 107 ."
+      },
+      "raw_block": "32. Em 2020, o número de estudantes em universidades federais era de 1,1 milhão. Considerando que a\n    reserva de 50% das vagas para negros (pretos ou pardos) foi integralmente aplicada, o total de estudantes\n    negros em universidades federais no ano de 2020, em notação científica, era\n\n    A) 5,5 ⋅ 106 .\n    B) 5,5 ⋅ 104 .\n    C) 5,5 ⋅ 105 .\n    D) 5,5 ⋅ 107 .\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 33,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "O Texto 1 informa que foram mais de 300 anos de escravidão. Se um legislador propuser que a Lei das Cotas, e seus efeitos, seja reavaliada a cada quinquênio por um período de 300 anos, o total de reavaliações sobre a Lei das Cotas a serem realizadas será",
+      "options": {
+        "A": "50.",
+        "B": "70.",
+        "C": "60.",
+        "D": "80."
+      },
+      "raw_block": "33. O Texto 1 informa que foram mais de 300 anos de escravidão. Se um legislador propuser que a Lei das\n    Cotas, e seus efeitos, seja reavaliada a cada quinquênio por um período de 300 anos, o total de\n    reavaliações sobre a Lei das Cotas a serem realizadas será\n\n    A) 50.\n    B) 70.\n    C) 60.\n    D) 80.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 34,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Em uma pesquisa de opinião sobre o apoio à Lei das Cotas, 500 pessoas opinaram se apoiavam ou não a sua manutenção. Se o número de pessoas que apoiavam as cotas era o triplo do de pessoas que não apoiavam, o número de pessoas que apoiavam a Lei das Cotas nessa pesquisa foi",
+      "options": {
+        "A": "375.",
+        "B": "125.",
+        "C": "250.",
+        "D": "350."
+      },
+      "raw_block": "34. Em uma pesquisa de opinião sobre o apoio à Lei das Cotas, 500 pessoas opinaram se apoiavam ou não\n    a sua manutenção. Se o número de pessoas que apoiavam as cotas era o triplo do de pessoas que não\n    apoiavam, o número de pessoas que apoiavam a Lei das Cotas nessa pesquisa foi\n\n    A) 375.\n    B) 125.\n    C) 250.\n    D) 350.\n\n"
+    },
+    {
+      "edition": "2023",
+      "number": 35,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 11,
+      "page_end": 12,
+      "statement": "Um grupo resolveu fazer um evento com apresentações culturais em apoio à continuidade da Lei das Cotas. Esse evento durou 48 horas ininterruptas e, a cada 20 minutos, uma apresentação cultural diferente subia ao palco. O número de apresentações distintas ocorridas no evento foi",
+      "options": {
+        "A": "72.",
+        "B": "100.",
+        "C": "144.",
+        "D": "200. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                11 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "35. Um grupo resolveu fazer um evento com apresentações culturais em apoio à continuidade da Lei das\n    Cotas. Esse evento durou 48 horas ininterruptas e, a cada 20 minutos, uma apresentação cultural\n    diferente subia ao palco. O número de apresentações distintas ocorridas no evento foi\n\n    A) 72.\n    B) 100.\n    C) 144.\n    D) 200.\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                11\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                            EDITAL Nº 40/2022 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2023",
+      "number": 36,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Em um estado com instituições de ensino superior municipais, estaduais e federais, ficou estabelecido que as instituições municipais reservariam 30% das suas X vagas para pretos ou pardos; as instituições estaduais reservariam 40% das suas Y vagas; e as federais, 50% das suas Z vagas. A expressão que representa o total T de vagas ofertadas para pretos ou pardos nesse estado é",
+      "options": {
+        "A": "𝑇 = 𝑋 + 𝑌 + 𝑍.",
+        "B": "𝑇 = 30𝑋 + 40𝑌 + 50𝑍.",
+        "C": "𝑇 = 0,3𝑋 + 0,4𝑌 + 0,5𝑍.",
+        "D": "𝑇 = 0,03𝑋 + 0,04𝑌 + 0,05𝑍."
+      },
+      "raw_block": "36. Em um estado com instituições de ensino superior municipais, estaduais e federais, ficou estabelecido\n    que as instituições municipais reservariam 30% das suas X vagas para pretos ou pardos; as instituições\n    estaduais reservariam 40% das suas Y vagas; e as federais, 50% das suas Z vagas. A expressão que\n    representa o total T de vagas ofertadas para pretos ou pardos nesse estado é\n\n     A) 𝑇 = 𝑋 + 𝑌 + 𝑍.\n     B) 𝑇 = 30𝑋 + 40𝑌 + 50𝑍.\n     C) 𝑇 = 0,3𝑋 + 0,4𝑌 + 0,5𝑍.\n     D) 𝑇 = 0,03𝑋 + 0,04𝑌 + 0,05𝑍.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 37,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Para simbolizar os 300 anos de escravidão, uma instituição de ensino deseja construir uma praça em formato de triângulo retângulo com hipotenusa medindo 300 m, que seja semelhante a um triângulo retângulo pitagórico de lados medindo 3, 4 e 5. As medidas dos catetos da praça triangular, em metros, serão",
+      "options": {
+        "A": "60 e 80.",
+        "B": "90 e 120.",
+        "C": "120 e 160.",
+        "D": "180 e 240."
+      },
+      "raw_block": "37. Para simbolizar os 300 anos de escravidão, uma instituição de ensino deseja construir uma praça em\n    formato de triângulo retângulo com hipotenusa medindo 300 m, que seja semelhante a um triângulo\n    retângulo pitagórico de lados medindo 3, 4 e 5. As medidas dos catetos da praça triangular, em metros,\n    serão\n\n     A) 60 e 80.\n     B) 90 e 120.\n     C) 120 e 160.\n     D) 180 e 240.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 38,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "O financiamento estudantil tem sido uma alternativa para os alunos que, infelizmente, não conseguem uma vaga em uma universidade pública. Se uma financeira oferece um financiamento para um curso de graduação que custa R$ 100 000,00 a uma taxa de juros simples de 1% ao mês e com pagamento ao final de 60 meses, o montante a ser pago pelo estudante que tomar esse financiamento será",
+      "options": {
+        "A": "R$ 160 000,00.",
+        "B": "R$ 120 000,00.",
+        "C": "R$ 140 000,00.",
+        "D": "R$ 180 000,00."
+      },
+      "raw_block": "38. O financiamento estudantil tem sido uma alternativa para os alunos que, infelizmente, não conseguem\n    uma vaga em uma universidade pública. Se uma financeira oferece um financiamento para um curso de\n    graduação que custa R$ 100 000,00 a uma taxa de juros simples de 1% ao mês e com pagamento ao\n    final de 60 meses, o montante a ser pago pelo estudante que tomar esse financiamento será\n\n     A) R$ 160 000,00.\n     B) R$ 120 000,00.\n     C) R$ 140 000,00.\n     D) R$ 180 000,00.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 39,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Observando que a bola de futebol representada no Texto 2 é formada por pentágonos e hexágonos, um professor perguntou aos seus alunos qual a diferença entre a soma dos ângulos internos do hexágono e do pentágono se eles fossem considerados regulares. A resposta esperada é",
+      "options": {
+        "A": "150°.",
+        "B": "180°.",
+        "C": "120°.",
+        "D": "200°."
+      },
+      "raw_block": "39. Observando que a bola de futebol representada no Texto 2 é formada por pentágonos e hexágonos, um\n    professor perguntou aos seus alunos qual a diferença entre a soma dos ângulos internos do hexágono e\n    do pentágono se eles fossem considerados regulares. A resposta esperada é\n\n     A) 150°.\n     B) 180°.\n     C) 120°.\n     D) 200°.\n"
+    },
+    {
+      "edition": "2023",
+      "number": 40,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "page_start": 12,
+      "page_end": 13,
+      "statement": "Uma universidade subdividiu os 50% de vagas destinadas às cotas raciais em vagas para candidatos que se enquadrem no critério racial e sejam de baixa renda, vagas para candidatos que se enquadrem no critério racial e fizeram todo o ensino médio em escola pública e vagas em que apenas o critério racial é exigido. Para avaliar se essa subdivisão estava tendo efeitos positivos na inserção social, um pesquisador estudou, a cada dois anos, as vagas de baixa renda; a cada três anos, as vagas de escola pública; e, a cada quatro anos, as vagas que exigiam apenas o critério racial. Se, em 2020, ele estudou as três categorias, após 2020, um ano em que ele estudará as três categorias juntas novamente será",
+      "options": {
+        "A": "2044.",
+        "B": "2034.",
+        "C": "2024.",
+        "D": "2054. 12                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+      },
+      "raw_block": "40. Uma universidade subdividiu os 50% de vagas destinadas às cotas raciais em vagas para candidatos que\n    se enquadrem no critério racial e sejam de baixa renda, vagas para candidatos que se enquadrem no\n    critério racial e fizeram todo o ensino médio em escola pública e vagas em que apenas o critério racial é\n    exigido. Para avaliar se essa subdivisão estava tendo efeitos positivos na inserção social, um pesquisador\n    estudou, a cada dois anos, as vagas de baixa renda; a cada três anos, as vagas de escola pública; e, a\n    cada quatro anos, as vagas que exigiam apenas o critério racial. Se, em 2020, ele estudou as três\n    categorias, após 2020, um ano em que ele estudará as três categorias juntas novamente será\n\n     A) 2044.\n     B) 2034.\n     C) 2024.\n     D) 2054.\n\n\n\n12                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
+    }
+  ],
+  "discursive": {
+    "present": true,
+    "page": 13,
+    "proposal_excerpt": "PRODUÇÃO TEXTUAL PROPOSTA Considere os textos desta prova e o seu conhecimento prévio sobre a temática em foco para produzir um artigo de opinião em que se posicione sobre a seguinte questão: A Lei das Cotas privilegia pretos e pardos em detrimento dos direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades? Assine seu artigo com o pseudônimo Negritude Iorubá. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes nos textos da prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto"
+  },
+  "warnings": []
+}

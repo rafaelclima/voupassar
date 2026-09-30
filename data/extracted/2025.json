@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "edition": "2025",
+    "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+    "source_sha256": "3f35c8024ea875051f99cdf82c2271ceb9ce92d1de9e7f9222f6fe4ddd24cdc2",
+    "source_pages": 14,
+    "extractor": "scripts/analysis/extract_questions.py",
+    "extractor_version": "1.0.0",
+    "generated_at_utc": "2026-09-30T15:09:39.343183+00:00",
+    "tool_versions": {
+      "pdfinfo": "pdfinfo version 26.08.0",
+      "pdftotext": "pdftotext version 26.08.0"
+    },
+    "note": "Dados intermediarios para auditoria (TASK 1.2). Enunciados/alternativas em texto bruto de pdftotext; figuras/formulas exigem revisao visual. Sem classificacao pedagogica."
+  },
+  "questions": [
+    {
+      "edition": "2025",
+      "number": 1,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 3,
+      "page_end": 3,
+      "statement": "De acordo com o Texto 1,",
+      "options": {
+        "A": "a minoria da população respondente da pesquisa concorda com a restrição total do acesso ao celular nas escolas do Rio.",
+        "B": "a escola, na era da tecnologia, tornou-se para os estudantes do Rio um espaço de desaprendizagem.",
+        "C": "a maioria da população consultada é favorável à proibição total do uso do celular nas escolas do Rio.",
+        "D": "a avaliação em larga escala aponta que a responsabilidade de controlar o uso do celular na sala de aula é da família."
+      },
+      "raw_block": "01. De acordo com o Texto 1,\n\n    A) a minoria da população respondente da pesquisa concorda com a restrição total do acesso ao celular\n       nas escolas do Rio.\n    B) a escola, na era da tecnologia, tornou-se para os estudantes do Rio um espaço de desaprendizagem.\n    C) a maioria da população consultada é favorável à proibição total do uso do celular nas escolas do Rio.\n    D) a avaliação em larga escala aponta que a responsabilidade de controlar o uso do celular na sala de\n       aula é da família.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 2,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 3,
+      "page_end": 4,
+      "statement": "A leitura do Texto 1 permite afirmar que a proibição de celulares e outros dispositivos eletrônicos nas escolas do Rio de Janeiro deveu-se",
+      "options": {
+        "A": "ao fato de que os adolescentes se sentem nervosos se seus telefones não estão perto deles.",
+        "B": "ao fato de que seu uso inadequado pode ter um impacto negativo na saúde emocional.",
+        "C": "a uma recomendação do Programa de Avaliação Internacional de Estudantes (PISA).",
+        "D": "a um acordo para cumprir o protocolo do Programa Acesso Mais Seguro. IFRN – Exame de Seleção – 2025                                                                                        3 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "02. A leitura do Texto 1 permite afirmar que a proibição de celulares e outros dispositivos eletrônicos nas\n    escolas do Rio de Janeiro deveu-se\n\n    A) ao fato de que os adolescentes se sentem nervosos se seus telefones não estão perto deles.\n    B) ao fato de que seu uso inadequado pode ter um impacto negativo na saúde emocional.\n    C) a uma recomendação do Programa de Avaliação Internacional de Estudantes (PISA).\n    D) a um acordo para cumprir o protocolo do Programa Acesso Mais Seguro.\nIFRN – Exame de Seleção – 2025                                                                                        3\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 23/2024 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2025",
+      "number": 3,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "A intenção comunicativa predominante no Texto 1 é",
+      "options": {
+        "A": "informar sobre a proibição do uso de celulares e outros dispositivos eletrônicos nas escolas do Rio de Janeiro.",
+        "B": "explicar os motivos que levaram as escolas do Rio de Janeiro a proibir o uso de celulares e outros dispositivos eletrônicos.",
+        "C": "identificar em que momentos é permitido utilizar celulares e outros dispositivos eletrônicos nas escolas do Rio de Janeiro.",
+        "D": "justificar o uso de celulares e outros dispositivos eletrônico em alguns momentos nas escolas do Rio de Janeiro."
+      },
+      "raw_block": "03. A intenção comunicativa predominante no Texto 1 é\n\n    A) informar sobre a proibição do uso de celulares e outros dispositivos eletrônicos nas escolas do Rio\n       de Janeiro.\n    B) explicar os motivos que levaram as escolas do Rio de Janeiro a proibir o uso de celulares e outros\n       dispositivos eletrônicos.\n    C) identificar em que momentos é permitido utilizar celulares e outros dispositivos eletrônicos nas escolas\n       do Rio de Janeiro.\n    D) justificar o uso de celulares e outros dispositivos eletrônico em alguns momentos nas escolas do Rio\n       de Janeiro.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 4,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "Quanto ao tipo textual, no último parágrafo do Texto 1, predomina a",
+      "options": {
+        "A": "narração, porque apresenta justificativas que apontam como se deu o percurso do desenvolvimento tecnológico nas atividades escolares em diferentes países do mundo e do Brasil.",
+        "B": "narração, visto que apresenta, de forma detalhada, as percepções do autor sobre um acontecimento da contemporaneidade, o avanço descontrolado do desenvolvimento tecnológico.",
+        "C": "argumentação, pois tem por objetivo instruir o leitor, a partir da explicação de conceitos e informações sobre os impactos da tecnologia na melhoria do desempenho acadêmico dos estudantes.",
+        "D": "argumentação, pois defende o ponto de vista de que, se for usada em excesso ou de forma inadequada, a tecnologia pode ser prejudicial à formação acadêmica dos estudantes."
+      },
+      "raw_block": "04. Quanto ao tipo textual, no último parágrafo do Texto 1, predomina a\n\n    A) narração, porque apresenta justificativas que apontam como se deu o percurso do desenvolvimento\n       tecnológico nas atividades escolares em diferentes países do mundo e do Brasil.\n    B) narração, visto que apresenta, de forma detalhada, as percepções do autor sobre um acontecimento\n       da contemporaneidade, o avanço descontrolado do desenvolvimento tecnológico.\n    C) argumentação, pois tem por objetivo instruir o leitor, a partir da explicação de conceitos e informações\n       sobre os impactos da tecnologia na melhoria do desempenho acadêmico dos estudantes.\n    D) argumentação, pois defende o ponto de vista de que, se for usada em excesso ou de forma\n       inadequada, a tecnologia pode ser prejudicial à formação acadêmica dos estudantes.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 5,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "No título de Texto 1, uso do elemento linguístico ATÉ",
+      "options": {
+        "A": "permite inferir que, nas escolas do Rio, não havia ainda a restrição do uso do celular pelos estudantes.",
+        "B": "deixa pressuposta a ideia de que, nas escolas do Rio, o uso do celular era liberado em algum momento.",
+        "C": "traduz um comentário favorável à liberação do uso do celular pelos estudantes nas escolas do Rio.",
+        "D": "manifesta uma apreciação sobre possibilidades do uso do celular pelos estudantes nas escolas do Rio. Utilize o trecho para responder às questões 06 a 09. Diz o decreto: (1) “Fica proibida a utilização de celulares e outros dispositivos eletrônicos (2) pelos alunos nas unidades escolares da rede pública municipal de ensino nas seguintes situações: (3) dentro da sala de aula; fora da sala de aula quando houver explanação (4) do professor e/ou realização de trabalhos individuais ou em grupo na unidade escolar; durante os intervalos, incluindo o recreio”."
+      },
+      "raw_block": "05. No título de Texto 1, uso do elemento linguístico ATÉ\n    A) permite inferir que, nas escolas do Rio, não havia ainda a restrição do uso do celular pelos estudantes.\n    B) deixa pressuposta a ideia de que, nas escolas do Rio, o uso do celular era liberado em algum\n       momento.\n    C) traduz um comentário favorável à liberação do uso do celular pelos estudantes nas escolas do Rio.\n    D) manifesta uma apreciação sobre possibilidades do uso do celular pelos estudantes nas escolas do\n       Rio.\n\nUtilize o trecho para responder às questões 06 a 09.\n\n    Diz o decreto: (1) “Fica proibida a utilização de celulares e outros dispositivos eletrônicos (2) pelos alunos\n    nas unidades escolares da rede pública municipal de ensino nas seguintes situações: (3) dentro da sala\n    de aula; fora da sala de aula quando houver explanação (4) do professor e/ou realização de trabalhos\n    individuais ou em grupo na unidade escolar; durante os intervalos, incluindo o recreio”.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 6,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 4,
+      "page_end": 4,
+      "statement": "Quanto à sua organização, o trecho é formado por",
+      "options": {
+        "A": "um período e três orações.",
+        "B": "dois períodos e três orações.",
+        "C": "dois períodos e duas orações.",
+        "D": "um período e quatro orações."
+      },
+      "raw_block": "06. Quanto à sua organização, o trecho é formado por\n\n    A) um período e três orações.\n    B) dois períodos e três orações.\n    C) dois períodos e duas orações.\n    D) um período e quatro orações.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 7,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 4,
+      "page_end": 5,
+      "statement": "Sobre o uso dos dois-pontos no trecho, é correto afirmar que",
+      "options": {
+        "A": "em (1), ele antecede uma citação.",
+        "B": "em (3), ele antecede uma citação.",
+        "C": "em ambas as ocorrências, eles antecedem uma explicação.",
+        "D": "em ambas as ocorrências, eles antecedem uma enumeração. IFRN – Exame de Seleção – 2025                                                                                  4 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "07. Sobre o uso dos dois-pontos no trecho, é correto afirmar que\n\n    A) em (1), ele antecede uma citação.\n    B) em (3), ele antecede uma citação.\n    C) em ambas as ocorrências, eles antecedem uma explicação.\n    D) em ambas as ocorrências, eles antecedem uma enumeração.\n\nIFRN – Exame de Seleção – 2025                                                                                  4\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 8,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "A expressão linguística A UTILIZAÇÃO DE CELULARES E OUTROS DISPOSITIVOS ELETRÔNICOS (2) assume, no trecho, a função de",
+      "options": {
+        "A": "aposto.",
+        "B": "sujeito.",
+        "C": "objeto direto.",
+        "D": "complemento nominal."
+      },
+      "raw_block": "08. A expressão linguística A UTILIZAÇÃO DE CELULARES E OUTROS DISPOSITIVOS ELETRÔNICOS\n    (2) assume, no trecho, a função de\n\n    A) aposto.\n    B) sujeito.\n    C) objeto direto.\n    D) complemento nominal.\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 9,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "O elemento linguístico EXPLANAÇÃO (4) pode, sem prejuízo para o sentido do trecho, ser substituído por",
+      "options": {
+        "A": "organização.",
+        "B": "explicação.",
+        "C": "sistematização.",
+        "D": "fundamentação Considere o trecho do Texto 1 para responder às questões de 10 a 14. “Os celulares e demais dispositivos eletrônicos deverão (1) ser guardados na mochila ou bolsa do próprio aluno, desligado ou ligado em modo silencioso e sem vibração”, especifica o decreto. “A gente (2) acredita que a escola é um local de aprendizagem e interação social. As crianças não podem continuar ficando isoladas nas suas próprias telas, sem interagir umas com as outras, sem brincar (3). A escola precisa dessa interação humana”, disse o secretário municipal de Educação, Renan Ferreirinha. 8 em cada 10 pessoas são a favor de proibir o uso de celulares em escolas do Rio."
+      },
+      "raw_block": "09. O elemento linguístico EXPLANAÇÃO (4) pode, sem prejuízo para o sentido do trecho, ser substituído\n    por\n\n    A) organização.\n    B) explicação.\n    C) sistematização.\n    D) fundamentação\n\nConsidere o trecho do Texto 1 para responder às questões de 10 a 14.\n\n\n    “Os celulares e demais dispositivos eletrônicos deverão (1) ser guardados na mochila ou bolsa do próprio\n    aluno, desligado ou ligado em modo silencioso e sem vibração”, especifica o decreto. “A gente (2) acredita\n    que a escola é um local de aprendizagem e interação social. As crianças não podem continuar ficando\n    isoladas nas suas próprias telas, sem interagir umas com as outras, sem brincar (3). A escola precisa\n    dessa interação humana”, disse o secretário municipal de Educação, Renan Ferreirinha. 8 em cada 10\n    pessoas são a favor de proibir o uso de celulares em escolas do Rio.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 10,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "No primeiro período do trecho, o elemento linguístico DEVERÁ (1) exprime sentido de",
+      "options": {
+        "A": "necessidade.",
+        "B": "possibilidade.",
+        "C": "obrigatoriedade.",
+        "D": "probabilidade."
+      },
+      "raw_block": "10. No primeiro período do trecho, o elemento linguístico DEVERÁ (1) exprime sentido de\n\n    A) necessidade.\n    B) possibilidade.\n    C) obrigatoriedade.\n    D) probabilidade.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 11,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 5,
+      "page_end": 5,
+      "statement": "A expressão A GENTE (2) tem como referente",
+      "options": {
+        "A": "escola.",
+        "B": "crianças.",
+        "C": "pessoas.",
+        "D": "secretário."
+      },
+      "raw_block": "11. A expressão A GENTE (2) tem como referente\n\n    A) escola.\n    B) crianças.\n    C) pessoas.\n    D) secretário.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 12,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 5,
+      "page_end": 6,
+      "statement": "O trecho sublinhado AS CRIANÇAS NÃO PODEM CONTINUAR FICANDO ISOLADAS NAS SUAS PRÓPRIAS TELAS, SEM INTERAGIR UMAS COM AS OUTRAS, SEM BRINCAR (3) permite afirmar que",
+      "options": {
+        "A": "as crianças brincam entre si com os celulares.",
+        "B": "os celulares são usados pelas crianças para brincar.",
+        "C": "o uso dos celulares isola as crianças umas das outras.",
+        "D": "a interação entre as crianças é estimulada pelo uso dos celulares. IFRN – Exame de Seleção – 2025                                                                              5 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "12. O trecho sublinhado AS CRIANÇAS NÃO PODEM CONTINUAR FICANDO ISOLADAS NAS SUAS\n    PRÓPRIAS TELAS, SEM INTERAGIR UMAS COM AS OUTRAS, SEM BRINCAR (3) permite afirmar\n    que\n\n    A) as crianças brincam entre si com os celulares.\n    B) os celulares são usados pelas crianças para brincar.\n    C) o uso dos celulares isola as crianças umas das outras.\n    D) a interação entre as crianças é estimulada pelo uso dos celulares.\n\nIFRN – Exame de Seleção – 2025                                                                              5\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                       EDITAL Nº 23/2024 – PROEN/IFRN\n\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 13,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "Assinale a opção que apresenta a informação implícita presente no trecho.",
+      "options": {
+        "A": "na escola, as crianças já não aprendem mais com os professores.",
+        "B": "na sociedade tecnológica, não há mais interação com as crianças.",
+        "C": "na escola, a partir de agora, as crianças estarão totalmente isoladas.",
+        "D": "na contemporaneidade, as crianças estão se isolando por causa do celular."
+      },
+      "raw_block": "13. Assinale a opção que apresenta a informação implícita presente no trecho.\n\n    A) na escola, as crianças já não aprendem mais com os professores.\n    B) na sociedade tecnológica, não há mais interação com as crianças.\n    C) na escola, a partir de agora, as crianças estarão totalmente isoladas.\n    D) na contemporaneidade, as crianças estão se isolando por causa do celular.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 14,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "Sobre a organização do trecho, é correto afirmar que",
+      "options": {
+        "A": "a ideia central do parágrafo está localizada no segundo período.",
+        "B": "a síntese das ideias do parágrafo está no último período.",
+        "C": "o parágrafo anuncia ao leitor a temática do texto.",
+        "D": "o parágrafo é predominantemente narrativo."
+      },
+      "raw_block": "14. Sobre a organização do trecho, é correto afirmar que\n\n    A) a ideia central do parágrafo está localizada no segundo período.\n    B) a síntese das ideias do parágrafo está no último período.\n    C) o parágrafo anuncia ao leitor a temática do texto.\n    D) o parágrafo é predominantemente narrativo.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 15,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "No Texto 2, os sentidos se estabelecem, primordialmente, a partir de",
+      "options": {
+        "A": "pontos de vista conflitantes.",
+        "B": "pontos de vista convergentes.",
+        "C": "inexistência de um ponto de vista.",
+        "D": "defesa explícita de um ponto de vista."
+      },
+      "raw_block": "15. No Texto 2, os sentidos se estabelecem, primordialmente, a partir de\n\n    A) pontos de vista conflitantes.\n    B) pontos de vista convergentes.\n    C) inexistência de um ponto de vista.\n    D) defesa explícita de um ponto de vista.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 16,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "A leitura dos elementos verbais e não verbais permite afirmar que o Texto 2",
+      "options": {
+        "A": "recomenda o uso de livros impressos nas escolas.",
+        "B": "censura o uso de livros impressos nas escolas.",
+        "C": "apoia o uso de equipamentos eletrônicos nas escolas.",
+        "D": "critica o uso de equipamentos eletrônicos nas escolas."
+      },
+      "raw_block": "16. A leitura dos elementos verbais e não verbais permite afirmar que o Texto 2\n\n    A) recomenda o uso de livros impressos nas escolas.\n    B) censura o uso de livros impressos nas escolas.\n    C) apoia o uso de equipamentos eletrônicos nas escolas.\n    D) critica o uso de equipamentos eletrônicos nas escolas.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 17,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 6,
+      "page_end": 6,
+      "statement": "O elemento linguístico SEGURO-DESEMPREGO, presente no Texto 2, é formado pelo processo de",
+      "options": {
+        "A": "derivação parassintética.",
+        "B": "composição por aglutinação.",
+        "C": "composição por justaposição.",
+        "D": "derivação prefixal e sufixal."
+      },
+      "raw_block": "17. O elemento linguístico SEGURO-DESEMPREGO, presente no Texto 2, é formado pelo processo de\n\n    A) derivação parassintética.\n    B) composição por aglutinação.\n    C) composição por justaposição.\n    D) derivação prefixal e sufixal.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 18,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 6,
+      "page_end": 7,
+      "statement": "Sobre o Texto 2, é correto afirmar que",
+      "options": {
+        "A": "sua temática é a mesma do Texto 1.",
+        "B": "tanto ele como o Texto 1 são do tipo descritivo.",
+        "C": "ele tem a mesma intenção comunicativa do Texto 1.",
+        "D": "seu registro de linguagem é o mesmo que o do Texto 1. IFRN – Exame de Seleção – 2025                                                                  6 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "18. Sobre o Texto 2, é correto afirmar que\n\n    A) sua temática é a mesma do Texto 1.\n    B) tanto ele como o Texto 1 são do tipo descritivo.\n    C) ele tem a mesma intenção comunicativa do Texto 1.\n    D) seu registro de linguagem é o mesmo que o do Texto 1.\n\n\n\n\nIFRN – Exame de Seleção – 2025                                                                  6\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 23/2024 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2025",
+      "number": 19,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 7,
+      "page_end": 7,
+      "statement": "Em relação ao gênero textual, respectivamente, os Textos 1 e 2 configuram-se como",
+      "options": {
+        "A": "notícia e anedota.",
+        "B": "editorial e tirinha.",
+        "C": "reportagem e charge.",
+        "D": "artigo de opinião e cartum."
+      },
+      "raw_block": "19. Em relação ao gênero textual, respectivamente, os Textos 1 e 2 configuram-se como\n\n    A) notícia e anedota.\n    B) editorial e tirinha.\n    C) reportagem e charge.\n    D) artigo de opinião e cartum.\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 20,
+      "kind": "OBJECTIVE",
+      "discipline": "LINGUA_PORTUGUESA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 7,
+      "page_end": 8,
+      "statement": "Os Textos 1 e 2 apresentam em comum",
+      "options": {
+        "A": "registro informal.",
+        "B": "recorte temático.",
+        "C": "gênero textual.",
+        "D": "tipo textual. IFRN – Exame de Seleção – 2025                                                              7 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "20. Os Textos 1 e 2 apresentam em comum\n\n    A) registro informal.\n    B) recorte temático.\n    C) gênero textual.\n    D) tipo textual.\n\n\n\n\nIFRN – Exame de Seleção – 2025                                                              7\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2025",
+      "number": 21,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Segundo o Texto 1, de cada 10 pessoas 8 são a favor de proibir o uso de celulares em escolas do Rio. Suponha que essa proporção foi obtida a partir de uma pesquisa realizada com 2450 pessoas. Nessa pesquisa, o número de pessoas que se manifestaram contra a proibição foi de",
+      "options": {
+        "A": "1960.",
+        "B": "1600.",
+        "C": "800.",
+        "D": "490."
+      },
+      "raw_block": "21. Segundo o Texto 1, de cada 10 pessoas 8 são a favor de proibir o uso de celulares em escolas do Rio.\n    Suponha que essa proporção foi obtida a partir de uma pesquisa realizada com 2450 pessoas. Nessa\n    pesquisa, o número de pessoas que se manifestaram contra a proibição foi de\n\n    A) 1960.\n    B) 1600.\n    C) 800.\n    D) 490.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 22,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Considere que, durante uma revisão de conteúdo para as provas, um estudante participou de um simulado online com 25 questões. Ele chutou 15 das questões, acertando 6 delas. A razão entre o número de acertos das questões que ele chutou e o total de chutes dados pelo estudante é",
+      "options": {
+        "A": "3/5.",
+        "B": "5/2.",
+        "C": "2/5.",
+        "D": "6/25."
+      },
+      "raw_block": "22. Considere que, durante uma revisão de conteúdo para as provas, um estudante participou de um simulado\n    online com 25 questões. Ele chutou 15 das questões, acertando 6 delas. A razão entre o número de\n    acertos das questões que ele chutou e o total de chutes dados pelo estudante é\n\n    A) 3/5.\n    B) 5/2.\n    C) 2/5.\n    D) 6/25.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 23,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Uma escola está avaliando o impacto de uma nova política que proíbe o uso de celulares durante as aulas. A administração entrevistou 150 alunos para saber a opinião deles sobre essa proibição. 60 dos alunos entrevistados disseram que apoiam a proibição, 45 disseram que são indiferentes e o restante se opõe à proibição. Se um aluno é escolhido aleatoriamente entre os entrevistados, a probabilidade de que ele seja um aluno que declarou que se opõe à proibição é",
+      "options": {
+        "A": "1/3.",
+        "B": "0,30.",
+        "C": "0,45.",
+        "D": "1/5."
+      },
+      "raw_block": "23. Uma escola está avaliando o impacto de uma nova política que proíbe o uso de celulares durante as\n    aulas. A administração entrevistou 150 alunos para saber a opinião deles sobre essa proibição. 60 dos\n    alunos entrevistados disseram que apoiam a proibição, 45 disseram que são indiferentes e o restante se\n    opõe à proibição. Se um aluno é escolhido aleatoriamente entre os entrevistados, a probabilidade de que\n    ele seja um aluno que declarou que se opõe à proibição é\n\n    A) 1/3.\n    B) 0,30.\n    C) 0,45.\n    D) 1/5.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 24,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 8,
+      "page_end": 8,
+      "statement": "Suponha que em uma determinada escola foi implementada uma nova política que proíbe o uso de telas (celulares, tablets etc.) durante as aulas. De acordo com o regulamento, se um aluno for pego usando qualquer dispositivo de tela durante o horário de aula, ele será punido com uma multa inicial de R$ 50,00. Além disso, a cada dia em que o dispositivo for usado após o primeiro incidente, o aluno receberá o valor da multa imediatamente anterior acrescida de 10%. Se um aluno for pego usando uma tela em três ocasiões diferentes durante o mês, o valor total da multa que ele deverá pagar ao final do mês é",
+      "options": {
+        "A": "R$ 150,00.",
+        "B": "R$ 160,00.",
+        "C": "R$ 165,50.",
+        "D": "R$ 155,50."
+      },
+      "raw_block": "24. Suponha que em uma determinada escola foi implementada uma nova política que proíbe o uso de telas\n    (celulares, tablets etc.) durante as aulas. De acordo com o regulamento, se um aluno for pego usando\n    qualquer dispositivo de tela durante o horário de aula, ele será punido com uma multa inicial de R$ 50,00.\n    Além disso, a cada dia em que o dispositivo for usado após o primeiro incidente, o aluno receberá o valor\n    da multa imediatamente anterior acrescida de 10%. Se um aluno for pego usando uma tela em três\n    ocasiões diferentes durante o mês, o valor total da multa que ele deverá pagar ao final do mês é\n\n    A) R$ 150,00.\n    B) R$ 160,00.\n    C) R$ 165,50.\n    D) R$ 155,50.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 25,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 8,
+      "page_end": 9,
+      "statement": "Considere que uma escola está monitorando o cumprimento da nova política que proíbe o uso de celulares durante as aulas. Em uma pesquisa com 150 alunos, foi constatado que 30 deles estavam usando celulares durante as aulas, apesar da proibição. A escola deseja estimar quantos alunos estariam usando celulares em um total de 2000 alunos. Considerando a mesma proporção da pesquisa, a estimativa de alunos que usariam celulares durante as aulas é",
+      "options": {
+        "A": "300.",
+        "B": "500.",
+        "C": "600.",
+        "D": "400. IFRN – Exame de Seleção – 2025                                                                              8 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "25. Considere que uma escola está monitorando o cumprimento da nova política que proíbe o uso de\n    celulares durante as aulas. Em uma pesquisa com 150 alunos, foi constatado que 30 deles estavam\n    usando celulares durante as aulas, apesar da proibição. A escola deseja estimar quantos alunos estariam\n    usando celulares em um total de 2000 alunos. Considerando a mesma proporção da pesquisa, a\n    estimativa de alunos que usariam celulares durante as aulas é\n\n    A) 300.\n    B) 500.\n    C) 600.\n    D) 400.\n\n\nIFRN – Exame de Seleção – 2025                                                                              8\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                  EDITAL Nº 23/2024 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2025",
+      "number": 26,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 9,
+      "page_end": 9,
+      "statement": "Considere o gráfico de barras abaixo. Ele mostra o número de horas semanais que sete grupos de alunos passam usando telas para atividades acadêmicas. O gráfico representa a seguinte distribuição de horas de uso de telas: A média aritmética de horas semanais de uso de telas para esses sete grupos de alunos é",
+      "options": {
+        "A": "9,0.",
+        "B": "9,5.",
+        "C": "8,0.",
+        "D": "8,5."
+      },
+      "raw_block": "26. Considere o gráfico de barras abaixo. Ele mostra o número de horas semanais que sete grupos de alunos\n    passam usando telas para atividades acadêmicas. O gráfico representa a seguinte distribuição de horas\n    de uso de telas:\n\n\n\n\n    A média aritmética de horas semanais de uso de telas para esses sete grupos de alunos é\n\n    A) 9,0.\n    B) 9,5.\n    C) 8,0.\n    D) 8,5.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 27,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 9,
+      "page_end": 10,
+      "statement": "Considere que uma escola está planejando a instalação de novas câmeras de segurança em suas salas de aula para garantir o cumprimento do decreto mencionado no Texto 1. Para determinar a quantidade de câmeras necessárias, a escola precisa calcular a área de cada um desses espaços. Cada sala de aula tem a forma de um retângulo e a escola pretende instalar uma câmera para até 10 metros quadrados. Considerando a sala de aula apresentada na figura acima, o número mínimo de câmeras necessárias para cobrir toda a sala é",
+      "options": {
+        "A": "4,8.",
+        "B": "5,2.",
+        "C": "5,0.",
+        "D": "4,0. IFRN – Exame de Seleção – 2025                                                                         9 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "27. Considere que uma escola está planejando a instalação de novas câmeras de segurança em suas salas\n    de aula para garantir o cumprimento do decreto mencionado no Texto 1. Para determinar a quantidade\n    de câmeras necessárias, a escola precisa calcular a área de cada um desses espaços. Cada sala de aula\n    tem a forma de um retângulo e a escola pretende instalar uma câmera para até 10 metros quadrados.\n\n\n\n\n    Considerando a sala de aula apresentada na figura acima, o número mínimo de câmeras necessárias\n    para cobrir toda a sala é\n\n    A) 4,8.\n    B) 5,2.\n    C) 5,0.\n    D) 4,0.\n\nIFRN – Exame de Seleção – 2025                                                                         9\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 28,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Durante uma semana (7 dias), um monitoramento revelou que um estudante passou 14 horas e 30 minutos em frente ao celular e ao computador. Preocupado com o tempo excessivo, o estudante decidiu estimar quanto tempo ele passaria em frente a essas telas durante um período de três meses (90 dias). Utilizando a mesma proporção, o tempo aproximado que o estudante passaria em frente ao celular e ao computador em três meses é",
+      "options": {
+        "A": "186 dias, 10 horas e 17 minutos.",
+        "B": "7 dias, 18 horas e 26 minutos.",
+        "C": "18 dias, 7 horas e 21 minutos.",
+        "D": "6 dias, 15 horas e 28 minutos."
+      },
+      "raw_block": "28. Durante uma semana (7 dias), um monitoramento revelou que um estudante passou 14 horas e 30\n    minutos em frente ao celular e ao computador. Preocupado com o tempo excessivo, o estudante decidiu\n    estimar quanto tempo ele passaria em frente a essas telas durante um período de três meses (90 dias).\n    Utilizando a mesma proporção, o tempo aproximado que o estudante passaria em frente ao celular e ao\n    computador em três meses é\n\n    A) 186 dias, 10 horas e 17 minutos.\n    B) 7 dias, 18 horas e 26 minutos.\n    C) 18 dias, 7 horas e 21 minutos.\n    D) 6 dias, 15 horas e 28 minutos.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 29,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Um estudante está organizando seu tempo diário disponível para atividades diversas e decide dedicar 1/4 do seu tempo total para usar o celular para fins acadêmicos, 1/5 para assistir a aulas online e 1/8 para fazer tarefas escolares. Após essas atividades, ele tem 4 horas e 15 minutos restantes para descanso e outras atividades pessoais. Por dia, o tempo total do estudante disponível para as atividades descritas é",
+      "options": {
+        "A": "10 h.",
+        "B": "8 h.",
+        "C": "12 h.",
+        "D": "7 h."
+      },
+      "raw_block": "29. Um estudante está organizando seu tempo diário disponível para atividades diversas e decide dedicar 1/4\n    do seu tempo total para usar o celular para fins acadêmicos, 1/5 para assistir a aulas online e 1/8 para\n    fazer tarefas escolares. Após essas atividades, ele tem 4 horas e 15 minutos restantes para descanso e\n    outras atividades pessoais. Por dia, o tempo total do estudante disponível para as atividades descritas é\n    A) 10 h.\n    B) 8 h.\n    C) 12 h.\n    D) 7 h.\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 30,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Um grupo de pesquisadores do Rio de Janeiro está analisando o impacto do tamanho das telas usadas pelos estudantes em seu desempenho acadêmico. Eles estudam uma tela retangular com uma área de 75 cm². Sabe-se que o lado maior da tela é o triplo do comprimento do lado menor. A soma dos comprimentos dos lados dessa tela é",
+      "options": {
+        "A": "45 cm.",
+        "B": "35 cm.",
+        "C": "40 cm.",
+        "D": "50 cm."
+      },
+      "raw_block": "30. Um grupo de pesquisadores do Rio de Janeiro está analisando o impacto do tamanho das telas usadas\n    pelos estudantes em seu desempenho acadêmico. Eles estudam uma tela retangular com uma área de\n    75 cm². Sabe-se que o lado maior da tela é o triplo do comprimento do lado menor. A soma dos\n    comprimentos dos lados dessa tela é\n\n    A) 45 cm.\n    B) 35 cm.\n    C) 40 cm.\n    D) 50 cm.\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 31,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 10,
+      "page_end": 10,
+      "statement": "Em uma instituição de ensino do Rio de Janeiro, há um total de 780 alunos. 135 desses alunos são do ensino fundamental, 345 são do ensino médio e os demais são do ensino superior. Sabendo que 17% dos alunos do ensino superior são favoráveis à proibição do uso de celulares, a quantidade de alunos do ensino superior não favoráveis à proibição é de",
+      "options": {
+        "A": "51.",
+        "B": "96.",
+        "C": "249.",
+        "D": "300."
+      },
+      "raw_block": "31. Em uma instituição de ensino do Rio de Janeiro, há um total de 780 alunos. 135 desses alunos são do\n    ensino fundamental, 345 são do ensino médio e os demais são do ensino superior. Sabendo que 17%\n    dos alunos do ensino superior são favoráveis à proibição do uso de celulares, a quantidade de alunos do\n    ensino superior não favoráveis à proibição é de\n\n    A) 51.\n    B) 96.\n    C) 249.\n    D) 300.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 32,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 10,
+      "page_end": 11,
+      "statement": "Para promover o uso consciente de tecnologia na sala de aula e reduzir a dependência de celulares, uma escola comprou 30 tablets educativos. O preço unitário de cada tablet era de R$ 200,00, mas a escola obteve um desconto de 55%. O valor total investido na compra dos tablets foi de",
+      "options": {
+        "A": "R$ 2700,00.",
+        "B": "R$ 3300,00.",
+        "C": "R$ 3000,00.",
+        "D": "R$ 6000,00. IFRN – Exame de Seleção – 2025                                                                             10 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "32. Para promover o uso consciente de tecnologia na sala de aula e reduzir a dependência de celulares, uma\n    escola comprou 30 tablets educativos. O preço unitário de cada tablet era de R$ 200,00, mas a escola\n    obteve um desconto de 55%. O valor total investido na compra dos tablets foi de\n\n    A) R$ 2700,00.\n    B) R$ 3300,00.\n    C) R$ 3000,00.\n    D) R$ 6000,00.\n\nIFRN – Exame de Seleção – 2025                                                                             10\n\n         IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 33,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Uma escola decidiu proibir o porte de celulares durante as aulas. Em uma inspeção, verificou-se que, em uma turma com 28 alunos, 13 deles trouxeram seus celulares para a sala de aula. Ao escolher aleatoriamente um aluno dessa turma, a probabilidade de que ele tenha trazido seu celular é de 15",
+      "options": {
+        "A": ". 28 13",
+        "B": ". 56 13",
+        "C": ". 14 13",
+        "D": ". 28"
+      },
+      "raw_block": "33. Uma escola decidiu proibir o porte de celulares durante as aulas. Em uma inspeção, verificou-se que, em\n    uma turma com 28 alunos, 13 deles trouxeram seus celulares para a sala de aula. Ao escolher\n    aleatoriamente um aluno dessa turma, a probabilidade de que ele tenha trazido seu celular é de\n\n          15\n    A)      .\n          28\n          13\n    B)      .\n          56\n          13\n    C)      .\n          14\n          13\n    D)      .\n          28\n\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 34,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Em uma escola da capital fluminense, uma pesquisa revelou que a proporção de alunos que utilizam celulares em sala de aula para os que não utilizam é de 9 para 4. Sabendo que há 234 alunos na escola, a quantidade de alunos que não utilizam celulares em sala de aula é de",
+      "options": {
+        "A": "72.",
+        "B": "90.",
+        "C": "104.",
+        "D": "162."
+      },
+      "raw_block": "34. Em uma escola da capital fluminense, uma pesquisa revelou que a proporção de alunos que utilizam\n    celulares em sala de aula para os que não utilizam é de 9 para 4. Sabendo que há 234 alunos na escola,\n    a quantidade de alunos que não utilizam celulares em sala de aula é de\n\n    A) 72.\n    B) 90.\n    C) 104.\n    D) 162.\n\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 35,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 11,
+      "page_end": 11,
+      "statement": "Em 2016, 67 alunos foram flagrados usando o celular indevidamente. Em 2024, esse número aumentou para 83. Se o aumento mantiver essa proporção, a quantidade de alunos que serão flagrados em 2034 será de",
+      "options": {
+        "A": "99.",
+        "B": "87.",
+        "C": "103.",
+        "D": "109. Considere o trecho baseado no Texto 1 para resolver a questão. “Rio proíbe celulares nas escolas até no recreio”, medida veio depois de uma consulta pública, aberta em dezembro, na qual 83% dos participantes manifestaram concordância com a restrição."
+      },
+      "raw_block": "35. Em 2016, 67 alunos foram flagrados usando o celular indevidamente. Em 2024, esse número aumentou\n    para 83. Se o aumento mantiver essa proporção, a quantidade de alunos que serão flagrados em 2034\n    será de\n\n    A) 99.\n    B) 87.\n    C) 103.\n    D) 109.\n\n\n\nConsidere o trecho baseado no Texto 1 para resolver a questão.\n\n\n       “Rio proíbe celulares nas escolas até no recreio”, medida veio depois de uma consulta pública, aberta\n    em dezembro, na qual 83% dos participantes manifestaram concordância com a restrição.\n\n"
+    },
+    {
+      "edition": "2025",
+      "number": 36,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 11,
+      "page_end": 12,
+      "statement": "A fração que mais se aproxima desse percentual é 25",
+      "options": {
+        "A": ". 30 732",
+        "B": ". 900 741",
+        "C": ". 900 24",
+        "D": ". 30 IFRN – Exame de Seleção – 2025                                                                            11 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "36. A fração que mais se aproxima desse percentual é\n\n          25\n    A)      .\n          30\n          732\n    B)          .\n          900\n          741\n    C)          .\n          900\n          24\n    D)      .\n          30\n\n\n\nIFRN – Exame de Seleção – 2025                                                                            11\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n"
+    },
+    {
+      "edition": "2025",
+      "number": 37,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Uma aluna está interessada em adquirir um celular recém-lançado, que custa R$ 1500,00 à vista. Para facilitar o pagamento, ela optou por parcelar a compra em 12 meses com uma taxa de juros simples, aplicada sobre todo valor do bem, de 2% ao mês. O valor total que ela pagará ao final de um ano será de",
+      "options": {
+        "A": "R$ 1530,00.",
+        "B": "R$ 1860,00.",
+        "C": "R$ 1902,36.",
+        "D": "R$ 1865,06."
+      },
+      "raw_block": "37. Uma aluna está interessada em adquirir um celular recém-lançado, que custa R$ 1500,00 à vista. Para\n    facilitar o pagamento, ela optou por parcelar a compra em 12 meses com uma taxa de juros simples,\n    aplicada sobre todo valor do bem, de 2% ao mês. O valor total que ela pagará ao final de um ano será de\n\n    A) R$ 1530,00.\n    B) R$ 1860,00.\n    C) R$ 1902,36.\n    D) R$ 1865,06.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 38,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "Uma prefeitura deseja lançar uma campanha, a ser veiculada tanto em redes sociais quanto em emissoras de TV, para promover os benefícios da proibição do uso de celulares nas salas de aula. O custo para veicular a campanha nas redes sociais inclui uma taxa de R$ 300,00 por cada postagem, enquanto nas emissoras de TV o custo é composto por uma taxa fixa de R$ 250,00, além de R$ 360,00 por cada transmissão. A função que representa o investimento total da prefeitura, considerando a veiculação de 𝑥 postagens e 𝑦 transmissões, pode ser expressa na forma:",
+      "options": {
+        "A": "𝐼(𝑥, 𝑦) = 250 + 300𝑥 + 360𝑦.",
+        "B": "𝐼(𝑥, 𝑦) = 300 + 360𝑥 + 250𝑦.",
+        "C": "𝐼(𝑥, 𝑦) = 360 + 250𝑥 + 300𝑦.",
+        "D": "𝐼(𝑥, 𝑦) = 300 + 360𝑥 + 300𝑦."
+      },
+      "raw_block": "38. Uma prefeitura deseja lançar uma campanha, a ser veiculada tanto em redes sociais quanto em emissoras\n    de TV, para promover os benefícios da proibição do uso de celulares nas salas de aula. O custo para\n    veicular a campanha nas redes sociais inclui uma taxa de R$ 300,00 por cada postagem, enquanto nas\n    emissoras de TV o custo é composto por uma taxa fixa de R$ 250,00, além de R$ 360,00 por cada\n    transmissão. A função que representa o investimento total da prefeitura, considerando a veiculação de 𝑥\n    postagens e 𝑦 transmissões, pode ser expressa na forma:\n\n    A) 𝐼(𝑥, 𝑦) = 250 + 300𝑥 + 360𝑦.\n    B) 𝐼(𝑥, 𝑦) = 300 + 360𝑥 + 250𝑦.\n    C) 𝐼(𝑥, 𝑦) = 360 + 250𝑥 + 300𝑦.\n    D) 𝐼(𝑥, 𝑦) = 300 + 360𝑥 + 300𝑦.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 39,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 12,
+      "page_end": 12,
+      "statement": "O tamanho de um celular, geralmente, é medido em polegadas, correspondendo à medida da diagonal da tela do aparelho. Considerando que uma polegada equivale a 2,5 cm, o tamanho aproximado, em polegadas, de um celular com dimensões de 150 mm por 75 mm é de",
+      "options": {
+        "A": "9,0.",
+        "B": "6,7.",
+        "C": "1,9.",
+        "D": "6,1."
+      },
+      "raw_block": "39. O tamanho de um celular, geralmente, é medido em polegadas, correspondendo à medida da diagonal\n    da tela do aparelho. Considerando que uma polegada equivale a 2,5 cm, o tamanho aproximado, em\n    polegadas, de um celular com dimensões de 150 mm por 75 mm é de\n\n    A) 9,0.\n    B) 6,7.\n    C) 1,9.\n    D) 6,1.\n"
+    },
+    {
+      "edition": "2025",
+      "number": 40,
+      "kind": "OBJECTIVE",
+      "discipline": "MATEMATICA",
+      "discipline_source": "HEADER",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "page_start": 12,
+      "page_end": 13,
+      "statement": "Considerando que todos os celulares devem estar alinhados na mesma orientação (horizontal ou vertical), a quantidade máxima de celulares com dimensões 150 mm x 75 mm que podem ser dispostos sobre uma mesa de 1,0 m por 0,8 m, sem sobreposição e sem ultrapassar os limites da mesa é de",
+      "options": {
+        "A": "60.",
+        "B": "72.",
+        "C": "71.",
+        "D": "65. IFRN – Exame de Seleção – 2025                                                                           12 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+      },
+      "raw_block": "40. Considerando que todos os celulares devem estar alinhados na mesma orientação (horizontal ou vertical),\n    a quantidade máxima de celulares com dimensões 150 mm x 75 mm que podem ser dispostos sobre uma\n    mesa de 1,0 m por 0,8 m, sem sobreposição e sem ultrapassar os limites da mesa é de\n\n\n\n\n    A) 60.\n    B) 72.\n    C) 71.\n    D) 65.\n\n\nIFRN – Exame de Seleção – 2025                                                                           12\n\n         IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                       EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
+    }
+  ],
+  "discursive": {
+    "present": true,
+    "page": 13,
+    "proposal_excerpt": "PRODUÇÃO TEXTUAL ESCRITA PRODUÇÃO TEXTUAL Considerando a temática em foco, a leitura dos textos desta prova e seus conhecimentos prévios sobre o tema em discussão, escreva um ARTIGO DE OPINIÃO em que se posicione sobre a seguinte questão: O USO DE CELULARES DEVE SER PROIBIDO NAS ESCOLAS BRASILEIRAS? Assine o seu artigo, exclusivamente, com o pseudônimo O REI DA NET. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique- se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Lembre-se de que seu texto será avaliado, levando-se em consideração os seguintes critérios: A) produção do gênero textual proposto no comando da questão; B) presença de marcas características"
+  },
+  "warnings": []
+}

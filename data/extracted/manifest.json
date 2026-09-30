@@ -1,0 +1,87 @@
+{
+  "extractor": "scripts/analysis/extract_questions.py",
+  "extractor_version": "1.0.0",
+  "generated_at_utc": "2026-09-30T15:09:39.600698+00:00",
+  "tool_versions": {
+    "pdfinfo": "pdfinfo version 26.08.0",
+    "pdftotext": "pdftotext version 26.08.0"
+  },
+  "editions": [
+    {
+      "edition": "2020",
+      "source_document": "data/provas/2020/Prova.pdf",
+      "source_sha256": "f53d78a34d1e669108bef0051783093a7ebfec20e87a94aa9b9f7f370154ba22",
+      "source_pages": 15,
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "discursive_present": true,
+      "discursive_page": 14,
+      "n_warnings": 4
+    },
+    {
+      "edition": "2022",
+      "source_document": "data/provas/2022/Prova_Exame_Tecnico_Integrado_2022_XNn8mg4.pdf",
+      "source_sha256": "ffcfa54064c148c026d99c2a73ada3fdfee4a5c78d664ba4db06c7a8ffdf1bfe",
+      "source_pages": 15,
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "discursive_present": true,
+      "discursive_page": 14,
+      "n_warnings": 0
+    },
+    {
+      "edition": "2023",
+      "source_document": "data/provas/2023/Caderno_de_provas.pdf",
+      "source_sha256": "99caba7636afdc10163c5e0bfddc0e1adbcf62443173e0196f08672b485772d8",
+      "source_pages": 14,
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "discursive_present": true,
+      "discursive_page": 13,
+      "n_warnings": 0
+    },
+    {
+      "edition": "2024",
+      "source_document": "data/provas/2024/Cadernos_de_provas_-_Cursos_Tecnicos_Integrados_2024_.pdf",
+      "source_sha256": "8bf3f5931abdfb0e07868d061d9c30b877e3dd4869d5e4481f2cf5044b770020",
+      "source_pages": 15,
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "discursive_present": true,
+      "discursive_page": 14,
+      "n_warnings": 0
+    },
+    {
+      "edition": "2025",
+      "source_document": "data/provas/2025/PROVA_IFRN_-_EXAME_DE_SELEÇÃO_2025.pdf",
+      "source_sha256": "3f35c8024ea875051f99cdf82c2271ceb9ce92d1de9e7f9222f6fe4ddd24cdc2",
+      "source_pages": 14,
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "discursive_present": true,
+      "discursive_page": 13,
+      "n_warnings": 0
+    },
+    {
+      "edition": "2026",
+      "source_document": "data/provas/2026/Caderno_de_Provas_-Técnico_Integrado_2026.pdf",
+      "source_sha256": "6a535a0b3a9207cc481ac373c4da9f38940c3558c6e1efac5e46443ce22aa3d1",
+      "source_pages": 14,
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "discursive_present": true,
+      "discursive_page": 13,
+      "n_warnings": 0
+    }
+  ],
+  "totals": {
+    "editions": 6,
+    "objective_questions": 240
+  },
+  "warnings": [
+    "2020: Q38: alternativa A sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
+    "2020: Q38: alternativa B sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
+    "2020: Q38: alternativa C sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
+    "2020: Q38: alternativa D sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)"
+  ]
+}
