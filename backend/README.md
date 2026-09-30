@@ -49,6 +49,26 @@ Sem token → `401` em envelope (JWT na TASK 3.5). Edição inexistente →
 `404 EDITION_NOT_FOUND` (2021 com motivo explícito de ausência).
 `scoring_rule` NULL = DESCONHECIDA. Detalhes em `docs/api-provas.md`.
 
+## API de disciplinas e conteúdos (TASK 3.3)
+
+Somente leitura sobre disciplinas, assuntos, subassuntos (taxonomia v1.1,
+seed V2) + frequências históricas derivadas das classificações.
+Enunciados/alternativas/gabaritos ficam para a TASK 3.4.
+
+| Rota | Auth | Descrição |
+|---|---|---|
+| `GET /api/v1/disciplines` | autenticada | listar disciplinas |
+| `GET /api/v1/disciplines/{code}` | autenticada | disciplina + assuntos |
+| `GET /api/v1/topics?disciplineCode=` | autenticada | assuntos (todos ou por disciplina) |
+| `GET /api/v1/topics/{id}` | autenticada | assunto + série por edição + confiança |
+| `GET /api/v1/subtopics?topicId=` | autenticada | subassuntos (todos ou por assunto) |
+| `GET /api/v1/subtopics/{id}` | autenticada | subassunto + série por edição |
+| `GET /api/v1/content/stats` | autenticada | panorama histórico (revisão PENDENTE sinalizada) |
+
+Inexistentes → `404 DISCIPLINE/TOPIC/SUBTOPIC_NOT_FOUND`; filtros
+inválidos → `400`. Anuladas contam como conteúdo, sem pontuar.
+Detalhes em `docs/api-conteudos.md`.
+
 Toda resposta de erro usa o envelope `{code, message, details, traceId, timestamp, path}`
 e nunca inclui stack trace. O `traceId` vai no header `X-Trace-Id`.
 
@@ -84,6 +104,8 @@ mvn -f backend/pom.xml test
 * `GlobalExceptionHandlerTest` — envelope 400/404/500 sem vazamento.
 * `exams/ExamServiceTest` (TASK 3.2) — regras de evidência sem contexto (2021 → 404, esperado × importado, sem invenção).
 * `exams/ExamControllerTest` (TASK 3.2) — contrato JSON + envelope via MockMvc standalone.
+* `content/ContentServiceTest` (TASK 3.3) — 404 por código explícito, banco vazio sem invenção, percentuais + revisão PENDENTE.
+* `content/ContentControllerTest` (TASK 3.3) — contrato JSON + envelope das 7 rotas via MockMvc standalone.
 
 ## Estrutura
 
@@ -97,6 +119,7 @@ backend/
     │   ├── VoupassarApplication.java
     │   ├── health/         # GET /api/v1/health
     │   ├── exams/          # TASK 3.2: entity, repository, dto, service, controller
+    │   ├── content/        # TASK 3.3: disciplines/topics/subtopics/stats (somente leitura)
     │   ├── exception/      # GlobalExceptionHandler + 400/404 de negócio
     │   ├── common/dto/     # ApiError (envelope)
     │   ├── config/         # CORS + CorrelationIdFilter (traceId) + OpenApiConfig

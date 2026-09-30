@@ -19,6 +19,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
   long countByExamYearAndAnnulledTrue(Short year);
 
+  long countByDisciplineCode(String disciplineCode);
+
   /**
    * Retorna linhas {@code [code(String), name(String), total(Long), annulled(Long)]}.
    */
