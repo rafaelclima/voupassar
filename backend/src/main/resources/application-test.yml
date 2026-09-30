@@ -16,6 +16,14 @@ spring:
       name: test
       password: test
 
+app:
+  security:
+    # Segredo fixo de teste (nunca produção) + rate limiting desligado
+    # para os testes de contexto não disputarem janela.
+    jwt-secret: "test-only-secret-min-32-chars-0123456789abcdef"
+    rate-limit:
+      enabled: false
+
 logging:
   level:
     root: WARN

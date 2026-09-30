@@ -88,6 +88,27 @@ revisão PENDENTE — tudo em `notes`. Detalhes em `docs/api-questoes.md`.
 Toda resposta de erro usa o envelope `{code, message, details, traceId, timestamp, path}`
 e nunca inclui stack trace. O `traceId` vai no header `X-Trace-Id`.
 
+## Autenticação (TASK 3.5)
+
+Access JWT HS256 curto (JJWT 0.13.0) + refresh/reset opacos com hash SHA-256
+no banco. Desbloqueia as três APIs acima: sem Bearer seguem `401`.
+
+| Rota | Auth | Descrição |
+|---|---|---|
+| `POST /api/v1/auth/register` | pública | cadastro (STUDENT + perfil) → `201` par de tokens |
+| `POST /api/v1/auth/login` | pública | falha sempre genérica `401` (anti-enumeração) |
+| `POST /api/v1/auth/refresh` | pública (c/ refresh) | rotação; reuso derruba a cadeia (`401 REFRESH_REUSED`) |
+| `POST /api/v1/auth/logout` | pública (c/ refresh) | revoga uma sessão (idempotente) |
+| `POST /api/v1/auth/logout-all` | Bearer | revoga todas as sessões |
+| `POST /api/v1/auth/password/forgot` | pública | resposta sempre genérica (entrega por e-mail pendente) |
+| `POST /api/v1/auth/password/reset` | pública (c/ token) | uso único, derruba sessões |
+| `POST /api/v1/auth/password/change` | Bearer | exige atual, devolve par novo |
+| `GET /api/v1/auth/me` | Bearer | conta + papéis |
+
+Senha `8–72` em bcrypt (custo 10); e-mail único case-insensitive (CITEXT);
+troca/reset incrementam `credential_version` (derrubam access antigos);
+rate limiting de borda no `/auth` (`429`). Detalhes em `docs/api-auth.md`.
+
 ## Configuração
 
 | Variável | Padrão dev | Descrição |
@@ -97,17 +118,22 @@ e nunca inclui stack trace. O `traceId` vai no header `X-Trace-Id`.
 | `SPRING_DATASOURCE_URL` | `jdbc:postgresql://localhost:5432/${POSTGRES_DB}` | JDBC (no Compose: `jdbc:postgresql://db:5432/...`) |
 | `SPRING_DATASOURCE_USERNAME/PASSWORD` | `POSTGRES_USER/PASSWORD` | credenciais (nunca no Git) |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:8080,http://localhost:3000` | origens exatas, vírgula |
+| `JWT_SECRET` | *(dev default — trocar)* | segredo HMAC 32+ bytes (boot falha se curto) |
+| `JWT_ISSUER` / `ACCESS_TTL_MINUTES` / `REFRESH_TTL_DAYS` / `RESET_TTL_MINUTES` | `voupassar` / `15` / `7` / `60` | emissor e TTLs |
+| `BCRYPT_STRENGTH` | `10` | custo bcrypt (VPS fraca — calibrar) |
+| `RATE_LIMIT_ENABLED/MAX/WINDOW_SECONDS` | `true` / `60` / `60` | borda do `/auth` (`429`) |
 | `JAVA_OPTS` | `-Xms256m -Xmx512m` | heap conservador p/ VPS 2 GB |
 
 Flyway reaproveita `database/migrations/*.sql` (copiadas para
 `classpath:db/migration` no build — sem duplicar SQL). Tabela
 `flyway_schema_history`, a mesma do `migrate` via Compose.
 
-## Segurança (base; JWT na TASK 3.5)
+## Segurança (TASK 3.5)
 
-Secure-by-default: só o health é público; o resto exige autenticação
-(hoje responde 401/403 — correto até a TASK 3.5 emitir tokens).
-CORS restritivo, CSRF off (API stateless), sessão stateless.
+JWT próprio + refresh opaco rotativo: só health, OpenAPI e fluxo público do
+`/auth` são abertos; o resto exige Bearer (401/403 em JSON).
+CORS restritivo, CSRF off (API stateless), sessão stateless, bcrypt,
+rate limiting de borda no `/auth`, sem stack trace em produção.
 
 ## Testes
 
@@ -120,14 +146,18 @@ mvn -f backend/pom.xml test
 * `GlobalExceptionHandlerTest` — envelope 400/404/500 sem vazamento.
 * `exams/ExamServiceTest` (TASK 3.2) — regras de evidência sem contexto (2021 → 404, esperado × importado, sem invenção).
 * `exams/ExamControllerTest` (TASK 3.2) — contrato JSON + envelope via MockMvc standalone.
-* `content/ContentServiceTest` (TASK 3.3) — 404 por código explícito, banco vazio sem invenção, percentuais + revisão PENDENTE.
-* `content/ContentControllerTest` (TASK 3.3) — contrato JSON + envelope das 7 rotas via MockMvc standalone.
+ * `content/ContentServiceTest` (TASK 3.3) — 404 por código explícito, banco vazio sem invenção, percentuais + revisão PENDENTE.
+ * `content/ContentControllerTest` (TASK 3.3) — contrato JSON + envelope das 7 rotas via MockMvc standalone.
+ * `auth/JwtServiceTest` (TASK 3.5) — emissão/validação HS256 e rejeições (6, sem Spring).
+ * `auth/AuthServiceTest` (TASK 3.5) — regras com mocks: registro/login/refresh/logout/forgot/reset/change/me (15).
+ * `auth/AuthControllerTest` (TASK 3.5) — contrato JSON + `201/200/400/401` das 9 rotas via MockMvc standalone.
+ * `auth/AuthSecurityTest` (TASK 3.5) — fiação no contexto real: fluxo público passa (400, não 401), resto protegido.
 
 ## Estrutura
 
 ```
 backend/
-├── pom.xml                   # + springdoc-openapi 3.1.1 (Boot 4.x)
+├── pom.xml                   # + springdoc-openapi 3.1.1 (Boot 4.x) + JJWT 0.13.0 (auth)
 ├── Dockerfile              # build context = raiz do repo
 ├── README.md
 └── src/
@@ -136,10 +166,13 @@ backend/
     │   ├── health/         # GET /api/v1/health
     │   ├── exams/          # TASK 3.2: entity, repository, dto, service, controller
     │   ├── content/        # TASK 3.3: disciplines/topics/subtopics/stats (somente leitura)
-    │   ├── exception/      # GlobalExceptionHandler + 400/404 de negócio
+    │   ├── questions/      # TASK 3.4: banco de leitura paginado + filtros
+    │   ├── auth/           # TASK 3.5: controller → service → repository (+ dto, entity, config)
+    │   ├── exception/      # GlobalExceptionHandler + 400/401/404/409/429 de negócio
     │   ├── common/dto/     # ApiError (envelope)
+    │   ├── common/jpa/     # CitextJdbcType (users.email CITEXT)
     │   ├── config/         # CORS + CorrelationIdFilter (traceId) + OpenApiConfig
-    │   └── security/       # base permissiva p/ health + docs (JWT na 3.5)
+    │   └── security/       # JWT filter + rate limiting + UserPrincipal (TASK 3.5)
     └── main/resources/
         ├── application.yml (+ dev/prod/test) + logback-spring.xml
         └── db/migration/   # gerado no build a partir de database/migrations

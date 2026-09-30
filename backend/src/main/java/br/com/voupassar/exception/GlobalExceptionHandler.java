@@ -56,6 +56,21 @@ public class GlobalExceptionHandler {
     return build(HttpStatus.BAD_REQUEST, ex.getCode(), ex.getMessage(), null, req);
   }
 
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ApiError> unauthorized(UnauthorizedException ex, HttpServletRequest req) {
+    return build(HttpStatus.UNAUTHORIZED, ex.getCode(), ex.getMessage(), null, req);
+  }
+
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<ApiError> conflict(ConflictException ex, HttpServletRequest req) {
+    return build(HttpStatus.CONFLICT, ex.getCode(), ex.getMessage(), null, req);
+  }
+
+  @ExceptionHandler(TooManyRequestsException.class)
+  public ResponseEntity<ApiError> tooManyRequests(TooManyRequestsException ex, HttpServletRequest req) {
+    return build(HttpStatus.TOO_MANY_REQUESTS, ex.getCode(), ex.getMessage(), null, req);
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiError> validation(MethodArgumentNotValidException ex, HttpServletRequest req) {
     List<String> details =

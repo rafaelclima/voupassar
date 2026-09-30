@@ -6,6 +6,19 @@ app:
   version: "@project.version@"
   cors:
     allowed-origins: "${CORS_ALLOWED_ORIGINS:http://localhost:8080,http://localhost:3000}"
+  # Auth (TASK 3.5). Segredo via env em produção — o default abaixo é SÓ
+  # para dev local (boot falha se o segredo tiver < 32 bytes).
+  security:
+    jwt-secret: "${JWT_SECRET:dev-only-secret-CHANGE-ME-min-32-chars-0123456789ab}"
+    jwt-issuer: "${JWT_ISSUER:voupassar}"
+    access-ttl-minutes: "${ACCESS_TTL_MINUTES:15}"
+    refresh-ttl-days: "${REFRESH_TTL_DAYS:7}"
+    reset-ttl-minutes: "${RESET_TTL_MINUTES:60}"
+    bcrypt-strength: "${BCRYPT_STRENGTH:10}"
+    rate-limit:
+      enabled: "${RATE_LIMIT_ENABLED:true}"
+      max-requests: "${RATE_LIMIT_MAX:60}"
+      window-seconds: "${RATE_LIMIT_WINDOW_SECONDS:60}"
 
 server:
   port: "${SERVER_PORT:8080}"

@@ -38,6 +38,21 @@ class GlobalExceptionHandlerTest {
       throw new BadRequestException("Filtro inválido.");
     }
 
+    @GetMapping("/unauthorized")
+    void unauthorized() {
+      throw new UnauthorizedException("INVALID_CREDENTIALS", "E-mail ou senha inválidos.");
+    }
+
+    @GetMapping("/conflict")
+    void conflict() {
+      throw new ConflictException("EMAIL_IN_USE", "E-mail já cadastrado.");
+    }
+
+    @GetMapping("/limited")
+    void limited() {
+      throw new TooManyRequestsException("Muitas tentativas.");
+    }
+
     @GetMapping("/boom")
     void boom() {
       throw new IllegalStateException("falha interna simulada");
@@ -78,6 +93,22 @@ class GlobalExceptionHandlerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
         .andExpect(jsonPath("$.details").isArray());
+  }
+
+  @Test
+  void authErrorsKeepEnvelopeAndStatus() throws Exception {
+    mvc.perform(get("/probe/unauthorized"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"))
+        .andExpect(jsonPath("$.stackTrace").doesNotExist());
+
+    mvc.perform(get("/probe/conflict"))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.code").value("EMAIL_IN_USE"));
+
+    mvc.perform(get("/probe/limited"))
+        .andExpect(status().isTooManyRequests())
+        .andExpect(jsonPath("$.code").value("RATE_LIMITED"));
   }
 
   @Test

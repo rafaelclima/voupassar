@@ -75,6 +75,27 @@
       <version>3.1.1</version>
     </dependency>
 
+    <!-- JWT (TASK 3.5): access token HS256. JJWT 0.13.0 = latest stable.
+         Refresh/reset são opacos (SecureRandom, hash SHA-256 no banco) —
+         nunca JWT — para rotação com detecção de reuso (architecture.md §5). -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>0.13.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>0.13.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>0.13.0</version>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- Observabilidade -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
