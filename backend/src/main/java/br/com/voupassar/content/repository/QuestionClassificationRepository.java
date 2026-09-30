@@ -138,4 +138,33 @@ public interface QuestionClassificationRepository
       ORDER BY q.exam.year ASC
       """)
   List<Short> editionsBySubtopic(@Param("subtopicId") Long subtopicId);
+
+  /**
+   * Classificações vigentes (não-rejeitadas) de um lote de questões (TASK 3.4).
+   *
+   * <p>Traz tópico + subassunto em fetch para montar a página sem N+1. Pode
+   * haver mais de uma por questão (histórico PENDING); o serviço escolhe a
+   * mais recente (maior id).
+   */
+  @Query("""
+      SELECT c FROM QuestionClassification c
+      LEFT JOIN FETCH c.topic t
+      LEFT JOIN FETCH c.subtopic s
+      WHERE c.question.id IN :ids AND c.status <> 'REJECTED'
+      ORDER BY c.question.id ASC, c.id DESC
+      """)
+  List<QuestionClassification> findActiveByQuestionIds(@Param("ids") List<Long> ids);
+
+  /**
+   * Classificações vigentes (não-rejeitadas) de uma questão, mais recente
+   * primeiro.
+   */
+  @Query("""
+      SELECT c FROM QuestionClassification c
+      LEFT JOIN FETCH c.topic t
+      LEFT JOIN FETCH c.subtopic s
+      WHERE c.question.id = :questionId AND c.status <> 'REJECTED'
+      ORDER BY c.id DESC
+      """)
+  List<QuestionClassification> findActiveByQuestionId(@Param("questionId") Long questionId);
 }

@@ -14,12 +14,18 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 /**
- * Questão — projeção mínima somente-leitura para as estatísticas da TASK 3.2.
+ * Questão — modelo completo de leitura do banco de questões.
  *
- * <p>Mapeia só as colunas necessárias aos agregados (edição, disciplina,
- * anulada). O conteúdo integral (enunciado, alternativas, gabarito) é objeto
- * da TASK 3.4 e nunca sai nestes endpoints. {@code @Immutable} impede updates
- * acidentais por este contexto.
+ * <p>TASK 3.2 usava esta entidade como projeção mínima para agregados;
+ * a TASK 3.4 a expande para o conteúdo integral (enunciado, alternativas via
+ * {@code question_options}, gabarito, proveniência). {@code @Immutable} impede
+ * updates acidentais por este contexto: a escrita acontece via migrations +
+ * importador (TASK 2.3), nunca pela API.
+ *
+ * <p>Regras de evidência: {@code answerKey = "X"} ⟺ anulada (conta como
+ * conteúdo, nunca pontua — regra de pontuação DESCONHECIDA, TASK 1.3 §4);
+ * {@code explanation} NULL = ainda não redigida (nunca inventar correção);
+ * {@code difficultyEstimate} é palpite com confiança BAIXA global.
  */
 @Entity
 @Immutable
@@ -30,9 +36,15 @@ public class Question {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(name = "source_type", nullable = false)
+  private String sourceType;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "exam_id")
   private Exam exam;
+
+  @Column(name = "exam_document_id")
+  private Long examDocumentId;
 
   @Column(name = "source_year")
   private Short sourceYear;
@@ -40,9 +52,21 @@ public class Question {
   @Column(name = "source_question_number")
   private Short sourceQuestionNumber;
 
+  @Column(name = "statement", nullable = false)
+  private String statement;
+
+  @Column(name = "kind", nullable = false)
+  private String kind;
+
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "discipline_id", nullable = false)
   private Discipline discipline;
+
+  @Column(name = "page_start", nullable = false)
+  private Short pageStart;
+
+  @Column(name = "page_end", nullable = false)
+  private Short pageEnd;
 
   @Column(name = "annulled", nullable = false)
   private boolean annulled;
@@ -51,14 +75,37 @@ public class Question {
   @Column(name = "answer_key", nullable = false, length = 1)
   private String answerKey;
 
+  @Column(name = "has_figure", nullable = false)
+  private boolean hasFigure;
+
+  @Column(name = "difficulty_estimate")
+  private String difficultyEstimate;
+
+  @Column(name = "explanation")
+  private String explanation;
+
+  @Column(name = "validation_status", nullable = false)
+  private String validationStatus;
+
+  @Column(name = "publication_status", nullable = false)
+  private String publicationStatus;
+
   public Question() {}
 
   public Long getId() {
     return id;
   }
 
+  public String getSourceType() {
+    return sourceType;
+  }
+
   public Exam getExam() {
     return exam;
+  }
+
+  public Long getExamDocumentId() {
+    return examDocumentId;
   }
 
   public Short getSourceYear() {
@@ -67,6 +114,14 @@ public class Question {
 
   public Short getSourceQuestionNumber() {
     return sourceQuestionNumber;
+  }
+
+  public String getStatement() {
+    return statement;
+  }
+
+  public String getKind() {
+    return kind;
   }
 
   public Discipline getDiscipline() {
@@ -79,5 +134,33 @@ public class Question {
 
   public String getAnswerKey() {
     return answerKey;
+  }
+
+  public Short getPageStart() {
+    return pageStart;
+  }
+
+  public Short getPageEnd() {
+    return pageEnd;
+  }
+
+  public boolean isHasFigure() {
+    return hasFigure;
+  }
+
+  public String getDifficultyEstimate() {
+    return difficultyEstimate;
+  }
+
+  public String getExplanation() {
+    return explanation;
+  }
+
+  public String getValidationStatus() {
+    return validationStatus;
+  }
+
+  public String getPublicationStatus() {
+    return publicationStatus;
   }
 }

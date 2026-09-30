@@ -69,6 +69,22 @@ Inexistentes → `404 DISCIPLINE/TOPIC/SUBTOPIC_NOT_FOUND`; filtros
 inválidos → `400`. Anuladas contam como conteúdo, sem pontuar.
 Detalhes em `docs/api-conteudos.md`.
 
+## API de questões (TASK 3.4)
+
+Somente leitura sobre o banco de questões (enunciado + 4 alternativas +
+gabarito) com proveniência e classificação vigente. Filtros por disciplina,
+assunto, subassunto, edição, dificuldade e origem + paginação.
+
+| Rota | Auth | Descrição |
+|---|---|---|
+| `GET /api/v1/questions?...&page=&size=` | autenticada | listar paginado (ordem fixa: ano, número, id) |
+| `GET /api/v1/questions/{id}` | autenticada | detalhe integral + notas de evidência |
+
+Filtros para refs inexistentes → `404` (`2021` com motivo explícito);
+`size` em `[1, 100]`; `X` = anulada (conta como conteúdo, sem pontuar);
+dificuldade estimada (confiança BAIXA), explicação NULL = não redigida,
+revisão PENDENTE — tudo em `notes`. Detalhes em `docs/api-questoes.md`.
+
 Toda resposta de erro usa o envelope `{code, message, details, traceId, timestamp, path}`
 e nunca inclui stack trace. O `traceId` vai no header `X-Trace-Id`.
 
