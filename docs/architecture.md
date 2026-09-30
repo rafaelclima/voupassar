@@ -47,11 +47,17 @@ Princípios (AGENTS.md): evidência antes de opinião; rastreabilidade prova→q
 
 ## 6. Comunicação e ambientes
 
-| Ambiente | Frontend | Backend | Banco |
-|---|---|---|---|
-| Local | arquivo estático / servidor simples + `API_BASE_URL=http://localhost:8080` | Spring profile `dev`, Compose local | Postgres em container, Flyway `migrate`, seed mínimo |
-| CI | validação + testes + build estático (artefato) | build + testes + imagem (sem push de secret) | Testcontainers/serviço efêmero |
-| Produção | GitHub Pages (`https://<USUARIO>.github.io/<REPO>/`) | VPS via Compose: `app + db + reverse-proxy`, HTTPS, `API_BASE_URL=https://<API-PRODUCAO-A-DEFINIR>` | Postgres em volume + backup diário + retenção documentada |
+> **Estratégia local-first:** toda a infra sobe primeiro na máquina de
+> desenvolvimento via Docker Compose (`app + db + reverse-proxy`), em paridade
+> com a VPS. Nada vai para a VPS sem estar testado e funcional no local; a VPS
+> recebe réplica daquilo que já foi validado (mesma imagem, mesmo Compose,
+> só com variáveis/hosts de produção).
+>
+> | Ambiente | Frontend | Backend | Banco |
+> |---|---|---|---|
+> | Local (referência) | arquivo estático / servidor simples + `API_BASE_URL=http://localhost:8080` | Compose local (`app + db + reverse-proxy`), Spring profile `dev` | Postgres em container, Flyway `migrate`, seed mínimo |
+> | CI | validação + testes + build estático (artefato) | build + testes + imagem (sem push de secret) | Testcontainers/serviço efêmero |
+> | Produção (réplica) | GitHub Pages (`https://<USUARIO>.github.io/<REPO>/`) | VPS via **mesmo** Compose do local: `app + db + reverse-proxy`, HTTPS, `API_BASE_URL=https://<API-PRODUCAO-A-DEFINIR>` | Postgres em volume + backup diário + retenção documentada |
 
 - CORS restritivo (origens exatas do Pages + localhost DEV), HTTPS obrigatório em produção, headers (`HSTS, X-Content-Type-Options, frame-ancestors, Referrer-Policy`), rate limiting em `/auth` e escrita, erros sem stack trace.
 - Health: `GET /actuator/health` (interno) + `GET /api/v1/health` público mínimo; logs estruturados com `traceId`; métricas essenciais (latência, 5xx, tentativas/dia) sem PII.
@@ -70,7 +76,7 @@ Fases 4–5, implementado **depois** do banco/questões confiáveis (ordem TASKS
 ## 9. Deploy e observabilidade
 
 - **Frontend (`pages.yml`):** checkout → validação (links, HTML) → testes JS → build (injeta `API_BASE_URL`) → deploy Pages; falha bloqueia publicação.
-- **Backend (pipeline separada):** build → testes → imagem Docker → push (registry a definir) → atualização documentada na VPS (SSH/deploy assistido; automação total futura). Nenhum secret no Git; VPS recebe via ambiente gerenciado fora do repo.
+- **Backend (pipeline separada):** build → testes → imagem Docker → validação local no Compose → push (registry a definir) → réplica documentada na VPS (SSH/deploy assistido; automação total futura). Nenhum secret no Git; VPS recebe via ambiente gerenciado fora do repo.
 - **Observabilidade (TASK 10.3):** health checks no Compose, logs JSON com rotação, endpoint de diagnóstico autenticado, backup/restore PostgreSQL testado periodicamente.
 
 ## 10. Decisões (registrar ADRs em `docs/decisions/` a partir da TASK 2.1)
