@@ -25,6 +25,7 @@ import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ConflictException;
 import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.exception.UnauthorizedException;
+import br.com.voupassar.performance.service.PerformanceService;
 import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
 import java.util.Optional;
@@ -52,12 +53,13 @@ class AttemptServiceTest {
   @Mock QuestionAttemptRepository attempts;
   @Mock StudySessionRepository sessions;
   @Mock SimulationAttemptRefRepository simulations;
+  @Mock PerformanceService performance;
 
   private AttemptService service;
 
   @BeforeEach
   void setup() {
-    service = new AttemptService(users, questions, attempts, sessions, simulations);
+    service = new AttemptService(users, questions, attempts, sessions, simulations, performance);
   }
 
   private static User user(long id, boolean active) {

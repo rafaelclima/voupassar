@@ -16,6 +16,7 @@ import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ConflictException;
 import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.exception.UnauthorizedException;
+import br.com.voupassar.performance.service.PerformanceService;
 import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
 import java.time.OffsetDateTime;
@@ -47,6 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
  *       gabarito no Modo Prova é responsabilidade da Fase 5.</li>
  *   <li>Tentativas são imutáveis (trigger): sem PUT/DELETE — correção só via
  *       nova tentativa.</li>
+ *   <li>A cada registro, o agregado {@code student_topic_performance} é
+ *       reconstruído pela TASK 4.1 ({@link PerformanceService}) na mesma
+ *       transação — overview ao vivo e materializado nunca divergem.</li>
  * </ul>
  */
 @Service
@@ -62,18 +66,21 @@ public class AttemptService {
   private final QuestionAttemptRepository attempts;
   private final StudySessionRepository sessions;
   private final SimulationAttemptRefRepository simulations;
+  private final PerformanceService performance;
 
   public AttemptService(
       UserRepository users,
       QuestionRepository questions,
       QuestionAttemptRepository attempts,
       StudySessionRepository sessions,
-      SimulationAttemptRefRepository simulations) {
+      SimulationAttemptRefRepository simulations,
+      PerformanceService performance) {
     this.users = users;
     this.questions = questions;
     this.attempts = attempts;
     this.sessions = sessions;
     this.simulations = simulations;
+    this.performance = performance;
   }
 
   /** Abre uma sessão de estudo ({@code IN_PROGRESS}). */
@@ -169,6 +176,7 @@ public class AttemptService {
     a.setMode(mode);
     a.setAnsweredAt(OffsetDateTime.now());
     attempts.save(a);
+    performance.rebuildTopicPerformance(userId);
 
     log.info("tentativa user_id={} attempt_id={} question_id={} mode={} annulled={}",
         userId, a.getId(), question.getId(), mode, annulled);

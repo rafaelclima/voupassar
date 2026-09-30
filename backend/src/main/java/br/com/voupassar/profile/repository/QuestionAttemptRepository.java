@@ -74,6 +74,23 @@ public interface QuestionAttemptRepository extends JpaRepository<QuestionAttempt
   Optional<OffsetDateTime> lastAttemptAt(@Param("userId") Long userId);
 
   /**
+   * Todas as tentativas do aluno com questão + disciplina em fetch (TASK 4.1).
+   *
+   * <p>Base do cálculo de desempenho determinístico (overview, evolução e
+   * rebuild do agregado): uma única leitura ordenada cronologicamente, sem
+   * N+1. A classificação vigente (tópico/subassunto) é resolvida em seguida
+   * via {@code QuestionClassificationRepository#findActiveByQuestionIds}.
+   */
+  @Query("""
+      SELECT a FROM QuestionAttempt a
+      LEFT JOIN FETCH a.question q
+      LEFT JOIN FETCH q.discipline d
+      WHERE a.user.id = :userId
+      ORDER BY a.answeredAt ASC, a.id ASC
+      """)
+  List<QuestionAttempt> findAllByUserIdWithQuestion(@Param("userId") Long userId);
+
+  /**
    * Histórico paginado (mais recentes primeiro), com questão + disciplina em
    * fetch para montar a página sem N+1.
    */

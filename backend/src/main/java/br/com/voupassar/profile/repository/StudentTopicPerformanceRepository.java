@@ -3,6 +3,7 @@ package br.com.voupassar.profile.repository;
 import br.com.voupassar.profile.entity.StudentTopicPerformance;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,4 +32,24 @@ public interface StudentTopicPerformanceRepository
   List<StudentTopicPerformance> findProgressByUserId(@Param("userId") Long userId);
 
   long countByUserId(Long userId);
+
+  /**
+   * Apaga o agregado do aluno antes do rebuild determinístico (TASK 4.1).
+   *
+   * <p>Bulk DELETE explícito (executa imediatamente no banco, sem carregar
+   * entidades): o rebuild recalcula tudo a partir do fato imutável {@code
+   * question_attempts} — delete + insert na mesma transação, sem UPDATE
+   * parcial, reexecução segura e auditável.
+   *
+   * <p>NÃO usar `deleteBy` derivado aqui: ele carrega as linhas para a
+   * memória e agenda `remove()` no contexto de persistência, e o flush do
+   * Hibernate ordena INSERTs antes de DELETEs — o rebuild falharia com
+   * violação da UNIQUE `(user, topic, subtopic)`. Sem
+   * `clearAutomatically` de propósito: o rebuild roda na mesma transação do
+   * `POST /attempts`, e limpar o contexto descartaria o INSERT da tentativa
+   * recém-registrada (ainda pendente de flush).
+   */
+  @Modifying
+  @Query("DELETE FROM StudentTopicPerformance p WHERE p.user.id = :userId")
+  void deleteByUserId(@Param("userId") Long userId);
 }

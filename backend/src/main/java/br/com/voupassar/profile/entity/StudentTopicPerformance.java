@@ -66,20 +66,40 @@ public class StudentTopicPerformance {
     return user;
   }
 
+  public void setUser(User user) {
+    this.user = user;
+  }
+
   public Topic getTopic() {
     return topic;
+  }
+
+  public void setTopic(Topic topic) {
+    this.topic = topic;
   }
 
   public Subtopic getSubtopic() {
     return subtopic;
   }
 
+  public void setSubtopic(Subtopic subtopic) {
+    this.subtopic = subtopic;
+  }
+
   public int getAttempts() {
     return attempts;
   }
 
+  public void setAttempts(int attempts) {
+    this.attempts = attempts;
+  }
+
   public int getHits() {
     return hits;
+  }
+
+  public void setHits(int hits) {
+    this.hits = hits;
   }
 
   public BigDecimal getAccuracy() {
@@ -88,5 +108,9 @@ public class StudentTopicPerformance {
 
   public OffsetDateTime getLastAttemptAt() {
     return lastAttemptAt;
+  }
+
+  public void setLastAttemptAt(OffsetDateTime lastAttemptAt) {
+    this.lastAttemptAt = lastAttemptAt;
   }
 }
