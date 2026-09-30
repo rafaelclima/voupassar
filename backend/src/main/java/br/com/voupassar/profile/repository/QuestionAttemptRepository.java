@@ -13,12 +13,16 @@ import org.springframework.data.repository.query.Param;
 /**
  * Leituras do fato de respostas por aluno (TASK 3.6).
  *
- * <p>Só leitura neste contexto: a escrita (registro de tentativa) é a TASK
- * 3.7. Anuladas ({@code wasAnnulled=true}, {@code isCorrect} NULL) contam
- * como conteúdo respondido e nunca entram no aproveitamento — regra de
- * pontuação DESCONHECIDA (TASK 1.3 §4).
+ * <p>Leituras agregadas e histórico são a TASK 3.6; a escrita (registro de
+ * tentativa) e a leitura unitária escopada ao dono são a TASK 3.7. Anuladas
+ * ({@code wasAnnulled=true}, {@code isCorrect} NULL) contam como conteúdo
+ * respondido e nunca entram no aproveitamento — regra de pontuação
+ * DESCONHECIDA (TASK 1.3 §4).
  */
 public interface QuestionAttemptRepository extends JpaRepository<QuestionAttempt, Long> {
+
+  /** Tentativa do dono do token (TASK 3.7 — nunca vaza tentativa alheia). */
+  Optional<QuestionAttempt> findByIdAndUserId(Long id, Long userId);
 
   long countByUserId(Long userId);
 
