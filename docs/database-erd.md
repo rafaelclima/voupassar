@@ -1,0 +1,505 @@
+# Modelo Conceitual / ERD — VouPassar (TASK 2.1)
+
+> Fonte: `AGENTS.md §11–13` (entidades esperadas, proveniência, tipos de questão),
+> `docs/architecture.md §4`, evidências da Fase 1 (`docs/provas-inventario.md`,
+> `docs/gabaritos-validation.md`, `data/extracted/*.json`, `data/linked/*.json`,
+> `docs/content-analysis/taxonomy.md + summary.md + content-map.md`).
+> Status: **projeto, nada implementado** — a implementação física (DDL/Flyway) é a TASK 2.2.
+> O que não pôde ser comprovado está marcado como `DESCONHECIDO` / `NÃO CONFIRMADO` /
+> `NECESSITA REVISÃO`. Nenhum assunto/dificuldade aqui é fato oficial do IFRN.
+
+## 0. Convenções (valem para a TASK 2.2)
+
+* Nomes em `snake_case`, tabelas no plural, PKs surrogate `id BIGINT GENERATED ALWAYS AS IDENTITY`.
+* Chaves naturais (edição, documento, número da questão etc.) viram `UNIQUE`, nunca PK —
+  isso sustenta a importação idempotente da TASK 2.3.
+* Enums como `TEXT + CHECK` (portável no Flyway; mapeado para `enum` Java no JPA),
+  nunca `ENUM` nativo — decisão a registrar em ADR na TASK 2.2.
+* Toda tabela tem `created_at / updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`.
+* `updated_at` mantido por trigger na migração (detalhe físico da TASK 2.2).
+* Rastreabilidade mínima em conteúdo: toda questão carrega `source_type, source_year,
+  source_question_number, exam_document_id, page_start/end, checksum`.
+* Confiança de classificação IA sempre explícita; curadoria humana obrigatória
+  (`PENDING → REVIEWED → APPROVED / REJECTED`, TASK 12.2).
+* Extensão `pg_trgm` prevista **apenas** para gerar *suspeitas* de duplicidade
+  (AGENTS.md §23) — nunca delete automático.
+
+## 1. Diagrama (núcleo)
+
+```mermaid
+erDiagram
+    ROLES ||--o{ USER_ROLES : "tem"
+    USERS ||--o{ USER_ROLES : "possui"
+    USERS ||--o| STUDENT_PROFILES : "1:1"
+    USERS ||--o{ REFRESH_TOKENS : "emite"
+    USERS ||--o{ STUDY_SESSIONS : "inicia"
+    USERS ||--o{ QUESTION_ATTEMPTS : "responde"
+    USERS ||--o{ SIMULATION_ATTEMPTS : "executa"
+    USERS ||--o{ STUDY_PLANS : "recebe"
+    USERS ||--o{ STUDENT_ACHIEVEMENTS : "conquista"
+    USERS ||--o{ PROGRESS_SNAPSHOTS : "fotografa"
+
+    EXAMS ||--o{ EXAM_VERSIONS : "1:N"
+    EXAM_VERSIONS ||--o{ EXAM_DOCUMENTS : "1:N"
+    EXAMS ||--o| EXAM_ESSAY_PROMPTS : "1:1"
+    EXAMS ||--o{ QUESTIONS : "1:N"
+    EXAM_DOCUMENTS ||--o{ QUESTIONS : "origina"
+    EXAM_DOCUMENTS ||--o{ QUESTION_SOURCES : "evidencia"
+
+    DISCIPLINES ||--o{ TOPICS : "1:N"
+    TOPICS ||--o{ SUBTOPICS : "1:N"
+    DISCIPLINES ||--o{ QUESTIONS : "classifica"
+    TOPICS ||--o{ QUESTION_CLASSIFICATIONS : "alvo"
+    SUBTOPICS ||--o{ QUESTION_CLASSIFICATIONS : "alvo"
+    QUESTIONS ||--o{ QUESTION_OPTIONS : "1:N"
+    QUESTIONS ||--o{ QUESTION_SOURCES : "1:N"
+    QUESTIONS ||--o{ QUESTION_CLASSIFICATIONS : "1:N versões"
+    QUESTIONS ||--o{ QUESTION_TAG_MAP : "M:N"
+    QUESTION_TAGS ||--o{ QUESTION_TAG_MAP : "M:N"
+    QUESTIONS ||--o{ QUESTION_ATTEMPTS : "respondida em"
+    QUESTIONS ||--o{ SIMULATION_QUESTIONS : "compõe"
+
+    STUDY_SESSIONS ||--o{ QUESTION_ATTEMPTS : "agrupa"
+    SIMULATION_ATTEMPTS ||--o{ QUESTION_ATTEMPTS : "agrupa"
+    SIMULATIONS ||--o{ SIMULATION_ATTEMPTS : "1:N execuções"
+    SIMULATION_ATTEMPTS ||--o{ SIMULATION_QUESTIONS : "congela"
+
+    TOPICS ||--o{ STUDENT_TOPIC_PERFORMANCE : "agrega"
+    SUBTOPICS ||--o{ STUDENT_TOPIC_PERFORMANCE : "agrega"
+    STUDY_PLANS ||--o{ STUDY_PLAN_ITEMS : "1:N"
+    TOPICS ||--o{ STUDY_PLAN_ITEMS : "recomenda"
+    ACHIEVEMENTS ||--o{ STUDENT_ACHIEVEMENTS : "1:N"
+```
+
+Tabelas de apoio omitidas do desenho por legibilidade: `user_roles`
+(join `users ↔ roles`). `student_topic_performance` também referencia `users`
+(N:1, ver §2.8).
+
+## 2. Entidades (finalidade + colunas de domínio)
+
+Legenda de classificações de origem: `F` = fato extraído da fonte,
+`D` = classificação pedagógica derivada, `C` = curadoria humana,
+`S` = dado do estudante (PII quando marcado 🔒).
+
+### 2.1 Identidade e autenticação (AGENTS.md §14)
+
+**`roles`** — papéis RBAC. Linhas-semente: `STUDENT, CURATOR, ADMIN`.
+| coluna | tipo | regra |
+|---|---|---|
+| id | PK | — |
+| code | TEXT UNIQUE NOT NULL | `CHECK (code IN ('STUDENT','CURATOR','ADMIN'))` |
+| description | TEXT | — |
+
+**`users`** 🔒 — conta de acesso. PII mínima.
+| coluna | tipo | regra |
+|---|---|---|
+| id | PK | — |
+| email | CITEXT UNIQUE NOT NULL | validação Bean Validation + `CHECK (email ~ '^[^@]+@[^@]+$')` na DDL |
+| password_hash | TEXT NOT NULL | bcrypt/argon2 (parâmetro a calibrar na TASK 3.5); nunca logar |
+| is_active | BOOLEAN NOT NULL DEFAULT TRUE | `FALSE` = revoga access+refresh |
+| credential_version | INT NOT NULL DEFAULT 1 | incremento invalida refreshes antigos |
+| last_login_at | TIMESTAMPTZ NULL | — |
+
+**`user_roles`** — join M:N (refinamento: AGENTS.md lista `roles` sem dizer
+cardinalidade; M:N permite `CURATOR` que também estuda sem segunda conta).
+| coluna | regra |
+|---|---|
+| user_id → users | PK composta `(user_id, role_id)`, FKs `ON DELETE CASCADE` |
+| role_id → roles | — |
+| granted_at | DEFAULT now() |
+
+**`refresh_tokens`** 🔒 — tabela **adicional** além da lista do §13, exigida pelo
+§14 (rotação + revogação). Finalidade: detectar reuso e permitir logout global.
+| coluna | tipo | regra |
+|---|---|---|
+| id | PK | — |
+| user_id → users | NOT NULL, `ON DELETE CASCADE`, índice | — |
+| token_hash | TEXT UNIQUE NOT NULL | armazena hash SHA-256, nunca o token |
+| expires_at | TIMESTAMPTZ NOT NULL | — |
+| revoked_at | TIMESTAMPTZ NULL | `CHECK (revoked_at IS NULL OR revoked_at >= created_at)` |
+| replaced_by_id → refresh_tokens | NULL | cadeia de rotação; reuso do pai = revoga cadeia |
+| created_ip / user_agent | TEXT NULL | auditoria mínima, sem fingerprint excessivo |
+
+**`student_profiles`** 🔒 — perfil pedagógico, 1:1 com `users`.
+| coluna | regra |
+|---|---|
+| user_id → users | PK (= FK), `ON DELETE CASCADE` |
+| display_name | TEXT NOT NULL |
+| school_year | TEXT NULL (`CHECK` em lista fechada na TASK 3.6; hoje `NÃO CONFIRMADO` quais valores o produto exigirá) |
+| target_year | SMALLINT NULL (ex.: 2027 — aspiração, não fato) |
+| study_goal | TEXT NULL, preferências de modo/turno (JSONB validado na API, não livre) |
+
+### 2.2 Provas e documentos (evidência Fase 1)
+
+**`exams`** — uma linha por edição presente no repo (`F`).
+Evidência: `docs/provas-inventario.md §1` — 6 edições, cada uma 20 LP + 20 MAT + 1
+discursiva **naquele documento** (nunca regra universal).
+| coluna | tipo | regra / evidência |
+|---|---|---|
+| id | PK | — |
+| year | SMALLINT UNIQUE NOT NULL | `CHECK (year IN (2020,2022,2023,2024,2025,2026))` — 2021 **ausente**, jamais inserir sem fonte |
+| edital | TEXT NOT NULL | ex. `29/2019`, `48/2025` (transcrição da capa) |
+| duration_minutes | SMALLINT NOT NULL DEFAULT 240 | 4h em todas as capas observadas |
+| objective_count | SMALLINT NOT NULL DEFAULT 40 | por edição; `CHECK (objective_count = 40)` só vale para as 6 conhecidas |
+| lp_count / mat_count | SMALLINT NOT NULL DEFAULT 20 | divisão 1–20/21–40 herdada do caderno |
+| has_essay | BOOLEAN NOT NULL DEFAULT TRUE | todas as 6 têm proposta + rascunho |
+| scoring_rule | TEXT NULL | pontuação de anuladas e da discursiva = **DESCONHECIDA** (TASK 1.3 §4); NULL até fonte oficial |
+
+**`exam_versions`** — versões/retificações de uma edição (`F`).
+Justificativa: só 2022 traz preliminar + definitivo (idênticos 40/40); demais só
+têm o definitivo/final no repo — divergência **NÃO CONFIRMADA** fora do repo.
+| coluna | regra |
+|---|---|
+| id | PK |
+| exam_id → exams | `ON DELETE CASCADE`, `UNIQUE (exam_id, version_code)` |
+| version_code | TEXT NOT NULL (ex. `FINAL`, `PRELIMINAR`, `DEFINITIVO`, `RETIFICACAO_N`) |
+| published_at | DATE NULL (data interna do gabarito quando impressa, ex. 04/11/2025 em 2026) |
+| note | TEXT NULL (ex. "preliminar e definitivo idênticos — FUNCERN 30/09/2022") |
+
+**`exam_documents`** — arquivo-fonte (`F`). Um caderno + N gabaritos por edição.
+| coluna | tipo | regra / evidência |
+|---|---|---|
+| id | PK | — |
+| exam_version_id → exam_versions | NOT NULL, `ON DELETE CASCADE` | — |
+| kind | TEXT NOT NULL | `CHECK (kind IN ('CADERNO','GABARITO_PRELIMINAR','GABARITO_DEFINITIVO','GABARITO_FINAL','OFERTAS','OUTRO'))` — `OFERTAS` cobre as págs. 1–2 do gabarito 2023 |
+| file_name | TEXT NOT NULL | nome literal no repo (ex. `Exame_de_Seleção_2024_-_Gabarito_Final.pdf` cujo conteúdo é 2025 — preservar literal + nota) |
+| sha256 | CHAR(64) UNIQUE NOT NULL | hashes auditados em `docs/gabaritos-validation.md §0` |
+| pages | SMALLINT NOT NULL | — |
+| generator | TEXT NULL | metadado informativo (Word/FUNCERN/PDF24…), não evidência pedagógica |
+
+**`exam_essay_prompts`** — configuração da discursiva por edição (`F`).
+Tabela **adicional** (refina o §13): a discursiva não é alternativa A–D e tem
+metadados próprios (gênero, tema, pseudônimo, critérios). Correção automática da
+discursiva = **DESCONHECIDA / fora do MVP** (só proposta + critérios).
+| coluna | regra / evidência |
+|---|---|
+| exam_id → exams | PK (= FK), `ON DELETE CASCADE` |
+| genre | TEXT NOT NULL (artigo de opinião nas 6 edições observadas) |
+| theme | TEXT NOT NULL (ex. 2026 "Brasil × mudanças climáticas") |
+| pseudonym | TEXT NOT NULL (ex. `Amazonino Belém`) |
+| proposal_excerpt | TEXT NOT NULL (trecho mínimo de identificação; texto integral fica no PDF-fonte) |
+| criteria_text | TEXT NULL (orientações/critérios quando impressos, ex. 2022) |
+| page | SMALLINT NOT NULL |
+
+### 2.3 Taxonomia controlada (D — emerge das provas, nunca lista externa)
+
+Códigos congelados v1.1: `docs/content-analysis/taxonomy.md`,
+agregados em `docs/content-map.md`. Revisão humana: PENDENTE.
+
+**`disciplines`** — `LINGUA_PORTUGUESA, MATEMATICA` (120 + 120 em 240).
+| coluna | regra |
+|---|---|
+| id | PK |
+| code | TEXT UNIQUE NOT NULL |
+| name | TEXT NOT NULL |
+
+**`topics`** — assuntos (`GRAMATICA_NORMA, INTERPRETACAO_TEXTUAL, RAZAO_PROPORCAO,
+ARITMETICA, ALGEBRA, GEOMETRIA, ESTATISTICA_DADOS, PORCENTAGEM,
+MATEMATICA_FINANCEIRA, GRANDEZAS_MEDIDAS`). `OUTRO` **não** é tópico permanente:
+a única ocorrência (2026 Q21) foi normalizada para `ARITMETICA/SISTEMAS_NUMERACAO`
+no mapa v1.1.
+| coluna | regra |
+|---|---|
+| id | PK |
+| discipline_id → disciplines | NOT NULL, `ON DELETE RESTRICT` (não apagar disciplina com histórico) |
+| code | TEXT NOT NULL, `UNIQUE (discipline_id, code)` |
+| name | TEXT NOT NULL |
+| is_active | BOOLEAN DEFAULT TRUE (desativar ≠ apagar, preserva histórico) |
+
+**`subtopics`** — subassuntos (ex. `REGRA_DE_TRES, FUNCAO_AFIM, INFERENCIA…`).
+| coluna | regra |
+|---|---|
+| id | PK |
+| topic_id → topics | NOT NULL, `ON DELETE RESTRICT` |
+| code | TEXT NOT NULL, `UNIQUE (topic_id, code)` |
+| name | TEXT NOT NULL |
+
+### 2.4 Questões e evidências (F + D + C)
+
+**`questions`** — grão: uma questão objetiva oficial por edição (`F` + `C`).
+Questões autorais/adaptadas reusam a mesma tabela com `source_type` distinto
+(AGENTS.md §11) e sem vínculo de edição oficial.
+| coluna | tipo | regra / origem |
+|---|---|---|
+| id | PK | — |
+| source_type | TEXT NOT NULL | `CHECK (source_type IN ('OFFICIAL','AUTHORAL','ADAPTED','INTERNAL_REVIEW','EXPERIMENTAL'))` |
+| exam_id → exams | NULL | NOT NULL quando `OFFICIAL`; NULL nos demais tipos |
+| exam_document_id → exam_documents | NULL | caderno de origem (questões oficiais) |
+| source_year | SMALLINT NULL | ex. 2026; NULL se não-oficial |
+| source_question_number | SMALLINT NULL | 1–40 nas oficiais; `CHECK` condicional na DDL |
+| statement | TEXT NOT NULL | enunciado em texto (`pdftotext`); figuras = `has_figure=TRUE` + revisão |
+| kind | TEXT NOT NULL DEFAULT 'OBJECTIVE' | `CHECK (kind IN ('OBJECTIVE','DISCURSIVE'))`; discursiva integral fica em `exam_essay_prompts` |
+| discipline_id → disciplines | NOT NULL | `discipline_source`: `HEADER` (ALTA) vs `INFERRED_RANGE` (MEDIA) — ver `question_sources` |
+| page_start / page_end | SMALLINT NOT NULL | `CHECK (page_end >= page_start)` |
+| answer_key | CHAR(1) NOT NULL | `CHECK (answer_key IN ('A','B','C','D','X'))`; `X` = anulada no próprio gabarito |
+| annulled | BOOLEAN NOT NULL DEFAULT FALSE | invariante: `CHECK ((annulled AND answer_key='X') OR (NOT annulled AND answer_key<>'X'))` |
+| checksum | CHAR(64) NOT NULL | SHA-256 normalizado do enunciado+alternativas (base da idempotência) |
+| has_figure | BOOLEAN NOT NULL DEFAULT FALSE | TRUE nos 38 itens `NECESSITA_REVISAO` de `summary.md §3` |
+| difficulty_estimate | TEXT NULL | `FACIL/MEDIA/DIFICIL` — sempre palpite (`ESTIMATIVA_ESPECIALISTA_SEM_DADOS`, conf. BAIXA) até a Fase 4 calibrar |
+| explanation | TEXT NULL | raciocínio de correção; NULL = ainda não redigida (nunca inventar) |
+| validation_status | TEXT NOT NULL DEFAULT 'PENDING' | `PENDING/REVIEWED/APPROVED/REJECTED` (ciclo da TASK 12.2) |
+| publication_status | TEXT NOT NULL DEFAULT 'PENDENTE_REVISAO' | `PUBLICAVEL/NAO_PUBLICAVEL/PENDENTE_REVISAO/SOMENTE_REFERENCIA` (§12); conteúdo `SOMENTE_REFERENCIA` nunca sai no GET público |
+| `UNIQUE (source_type, source_year, source_question_number, exam_document_id)` | — | chave de idempotência da TASK 2.3 (oficiais); parciais NULLs permitem múltiplas autorais |
+| `UNIQUE (checksum)` | — | trava contra importação duplicada do mesmo texto |
+
+**`question_options`** — alternativas A–D (`F`).
+| coluna | regra |
+|---|---|
+| id | PK |
+| question_id → questions | `ON DELETE CASCADE`, `UNIQUE (question_id, label)` |
+| label | `CHECK (label IN ('A','B','C','D'))` |
+| option_text | TEXT NOT NULL |
+| `CHECK ((SELECT COUNT(*) …) = 4)` | aplicado em trigger/validação de importação para objetivas (não como CHECK inline); 2020 Q38 (frações achatadas) entra com `validation_status=PENDING` + `has_figure` até revisão visual |
+
+**`question_sources`** — cada evidência que sustenta a questão (`F`, auditável).
+Uma questão tem ≥2 fontes: extração do caderno + gabarito(s).
+| coluna | regra |
+|---|---|
+| id | PK |
+| question_id → questions | `ON DELETE CASCADE` |
+| exam_document_id → exam_documents | NOT NULL |
+| role | `CHECK (role IN ('PRIMARY','GABARITO','OFERTAS','COMPLEMENTAR'))` |
+| page_start / page_end | SMALLINT NULL |
+| doc_sha256 | CHAR(64) NOT NULL (redundância intencional para auditoria offline) |
+| note | TEXT NULL (ex. "mojibake no cabeçalho 2026 sem impacto nas 40 linhas") |
+
+**`question_tags` + `question_tag_map`** — rótulos livres M:N
+(ex. `FIGURA`, `CHARGE`, `GRAFICO`, `FRACAO`, `U200B_NORMALIZADO`).
+| regra | — |
+|---|---|
+| `question_tags.code UNIQUE NOT NULL` | vocabulário cresce sem migração |
+| `question_tag_map (question_id, tag_id)` | PK composta, FKs `ON DELETE CASCADE` |
+
+**`question_classifications`** — julgamento pedagógico versionado (`D` + `C`).
+Tabela **adicional** (o §13 embutiria tudo em `topics`; versionar é necessário
+porque a taxonomia evoluiu v1 → v1.1 sem reescrever os JSONs, e a revisão humana
+está PENDENTE). Um `question_id` tem N versões; só a `APPROVED` mais recente
+alimenta recomendação.
+| coluna | regra / evidência |
+|---|---|
+| id | PK |
+| question_id → questions | `ON DELETE CASCADE`, índice |
+| taxonomy_version | TEXT NOT NULL (ex. `v1`, `v1.1`) |
+| topic_id → topics / subtopic_id → subtopics | NULL aceito quando `OUTRO`/revisão; `CHECK` de coerência tópico↔subtópico via trigger |
+| skill | TEXT NULL (lista fechada em `taxonomy.md`: `LOCALIZAR_…`, `INFERIR_…` etc.) |
+| reasoning_type | TEXT NULL (ex. `PROPORCIONAL`, `MODELAGEM_MULTIETAPAS`) |
+| confidence | TEXT NOT NULL — `CHECK (confidence IN ('ALTA','MEDIA','BAIXA'))`; dificuldade sempre `BAIXA` até Fase 4 |
+| evidence | TEXT NOT NULL (≤200 chars, citação do enunciado) |
+| origin | TEXT NOT NULL DEFAULT 'CLASSIFICACAO_DERIVADA_FONTE' |
+| status | `PENDING/REVIEWED/APPROVED/REJECTED` |
+| reviewed_by → users / reviewed_at | NULL até curadoria (só `CURATOR/ADMIN`) |
+| observation | TEXT NULL (motivo do `NECESSITA_REVISAO`) |
+
+### 2.5 Tentativas e sessões (S — fato por resposta)
+
+**`study_sessions`** — agrupa respostas de um bloco de estudo (Modo Estudo/Prova/Revisão).
+| coluna | regra |
+|---|---|
+| id | PK |
+| user_id → users | `ON DELETE CASCADE`, índice `(user_id, started_at)` |
+| mode | `CHECK (mode IN ('ESTUDO','PROVA','REVISAO'))` |
+| started_at / finished_at | `CHECK (finished_at IS NULL OR finished_at >= started_at)` |
+| status | `CHECK (status IN ('IN_PROGRESS','FINISHED','ABANDONED'))` |
+
+**`question_attempts`** — **única tabela-fato de respostas** (grão: um evento de
+resposta). Toda métrica de desempenho deriva daqui; nenhuma outra tabela duplica
+contagem.
+| coluna | regra |
+|---|---|
+| id | PK |
+| user_id → users | `ON DELETE CASCADE` |
+| question_id → questions | `ON DELETE RESTRICT` (nunca apagar questão com histórico) |
+| study_session_id → study_sessions | NULLável |
+| simulation_attempt_id → simulation_attempts | NULLável; `CHECK (study_session_id IS NOT NULL OR simulation_attempt_id IS NOT NULL)` |
+| selected_option | `CHECK (selected_option IN ('A','B','C','D','BLANK'))` |
+| is_correct | BOOLEAN NOT NULL (anuladas `X`: `is_correct` NULL + `was_annulled=TRUE` — pontuação de anuladas **DESCONHECIDA**, não creditar automaticamente) |
+| was_annulled | BOOLEAN DEFAULT FALSE |
+| time_spent_seconds | INT NULL, `CHECK (>= 0)` |
+| mode | cópia do modo (`ESTUDO/PROVA/REVISAO`) para análise sem join |
+| answered_at | TIMESTAMPTZ NOT NULL DEFAULT now() |
+
+### 2.6 Simulados (Fase 5 — configuração por edição, nunca universal)
+
+**`simulations`** — definição/consulta salva (não a execução).
+| coluna | regra |
+|---|---|
+| id | PK |
+| owner_user_id → users | NULL = template público/curadoria; `ON DELETE SET NULL` |
+| type | `CHECK (type IN ('BY_DISCIPLINE','REAL_EDITION'))` |
+| exam_id → exams | NOT NULL quando `REAL_EDITION` (estrutura daquela edição); NULL no por-disciplina |
+| filter_json | JSONB NOT NULL (disciplina, tópicos, dificuldade, quantidade — validado contra o banco disponível) |
+| title | TEXT NOT NULL |
+
+**`simulation_attempts`** — uma execução por usuário (cabeçalho; detalhe em
+`question_attempts` + `simulation_questions`).
+| coluna | regra |
+|---|---|
+| id | PK |
+| simulation_id → simulations | `ON DELETE RESTRICT` |
+| user_id → users | `ON DELETE CASCADE` |
+| mode | `CHECK (mode IN ('ESTUDO','PROVA'))` (Revisão não gera simulado novo, só filtra erros) |
+| status | `CHECK (status IN ('IN_PROGRESS','SUBMITTED','ABANDONED'))` |
+| started_at / submitted_at | — |
+| score_json | JSONB NULL (resumo calculado no servidor ao submeter; cliente nunca escreve nota) |
+
+**`simulation_questions`** — congelamento do caderno da tentativa (posição +
+resposta correta vigente; protege contra reclassificação posterior).
+| coluna | regra |
+|---|---|
+| simulation_attempt_id → simulation_attempts | PK composta `(simulation_attempt_id, position)`, `ON DELETE CASCADE` |
+| position | SMALLINT NOT NULL (`CHECK (> 0)`) |
+| question_id → questions | `ON DELETE RESTRICT` |
+| frozen_answer_key | CHAR(1) NOT NULL |
+
+### 2.7 Roteiro de estudos (Fase 4 — determinístico e explicável)
+
+**`study_plans`** — um plano vigente por usuário (histórico preservado).
+| coluna | regra |
+|---|---|
+| user_id → users | `ON DELETE CASCADE`, `UNIQUE (user_id)` parcial `WHERE is_active` |
+| is_active | BOOLEAN DEFAULT TRUE |
+| generated_at | — |
+| algorithm_version | TEXT NOT NULL (ex. `v1-deterministico`; sem ML no MVP) |
+
+**`study_plan_items`** — cada recomendação precisa citar evidência.
+| coluna | regra |
+|---|---|
+| id | PK |
+| study_plan_id → study_plans | `ON DELETE CASCADE` |
+| topic_id → topics / subtopic_id → subtopics | NOT NULL (recomendação é sempre por conteúdo controlado) |
+| priority | SMALLINT `CHECK (1–5)` |
+| reason | TEXT NOT NULL (texto gerado dos mesmos fatores do score, ex. "aproveitamento abaixo da média e tema em N edições") |
+| evidence_json | JSONB NOT NULL (edições/questões que sustentam — ex. `{editions:[2022,2024], questions:[ids]}`) |
+| status | `CHECK (status IN ('TODO','DOING','DONE','SKIPPED'))` |
+
+### 2.8 Agregados, gamificação e snapshots
+
+**`student_topic_performance`** — agregado materializado por usuário×conteúdo
+(única fonte para "onde estou?"). Escrito por job, nunca pelo cliente.
+| coluna | regra |
+|---|---|
+| user_id → users | PK composta `(user_id, topic_id, subtopic_id NULLS NOT DISTINCT)` |
+| topic_id / subtopic_id (NULL = nível tópico) | FKs |
+| attempts / hits | INT `CHECK (>= 0)`, `hits <= attempts` |
+| accuracy | NUMERIC(5,4) gerada (`hits/NULLIF(attempts,0)`) |
+| last_attempt_at | TIMESTAMPTZ NULL |
+| `CHECK (subtopic→topic coerente)` | via trigger |
+
+**`achievements`** — catálogo (Fase 7; mínimo agora: consistência, conclusão,
+evolução, domínio — sem pressão excessiva).
+| coluna | regra |
+|---|---|
+| code TEXT UNIQUE NOT NULL | ex. `STREAK_7D`, `TOPICO_DOMINADO` (regras em `rule_json`) |
+| title / description / rule_json | — |
+
+**`student_achievements`** — `(user_id, achievement_id, awarded_at)` PK composta.
+
+**`progress_snapshots`** — foto periódica da evolução (gráficos sem recalcular tudo).
+| coluna | regra |
+|---|---|
+| user_id → users | `ON DELETE CASCADE`, `UNIQUE (user_id, taken_at)` |
+| metrics_json | JSONB (accuracy global/por disciplina/por tópico, streak) |
+
+## 3. Cardinalidades (resumo auditável)
+
+| Relação | Card. | Regra de negócio que a impõe |
+|---|---|---|
+| users : student_profiles | 1:1 | PK compartilhada |
+| users : roles | M:N via user_roles | RBAC; admin/curadoria exigem papel |
+| exams : exam_versions | 1:N | preliminar/definitivo/retificações |
+| exam_versions : exam_documents | 1:N | caderno + gabaritos + ofertas |
+| exams : exam_essay_prompts | 1:1 | 1 discursiva por edição observada |
+| exams : questions | 1:N | 40 objetivas por edição conhecida |
+| disciplines : topics : subtopics | 1:N:N | taxonomia v1.1 controlada |
+| questions : question_options | 1:4 | objetivas; discursiva sem options |
+| questions : question_sources | 1:N | ≥ caderno + gabarito |
+| questions : question_classifications | 1:N | versões; vigente = `APPROVED` mais recente |
+| questions : question_tags | M:N | flags livres (figura, charge…) |
+| users : question_attempts | 1:N | fato imutável (sem UPDATE de resposta) |
+| simulations : simulation_attempts | 1:N | execução preserva definição |
+| simulation_attempts : simulation_questions | 1:N | caderno congelado |
+| study_plans : study_plan_items | 1:N | item sempre cita `evidence_json` |
+
+## 4. Índices (além dos UNIQUE/PK)
+
+| Tabela | Índice | Serve a |
+|---|---|---|
+| questions | `(discipline_id, id)`, `(exam_id, source_question_number)` | filtros da API `GET /questions?disciplina&edicao` (TASK 3.4) |
+| questions | `(source_type, publication_status)` parcial `WHERE publication_status='PUBLICAVEL'` | GET público nunca vaza `SOMENTE_REFERENCIA` |
+| questions | `checksum` UNIQUE | idempotência + anti-duplicata exata |
+| questions | `statement gin_trgm_ops` (GIN, pg_trgm) | **suspeitas** de equivalência/OCR (fila de curadoria) |
+| question_classifications | `(question_id, status, taxonomy_version)` | "classificação vigente" + cobertura (TASK 11.2) |
+| question_classifications | `(topic_id, subtopic_id)` | estatísticas históricas por assunto |
+| question_options | `(question_id)` | correção em lote |
+| question_attempts | `(user_id, question_id, answered_at DESC)` | histórico + "já respondida?" |
+| question_attempts | `(user_id, mode, answered_at DESC)` | desempenho por modo |
+| question_attempts | `(question_id)` | calibração de dificuldade (Fase 4) |
+| student_topic_performance | `(user_id, accuracy)` | "assuntos mais fracos primeiro" |
+| simulation_questions | `(simulation_attempt_id, position)` | ordem do caderno |
+| study_plan_items | `(study_plan_id, priority)` | roteiro ordenado |
+| refresh_tokens | `(user_id, expires_at)` parcial `WHERE revoked_at IS NULL` | validação de refresh |
+| exam_documents | `(sha256)` UNIQUE | auditoria prova↔banco |
+
+## 5. Constraints de integridade (as que viram DDL na TASK 2.2)
+
+1. `questions`: `CHECK (source_type='OFFICIAL' AND exam_id IS NOT NULL AND source_year IS NOT NULL AND source_question_number BETWEEN 1 AND 40)` **para as 6 edições conhecidas**; autorais com `exam_id IS NULL`.
+2. `questions`: `CHECK ((annulled AND answer_key='X') OR (NOT annulled AND answer_key IN ('A','B','C','D')))`.
+3. `questions`: `UNIQUE (source_type, source_year, source_question_number, exam_document_id)` + `UNIQUE (checksum)`.
+4. `question_options`: exatamente 4 linhas por objetiva (trigger `AFTER INSERT OR DELETE`, com exceção registrada para itens `PENDING` como 2020 Q38).
+5. `question_attempts`: imutável — `REVOKE UPDATE/DELETE` do role da API; correção só por nova tentativa; `is_correct` NULL quando `was_annulled`.
+6. `question_attempts`: `CHECK (study_session_id IS NOT NULL OR simulation_attempt_id IS NOT NULL)` — resposta órfã proibida.
+7. `simulations`: `CHECK ((type='REAL_EDITION' AND exam_id IS NOT NULL) OR (type='BY_DISCIPLINE'))`.
+8. `question_classifications`: `CHECK (subtopic_id IS NULL OR subtopic→topic)` + vigente única por questão (índice parcial `UNIQUE (question_id) WHERE status='APPROVED'` — a TASK 2.2 decide entre índice parcial ou coluna `is_current`; registrado como pendência física, não conceitual).
+9. `users`: `email` CITEXT UNIQUE; `password_hash` nunca NULL/vazio.
+10. `study_plan_items`: `evidence_json` NOT NULL e não-vazio (plano sem evidência é inválido — AGENTS.md §8).
+
+## 6. Rastreabilidade (a pergunta "por que estudar isso?")
+
+```
+study_plan_items.evidence_json ──→ questions.id ──→ question_sources ──→ exam_documents.sha256
+        │                                │                     └──→ exams.year / edital
+        │                                └──→ question_classifications (topic, confidence, evidence, status)
+        └──→ student_topic_performance (accuracy, attempts — o lado do aluno)
+```
+
+Toda recomendação percorre esse caminho nos dois sentidos: do conteúdo para as
+questões/edições que o sustentam, e do aluno para seu aproveitamento.
+
+## 7. Curadoria e publicação (AGENTS.md §12 + §22, TASK 12.2)
+
+* Entrada: `validation_status=PENDING, publication_status=PENDENTE_REVISAO`.
+* Fila: `has_figure=TRUE`, `confidence=BAIXA`, `status=NECESSITA_REVISAO`,
+  suspeitas do `pg_trgm`, divergência MMC×gabarito (2023 Q40).
+* Transição: `CURATOR/ADMIN` move `PENDING → REVIEWED → APPROVED/REJECTED`
+  (em `questions` e em `question_classifications`, com `reviewed_by/at`).
+* Publicação: só `APPROVED + PUBLICAVEL` aparece no GET público; `SOMENTE_REFERENCIA`
+  alimenta estatísticas agregadas sem expor enunciado (análise sem redistribuição).
+
+## 8. Contrato para a TASK 2.3 (importador idempotente)
+
+Chave natural: `(source_type, source_year, source_question_number, exam_document_id)`
+com `ON CONFLICT DO NOTHING` + comparação de `checksum`:
+checksum igual = reexecução segura; checksum diferente = divergência registrada em
+fila de curadoria (nunca `UPDATE` silencioso, nunca `DELETE`).
+Documentos identificados por `sha256` (gabaritos auditados em
+`docs/gabaritos-validation.md §0`).
+
+## 9. O que foi deliberadamente NÃO modelado / DESCONHECIDO
+
+* **2021**: sem linha em `exams` (fonte ausente; séries pulam 2021).
+* **Regra de pontuação de anuladas e da discursiva**: `exams.scoring_rule` NULL
+  (pendência TASK 1.3 §4; capa 2020/2023 com valores NÃO CONFIRMADOS).
+* **Múltiplos cadernos por edição** (ofertas 2023 págs. 1–2): NÃO CONFIRMADO —
+  se confirmado, vira nova `exam_versions` + `exam_documents`, sem mudar o ERD.
+* **Correção automática da discursiva**: fora do modelo (só prompt + critérios).
+* **Versão exata de Postgres/extensões e tipos físicos**: decisão da TASK 2.2
+  contra documentação oficial vigente.
+
+## 10. Pendências para a TASK 2.2
+
+1. DDL Flyway (`V1__…`) + `docker-compose.yml` com volume, healthcheck e backup.
+2. Decisão física: `is_current` vs índice parcial UNIQUE para classificação vigente.
+3. Trigger `updated_at` + trigger "4 options por objetiva".
+4. Seed: `roles`, `disciplines`, `topics/subtopics` v1.1, `exams` (6) + `exam_documents`
+   (12+ hashes) — questões só via importador 2.3, nunca seed manual.
+5. ADRs em `docs/decisions/` (TEXT+CHECK vs ENUM, BIGINT vs UUID, pg_trgm).
