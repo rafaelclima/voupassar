@@ -51,6 +51,18 @@ management:
     db:
       enabled: true
 
+# OpenAPI (TASK 3.2): contrato em /v3/api-docs, UI em /swagger-ui.html.
+# Escopo restrito à API versionada; Actuator fora da documentação.
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  paths-to-match: /api/v1/**
+  packages-to-scan: br.com.voupassar
+
 logging:
   level:
     root: INFO

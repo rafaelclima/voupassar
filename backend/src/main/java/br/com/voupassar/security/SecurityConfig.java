@@ -44,6 +44,11 @@ public class SecurityConfig {
                 auth
                     .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
                     .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                    // OpenAPI (TASK 3.2): só schemas, sem PII e sem conteúdo
+                    // de questão — seguro expor para leitura.
+                    .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
                     .anyRequest().authenticated())
         // Sem login form / httpBasic: API retorna 401 JSON em vez de página.
         .httpBasic(AbstractHttpConfigurer::disable)

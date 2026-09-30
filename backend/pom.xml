@@ -68,6 +68,13 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- OpenAPI (TASK 3.2: primeira API real; springdoc 3.1.1 = suporte a Boot 4.x) -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>3.1.1</version>
+    </dependency>
+
     <!-- Observabilidade -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
