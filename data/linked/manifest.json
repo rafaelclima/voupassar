@@ -1,0 +1,109 @@
+{
+  "linker": "scripts/analysis/link_answer_keys.py",
+  "linker_version": "1.0.0",
+  "generated_at_utc": "2026-09-30T15:13:40.144076+00:00",
+  "tool_versions": {
+    "pdfinfo": "pdfinfo version 26.08.0",
+    "pdftotext": "pdftotext version 26.08.0"
+  },
+  "editions": [
+    {
+      "edition": "2020",
+      "gabarito_document": "data/provas/2020/Gabarito_Final.pdf",
+      "gabarito_sha256": "d12f799b5fc63c631a90d22eeb1c87ec1461cfef02e7399ebf4ed493d6a065c8",
+      "gabarito_pages": 1,
+      "gabarito_kind": "FINAL_GRID_LP_MAT",
+      "n_linked": 40,
+      "n_confirmed": 38,
+      "n_annulled": 2,
+      "n_missing_answer": 0,
+      "annulled_questions": [
+        7,
+        26
+      ],
+      "n_prelim_def_diff": 0,
+      "n_issues": 0
+    },
+    {
+      "edition": "2022",
+      "gabarito_document": "data/provas/2022/GABARITO_Prova_Exame_Tecnico_Integrado_2022.pdf",
+      "gabarito_sha256": "35cd549542acd3c2c0fe02b35f447caacf61e74d86c07c83019cb6fa4faa403c",
+      "gabarito_pages": 4,
+      "gabarito_kind": "PRELIMINARY_AND_DEFINITIVE",
+      "n_linked": 40,
+      "n_confirmed": 40,
+      "n_annulled": 0,
+      "n_missing_answer": 0,
+      "annulled_questions": [],
+      "n_prelim_def_diff": 0,
+      "n_issues": 0
+    },
+    {
+      "edition": "2023",
+      "gabarito_document": "data/provas/2023/Gabarito_Final_-_Exame_de_Selecao_2023.pdf",
+      "gabarito_sha256": "57d989e8df89a59f819237e8bbd4b0e0975db341a250bfb91b9f48fecca180ac",
+      "gabarito_pages": 3,
+      "gabarito_kind": "FINAL_GRID_LP_MAT",
+      "n_linked": 40,
+      "n_confirmed": 39,
+      "n_annulled": 1,
+      "n_missing_answer": 0,
+      "annulled_questions": [
+        21
+      ],
+      "n_prelim_def_diff": 0,
+      "n_issues": 0
+    },
+    {
+      "edition": "2024",
+      "gabarito_document": "data/provas/2024/Gabarito_Oficial_Definitivo_IFRN_78.pdf",
+      "gabarito_sha256": "6a1dfb5a8123641a9da011a0c80cbdfbabd8d390f69eece83463fc2fb551e8b6",
+      "gabarito_pages": 1,
+      "gabarito_kind": "FINAL_GRID_LP_MAT",
+      "n_linked": 40,
+      "n_confirmed": 39,
+      "n_annulled": 1,
+      "n_missing_answer": 0,
+      "annulled_questions": [
+        17
+      ],
+      "n_prelim_def_diff": 0,
+      "n_issues": 0
+    },
+    {
+      "edition": "2025",
+      "gabarito_document": "data/provas/2025/Exame_de_Seleção_2024_-_Gabarito_Final.pdf",
+      "gabarito_sha256": "878446a04760fd5f70d341f57ad307ceb08c3e73d574e698b93fcbb101efa756",
+      "gabarito_pages": 1,
+      "gabarito_kind": "FINAL_GRID_LP_MAT",
+      "n_linked": 40,
+      "n_confirmed": 40,
+      "n_annulled": 0,
+      "n_missing_answer": 0,
+      "annulled_questions": [],
+      "n_prelim_def_diff": 0,
+      "n_issues": 0
+    },
+    {
+      "edition": "2026",
+      "gabarito_document": "data/provas/2026/GABARITO_EXAME_DE_SELEÇÃO_2026_-_DEFINITIVO.pdf",
+      "gabarito_sha256": "5cf06f9de02e03077ca592860c60a09db8ce1539df43dc1c881c37cde8354ece",
+      "gabarito_pages": 1,
+      "gabarito_kind": "DEFINITIVE_TABLE",
+      "n_linked": 40,
+      "n_confirmed": 39,
+      "n_annulled": 1,
+      "n_missing_answer": 0,
+      "annulled_questions": [
+        37
+      ],
+      "n_prelim_def_diff": 0,
+      "n_issues": 0
+    }
+  ],
+  "totals": {
+    "editions": 6,
+    "linked_questions": 240,
+    "annulled": 5
+  }
+}
