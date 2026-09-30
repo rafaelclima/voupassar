@@ -1,0 +1,18 @@
+# Profile prod — réplica na VPS (mesma imagem do local).
+# Exige env real: POSTGRES_*, CORS_ALLOWED_ORIGINS=<PAGES-PRODUCAO-A-DEFINIR>.
+# Nenhum secret neste arquivo (AGENTS.md §29).
+spring:
+  datasource:
+    url: "${SPRING_DATASOURCE_URL:?SPRING_DATASOURCE_URL ausente}"
+    username: "${SPRING_DATASOURCE_USERNAME:?usuario ausente}"
+    password: "${SPRING_DATASOURCE_PASSWORD:?senha ausente}"
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    br.com.voupassar: INFO
