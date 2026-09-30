@@ -1,0 +1,22 @@
+{
+  "importer": "scripts/db/import_questions.py",
+  "importer_version": "1.0.0",
+  "taxonomy_version": "v1.1",
+  "started_at_utc": "2026-09-30T17:41:05.487286+00:00",
+  "check_only": true,
+  "source_files": 18,
+  "candidates": 240,
+  "to_insert": 0,
+  "already_present": 240,
+  "divergences": [],
+  "db_state": {
+    "questions": 240,
+    "options": 960,
+    "sources": 480,
+    "classifications": 240,
+    "has_figure": 36,
+    "checksum_mismatches": []
+  },
+  "status": "OK",
+  "finished_at_utc": "2026-09-30T17:41:05.733573+00:00"
+}
