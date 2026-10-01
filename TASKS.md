@@ -697,6 +697,30 @@ Perguntas:
 
 ---
 
+# FASE 8.5 — DARK MODE
+
+## TASK 8.4 — Dark mode harmônico
+
+Objetivo:
+
+* Permitir que o usuário alterne entre tema claro e escuro.
+* Usar CSS variables existentes (`tokens.css`) para cores, tipografia e componentes.
+* Preservar contraste, acessibilidade e harmonia visual.
+* Não quebrar o design system existente (`base.css`, `components.css`, `landing.css`, etc.).
+* Incluir toggle visível no header (todas as páginas).
+* Respeitar `prefers-color-scheme` quando nenhuma preferência manual estiver definida.
+* Persistir preferência (localStorage) sem expor dados sensíveis.
+
+Critério:
+
+* Todas as páginas (`frontend/*.html`) renderizam corretamente no modo claro e escuro.
+* Nenhum componente (`btn`, `card`, `table`, `badge`, `input`, `select`, `progress`, `alert`) quebra visualmente.
+* Contraste mínimo respeitado em ambos os modos.
+* Responsividade mantida.
+* Nenhum arquivo de código existente destruído sem motivo técnico documentado.
+
+---
+
 # FASE 9 — SEGURANÇA
 
 ## TASK 9.1 — Auditoria de segurança

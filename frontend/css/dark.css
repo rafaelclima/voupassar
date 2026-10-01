@@ -1,0 +1,109 @@
+/* VouPassar — Dark mode (TASK 8.4)
+ * Harmônico: mantém paleta primária, inverte neutros/superfícies.
+ * Ativado via data-theme="dark" no <html> ou prefers-color-scheme.
+ */
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --color-surface: #0b1120;
+    --color-bg-50: #0b1120;
+    --color-bg-100: #111827;
+    --color-ink-900: #f0f5f9;
+    --color-ink-700: #cbd5e1;
+    --color-ink-500: #94a3b8;
+    --color-line-300: #334155;
+    --color-line-200: #1e293b;
+
+    --color-primary-50: #0f172a;
+    --color-primary-100: #1b3a5c;
+    --color-primary-600: #3b82f6;
+    --color-primary-900: #93c5fd;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+    --shadow-md: 0 2px 8px rgb(0 0 0 / 0.45);
+    --focus-ring: 0 0 0 3px rgb(59 130 246 / 0.35);
+  }
+}
+
+html[data-theme="dark"] {
+  --color-surface: #0b1120;
+  --color-bg-50: #0b1120;
+  --color-bg-100: #111827;
+  --color-ink-900: #f0f5f9;
+  --color-ink-700: #cbd5e1;
+  --color-ink-500: #94a3b8;
+  --color-line-300: #334155;
+  --color-line-200: #1e293b;
+
+  --color-primary-50: #0f172a;
+  --color-primary-100: #1b3a5c;
+  --color-primary-600: #3b82f6;
+  --color-primary-900: #93c5fd;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 2px 8px rgb(0 0 0 / 0.45);
+  --focus-ring: 0 0 0 3px rgb(59 130 246 / 0.35);
+}
+
+/* Ajustes específicos de componentes para dark mode */
+html[data-theme="dark"] body,
+html[data-theme="dark"] .site-header,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .table-wrap,
+html[data-theme="dark"] .empty,
+html[data-theme="dark"] .loading-block,
+html[data-theme="dark"] .question {
+  background: var(--color-surface);
+  color: var(--color-ink-900);
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4 {
+  color: var(--color-ink-900);
+}
+
+html[data-theme="dark"] .brand {
+  color: var(--color-primary-900);
+}
+
+html[data-theme="dark"] pre {
+  background: #020617;
+  color: #e2e8f0;
+}
+
+html[data-theme="dark"] .skip-link {
+  background: var(--color-primary-900);
+  color: #fff;
+}
+
+/* Toggle de tema: visível no header */
+.theme-toggle {
+  appearance: none;
+  border: 1px solid var(--color-line-300);
+  background: var(--color-surface);
+  color: var(--color-ink-700);
+  border-radius: var(--radius-sm);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  margin-left: auto;
+  transition: background var(--motion-fast), border-color var(--motion-fast);
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-primary-600);
+  color: var(--color-primary-700);
+}
+
+.theme-toggle[aria-pressed="true"] {
+  background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+  color: #fff;
+}
