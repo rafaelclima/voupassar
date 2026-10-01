@@ -105,4 +105,20 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
   List<Long> findCandidateIdsByDiscipline(
       @Param("disciplineCode") String disciplineCode,
       @Param("difficulty") String difficulty);
+
+  /**
+   * Caderno integral de uma edição real (TASK 5.5).
+   *
+   * <p>Difere da seleção por disciplina (TASK 5.1): aqui não há sorteio nem
+   * filtro de dificuldade, e as anuladas <b>participam</b> nas posições
+   * originais (fidelidade à prova; ficam fora do aproveitamento, pontuação
+   * DESCONHECIDA, TASK 1.3 §4). Ordem canônica = número da questão na edição.
+   */
+  @Query("""
+      SELECT q FROM Question q
+      JOIN q.exam e
+      WHERE e.year = :year
+      ORDER BY q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
+      """)
+  List<Question> findByEditionYearOrdered(@Param("year") Short year);
 }

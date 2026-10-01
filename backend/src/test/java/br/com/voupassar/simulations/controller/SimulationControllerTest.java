@@ -79,6 +79,10 @@ class SimulationControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"disciplineCode\":\"MATEMATICA\",\"questionCount\":10,\"mode\":\"PROVA\"}"))
         .andExpect(status().isUnauthorized());
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"editionYear\":2026,\"mode\":\"PROVA\"}"))
+        .andExpect(status().isUnauthorized());
     mvc().perform(get("/api/v1/simulations/attempts")).andExpect(status().isUnauthorized());
     mvc().perform(get("/api/v1/simulations/attempts/55")).andExpect(status().isUnauthorized());
     mvc().perform(post("/api/v1/simulations/attempts/55/submit"))
@@ -115,6 +119,42 @@ class SimulationControllerTest {
     mvc().perform(post("/api/v1/simulations/by-discipline")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"disciplineCode\":\"MATEMATICA\",\"questionCount\":5,\"mode\":\"REVISAO\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void createByEditionReturns201() throws Exception {
+    authenticate();
+    when(service.createByEdition(anyLong(), any())).thenReturn(new SimulationAttemptResponse(
+        56L, 8L, "REAL_EDITION", "Simulado Edição 2026 — 40 questões [PROVA]",
+        null, null, "PROVA", "IN_PROGRESS", 40,
+        OffsetDateTime.parse("2026-10-01T10:00:00Z"), null,
+        List.of(), null, List.of()));
+
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"editionYear\":2026,\"mode\":\"PROVA\"}"))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.attemptId").value(56))
+        .andExpect(jsonPath("$.type").value("REAL_EDITION"))
+        .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+  }
+
+  @Test
+  void createByEditionValidationFails400() throws Exception {
+    authenticate();
+
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"mode\":\"PROVA\"}"))
+        .andExpect(status().isBadRequest());
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"editionYear\":2026,\"mode\":\"REVISAO\"}"))
+        .andExpect(status().isBadRequest());
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"editionYear\":1999,\"mode\":\"PROVA\"}"))
         .andExpect(status().isBadRequest());
   }
 

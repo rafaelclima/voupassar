@@ -11,13 +11,18 @@ import br.com.voupassar.exception.ConflictException;
 import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.exception.UnauthorizedException;
 import br.com.voupassar.exams.entity.Discipline;
+import br.com.voupassar.exams.entity.Exam;
+import br.com.voupassar.exams.entity.ExamEssayPrompt;
 import br.com.voupassar.exams.entity.Question;
 import br.com.voupassar.exams.repository.DisciplineRepository;
+import br.com.voupassar.exams.repository.ExamEssayPromptRepository;
+import br.com.voupassar.exams.repository.ExamRepository;
 import br.com.voupassar.exams.repository.QuestionRepository;
 import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
 import br.com.voupassar.questions.dto.PageResponse;
 import br.com.voupassar.simulations.dto.CreateDisciplineSimulationRequest;
+import br.com.voupassar.simulations.dto.CreateEditionSimulationRequest;
 import br.com.voupassar.simulations.dto.StudyFeedbackResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse.CadernoItem;
@@ -52,9 +57,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Simulado por disciplina (TASK 5.1) — escolher disciplina, quantidade e
- * dificuldade; iniciar; retomar ({@code IN_PROGRESS}); concluir; abandonar;
- * visualizar resultado — mais feedback imediato do Modo Estudo (TASK 5.2).
+ * Simulado por disciplina (TASK 5.1) e simulado real por edição (TASK 5.5) —
+ * escolher disciplina, quantidade e dificuldade, ou reproduzir a estrutura
+ * integral de uma edição real; iniciar; retomar ({@code IN_PROGRESS});
+ * concluir; abandonar; visualizar resultado — mais feedback imediato do Modo
+ * Estudo (TASK 5.2).
  *
  * <p>Regras de evidência:
  * <ul>
@@ -105,6 +112,8 @@ public class SimulationService {
   private final SimulationQuestionRepository caderno;
   private final QuestionAttemptRepository responses;
   private final QuestionClassificationRepository classifications;
+  private final ExamRepository exams;
+  private final ExamEssayPromptRepository essayPrompts;
   private final Random random;
 
   @Autowired
@@ -116,9 +125,11 @@ public class SimulationService {
       SimulationAttemptRepository attempts,
       SimulationQuestionRepository caderno,
       QuestionAttemptRepository responses,
-      QuestionClassificationRepository classifications) {
+      QuestionClassificationRepository classifications,
+      ExamRepository exams,
+      ExamEssayPromptRepository essayPrompts) {
     this(users, disciplines, questions, simulations, attempts, caderno, responses,
-        classifications, new SecureRandom());
+        classifications, exams, essayPrompts, new SecureRandom());
   }
 
   SimulationService(
@@ -130,6 +141,8 @@ public class SimulationService {
       SimulationQuestionRepository caderno,
       QuestionAttemptRepository responses,
       QuestionClassificationRepository classifications,
+      ExamRepository exams,
+      ExamEssayPromptRepository essayPrompts,
       Random random) {
     this.users = users;
     this.disciplines = disciplines;
@@ -139,6 +152,8 @@ public class SimulationService {
     this.caderno = caderno;
     this.responses = responses;
     this.classifications = classifications;
+    this.exams = exams;
+    this.essayPrompts = essayPrompts;
     this.random = random;
   }
 
@@ -201,6 +216,80 @@ public class SimulationService {
     return toAttemptResponse(attempt, simulation, rows, byId, Map.of(), false);
   }
 
+  /**
+   * Cria e inicia um simulado real por edição (TASK 5.5): caderno integral da
+   * edição em ordem original, {@code IN_PROGRESS}.
+   *
+   * <p>Regras de evidência:
+   * <ul>
+   *   <li>Estrutura dirigida pela configuração da própria edição ({@code
+   *       exams}: total, LP, MAT, discursiva) — nunca regra universal.</li>
+   *   <li>Sem sorteio e sem filtro de dificuldade: posições 1..N seguem o
+   *       número da questão na edição; anuladas participam nas posições
+   *       originais (fidelidade) e ficam fora do aproveitamento (pontuação
+   *       DESCONHECIDA, TASK 1.3 §4).</li>
+   *   <li>Banco divergente do esperado na capa (faltas, numeração com lacuna
+   *       ou divisão disciplinar diferente) → {@code 409 INCOMPLETE_EDITION}
+   *       com os números explícitos (nunca caderno parcial silencioso).</li>
+   *   <li>Discursiva sai só como referência em notas (proposta + critérios
+   *       impressos); correção automática DESCONHECIDA / fora do MVP.</li>
+   * </ul>
+   */
+  @Transactional
+  public SimulationAttemptResponse createByEdition(long userId, CreateEditionSimulationRequest req) {
+    User user = requireActiveUser(userId);
+    int year = requireEditionYear(req == null ? null : req.editionYear());
+    String mode = normalizeMode(req == null ? null : req.mode());
+    Exam exam = requireExam(year);
+
+    List<Question> board = questions.findByEditionYearOrdered((short) year);
+    validateEditionBoard(exam, board);
+
+    Simulation simulation = new Simulation();
+    simulation.setOwner(user);
+    simulation.setType("REAL_EDITION");
+    simulation.setExamId(exam.getId());
+    simulation.setFilterJson(filterJsonEdition(year, mode));
+    simulation.setTitle(titleEdition(year, board.size(), mode));
+    simulations.save(simulation);
+
+    SimulationAttempt attempt = new SimulationAttempt();
+    attempt.setSimulation(simulation);
+    attempt.setUser(user);
+    attempt.setMode(mode);
+    attempt.setStatus("IN_PROGRESS");
+    attempt.setStartedAt(OffsetDateTime.now());
+    attempts.save(attempt);
+
+    List<SimulationQuestion> rows = new ArrayList<>(board.size());
+    for (int i = 0; i < board.size(); i++) {
+      Question q = board.get(i);
+      SimulationQuestion row = new SimulationQuestion();
+      row.setSimulationAttemptId(attempt.getId());
+      row.setPosition((short) (i + 1));
+      row.setQuestion(q);
+      row.setFrozenAnswerKey(q.getAnswerKey());
+      rows.add(row);
+    }
+    caderno.saveAll(rows);
+
+    Map<Long, Question> byId = new HashMap<>(board.size() * 2);
+    for (Question q : board) {
+      byId.put(q.getId(), q);
+    }
+    SimulationAttemptResponse base = toAttemptResponse(attempt, simulation, rows, byId, Map.of(), false);
+    List<String> notes = new ArrayList<>(base.notes().size() + 4);
+    notes.addAll(editionNotes(exam, year));
+    notes.addAll(base.notes());
+    log.info("simulado real criado user_id={} attempt_id={} edition={} count={} mode={}",
+        userId, attempt.getId(), year, board.size(), mode);
+    return new SimulationAttemptResponse(
+        base.attemptId(), base.simulationId(), base.type(), base.title(),
+        base.disciplineCode(), base.disciplineName(), base.mode(), base.status(),
+        base.questionCount(), base.startedAt(), base.submittedAt(),
+        base.questions(), base.score(), List.copyOf(notes));
+  }
+
   /** Consulta uma execução do dono do token (retomar o caderno em andamento ou rever o encerrado). */
   @Transactional(readOnly = true)
   public SimulationAttemptResponse getAttempt(long userId, long attemptId) {
@@ -249,8 +338,9 @@ public class SimulationService {
       List<SimulationQuestion> rows = rowsByAttempt.getOrDefault(a.getId(), List.of());
       Simulation s = simulationsById.get(a.getSimulation().getId());
       String title = s == null ? "Simulado" : s.getTitle();
+      boolean realEdition = s != null && "REAL_EDITION".equals(s.getType());
       String discCode = null;
-      if (!rows.isEmpty()) {
+      if (!realEdition && !rows.isEmpty()) {
         Question first = questionsById.get(rows.get(0).getQuestion().getId());
         if (first != null) {
           discCode = first.getDiscipline().getCode();
@@ -472,6 +562,112 @@ public class SimulationService {
     return m;
   }
 
+  private static int requireEditionYear(Integer year) {
+    if (year == null) {
+      throw new BadRequestException("Ano da edição é obrigatório.");
+    }
+    if (year < 2000 || year > 2100) {
+      throw new BadRequestException(
+          "INVALID_EDITION_YEAR", "Ano de edição inválido: " + year + " (permitido 2000–2100).");
+    }
+    return year;
+  }
+
+  private Exam requireExam(int year) {
+    Short y = (short) year;
+    return exams.findByYear(y).orElseThrow(() -> {
+      if (year == 2021) {
+        return new ResourceNotFoundException(
+            "EDITION_NOT_FOUND",
+            "Edição 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3).");
+      }
+      return new ResourceNotFoundException(
+          "EDITION_NOT_FOUND", "Edição " + year + " não encontrada.");
+    });
+  }
+
+  /**
+   * Garante fidelidade do caderno real: total, numeração 1..N sem lacunas e
+   * divisão por disciplina iguais aos da configuração da edição.
+   */
+  private static void validateEditionBoard(Exam exam, List<Question> board) {
+    int year = exam.getYear().intValue();
+    int expected = exam.getObjectiveCount().intValue();
+    if (board.isEmpty()) {
+      throw new ConflictException(
+          "INCOMPLETE_EDITION",
+          "Edição " + year + " sem questões importadas (esperadas " + expected
+              + " pela capa): NECESSITA REVISÃO antes de publicar simulado real.");
+    }
+    if (board.size() != expected) {
+      throw new ConflictException(
+          "INCOMPLETE_EDITION",
+          "Edição " + year + " incompleta: esperadas " + expected
+              + " objetivas (capa) × importadas " + board.size()
+              + ": NECESSITA REVISÃO antes de publicar simulado real.");
+    }
+    Set<Integer> numbers = new HashSet<>();
+    for (Question q : board) {
+      if (q.getSourceQuestionNumber() != null) {
+        numbers.add(q.getSourceQuestionNumber().intValue());
+      }
+    }
+    for (int n = 1; n <= expected; n++) {
+      if (!numbers.contains(n)) {
+        throw new ConflictException(
+            "INCOMPLETE_EDITION",
+            "Edição " + year + " com numeração incompleta (ausente a questão " + n
+                + "): NECESSITA REVISÃO antes de publicar simulado real.");
+      }
+    }
+    int lpExpected = exam.getLpCount() == null ? 0 : exam.getLpCount().intValue();
+    int matExpected = exam.getMatCount() == null ? 0 : exam.getMatCount().intValue();
+    if (lpExpected + matExpected == expected) {
+      long lp = 0;
+      long mat = 0;
+      for (Question q : board) {
+        String code = q.getDiscipline() == null ? "" : q.getDiscipline().getCode();
+        if ("LINGUA_PORTUGUESA".equals(code)) {
+          lp++;
+        } else if ("MATEMATICA".equals(code)) {
+          mat++;
+        }
+      }
+      if (lp != lpExpected || mat != matExpected) {
+        throw new ConflictException(
+            "INCOMPLETE_EDITION",
+            "Edição " + year + " com divisão disciplinar divergente: esperado LP "
+                + lpExpected + " + MAT " + matExpected + " × importado LP " + lp
+                + " + MAT " + mat + ": NECESSITA REVISÃO antes de publicar simulado real.");
+      }
+    }
+  }
+
+  private List<String> editionNotes(Exam exam, int year) {
+    List<String> notes = new ArrayList<>(4);
+    notes.add("Simulado real da edição " + year + " (edital " + exam.getEdital() + "): caderno integral "
+        + "em ordem original (posições 1.." + exam.getObjectiveCount()
+        + ", incluindo anuladas nas posições originais) — sem sorteio e sem filtro de dificuldade.");
+    notes.add("Estrutura dirigida pela configuração desta edição (LP " + exam.getLpCount()
+        + " + MAT " + exam.getMatCount() + " objetivas"
+        + (Boolean.TRUE.equals(exam.getHasEssay()) ? " + 1 produção textual" : "")
+        + ") — nunca regra universal.");
+    if (Boolean.TRUE.equals(exam.getHasEssay())) {
+      String essay = essayPrompts.findByExamYear((short) year)
+          .map(p -> p.getGenre() + " — " + p.getTheme() + " (pseudônimo " + p.getPseudonym() + ")")
+          .orElse(null);
+      notes.add(essay == null
+          ? "Produção textual desta edição como referência (sem correção automática: pontuação DESCONHECIDA)."
+          : "Produção textual desta edição como referência (" + essay
+              + ") — sem correção automática (pontuação DESCONHECIDA, fora do MVP).");
+    }
+    if (exam.getScoringRule() == null) {
+      notes.add("scoring_rule DESCONHECIDA: anuladas fora do aproveitamento; regra de pontuação sem fonte oficial.");
+    }
+    notes.add("Questões com revisão humana PENDENTE (TASK 12.2): classificação pedagógica nunca é verdade oficial do IFRN.");
+    return notes;
+  }
+
   private static String describeFilter(String disciplineCode, String difficulty) {
     return " em " + disciplineCode + (difficulty == null ? "" : " com dificuldade " + difficulty);
   }
@@ -479,6 +675,15 @@ public class SimulationService {
   private static String title(String disciplineName, int count, String difficulty, String mode) {
     return "Simulado " + disciplineName + " — " + count + (count == 1 ? " questão" : " questões")
         + (difficulty == null ? "" : " " + difficulty) + " [" + mode + "]";
+  }
+
+  private static String titleEdition(int year, int count, String mode) {
+    return "Simulado Edição " + year + " — " + count + (count == 1 ? " questão" : " questões")
+        + " [" + mode + "]";
+  }
+
+  private static String filterJsonEdition(int year, String mode) {
+    return "{\"type\":\"REAL_EDITION\",\"editionYear\":" + year + ",\"mode\":\"" + mode + "\"}";
   }
 
   private static String filterJson(String disciplineCode, int count, String difficulty, String mode) {
@@ -675,10 +880,12 @@ public class SimulationService {
           board.scored, board.correct, board.incorrect, board.annulled, board.accuracy);
     }
 
-    List<String> notes = attemptNotes(attempt, reveal);
+    boolean realEdition = "REAL_EDITION".equals(simulation.getType());
+    List<String> notes = attemptNotes(attempt, simulation.getType(), reveal);
     return new SimulationAttemptResponse(
         attempt.getId(), simulation.getId(), simulation.getType(), simulation.getTitle(),
-        discCode, discName, attempt.getMode(), attempt.getStatus(), rows.size(),
+        realEdition ? null : discCode, realEdition ? null : discName,
+        attempt.getMode(), attempt.getStatus(), rows.size(),
         attempt.getStartedAt(), attempt.getSubmittedAt(),
         List.copyOf(items), score, List.copyOf(notes));
   }
@@ -706,16 +913,21 @@ public class SimulationService {
           unanswered));
     }
     List<String> notes = resultNotes(attempt, board, abandoned);
+    boolean realEdition = "REAL_EDITION".equals(attempt.getSimulation().getType());
     return new SimulationResultResponse(
         attempt.getId(), attempt.getSimulation().getId(), attempt.getSimulation().getTitle(),
-        discCode, attempt.getMode(), attempt.getStatus(),
+        realEdition ? null : discCode, attempt.getMode(), attempt.getStatus(),
         board.total, board.answered, board.unanswered, board.scored,
         board.correct, board.incorrect, board.annulled, board.accuracy,
         List.copyOf(items), List.copyOf(notes));
   }
 
-  private static List<String> attemptNotes(SimulationAttempt attempt, boolean reveal) {
+  private static List<String> attemptNotes(SimulationAttempt attempt, String type, boolean reveal) {
     List<String> notes = new ArrayList<>();
+    if ("REAL_EDITION".equals(type)) {
+      notes.add("Caderno integral da edição em ordem original (posições 1..N, sem sorteio); "
+          + "anuladas participam nas posições originais e ficam fora do aproveitamento.");
+    }
     if (!reveal) {
       notes.add("Gabarito oculto durante a execução (preserva a sensação de prova). "
           + "No Modo Estudo o feedback imediato vem de POST /attempts; "

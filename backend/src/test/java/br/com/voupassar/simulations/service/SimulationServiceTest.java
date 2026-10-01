@@ -19,12 +19,17 @@ import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ConflictException;
 import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.exams.entity.Discipline;
+import br.com.voupassar.exams.entity.Exam;
+import br.com.voupassar.exams.entity.ExamEssayPrompt;
 import br.com.voupassar.exams.entity.Question;
 import br.com.voupassar.exams.repository.DisciplineRepository;
+import br.com.voupassar.exams.repository.ExamEssayPromptRepository;
+import br.com.voupassar.exams.repository.ExamRepository;
 import br.com.voupassar.exams.repository.QuestionRepository;
 import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
 import br.com.voupassar.simulations.dto.CreateDisciplineSimulationRequest;
+import br.com.voupassar.simulations.dto.CreateEditionSimulationRequest;
 import br.com.voupassar.simulations.entity.Simulation;
 import br.com.voupassar.simulations.entity.SimulationAttempt;
 import br.com.voupassar.simulations.entity.SimulationQuestion;
@@ -66,6 +71,8 @@ class SimulationServiceTest {
   @Mock SimulationQuestionRepository caderno;
   @Mock QuestionAttemptRepository responses;
   @Mock QuestionClassificationRepository classifications;
+  @Mock ExamRepository exams;
+  @Mock ExamEssayPromptRepository essayPrompts;
 
   private SimulationService service;
 
@@ -73,7 +80,7 @@ class SimulationServiceTest {
   void setup() {
     service = new SimulationService(
         users, disciplines, questions, simulations, attempts, caderno, responses,
-        classifications, new Random(42));
+        classifications, exams, essayPrompts, new Random(42));
   }
 
   private static User user(long id, boolean active) {
@@ -646,6 +653,252 @@ class SimulationServiceTest {
     assertTrue(out.wasAnnulled());
     assertNull(out.isCorrect());
     assertTrue(out.notes().stream().anyMatch(n -> n.contains("anulada")));
+  }
+
+  // ---- simulado real por edição (TASK 5.5) ----
+
+  private static Discipline lp() {
+    return discipline(1L, "LINGUA_PORTUGUESA", "Língua Portuguesa");
+  }
+
+  private static Exam editionExam(
+      long id, int year, String edital, int objective, int lpCount, int matCount) {
+    Exam e = new Exam();
+    ReflectionTestUtils.setField(e, "id", id);
+    ReflectionTestUtils.setField(e, "year", (short) year);
+    ReflectionTestUtils.setField(e, "edital", edital);
+    ReflectionTestUtils.setField(e, "objectiveCount", (short) objective);
+    ReflectionTestUtils.setField(e, "lpCount", (short) lpCount);
+    ReflectionTestUtils.setField(e, "matCount", (short) matCount);
+    ReflectionTestUtils.setField(e, "hasEssay", true);
+    ReflectionTestUtils.setField(e, "scoringRule", null);
+    return e;
+  }
+
+  private static Question editionQuestion(
+      long id, Discipline d, int year, int number, String answerKey, boolean annulled) {
+    Question q = question(id, d, answerKey, annulled);
+    ReflectionTestUtils.setField(q, "sourceYear", (short) year);
+    ReflectionTestUtils.setField(q, "sourceQuestionNumber", (short) number);
+    return q;
+  }
+
+  private void stubEdition(Exam exam, List<Question> board) {
+    when(exams.findByYear(exam.getYear())).thenReturn(Optional.of(exam));
+    when(questions.findByEditionYearOrdered(exam.getYear())).thenReturn(board);
+    when(essayPrompts.findByExamYear(exam.getYear())).thenReturn(Optional.empty());
+  }
+
+  private void stubCreationIds(long simulationId, long attemptId) {
+    when(simulations.save(any(Simulation.class))).thenAnswer(inv -> {
+      Simulation s = inv.getArgument(0);
+      ReflectionTestUtils.setField(s, "id", simulationId);
+      return s;
+    });
+    when(attempts.save(any(SimulationAttempt.class))).thenAnswer(inv -> {
+      SimulationAttempt a = inv.getArgument(0);
+      ReflectionTestUtils.setField(a, "id", attemptId);
+      return a;
+    });
+    when(caderno.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+  }
+
+  @Test
+  void createByEditionFreezesFullBoardInOriginalOrder() {
+    activeUser();
+    Discipline lp = lp();
+    Discipline mat = mat();
+    Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
+    List<Question> board = List.of(
+        editionQuestion(101L, lp, 2026, 1, "A", false),
+        editionQuestion(102L, lp, 2026, 2, "B", false),
+        editionQuestion(103L, mat, 2026, 3, "C", false),
+        editionQuestion(104L, mat, 2026, 4, "D", false));
+    stubEdition(exam, board);
+    stubCreationIds(8L, 56L);
+
+    var out = service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "prova"));
+
+    assertEquals(56L, out.attemptId());
+    assertEquals("REAL_EDITION", out.type());
+    assertEquals("PROVA", out.mode());
+    assertEquals("IN_PROGRESS", out.status());
+    assertEquals(4, out.questionCount());
+    assertEquals(List.of(1, 2, 3, 4),
+        out.questions().stream().map(q -> q.sourceQuestionNumber()).toList());
+    assertEquals(List.of(1, 2, 3, 4),
+        out.questions().stream().map(q -> q.position()).toList());
+    // Caderno misto: sem disciplina única no cabeçalho (só por posição).
+    assertNull(out.disciplineCode());
+    assertNull(out.disciplineName());
+    assertEquals("LINGUA_PORTUGUESA", out.questions().get(0).disciplineCode());
+    assertEquals("MATEMATICA", out.questions().get(3).disciplineCode());
+    // Gabarito oculto em andamento.
+    assertTrue(out.questions().stream().allMatch(q -> q.frozenAnswerKey() == null));
+    assertNull(out.score());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("2026") && n.contains("ordem original")));
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("48/2025")));
+
+    ArgumentCaptor<Simulation> simCap = ArgumentCaptor.forClass(Simulation.class);
+    verify(simulations).save(simCap.capture());
+    assertEquals("REAL_EDITION", simCap.getValue().getType());
+    assertEquals(9L, simCap.getValue().getExamId());
+
+    ArgumentCaptor<List<SimulationQuestion>> rowsCap = ArgumentCaptor.forClass(List.class);
+    verify(caderno).saveAll(rowsCap.capture());
+    assertEquals(4, rowsCap.getValue().size());
+    assertEquals(List.of("A", "B", "C", "D"),
+        rowsCap.getValue().stream().map(SimulationQuestion::getFrozenAnswerKey).toList());
+  }
+
+  @Test
+  void createByEditionKeepsAnnulledInOriginalPosition() {
+    activeUser();
+    Discipline lp = lp();
+    Exam exam = editionExam(9L, 2020, "29/2019", 3, 2, 1);
+    List<Question> board = List.of(
+        editionQuestion(101L, lp, 2020, 1, "A", false),
+        editionQuestion(102L, lp, 2020, 2, "X", true),
+        editionQuestion(103L, mat(), 2020, 3, "C", false));
+    stubEdition(exam, board);
+    stubCreationIds(8L, 57L);
+
+    var out = service.createByEdition(1L, new CreateEditionSimulationRequest(2020, "ESTUDO"));
+
+    assertEquals(3, out.questionCount());
+    assertEquals(3, out.questions().size());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("DESCONHECIDA")));
+
+    ArgumentCaptor<List<SimulationQuestion>> rowsCap = ArgumentCaptor.forClass(List.class);
+    verify(caderno).saveAll(rowsCap.capture());
+    assertEquals(List.of("A", "X", "C"),
+        rowsCap.getValue().stream().map(SimulationQuestion::getFrozenAnswerKey).toList());
+  }
+
+  @Test
+  void createByEditionMentionsEssayPrompt() {
+    activeUser();
+    Exam exam = editionExam(9L, 2026, "48/2025", 2, 1, 1);
+    List<Question> board = List.of(
+        editionQuestion(101L, lp(), 2026, 1, "A", false),
+        editionQuestion(102L, mat(), 2026, 2, "B", false));
+    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(board);
+    ExamEssayPrompt prompt = new ExamEssayPrompt();
+    ReflectionTestUtils.setField(prompt, "genre", "artigo de opinião");
+    ReflectionTestUtils.setField(prompt, "theme", "mudanças climáticas");
+    ReflectionTestUtils.setField(prompt, "pseudonym", "Amazonino Belém");
+    when(essayPrompts.findByExamYear((short) 2026)).thenReturn(Optional.of(prompt));
+    stubCreationIds(8L, 58L);
+
+    var out = service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "ESTUDO"));
+
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("mudanças climáticas")));
+  }
+
+  @Test
+  void createByEditionUnknownYearIs404() {
+    activeUser();
+    when(exams.findByYear((short) 2030)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2030, "PROVA")));
+    assertEquals("EDITION_NOT_FOUND", ex.getCode());
+  }
+
+  @Test
+  void createByEditionMissing2021ExplainsAbsence() {
+    activeUser();
+    when(exams.findByYear((short) 2021)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2021, "PROVA")));
+    assertEquals("EDITION_NOT_FOUND", ex.getCode());
+    assertTrue(ex.getMessage().contains("ausente"));
+  }
+
+  @Test
+  void createByEditionWithIncompleteBoardIs409() {
+    activeUser();
+    Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
+    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    // Total divergente da capa.
+    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(List.of(
+        editionQuestion(101L, lp(), 2026, 1, "A", false),
+        editionQuestion(102L, lp(), 2026, 2, "B", false),
+        editionQuestion(103L, mat(), 2026, 3, "C", false)));
+
+    ConflictException ex = assertThrows(ConflictException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "PROVA")));
+    assertEquals("INCOMPLETE_EDITION", ex.getCode());
+  }
+
+  @Test
+  void createByEditionWithNumberGapIs409() {
+    activeUser();
+    Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
+    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    // Falta a questão 3 (lacuna na numeração).
+    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(List.of(
+        editionQuestion(101L, lp(), 2026, 1, "A", false),
+        editionQuestion(102L, lp(), 2026, 2, "B", false),
+        editionQuestion(103L, mat(), 2026, 4, "C", false),
+        editionQuestion(104L, mat(), 2026, 5, "D", false)));
+
+    ConflictException ex = assertThrows(ConflictException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "PROVA")));
+    assertEquals("INCOMPLETE_EDITION", ex.getCode());
+  }
+
+  @Test
+  void createByEditionWithDisciplineMismatchIs409() {
+    activeUser();
+    Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
+    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    // 3 LP + 1 MAT contra 2 + 2 da capa.
+    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(List.of(
+        editionQuestion(101L, lp(), 2026, 1, "A", false),
+        editionQuestion(102L, lp(), 2026, 2, "B", false),
+        editionQuestion(103L, lp(), 2026, 3, "C", false),
+        editionQuestion(104L, mat(), 2026, 4, "D", false)));
+
+    ConflictException ex = assertThrows(ConflictException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "PROVA")));
+    assertEquals("INCOMPLETE_EDITION", ex.getCode());
+  }
+
+  @Test
+  void createByEditionWithInvalidModeAndYearIs400() {
+    activeUser();
+
+    assertThrows(BadRequestException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "REVISAO")));
+    assertThrows(BadRequestException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(null, "PROVA")));
+    assertThrows(BadRequestException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(1999, "PROVA")));
+  }
+
+  @Test
+  void realEditionAttemptHidesSingleDiscipline() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(8L, "Simulado Edição 2026 — 40 questões [PROVA]");
+    s.setType("REAL_EDITION");
+    Question q1 = question(101L, d, "A", false);
+    when(attempts.findByIdAndUserId(56L, 1L))
+        .thenReturn(Optional.of(attempt(56L, s, u, "PROVA", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(56L))
+        .thenReturn(List.of(row(56L, 1, q1, "A")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    when(responses.findBySimulationAttemptIdAndUserId(56L, 1L)).thenReturn(List.of());
+
+    var out = service.getAttempt(1L, 56L);
+
+    assertEquals("REAL_EDITION", out.type());
+    assertNull(out.disciplineCode());
+    assertEquals("MATEMATICA", out.questions().get(0).disciplineCode());
   }
 
   @Test
