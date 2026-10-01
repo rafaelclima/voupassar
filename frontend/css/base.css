@@ -110,6 +110,19 @@ summary:focus-visible {
   padding-inline: var(--container-pad);
 }
 
+/* Itens de grade nunca alargam a trilha além do contêiner (TASK 8.2).
+ * Itens de grid têm min-width:auto por padrão: um descendente com
+ * largura mínima fixa (ex.: .table com min-width:560px na página do
+ * design system) esticaria a trilha de 1fr e geraria rolagem horizontal
+ * da página inteira em telas estreitas. Com min-width:0, o conteúdo
+ * largo rola dentro do próprio .table-wrap (comportamento projetado).
+ * Precedente: .study-main/.study-side já usam min-width:0. */
+.card-grid > *,
+.docs-grid > *,
+.grid-2 > * {
+  min-width: 0;
+}
+
 /* Header / footer públicos mínimos (6.2 expande) */
 .site-header {
   background: var(--color-surface);
@@ -125,6 +138,7 @@ summary:focus-visible {
   gap: var(--space-4);
   min-height: 60px;
   padding-block: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -148,6 +162,73 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  width: 100%;
+}
+
+/* Navegação responsiva global (TASK 8.2): o mesmo header com toggle é
+ * usado por todas as páginas (antes estas regras viviam só em
+ * landing.css, então o menu mobile só colapsava na index). Mobile-first:
+ * links colapsados sob o toggle; a partir de 48rem, linha horizontal
+ * sem toggle. Páginas sem toggle (ex.: design-system) não são afetadas:
+ * as regras de .site-nav__links/.site-nav__toggle só casam onde existem. */
+.site-nav__toggle {
+  display: inline-flex;
+  margin-left: auto;
+  appearance: none;
+  border: 1px solid var(--color-line-300);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--color-ink-900);
+}
+
+.site-nav__links {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+}
+
+.site-nav.is-open .site-nav__links {
+  display: flex;
+}
+
+.site-nav__links a:not(.btn) {
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--color-ink-700);
+}
+
+.site-nav__links a:not(.btn):hover {
+  background: var(--color-bg-100);
+  color: var(--color-primary-900);
+}
+
+@media (min-width: 48rem) {
+  .site-nav {
+    width: auto;
+    gap: var(--space-3);
+  }
+
+  .site-nav__toggle {
+    display: none;
+  }
+
+  .site-nav__links {
+    display: flex;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    padding-block: 0;
+  }
 }
 
 .site-footer {
