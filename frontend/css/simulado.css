@@ -1,0 +1,238 @@
+/* VouPassar — simulado (TASK 6.7)
+ * Só layout da página simulado.html. Tokens, cards, tabelas, badges,
+ * alerts, loading e botões vêm do design system (base/components/utilities).
+ * Mobile-first: 1 coluna; formulários lado a lado a partir de 48rem;
+ * caderno ocupa a medida de leitura.
+ */
+
+.sim-head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.sim-head p {
+  max-width: var(--measure);
+}
+
+.sim-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.sim-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.sim-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sim-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sim-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+}
+
+.sim-list__title {
+  font-weight: 600;
+}
+
+.sim-list__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+/* Caderno: experiência de prova */
+.sim-card {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  max-width: var(--measure);
+}
+
+.sim-card + .sim-card {
+  margin-top: var(--space-4);
+}
+
+.sim-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.sim-card__pos {
+  font-weight: 700;
+  color: var(--color-primary-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-card__statement {
+  white-space: pre-wrap;
+  line-height: var(--leading-body);
+}
+
+.sim-card__figure {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.sim-options {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sim-options legend {
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.sim-option {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+
+.sim-option input {
+  margin-top: 0.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  accent-color: var(--color-primary-700);
+}
+
+.sim-option__letter {
+  font-weight: 700;
+  flex: none;
+}
+
+.sim-option--correct {
+  border-color: var(--color-success-700);
+  background: var(--color-success-50, #ecfdf3);
+}
+
+.sim-option--wrong {
+  border-color: var(--color-danger-700);
+  background: var(--color-danger-50, #fdf0f0);
+}
+
+.sim-feedback {
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  border: 1px solid var(--color-line-200);
+  background: var(--color-surface);
+}
+
+.sim-feedback[data-tone="success"] {
+  border-color: var(--color-success-700);
+  background: var(--color-success-50, #ecfdf3);
+}
+
+.sim-feedback[data-tone="danger"] {
+  border-color: var(--color-danger-700);
+  background: var(--color-danger-50, #fdf0f0);
+}
+
+.sim-feedback[data-tone="warning"] {
+  border-color: var(--color-warning-700);
+  background: var(--color-warning-50, #fdf8ec);
+}
+
+.sim-feedback[data-tone="muted"] {
+  border-style: dashed;
+  color: var(--color-ink-700);
+}
+
+/* Resultado: resumo + correção por posição */
+.sim-score {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 1fr 1fr;
+}
+
+.sim-score__cell {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-1);
+}
+
+.sim-score__value {
+  font-weight: 700;
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-score__label {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.sim-result-item {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.sim-result-item + .sim-result-item {
+  margin-top: var(--space-2);
+}
+
+#sim-confirm {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  max-width: 28rem;
+}
+
+#sim-confirm::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@media (min-width: 48rem) {
+  .sim-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sim-score {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão).
+"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão) + 6.7 (simulado).
 
 Verifica `frontend/` sem rodar navegador:
   - arquivos obrigatórios existem;
@@ -39,6 +39,7 @@ REQUIRED_FILES = [
     "dashboard.html",
     "estudos.html",
     "questao.html",
+    "simulado.html",
     "css/tokens.css",
     "css/base.css",
     "css/components.css",
@@ -48,12 +49,14 @@ REQUIRED_FILES = [
     "css/dashboard.css",
     "css/estudos.css",
     "css/questao.css",
+    "css/simulado.css",
     "js/config.js",
     "js/api/client.js",
     "js/api/auth.js",
     "js/api/dashboard.js",
     "js/api/estudos.js",
     "js/api/questao.js",
+    "js/api/simulado.js",
     "js/state/store.js",
     "js/state/session.js",
     "js/components/ui.js",
@@ -67,6 +70,7 @@ REQUIRED_FILES = [
     "js/views/dashboard.js",
     "js/views/estudos.js",
     "js/views/questao.js",
+    "js/views/simulado.js",
     "assets/favicon.svg",
 ]
 
@@ -144,7 +148,7 @@ def main() -> int:
     if ":focus-visible" not in base:
         fail("base.css sem :focus-visible")
 
-    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", *REQUIRED_AUTH_FORMS]:
+    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", "simulado.html", *REQUIRED_AUTH_FORMS]:
         p = FRONT / page
         if not p.is_file():
             continue
@@ -280,6 +284,51 @@ def main() -> int:
         if "questao.html" not in study_js:
             fail("js/views/estudos.js sem link para questao.html (TASK 6.6)")
 
+    # TASK 6.7 — simulado: hub (criar por disciplina/edição + histórico) + execução (caderno + encerrar + resultado)
+    sim = (FRONT / "simulado.html").read_text(encoding="utf-8") if (FRONT / "simulado.html").exists() else ""
+    if sim:
+        for sid in ["sim-guard", "sim-error", "sim-loading", "sim-content",
+                    "sim-hub", "sim-create-discipline", "s-disc-disciplina",
+                    "s-disc-qtd", "s-disc-dificuldade", "s-disc-modo",
+                    "sim-disc-submit", "sim-create-edition", "s-ed-edicao",
+                    "s-ed-modo", "sim-ed-submit", "sim-history",
+                    "sim-history-count", "sim-more", "sim-exec", "sim-back",
+                    "sim-mode-badge", "sim-exec-title", "sim-exec-meta",
+                    "sim-exec-badges", "sim-progress-text", "sim-progress-bar",
+                    "sim-progress-fill", "sim-hidden-note", "sim-questions",
+                    "sim-submit", "sim-abandon", "sim-result-section",
+                    "sim-result", "sim-confirm", "sim-confirm-text",
+                    "sim-confirm-yes", "sim-confirm-no", "sim-notes"]:
+            if f'id="{sid}"' not in sim:
+                fail(f"simulado.html sem bloco #{sid} (TASK 6.7)")
+        if "css/simulado.css" not in sim:
+            fail("simulado.html sem css/simulado.css")
+        if "js/views/simulado.js" not in sim:
+            fail("simulado.html sem js/views/simulado.js")
+        if "voupassar-api" not in sim:
+            fail("simulado.html sem meta voupassar-api (config.js)")
+        if "2021" not in sim:
+            fail("simulado.html omite a ausência de 2021 (AGENTS.md §3)")
+        sim_js = (FRONT / "js" / "views" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "simulado.js").exists() else ""
+        for token in ["createByDiscipline", "createByEdition", "fetchAttempt",
+                      "submitSimulation", "abandonSimulation", "fetchResult",
+                      "fetchFeedback", "simulationAttemptId", "2021"]:
+            if token not in sim_js:
+                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7)")
+        sim_api = (FRONT / "js" / "api" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "simulado.js").exists() else ""
+        for token in ["/api/v1/simulations/by-discipline", "/api/v1/simulations/by-edition",
+                      "/api/v1/simulations/attempts", "/feedback/", "/api/v1/attempts",
+                      "/api/v1/questions", "/api/v1/disciplines", "/api/v1/editions"]:
+            if token not in sim_api:
+                fail(f"js/api/simulado.js sem endpoint {token!r} (TASK 6.7)")
+        for page, label in [("dashboard.html", "dashboard"), ("estudos.html", "estudos"), ("questao.html", "questao")]:
+            nav = (FRONT / page).read_text(encoding="utf-8") if (FRONT / page).exists() else ""
+            if nav and "simulado.html" not in nav:
+                fail(f"{page} sem link para simulado.html (TASK 6.7)")
+        dash_js = (FRONT / "js" / "views" / "dashboard.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "dashboard.js").exists() else ""
+        if "As telas de prova chegam" in dash_js:
+            fail("js/views/dashboard.js com placeholder vencido da TASK 6.7")
+
     # JS: sem innerHTML; URL de API só em config.js/meta
     for js in (FRONT / "js").rglob("*.js"):
         src = js.read_text(encoding="utf-8")
@@ -296,7 +345,7 @@ def main() -> int:
 
     for html_file in [FRONT / "index.html", FRONT / "design-system.html",
                       FRONT / "dashboard.html", FRONT / "estudos.html",
-                      FRONT / "questao.html",
+                      FRONT / "questao.html", FRONT / "simulado.html",
                       *(FRONT / p for p in REQUIRED_AUTH_FORMS)]:
         if not html_file.is_file():
             continue

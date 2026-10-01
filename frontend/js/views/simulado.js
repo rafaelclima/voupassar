@@ -1,0 +1,995 @@
+/* VouPassar — simulado (TASK 6.7)
+ * Página protegida: exige sessão (restoreSession). Sem sessão → painel de
+ * acesso com link seguro para login (?next=simulado.html).
+ *
+ * Cobre TASKS.md 6.7 (interface de prova real):
+ * - Hub (sem ?id=): criar por disciplina (5.1: disciplina, quantidade 1–100,
+ *   dificuldade opcional, modo) e por edição real (5.5: edição, modo), além
+ *   do histórico de execuções (mais recentes primeiro).
+ * - Execução (?id=<attemptId>): caderno congelado em ordem de posição,
+ *   respostas via POST /attempts com simulationAttemptId (3.7), feedback
+ *   imediato por posição no Modo Estudo (5.2), resultado oculto no Modo
+ *   Prova até encerrar (5.3), concluir/abandonar com placar do servidor e
+ *   resultado com correção por posição.
+ *
+ * Sem innerHTML (só textContent via el()). Enunciados vêm de
+ * GET /questions/{id} (3.4) — mascarados em PROVA em andamento (5.3).
+ * 2021 nunca aparece: edições vêm do backend (ausente do dataset, §3).
+ */
+
+import { ApiError, friendlyMessage } from "../api/client.js";
+import { restoreSession, logout } from "../api/auth.js";
+import {
+  fetchDisciplines,
+  fetchEditions,
+  createByDiscipline,
+  createByEdition,
+  listAttempts,
+  fetchAttempt,
+  submitSimulation,
+  abandonSimulation,
+  fetchResult,
+  fetchFeedback,
+  fetchQuestion,
+  submitAttempt,
+} from "../api/simulado.js";
+import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+
+const PAGE_SIZE = 20;
+
+const guard = document.getElementById("sim-guard");
+const errorBox = document.getElementById("sim-error");
+const loadingBox = document.getElementById("sim-loading");
+const content = document.getElementById("sim-content");
+const subtitle = document.getElementById("sim-subtitle");
+
+const hub = document.getElementById("sim-hub");
+const execBox = document.getElementById("sim-exec");
+
+// Hub
+const formDisc = document.getElementById("sim-create-discipline");
+const selDisc = document.getElementById("s-disc-disciplina");
+const inpQtd = document.getElementById("s-disc-qtd");
+const selDiff = document.getElementById("s-disc-dificuldade");
+const selDiscMode = document.getElementById("s-disc-modo");
+const btnDisc = document.getElementById("sim-disc-submit");
+const formEd = document.getElementById("sim-create-edition");
+const selEd = document.getElementById("s-ed-edicao");
+const selEdMode = document.getElementById("s-ed-modo");
+const btnEd = document.getElementById("sim-ed-submit");
+const historyBox = document.getElementById("sim-history");
+const historyCount = document.getElementById("sim-history-count");
+const btnMore = document.getElementById("sim-more");
+
+// Execução
+const modeBadge = document.getElementById("sim-mode-badge");
+const execTitle = document.getElementById("sim-exec-title");
+const execMeta = document.getElementById("sim-exec-meta");
+const execBadges = document.getElementById("sim-exec-badges");
+const progressText = document.getElementById("sim-progress-text");
+const progressBar = document.getElementById("sim-progress-bar");
+const progressFill = document.getElementById("sim-progress-fill");
+const hiddenNote = document.getElementById("sim-hidden-note");
+const questionsBox = document.getElementById("sim-questions");
+const btnSubmit = document.getElementById("sim-submit");
+const btnAbandon = document.getElementById("sim-abandon");
+const resultSection = document.getElementById("sim-result-section");
+const resultBox = document.getElementById("sim-result");
+const confirmDlg = document.getElementById("sim-confirm");
+const confirmText = document.getElementById("sim-confirm-text");
+const confirmYes = document.getElementById("sim-confirm-yes");
+const confirmNo = document.getElementById("sim-confirm-no");
+
+const notesBox = document.getElementById("sim-notes");
+
+const state = {
+  user: null,
+  attemptId: null,
+  attempt: null,
+  details: new Map(),
+  answeredLocal: new Map(),
+  startTimes: new Map(),
+  historyPage: 0,
+  historyLast: true,
+  historyItems: [],
+  confirmAction: null,
+};
+
+wireLogoutButtons();
+main();
+
+async function main() {
+  const user = await restoreSession().catch(() => null);
+  if (!user) {
+    showGuard();
+    return;
+  }
+  state.user = user;
+  subtitle.textContent = `Olá, ${user.displayName || "estudante"} — monte por disciplina ou reproduza uma edição real, responda como em prova e receba a correção ao final.`;
+  showLogoutButtons();
+  const id = readAttemptId();
+  if (id !== null) {
+    state.attemptId = id;
+    hub.hidden = true;
+    execBox.hidden = false;
+    loadingBox.hidden = true;
+    content.hidden = false;
+    await loadExecution(id);
+  } else {
+    execBox.hidden = true;
+    hub.hidden = false;
+    await loadHub();
+  }
+  renderNotes();
+}
+
+function wireLogoutButtons() {
+  document.querySelectorAll("[data-logout]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      btn.setAttribute("disabled", "");
+      try {
+        await logout();
+      } finally {
+        const next = state.attemptId ? `simulado.html?id=${encodeURIComponent(String(state.attemptId))}` : "simulado.html";
+        window.location.href = `./login.html?next=${encodeURIComponent(next)}`;
+      }
+    });
+  });
+}
+
+function showLogoutButtons() {
+  document.querySelectorAll("[data-logout]").forEach((btn) => {
+    btn.hidden = false;
+  });
+}
+
+function showGuard() {
+  loadingBox.hidden = true;
+  content.hidden = true;
+  guard.hidden = false;
+  guard.textContent = "";
+  const box = el("div", { className: "empty" });
+  box.appendChild(el("h2", { text: "Entre para fazer simulados" }));
+  box.appendChild(
+    el("p", {
+      text: "O simulado monta um caderno, registra suas respostas e corrige no servidor. Ele precisa da sua sessão — entre ou crie uma conta para continuar.",
+    }),
+  );
+  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
+  const next = readAttemptId() !== null ? `simulado.html?id=${readAttemptId()}` : "simulado.html";
+  actions.appendChild(
+    el("a", {
+      className: "btn btn--primary",
+      text: "Entrar",
+      attrs: { href: `./login.html?next=${encodeURIComponent(next)}` },
+    }),
+  );
+  actions.appendChild(
+    el("a", {
+      className: "btn btn--secondary",
+      text: "Criar conta",
+      attrs: { href: "./cadastro.html" },
+    }),
+  );
+  box.appendChild(actions);
+  guard.appendChild(box);
+}
+
+function readAttemptId() {
+  let raw = "";
+  try {
+    raw = new URLSearchParams(window.location.search).get("id") || "";
+  } catch {
+    raw = "";
+  }
+  const n = Number.parseInt(String(raw).trim(), 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/* ================= HUB ================= */
+
+async function loadHub() {
+  loadingBox.hidden = false;
+  content.hidden = true;
+  errorBox.textContent = "";
+  try {
+    const settled = await Promise.allSettled([fetchDisciplines(), fetchEditions()]);
+    const [discR, edR] = settled;
+    if (discR.status === "rejected") throw discR.reason;
+    if (edR.status === "rejected") throw edR.reason;
+    fillDisciplines(asList(discR.value));
+    fillEditions(asList(edR.value));
+    bindHubForms();
+    await loadHistory(true);
+    loadingBox.hidden = true;
+    content.hidden = false;
+  } catch (err) {
+    loadingBox.hidden = true;
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    renderErrorSummary(errorBox, {
+      title: "Não foi possível carregar o simulado",
+      items: [friendlyMessage(err)],
+      traceId: err instanceof ApiError ? err.traceId : null,
+    });
+  }
+}
+
+function asList(v) {
+  if (Array.isArray(v)) return v;
+  if (Array.isArray(v?.content)) return v.content;
+  return [];
+}
+
+function fillDisciplines(items) {
+  selDisc.textContent = "";
+  if (items.length === 0) {
+    selDisc.appendChild(el("option", { text: "Nenhuma disciplina", attrs: { value: "" } }));
+    return;
+  }
+  selDisc.appendChild(el("option", { text: "Escolha…", attrs: { value: "" } }));
+  for (const d of items) {
+    selDisc.appendChild(
+      el("option", {
+        text: `${d.name} (${d.questionCount} questões)`,
+        attrs: { value: d.code },
+      }),
+    );
+  }
+}
+
+function fillEditions(items) {
+  selEd.textContent = "";
+  const years = items.map((e) => e.year).sort((a, b) => a - b);
+  if (years.length === 0) {
+    selEd.appendChild(el("option", { text: "Nenhuma edição", attrs: { value: "" } }));
+    return;
+  }
+  selEd.appendChild(el("option", { text: "Escolha…", attrs: { value: "" } }));
+  for (const e of items) {
+    const label = `${e.year} — ${e.objectiveCount} questões${e.hasEssay ? " + texto" : ""}`;
+    selEd.appendChild(el("option", { text: label, attrs: { value: String(e.year) } }));
+  }
+}
+
+function bindHubForms() {
+  if (!formDisc.dataset.bound) {
+    formDisc.dataset.bound = "1";
+    formDisc.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const disciplineCode = selDisc.value || "";
+      const questionCount = Number.parseInt(inpQtd.value || "", 10);
+      if (!disciplineCode) {
+        toast("Escolha uma disciplina.", "info");
+        selDisc.focus();
+        return;
+      }
+      if (!Number.isFinite(questionCount) || questionCount < 1 || questionCount > 100) {
+        toast("Quantidade deve estar entre 1 e 100.", "info");
+        inpQtd.focus();
+        return;
+      }
+      setButtonLoading(btnDisc, true, "Sorteando…");
+      try {
+        const created = await createByDiscipline({
+          disciplineCode,
+          questionCount,
+          difficulty: selDiff.value || undefined,
+          mode: selDiscMode.value || "PROVA",
+        });
+        window.location.href = `./simulado.html?id=${encodeURIComponent(String(created.attemptId))}`;
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          showGuard();
+          return;
+        }
+        toast(friendlyMessage(err), "info");
+        if (err instanceof ApiError && err.traceId) {
+          renderErrorSummary(errorBox, {
+            title: "Não foi possível criar o simulado por disciplina",
+            items: [friendlyMessage(err)],
+            traceId: err.traceId,
+          });
+        }
+      } finally {
+        setButtonLoading(btnDisc, false);
+      }
+    });
+  }
+  if (!formEd.dataset.bound) {
+    formEd.dataset.bound = "1";
+    formEd.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const editionYear = Number.parseInt(selEd.value || "", 10);
+      if (!Number.isFinite(editionYear)) {
+        toast("Escolha uma edição.", "info");
+        selEd.focus();
+        return;
+      }
+      setButtonLoading(btnEd, true, "Montando…");
+      try {
+        const created = await createByEdition({
+          editionYear,
+          mode: selEdMode.value || "PROVA",
+        });
+        window.location.href = `./simulado.html?id=${encodeURIComponent(String(created.attemptId))}`;
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          showGuard();
+          return;
+        }
+        toast(friendlyMessage(err), "info");
+        if (err instanceof ApiError && (err.status >= 400)) {
+          renderErrorSummary(errorBox, {
+            title: "Não foi possível criar o simulado da edição",
+            items: [friendlyMessage(err)],
+            traceId: err.traceId,
+          });
+        }
+      } finally {
+        setButtonLoading(btnEd, false);
+      }
+    });
+  }
+  if (!btnMore.dataset.bound) {
+    btnMore.dataset.bound = "1";
+    btnMore.addEventListener("click", () => loadHistory(false));
+  }
+}
+
+async function loadHistory(reset) {
+  if (reset) {
+    state.historyPage = 0;
+    state.historyItems = [];
+    historyBox.textContent = "";
+  }
+  try {
+    const page = await listAttempts({ page: state.historyPage, size: PAGE_SIZE });
+    const items = page?.content ?? [];
+    state.historyItems.push(...items);
+    state.historyLast = Boolean(page?.last ?? items.length < PAGE_SIZE);
+    renderHistory(page?.totalElements ?? state.historyItems.length);
+    if (!state.historyLast) {
+      state.historyPage += 1;
+      btnMore.hidden = false;
+    } else {
+      btnMore.hidden = true;
+    }
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    renderEmpty(historyBox, {
+      title: "Histórico indisponível",
+      description: friendlyMessage(err),
+    });
+    btnMore.hidden = true;
+  }
+}
+
+function statusLabel(s) {
+  if (s === "SUBMITTED") return "Concluído";
+  if (s === "IN_PROGRESS") return "Em andamento";
+  if (s === "ABANDONED") return "Abandonado";
+  return String(s || "—");
+}
+
+function statusBadge(s) {
+  if (s === "SUBMITTED") return "badge--success";
+  if (s === "IN_PROGRESS") return "badge--warning";
+  return "";
+}
+
+function formatDateTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+}
+
+function renderHistory(total) {
+  historyBox.textContent = "";
+  historyCount.textContent = state.historyItems.length === 0
+    ? "Nenhum simulado ainda — crie o primeiro acima."
+    : `${total} ${total === 1 ? "execução" : "execuções"} · mostrando ${state.historyItems.length}.`;
+  if (state.historyItems.length === 0) {
+    renderEmpty(historyBox, {
+      title: "Nenhum simulado ainda",
+      description: "Seus simulados por disciplina e de edição real aparecem aqui.",
+    });
+    return;
+  }
+  const list = el("ol", { className: "sim-list" });
+  for (const s of state.historyItems) {
+    const li = el("li", { className: "sim-list__item" });
+    const left = el("div");
+    left.appendChild(el("p", { className: "sim-list__title", text: s.title || `Simulado #${s.attemptId}` }));
+    left.appendChild(
+      el("p", {
+        className: "sim-list__meta",
+        text: `${s.disciplineCode || "Edição real"} · ${s.mode || "—"} · ${s.questionCount} questões · início ${formatDateTime(s.startedAt)}`,
+      }),
+    );
+    li.appendChild(left);
+    const right = el("div", { className: "cluster" });
+    right.appendChild(el("span", { className: `badge ${statusBadge(s.status)}`.trim(), text: statusLabel(s.status) }));
+    const openLabel = s.status === "IN_PROGRESS" ? "Retomar" : "Ver resultado";
+    right.appendChild(
+      el("a", {
+        className: "btn btn--secondary btn--sm",
+        text: openLabel,
+        attrs: { href: `./simulado.html?id=${encodeURIComponent(String(s.attemptId))}` },
+      }),
+    );
+    li.appendChild(right);
+    list.appendChild(li);
+  }
+  historyBox.appendChild(list);
+}
+
+/* ================= EXECUÇÃO ================= */
+
+function isProva() {
+  return String(state.attempt?.mode || "").toUpperCase() === "PROVA";
+}
+
+function isOpen() {
+  return state.attempt?.status === "IN_PROGRESS";
+}
+
+async function loadExecution(id) {
+  loadingBox.hidden = false;
+  content.hidden = true;
+  errorBox.textContent = "";
+  try {
+    const attempt = await fetchAttempt(id);
+    state.attempt = attempt;
+    renderExecHeader(attempt);
+    await loadCaderno(attempt);
+    loadingBox.hidden = true;
+    content.hidden = false;
+    execTitle.focus({ preventScroll: true });
+  } catch (err) {
+    loadingBox.hidden = true;
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    const notFound = err instanceof ApiError && err.status === 404;
+    renderErrorSummary(errorBox, {
+      title: notFound ? "Simulado não encontrado" : "Não foi possível carregar a execução",
+      items: [notFound ? "Esta execução não existe ou pertence a outro aluno." : friendlyMessage(err)],
+      traceId: err instanceof ApiError ? err.traceId : null,
+    });
+    const actions = el("div", { className: "btn-group mt-4" });
+    actions.appendChild(
+      el("a", { className: "btn btn--secondary btn--sm", text: "Voltar aos simulados", attrs: { href: "./simulado.html" } }),
+    );
+    actions.appendChild(
+      el("a", { className: "btn btn--ghost btn--sm", text: "Abrir dashboard", attrs: { href: "./dashboard.html" } }),
+    );
+    errorBox.appendChild(actions);
+  }
+}
+
+function execKindLabel(a) {
+  if (String(a?.type || "").toUpperCase() === "REAL_EDITION") return "Edição real";
+  return "Por disciplina";
+}
+
+function renderExecHeader(a) {
+  document.title = `${a.title || `Simulado #${a.attemptId}`} — VouPassar`;
+  modeBadge.textContent = `Simulado · Modo ${a.mode || "—"} · ${statusLabel(a.status)}`;
+  execTitle.textContent = a.title || `Simulado #${a.attemptId}`;
+  const bits = [
+    execKindLabel(a),
+    a.disciplineName || a.disciplineCode || "caderno misto",
+    `${a.questionCount} ${a.questionCount === 1 ? "questão" : "questões"}`,
+    `início ${formatDateTime(a.startedAt)}`,
+  ];
+  if (a.submittedAt) bits.push(`encerrado ${formatDateTime(a.submittedAt)}`);
+  execMeta.textContent = "";
+  execMeta.appendChild(el("small", { text: bits.join(" · ") }));
+
+  execBadges.textContent = "";
+  execBadges.appendChild(el("span", { className: "badge", text: execKindLabel(a) }));
+  execBadges.appendChild(el("span", { className: "badge", text: `Modo ${a.mode || "—"}` }));
+  execBadges.appendChild(el("span", { className: `badge ${statusBadge(a.status)}`.trim(), text: statusLabel(a.status) }));
+
+  hiddenNote.textContent = "";
+  if (isOpen() && isProva()) {
+    hiddenNote.appendChild(
+      el("small", { text: "Modo Prova: o resultado e o gabarito ficam ocultos durante a execução — a correção aparece ao concluir ou abandonar." }),
+    );
+  } else if (isOpen()) {
+    hiddenNote.appendChild(
+      el("small", { text: "Modo Estudo: cada resposta mostra o feedback imediato (acerto/erro, resposta correta, explicação e assunto)." }),
+    );
+  }
+  updateProgress();
+  bindFinishButtons();
+  const finishCard = btnSubmit.closest(".card");
+  if (finishCard) finishCard.hidden = !isOpen();
+}
+
+function answeredCount() {
+  const items = state.attempt?.questions ?? [];
+  let n = 0;
+  for (const it of items) {
+    if (state.answeredLocal.get(it.position) || it.answered) n += 1;
+  }
+  return n;
+}
+
+function updateProgress() {
+  const total = state.attempt?.questionCount ?? state.attempt?.questions?.length ?? 0;
+  const done = answeredCount();
+  progressText.textContent = `${done} de ${total} respondidas`;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  progressFill.style.width = `${pct}%`;
+  progressBar.setAttribute("aria-valuenow", String(pct));
+}
+
+async function loadCaderno(attempt) {
+  questionsBox.textContent = "";
+  const items = [...(attempt.questions ?? [])].sort((a, b) => a.position - b.position);
+  if (items.length === 0) {
+    renderEmpty(questionsBox, {
+      title: "Caderno vazio",
+      description: "Esta execução não trouxe posições. Volte ao hub e crie um novo simulado.",
+    });
+    return;
+  }
+  const loading = el("div", { className: "loading-block", attrs: { role: "status" } });
+  loading.appendChild(el("span", { className: "spinner", attrs: { "aria-hidden": "true" } }));
+  loading.appendChild(el("span", { text: "Buscando enunciados do caderno…" }));
+  questionsBox.appendChild(loading);
+
+  const settled = await Promise.allSettled(items.map((it) => fetchQuestion(it.questionId)));
+  questionsBox.textContent = "";
+  settled.forEach((r, i) => {
+    const item = items[i];
+    if (r.status === "fulfilled") {
+      state.details.set(item.questionId, r.value);
+      state.startTimes.set(item.position, Date.now());
+      questionsBox.appendChild(renderSimCard(item, r.value));
+    } else {
+      questionsBox.appendChild(renderMissingCard(item, r.reason));
+    }
+  });
+
+  if (!isOpen()) {
+    await renderFinishedState();
+  }
+}
+
+function positionTitle(item, detail) {
+  const ref = item.sourceYear && item.sourceQuestionNumber
+    ? `${item.sourceYear} Q${item.sourceQuestionNumber}`
+    : (detail?.examYear && detail?.questionNumber
+      ? `${detail.examYear} Q${detail.questionNumber}`
+      : `Questão #${item.questionId}`);
+  const disc = item.disciplineCode || detail?.discipline?.code || "";
+  return { ref, disc };
+}
+
+function renderSimCard(item, detail) {
+  const open = isOpen();
+  const { ref, disc } = positionTitle(item, detail);
+  const card = el("article", { className: "sim-card", attrs: { "aria-labelledby": `sim-p${item.position}-t` } });
+  const head = el("div", { className: "sim-card__head" });
+  head.appendChild(el("span", { className: "sim-card__pos", text: `Posição ${item.position}`, attrs: { id: `sim-p${item.position}-t` } }));
+  head.appendChild(el("span", { className: "badge", text: ref }));
+  if (disc) head.appendChild(el("span", { className: "badge", text: disc }));
+  if (item.wasAnnulled || detail?.annulled) {
+    head.appendChild(el("span", { className: "badge badge--warning", text: "Anulada" }));
+  }
+  card.appendChild(head);
+
+  card.appendChild(el("p", { className: "sim-card__statement", text: detail?.statement || "(enunciado ausente — NECESSITA REVISÃO)" }));
+  if (detail?.hasFigure) {
+    card.appendChild(el("p", { className: "sim-card__figure", text: "Esta questão possui figura no caderno original (consulte o PDF-fonte)." }));
+  }
+
+  const fieldset = el("fieldset", { className: "sim-options" });
+  fieldset.appendChild(el("legend", { text: isProva() && open ? "Sua resposta (resultado oculto até o final)" : "Sua resposta" }));
+  const group = `sim-${state.attemptId}-p${item.position}`;
+  const options = Array.isArray(detail?.options) ? detail.options : [];
+  if (options.length === 0) {
+    fieldset.appendChild(el("p", { className: "muted", text: "Sem alternativas registradas — NECESSITA REVISÃO." }));
+  }
+  for (const opt of options) {
+    const label = el("label", { className: "sim-option" });
+    const input = el("input", { attrs: { type: "radio", name: group, value: opt.label } });
+    input.disabled = !open;
+    label.appendChild(input);
+    label.appendChild(el("span", { className: "sim-option__letter", text: `${opt.label})` }));
+    label.appendChild(el("span", { text: opt.text || "" }));
+    fieldset.appendChild(label);
+  }
+  card.appendChild(fieldset);
+
+  const actions = el("div", { className: "btn-group" });
+  const btnAnswer = el("button", { className: "btn btn--primary btn--sm", text: "Responder", attrs: { type: "button" } });
+  const btnBlank = el("button", { className: "btn btn--ghost btn--sm", text: "Em branco", attrs: { type: "button" } });
+  if (!open || options.length === 0) {
+    btnAnswer.disabled = true;
+    btnBlank.disabled = true;
+  }
+  if (item.answered && open) {
+    // Já respondida antes (retomada): permite alterar — vale a última.
+    btnAnswer.textContent = "Alterar resposta";
+  }
+  actions.appendChild(btnAnswer);
+  actions.appendChild(btnBlank);
+  card.appendChild(actions);
+
+  const feedback = el("div", { className: "sim-feedback", attrs: { role: "status", hidden: "" } });
+  card.appendChild(feedback);
+  if (item.answered && open && isProva()) {
+    feedback.hidden = false;
+    feedback.dataset.tone = "muted";
+    feedback.appendChild(el("p", { text: "Posição já respondida — o resultado segue oculto até concluir. Você pode alterar a resposta (vale a última)." }));
+  }
+
+  async function answer(choice) {
+    const sel = choice === "BLANK" ? "BLANK" : choice;
+    if (!sel) {
+      toast("Escolha uma alternativa ou responda em branco.", "info");
+      fieldset.querySelector("input")?.focus();
+      return;
+    }
+    setButtonLoading(btnAnswer, true, "Registrando…");
+    btnBlank.disabled = true;
+    try {
+      const elapsed = Math.max(0, Math.round((Date.now() - (state.startTimes.get(item.position) || Date.now())) / 1000));
+      const attempt = await submitAttempt({
+        questionId: item.questionId,
+        selectedOption: sel,
+        mode: state.attempt.mode,
+        timeSpentSeconds: elapsed,
+        simulationAttemptId: state.attemptId,
+      });
+      state.answeredLocal.set(item.position, sel);
+      item.answered = true;
+      updateProgress();
+      if (isProva()) {
+        showHiddenFeedback(feedback, sel, attempt);
+      } else {
+        await showStudyFeedback(card, fieldset, feedback, item, detail, sel);
+      }
+      markAnsweredCard(card, fieldset, btnAnswer, btnBlank, actions, item, () => {
+        state.startTimes.set(item.position, Date.now());
+      });
+      if (!isProva()) toast("Resposta registrada com feedback imediato.", "success");
+      else toast("Resposta registrada — resultado oculto até concluir.", "success");
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        showGuard();
+        return;
+      }
+      if (err instanceof ApiError && err.code === "SIMULATION_CLOSED") {
+        toast("Esta execução já foi encerrada. Atualizando o resultado…", "info");
+        await refreshToFinished();
+        return;
+      }
+      toast(friendlyMessage(err), "info");
+      btnBlank.disabled = false;
+    } finally {
+      setButtonLoading(btnAnswer, false);
+      if (state.answeredLocal.get(item.position) || item.answered) btnBlank.disabled = true;
+    }
+  }
+
+  btnAnswer.addEventListener("click", () => {
+    const checked = fieldset.querySelector("input:checked");
+    answer(checked?.value || null);
+  });
+  btnBlank.addEventListener("click", () => answer("BLANK"));
+
+  return card;
+}
+
+function markAnsweredCard(card, fieldset, btnAnswer, btnBlank, actions, item, onRetry) {
+  fieldset.querySelectorAll("input").forEach((r) => {
+    r.disabled = true;
+  });
+  btnAnswer.disabled = true;
+  btnBlank.disabled = true;
+  if (!actions.querySelector("[data-retry]")) {
+    const retry = el("button", {
+      className: "btn btn--secondary btn--sm",
+      text: isProva() ? "Alterar resposta" : "Tentar novamente",
+      attrs: { type: "button", "data-retry": "1" },
+    });
+    retry.addEventListener("click", () => {
+      fieldset.querySelectorAll("input").forEach((r) => {
+        r.disabled = false;
+        r.checked = false;
+      });
+      fieldset.querySelectorAll(".sim-option").forEach((row) => {
+        row.classList.remove("sim-option--correct", "sim-option--wrong");
+      });
+      btnAnswer.disabled = false;
+      btnAnswer.textContent = isProva() ? "Alterar resposta" : "Responder";
+      btnBlank.disabled = false;
+      retry.remove();
+      onRetry?.();
+      fieldset.querySelector("input")?.focus();
+    });
+    actions.appendChild(retry);
+  }
+}
+
+function showHiddenFeedback(box, choice, attempt) {
+  box.textContent = "";
+  box.hidden = false;
+  box.dataset.tone = "muted";
+  if (attempt?.wasAnnulled) {
+    box.dataset.tone = "warning";
+    box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
+    box.appendChild(el("p", { text: `Você marcou ${choice}. Regra de pontuação DESCONHECIDA.` }));
+    return;
+  }
+  box.appendChild(el("p", { text: `Resposta ${choice} registrada — resultado oculto durante a prova. Conclua para ver a correção.` }));
+}
+
+async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
+  box.textContent = "";
+  box.hidden = false;
+  try {
+    const fb = await fetchFeedback(state.attemptId, item.position);
+    if (fb.wasAnnulled) {
+      box.dataset.tone = "warning";
+      box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
+      box.appendChild(el("p", { text: `Você marcou ${fb.selectedOption}. Regra de pontuação DESCONHECIDA.` }));
+    } else if (fb.isCorrect === true) {
+      box.dataset.tone = "success";
+      box.appendChild(el("strong", { text: `Você acertou — alternativa ${fb.correctAnswer}.` }));
+      box.appendChild(el("p", { text: `Sua resposta: ${fb.selectedOption}.` }));
+    } else {
+      box.dataset.tone = "danger";
+      box.appendChild(el("strong", { text: `Não foi dessa vez — resposta correta: ${fb.correctAnswer}.` }));
+      box.appendChild(el("p", { text: `Você marcou ${fb.selectedOption}.` }));
+    }
+    fieldset.querySelectorAll(".sim-option").forEach((row) => {
+      const v = row.querySelector("input")?.value;
+      row.classList.remove("sim-option--correct", "sim-option--wrong");
+      if (v === fb.correctAnswer && !fb.wasAnnulled) row.classList.add("sim-option--correct");
+      if (v === fb.selectedOption && fb.selectedOption !== fb.correctAnswer) row.classList.add("sim-option--wrong");
+    });
+    if (fb.explanation) {
+      box.appendChild(el("p", { text: `Explicação: ${fb.explanation}` }));
+    } else {
+      box.appendChild(el("p", { text: "Explicação ainda não redigida — NECESSITA REVISÃO." }));
+    }
+    const topicLine = fb.topicName
+      ? `Conteúdo: ${fb.topicName}${fb.subtopicName ? ` · ${fb.subtopicName}` : ""} (revisão humana pendente).`
+      : "Conteúdo: assunto NÃO CONFIRMADO (revisão pendente).";
+    box.appendChild(el("p", { text: topicLine }));
+    for (const n of (fb.notes ?? []).slice(0, 2)) {
+      box.appendChild(el("p", { text: n }));
+    }
+  } catch (err) {
+    box.dataset.tone = "muted";
+    box.appendChild(el("p", { text: `Resposta ${choice} registrada, mas o feedback falhou: ${friendlyMessage(err)}` }));
+    if (detail?.explanation) box.appendChild(el("p", { text: `Explicação: ${detail.explanation}` }));
+  }
+  card.dataset.answered = "1";
+}
+
+function renderMissingCard(item, reason) {
+  const card = el("article", { className: "sim-card" });
+  card.appendChild(el("span", { className: "sim-card__pos", text: `Posição ${item.position}` }));
+  const box = el("div", { className: "alert alert--danger", attrs: { role: "alert" } });
+  box.appendChild(el("strong", { text: "Não foi possível carregar esta questão. " }));
+  box.appendChild(el("span", { text: friendlyMessage(reason) }));
+  if (reason instanceof ApiError && reason.traceId) {
+    box.appendChild(el("p", { className: "envelope mt-2", text: `Código de rastreio: ${reason.traceId}` }));
+  }
+  const retry = el("button", { className: "btn btn--secondary btn--sm mt-2", text: "Tentar de novo", attrs: { type: "button" } });
+  retry.addEventListener("click", async () => {
+    retry.disabled = true;
+    try {
+      const detail = await fetchQuestion(item.questionId);
+      state.details.set(item.questionId, detail);
+      state.startTimes.set(item.position, Date.now());
+      card.replaceWith(renderSimCard(item, detail));
+    } catch (err2) {
+      toast(friendlyMessage(err2), "info");
+      retry.disabled = false;
+    }
+  });
+  box.appendChild(retry);
+  card.appendChild(box);
+  return card;
+}
+
+/* ---------- encerrar ---------- */
+
+function bindFinishButtons() {
+  if (btnSubmit.dataset.bound) return;
+  btnSubmit.dataset.bound = "1";
+  btnSubmit.addEventListener("click", () => askConfirm("submit"));
+  btnAbandon.addEventListener("click", () => askConfirm("abandon"));
+  confirmNo.addEventListener("click", () => {
+    confirmDlg.close();
+    state.confirmAction = null;
+    if (isOpen()) btnSubmit.focus?.();
+  });
+  confirmYes.addEventListener("click", async () => {
+    const action = state.confirmAction;
+    confirmDlg.close();
+    state.confirmAction = null;
+    if (action === "submit") await doFinish("submit");
+    else if (action === "abandon") await doFinish("abandon");
+  });
+}
+
+function askConfirm(action) {
+  if (!isOpen()) {
+    toast("Esta execução já foi encerrada.", "info");
+    return;
+  }
+  state.confirmAction = action;
+  const done = answeredCount();
+  const total = state.attempt?.questionCount ?? 0;
+  const pending = Math.max(0, total - done);
+  confirmText.textContent = action === "submit"
+    ? `Concluir com ${done} respondidas e ${pending} pendentes? Não será possível responder após encerrar.`
+    : `Abandonar com ${done} respondidas? O placar parcial será registrado e não será possível responder.`;
+  confirmYes.textContent = action === "submit" ? "Concluir agora" : "Abandonar mesmo assim";
+  if (typeof confirmDlg.showModal === "function") {
+    confirmDlg.showModal();
+    confirmYes.focus();
+  } else {
+    doFinish(action);
+  }
+}
+
+async function doFinish(action) {
+  const btn = action === "submit" ? btnSubmit : btnAbandon;
+  setButtonLoading(btn, true, action === "submit" ? "Corrigindo…" : "Abandonando…");
+  try {
+    await (action === "submit" ? submitSimulation(state.attemptId) : abandonSimulation(state.attemptId));
+    toast(action === "submit" ? "Simulado concluído. Correção disponível abaixo." : "Simulado abandonado com placar parcial.", "success");
+    await refreshToFinished();
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    if (err instanceof ApiError && err.code === "SIMULATION_CLOSED") {
+      await refreshToFinished();
+      return;
+    }
+    toast(friendlyMessage(err), "info");
+  } finally {
+    setButtonLoading(btn, false);
+  }
+}
+
+async function refreshToFinished() {
+  try {
+    state.attempt = await fetchAttempt(state.attemptId);
+    renderExecHeader(state.attempt);
+    questionsBox.textContent = "";
+    const items = [...(state.attempt.questions ?? [])].sort((a, b) => a.position - b.position);
+    for (const item of items) {
+      const detail = state.details.get(item.questionId) || null;
+      if (detail) questionsBox.appendChild(renderSimCard(item, detail));
+      else questionsBox.appendChild(renderMissingCard(item, new Error("Enunciado indisponível.")));
+    }
+    await renderFinishedState();
+  } catch (err) {
+    toast(friendlyMessage(err), "info");
+  }
+}
+
+function formatPercent(acc) {
+  if (acc === null || acc === undefined) return "—";
+  const n = Number(acc);
+  if (!Number.isFinite(n)) return "—";
+  return `${(n * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+}
+
+async function renderFinishedState() {
+  resultSection.hidden = false;
+  resultBox.textContent = "";
+  const loading = el("div", { className: "loading-block", attrs: { role: "status" } });
+  loading.appendChild(el("span", { className: "spinner", attrs: { "aria-hidden": "true" } }));
+  loading.appendChild(el("span", { text: "Calculando resultado no servidor…" }));
+  resultBox.appendChild(loading);
+  try {
+    const res = await fetchResult(state.attemptId);
+    resultBox.textContent = "";
+    renderScoreGrid(res);
+    renderResultItems(res);
+    resultSection.scrollIntoView({ block: "start" });
+  } catch (err) {
+    resultBox.textContent = "";
+    if (err instanceof ApiError && err.code === "SIMULATION_NOT_FINISHED") {
+      resultSection.hidden = true;
+      return;
+    }
+    const box = el("div", { className: "alert alert--danger", attrs: { role: "alert" } });
+    box.appendChild(el("strong", { text: "Não foi possível carregar o resultado. " }));
+    box.appendChild(el("span", { text: friendlyMessage(err) }));
+    if (err instanceof ApiError && err.traceId) {
+      box.appendChild(el("p", { className: "envelope mt-2", text: `Código de rastreio: ${err.traceId}` }));
+    }
+    resultBox.appendChild(box);
+  }
+}
+
+function renderScoreGrid(res) {
+  const grid = el("div", { className: "sim-score" });
+  const cells = [
+    [`${res.correct}/${res.scored}`, "corretas / pontuáveis"],
+    [formatPercent(res.accuracy), "aproveitamento"],
+    [`${res.answered}/${res.total}`, "respondidas / total"],
+    [String(res.annulled ?? 0), "anuladas (fora do cálculo)"],
+  ];
+  for (const [value, label] of cells) {
+    const cell = el("div", { className: "sim-score__cell" });
+    cell.appendChild(el("span", { className: "sim-score__value", text: value }));
+    cell.appendChild(el("span", { className: "sim-score__label", text: label }));
+    grid.appendChild(cell);
+  }
+  resultBox.appendChild(grid);
+  const note = el("p", { className: "muted mt-2" });
+  note.appendChild(
+    el("small", {
+      text: "Placar calculado no servidor (última resposta por questão; não respondidas como pendentes; anuladas fora do aproveitamento — regra DESCONHECIDA).",
+    }),
+  );
+  resultBox.appendChild(note);
+  for (const n of (res.notes ?? []).slice(0, 3)) {
+    const p = el("p", { className: "muted" });
+    p.appendChild(el("small", { text: n }));
+    resultBox.appendChild(p);
+  }
+}
+
+function renderResultItems(res) {
+  const items = [...(res.items ?? [])].sort((a, b) => a.position - b.position);
+  if (items.length === 0) return;
+  const head = el("h3", { text: "Correção por posição", attrs: { style: "font-size:var(--text-md)", class: "mt-4" } });
+  resultBox.appendChild(head);
+  for (const it of items) {
+    const row = el("div", { className: "sim-result-item" });
+    const title = it.sourceYear && it.sourceQuestionNumber
+      ? `Posição ${it.position} · ${it.sourceYear} Q${it.sourceQuestionNumber}`
+      : `Posição ${it.position}`;
+    row.appendChild(el("strong", { text: title }));
+    let verdict;
+    if (it.wasAnnulled) verdict = "Anulada — fora do aproveitamento.";
+    else if (it.unanswered) verdict = "Não respondida (pendente, nunca erro inventado).";
+    else if (it.isCorrect === true) verdict = `Acertou — você marcou ${it.selectedOption}, gabarito ${it.frozenAnswerKey}.`;
+    else verdict = `Errou — você marcou ${it.selectedOption}, gabarito ${it.frozenAnswerKey}.`;
+    row.appendChild(el("span", { text: verdict }));
+    resultBox.appendChild(row);
+  }
+}
+
+/* ---------- notas ---------- */
+
+function renderNotes() {
+  notesBox.textContent = "";
+  const fixed = [
+    "Por disciplina: sorteio sem reposição sobre questões não-anuladas; a ordem sorteada vira o caderno (posições 1..N).",
+    "Edição real: caderno integral em ordem original daquela edição, incluindo anuladas nas posições originais (fora do aproveitamento). A edição de 2021 não existe no acervo.",
+    "Modo Prova: resultado e gabarito ocultos durante a execução; correção só ao concluir ou abandonar. Anuladas contam como conteúdo e ficam fora do aproveitamento — regra de pontuação DESCONHECIDA.",
+    "Explicação ausente = NECESSITA REVISÃO, nunca texto inventado. Assuntos são classificação derivada com revisão humana PENDENTE.",
+  ];
+  for (const t of fixed) {
+    const card = el("div", { className: "card" });
+    const body = el("div", { className: "card__body" });
+    body.appendChild(el("p", { text: t, attrs: { style: "font-size:var(--text-sm)" } }));
+    card.appendChild(body);
+    notesBox.appendChild(card);
+  }
+}

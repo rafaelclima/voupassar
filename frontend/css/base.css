@@ -31,6 +31,13 @@ main {
   display: block;
 }
 
+/* O atributo hidden deve sempre esconder (TASK 6.7): componentes como
+ * .loading-block definem display próprio e venceriam o estilo do navegador,
+ * deixando blocos de loading anunciados mesmo após a carga. */
+[hidden] {
+  display: none !important;
+}
+
 /* Hierarquia tipográfica */
 h1,
 h2,

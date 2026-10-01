@@ -669,8 +669,15 @@ function renderSimulations(page, loadError) {
   if (!items.length) {
     renderEmpty(simBox, {
       title: "Nenhum simulado ainda",
-      description: "Seus simulados por disciplina e de edição real aparecem aqui. As telas de prova chegam nas TASKs 6.5–6.7.",
+      description: "Seus simulados por disciplina e de edição real aparecem aqui.",
     });
+    simBox.appendChild(
+      el("a", {
+        className: "btn btn--primary btn--sm mt-4",
+        text: "Fazer simulado",
+        attrs: { href: "./simulado.html" },
+      }),
+    );
     return;
   }
   const list = el("ol", { className: "sim-list" });
@@ -691,6 +698,13 @@ function renderSimulations(page, loadError) {
     list.appendChild(li);
   }
   simBox.appendChild(list);
+  simBox.appendChild(
+    el("a", {
+      className: "btn btn--secondary btn--sm mt-4",
+      text: "Abrir simulados",
+      attrs: { href: "./simulado.html" },
+    }),
+  );
 }
 
 /* ---------- notas ---------- */
