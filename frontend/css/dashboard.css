@@ -1,0 +1,191 @@
+/* VouPassar — dashboard (TASK 6.4)
+ * Só layout da página dashboard.html. Tokens, cards, tabelas, badges,
+ * alerts, loading e botões vêm do design system (base/components/utilities).
+ * Mobile-first: 1 coluna; 2 colunas a partir de 48rem; evolução vira
+ * grade larga a partir de 64rem.
+ */
+
+.dash-head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.dash-head p {
+  max-width: var(--measure);
+}
+
+.dash-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.dash-stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.dash-stats .stat-value--empty {
+  color: var(--color-ink-500);
+}
+
+@media (min-width: 48rem) {
+  .dash-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dash-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 64rem) {
+  .dash-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Lista de prioridades (diagnóstico) */
+.priority-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.priority-list__item {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.priority-list__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.priority-list__rank {
+  font-weight: 700;
+  color: var(--color-primary-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.priority-list__reason {
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+}
+
+/* Próximo estudo / plano */
+.plan-next {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.plan-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.plan-items__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-line-200);
+  padding-top: var(--space-2);
+}
+
+.plan-items__name {
+  font-weight: 600;
+}
+
+.plan-items__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+/* Evolução: barras CSS puras (sem lib, sem canvas) */
+.evo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+  margin-bottom: var(--space-3);
+}
+
+.evo-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.evo-bars__row {
+  display: grid;
+  grid-template-columns: 7rem 1fr 4.5rem;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+
+.evo-bars__label {
+  color: var(--color-ink-700);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evo-bars__value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-900);
+}
+
+/* Simulados recentes */
+.sim-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sim-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+}
+
+.sim-list__title {
+  font-weight: 600;
+}
+
+.sim-list__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.dash-notes {
+  display: grid;
+  gap: var(--space-3);
+}

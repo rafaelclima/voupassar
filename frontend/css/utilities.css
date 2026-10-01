@@ -1,0 +1,122 @@
+/* VouPassar — utilitários (TASK 6.1): layout e helpers. Mobile-first. */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+.mb-4 { margin-bottom: var(--space-4); }
+
+.flow > * + * {
+  margin-top: var(--space-4);
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grid-2 {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48rem) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.section {
+  padding-block: var(--space-8);
+}
+
+.section--tight {
+  padding-block: var(--space-4);
+}
+
+.lead {
+  font-size: var(--text-lg);
+  color: var(--color-ink-700);
+}
+
+.muted {
+  color: var(--color-ink-500);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.docs-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 64rem) {
+  .docs-grid {
+    grid-template-columns: 16rem 1fr;
+    align-items: start;
+  }
+
+  .docs-toc {
+    position: sticky;
+    top: 76px;
+  }
+}
+
+.docs-toc nav {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: var(--space-4);
+}
+
+.docs-toc ol {
+  padding-left: 1.25rem;
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.swatch {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-line-300);
+  vertical-align: middle;
+}
+
+.code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-bg-100);
+  border: 1px solid var(--color-line-200);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  white-space: nowrap;
+}

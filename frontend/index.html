@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="VouPassar — preparação orientada por evidências para o processo seletivo dos Cursos Técnicos Integrados do IFRN, a partir de provas reais." />
+  <meta name="voupassar-api" content="http://localhost:8080" />
+  <meta name="theme-color" content="#0f2e47" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/utilities.css" />
+  <link rel="stylesheet" href="./css/landing.css" />
+  <title>VouPassar — preparação para o IFRN</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="./index.html" aria-label="VouPassar — início">
+        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <span>VouPassar</span>
+      </a>
+      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
+      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
+        <div class="site-nav__links" id="nav-links">
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#funcionalidades">Funcionalidades</a>
+          <a href="#evidencias">Evidências</a>
+          <a href="#faq">Dúvidas</a>
+          <a class="btn btn--primary btn--sm" href="#acesso">Começar agora</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-t">
+      <div class="container hero__grid">
+        <div class="flow">
+          <p><span class="badge badge--primary">Provas reais do IFRN · 2020–2026</span></p>
+          <h1 id="hero-t">Estude para o IFRN com base no que a prova realmente cobra</h1>
+          <p class="lead">
+            O VouPassar organiza as provas do processo seletivo dos Cursos
+            Técnicos Integrados em questões, assuntos e recomendações
+            rastreáveis — cada sugestão de estudo aponta para as edições e
+            questões que a sustentam.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" href="#acesso">Começar agora</a>
+            <a class="btn btn--secondary btn--lg" href="#como-funciona">Ver como funciona</a>
+          </div>
+          <div class="trust" role="list" aria-label="Números auditados do acervo">
+            <article class="card" role="listitem">
+              <div class="card__body">
+                <div class="stat-value">240</div>
+                <div class="stat-label">questões oficiais no banco (40 × 6 edições)</div>
+              </div>
+            </article>
+            <article class="card" role="listitem">
+              <div class="card__body">
+                <div class="stat-value">6</div>
+                <div class="stat-label">edições: 2020, 2022, 2023, 2024, 2025 e 2026</div>
+              </div>
+            </article>
+            <article class="card" role="listitem">
+              <div class="card__body">
+                <div class="stat-value">120 + 120</div>
+                <div class="stat-label">questões de Língua Portuguesa e de Matemática</div>
+              </div>
+            </article>
+          </div>
+        </div>
+        <aside aria-label="Situação da plataforma">
+          <div class="card">
+            <div class="card__header"><h2 style="font-size:var(--text-md)">Por que confiar?</h2></div>
+            <div class="card__body flow">
+              <p><small><strong>Evidência antes de opinião.</strong> Nada aqui foi inventado: o conteúdo vem dos cadernos e gabaritos oficiais guardados no repositório. O que não pôde ser comprovado aparece marcado como desconhecido.</small></p>
+              <p><span class="badge">2021 ausente</span> <small>sem fonte no acervo — jamais preenchida com dados inventados.</small></p>
+              <p><span class="badge badge--warning">Revisão pendente</span> <small>classificações de assunto aguardam curadoria humana.</small></p>
+            </div>
+          </div>
+          <p class="api-status" id="api-status" data-state="loading" role="status" aria-live="polite">
+            <span class="api-status__dot" aria-hidden="true"></span>
+            <span data-api-label>Verificando API…</span>
+            <button type="button" class="btn btn--ghost btn--sm" data-api-retry hidden>Tentar de novo</button>
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PROPOSTA DE VALOR -->
+    <section class="section--tight" id="proposta" aria-labelledby="proposta-t">
+      <div class="container">
+        <h2 id="proposta-t">Uma plataforma séria para uma prova séria</h2>
+        <p class="lead">Sem achismo sobre “o que cai mais”. O roteiro nasce do que foi observado nas provas.</p>
+        <div class="card-grid card-grid--3 mt-4">
+          <article class="card">
+            <div class="card__body">
+              <span class="feature-icon" aria-hidden="true">◉</span>
+              <h3>Questões reais, com origem</h3>
+              <p>Cada questão carrega edição, número, página do caderno e gabarito oficial. Questões autorais, quando existirem, serão sempre identificadas como tal.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <span class="feature-icon" aria-hidden="true">◎</span>
+              <h3>Roteiro que se explica</h3>
+              <p>Em vez de “estude isso”, você recebe o motivo: seu aproveitamento no assunto e as edições em que ele apareceu.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <span class="feature-icon" aria-hidden="true">▣</span>
+              <h3>Simulados como a prova</h3>
+              <p>Por disciplina ou reproduzindo a estrutura de uma edição real — 20 de Português, 20 de Matemática e produção textual, como nos cadernos do acervo.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="section--tight" id="como-funciona" aria-labelledby="como-t">
+      <div class="container">
+        <h2 id="como-t">Como funciona</h2>
+        <p class="lead">Do diagnóstico ao novo diagnóstico: um ciclo que se atualiza com o seu desempenho.</p>
+        <ol class="steps mt-4">
+          <li>
+            <h3>Responda e diagnostique</h3>
+            <p>Você resolve questões e o sistema mede seu acerto geral, por disciplina e por assunto.</p>
+          </li>
+          <li>
+            <h3>Receba o roteiro</h3>
+            <p>Assuntos priorizados por frequência histórica, seu desempenho e dificuldade — sempre com o motivo explicado.</p>
+          </li>
+          <li>
+            <h3>Pratique nos 3 modos</h3>
+            <p>Estudo (feedback imediato), Prova (sem respostas até o fim) e Revisão (foco nos erros e pontos fracos).</p>
+          </li>
+          <li>
+            <h3>Acompanhe a evolução</h3>
+            <p>Desempenho, histórico e progresso atualizam o roteiro. O próximo passo está sempre visível.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FUNCIONALIDADES -->
+    <section class="section--tight" id="funcionalidades" aria-labelledby="func-t">
+      <div class="container">
+        <h2 id="func-t">Funcionalidades</h2>
+        <p class="lead">O motor da plataforma já está implementado e testado na API.</p>
+        <div class="card-grid card-grid--3 mt-4">
+          <article class="card">
+            <div class="card__body">
+              <p><span class="badge badge--success">API pronta</span></p>
+              <h3 class="mt-2">Banco de questões</h3>
+              <p>Busca por disciplina, assunto, edição e dificuldade, com paginação e proveniência completa.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <p><span class="badge badge--success">API pronta</span></p>
+              <h3 class="mt-2">Simulados por disciplina</h3>
+              <p>Escolha disciplina, quantidade e dificuldade; o caderno é congelado e corrigido no servidor.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <p><span class="badge badge--success">API pronta</span></p>
+              <h3 class="mt-2">Simulado de edição real</h3>
+              <p>Reproduz a estrutura daquela edição específica — nunca uma média inventada de “todas as provas”.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <p><span class="badge badge--success">API pronta</span></p>
+              <h3 class="mt-2">Modos Estudo, Prova e Revisão</h3>
+              <p>Feedback imediato, ocultação de gabarito durante a prova e fila de revisão dos seus erros.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <p><span class="badge badge--success">API pronta</span></p>
+              <h3 class="mt-2">Diagnóstico e roteiro</h3>
+              <p>Pontos fortes e fracos, nível de domínio estimado e plano de estudos determinístico e auditável.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__body">
+              <p><span class="badge badge--success">API pronta</span></p>
+              <h3 class="mt-2">Dashboard e histórico</h3>
+              <p>Onde você está, o que estudar, como está evoluindo e o que fazer agora.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVIDÊNCIAS -->
+    <section class="section--tight" id="evidencias" aria-labelledby="evid-t">
+      <div class="container">
+        <h2 id="evid-t">O que as provas mostram</h2>
+        <p class="lead">Agregado das 240 questões classificadas. Revisão humana das classificações: <strong>pendente</strong>.</p>
+        <div class="table-wrap mt-4" role="region" aria-label="Assuntos mais frequentes no acervo" tabindex="0">
+          <table class="table">
+            <caption>Assuntos por frequência (6 edições; % do total de 240)</caption>
+            <thead><tr><th scope="col">Assunto</th><th scope="col">Disciplina</th><th scope="col" class="num">Questões</th><th scope="col" class="num">% total</th></tr></thead>
+            <tbody>
+              <tr><td>Gramática e norma</td><td>Língua Portuguesa</td><td class="num">60</td><td class="num">25,0%</td></tr>
+              <tr><td>Interpretação textual</td><td>Língua Portuguesa</td><td class="num">60</td><td class="num">25,0%</td></tr>
+              <tr><td>Razão e proporção</td><td>Matemática</td><td class="num">25</td><td class="num">10,4%</td></tr>
+              <tr><td>Aritmética</td><td>Matemática</td><td class="num">22</td><td class="num">9,2%</td></tr>
+              <tr><td>Álgebra</td><td>Matemática</td><td class="num">18</td><td class="num">7,5%</td></tr>
+              <tr><td>Geometria</td><td>Matemática</td><td class="num">18</td><td class="num">7,5%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert alert--info mt-4" role="note">
+          <div>
+            <strong>Leitura honesta dos números</strong>
+            <p>Cada edição do acervo traz 20 questões de Português, 20 de Matemática e uma produção textual — configuração daquele documento, não regra universal. Cinco questões foram anuladas pelos gabaritos (2020 Q7 e Q26 · 2023 Q21 · 2024 Q17 · 2026 Q37); a regra de pontuação de anuladas é desconhecida. A edição de 2021 não existe no acervo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section--tight faq" id="faq" aria-labelledby="faq-t">
+      <div class="container" style="max-width: 44rem">
+        <h2 id="faq-t">Dúvidas frequentes</h2>
+        <details class="mt-4" open>
+          <summary>As questões são do IFRN de verdade?</summary>
+          <p class="mt-2">Sim — 240 questões oficiais das edições 2020, 2022, 2023, 2024, 2025 e 2026, cada uma com edição, número e página de origem. Questões autorais, quando existirem, serão marcadas como tal e nunca apresentadas como oficiais.</p>
+        </details>
+        <details>
+          <summary>Por que não há nada de 2021?</summary>
+          <p class="mt-2">Porque nenhuma prova de 2021 foi encontrada para o acervo. A ausência está documentada e nunca será preenchida com conteúdo inventado.</p>
+        </details>
+        <details>
+          <summary>E a redação?</summary>
+          <p class="mt-2">Cada uma das 6 edições do acervo traz uma proposta de produção textual (artigo de opinião). A correção automática da discursiva está fora do escopo inicial — a plataforma registra a proposta e os critérios quando impressos.</p>
+        </details>
+        <details>
+          <summary>Como o roteiro sabe o que recomendar?</summary>
+          <p class="mt-2">Combinando frequência histórica do assunto nas provas, seu aproveitamento, dificuldade estimada e recência — com o motivo exibido em cada recomendação e as questões que a sustentam.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ACESSO -->
+    <section class="section" id="acesso" aria-labelledby="acesso-t">
+      <div class="container">
+        <div class="cta-band">
+          <h2 id="acesso-t">Pronto para começar?</h2>
+          <p class="lead" style="max-width: 36rem">Crie sua conta, faça o diagnóstico e receba seu roteiro de estudos.</p>
+          <div class="btn-group mt-4" style="justify-content: center" role="group" aria-label="Acesso à plataforma">
+            <a class="btn btn--primary btn--lg" href="./cadastro.html">Criar conta</a>
+            <a class="btn btn--ghost btn--lg" href="./login.html">Entrar</a>
+          </div>
+          <div class="grid-2 mt-8" style="text-align: left">
+            <article class="card">
+              <div class="card__body">
+                <h3>Criar conta</h3>
+                <p class="mt-2"><small>Cadastro com e-mail e senha (mínimo de dados, sem informações desnecessárias). Nome de exibição, ano escolar e objetivo são opcionais para personalizar o roteiro.</small></p>
+                <p class="mt-2"><a class="btn btn--primary" href="./cadastro.html">Criar conta</a></p>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card__body">
+                <h3>Entrar</h3>
+                <p class="mt-2"><small>Acesso com sessão segura: token curto em memória e renovação com refresh rotativo. Esqueceu a senha? <a href="./recuperar-senha.html">Recupere aqui</a>.</small></p>
+                <p class="mt-2"><a class="btn btn--secondary" href="./login.html">Entrar</a></p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container split">
+      <p class="muted"><small>VouPassar · Preparação orientada por evidências · <span data-current-year>2026</span></small></p>
+      <p class="muted"><small><a href="./design-system.html">Design system</a> · Conteúdo das provas: somente referência pública até curadoria</small></p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/views/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Entrar no VouPassar — acesse sua conta de estudos para o IFRN com e-mail e senha." />
+  <meta name="voupassar-api" content="http://localhost:8080" />
+  <meta name="theme-color" content="#0f2e47" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/utilities.css" />
+  <link rel="stylesheet" href="./css/auth.css" />
+  <title>Entrar — VouPassar</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="./index.html" aria-label="VouPassar — início">
+        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <span>VouPassar</span>
+      </a>
+      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
+      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
+        <div class="site-nav__links" id="nav-links">
+          <a href="./index.html#como-funciona">Como funciona</a>
+          <a href="./cadastro.html">Criar conta</a>
+          <a class="btn btn--primary btn--sm" href="./login.html" aria-current="page">Entrar</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <div class="container auth-wrap">
+      <article class="card auth-card" aria-labelledby="auth-t">
+        <div class="card__header">
+          <p><span class="badge badge--primary">Acesso à plataforma</span></p>
+          <h1 id="auth-t">Entrar</h1>
+          <p class="muted">Acesse com o e-mail e a senha do seu cadastro.</p>
+        </div>
+        <div class="card__body">
+          <div id="auth-feedback"></div>
+          <div id="auth-already" hidden></div>
+          <form id="login-form" novalidate aria-describedby="login-hint">
+            <p class="muted" id="login-hint"><small>A falha de login é sempre genérica (“e-mail ou senha inválidos”) para não revelar quais contas existem.</small></p>
+            <div class="field mt-4">
+              <label class="field__label" for="login-email">E-mail <span class="required" aria-hidden="true">*</span></label>
+              <input class="input" id="login-email" name="email" type="email" autocomplete="email" spellcheck="false" required maxlength="254" placeholder="voce@exemplo.com" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="login-password">Senha <span class="required" aria-hidden="true">*</span></label>
+              <div class="password-field">
+                <input class="input" id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha" />
+                <button type="button" class="password-toggle" data-password-toggle="login-password" aria-label="Mostrar senha">Mostrar</button>
+              </div>
+            </div>
+            <label class="check-row"><input type="checkbox" name="remember" value="1" /> Manter conectado neste dispositivo</label>
+            <p class="auth-meta">Sem “manter conectado”, a sessão dura apenas nesta aba (sessionStorage). Com a opção, o refresh fica em localStorage até você sair.</p>
+            <div class="btn-group mt-4">
+              <button type="submit" class="btn btn--primary btn--block" id="login-submit">Entrar</button>
+            </div>
+          </form>
+          <div class="auth-links mt-4">
+            <a href="./cadastro.html">Ainda não tenho conta — criar conta</a>
+            <a href="./recuperar-senha.html">Esqueci minha senha</a>
+            <a href="./index.html">← Voltar ao início</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container split">
+      <p class="muted"><small>VouPassar · Preparação orientada por evidências · <span data-current-year>2026</span></small></p>
+      <p class="muted"><small><a href="./design-system.html">Design system</a> · <a href="./index.html">Início</a></small></p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/views/login.js"></script>
+</body>
+</html>
