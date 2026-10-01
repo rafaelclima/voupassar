@@ -1,5 +1,7 @@
 package br.com.voupassar.studyplan.entity;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -35,6 +37,7 @@ public class StudyPlanItem {
   private String reason;
 
   @Column(name = "evidence_json", nullable = false)
+  @JdbcTypeCode(SqlTypes.JSON)
   private String evidenceJson;
 
   @Column(name = "status", nullable = false)
