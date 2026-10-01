@@ -2,6 +2,7 @@ package br.com.voupassar.studyplan.entity;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -20,6 +21,11 @@ public class StudyPlanItem {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  // Ignorado no JSON: o plano já carrega os itens (plan -> items).
+  // Sem isso a serialização entra em recursão infinita
+  // (plan.items[].studyPlan.items...) e GET/POST do roteiro retornam 500.
+  // Detectado ao vivo na TASK 6.4 (dashboard).
+  @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "study_plan_id", nullable = false)
   private StudyPlan studyPlan;

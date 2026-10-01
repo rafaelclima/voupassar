@@ -3,8 +3,9 @@ package br.com.voupassar.studyplan.service;
 import br.com.voupassar.auth.entity.User;
 import br.com.voupassar.auth.repository.UserRepository;
 import br.com.voupassar.content.entity.Topic;
-import br.com.voupassar.content.entity.Subtopic;
 import br.com.voupassar.content.repository.TopicRepository;
+import br.com.voupassar.exception.BadRequestException;
+import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.content.repository.SubtopicRepository;
 import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.entity.StudentTopicPerformance;
@@ -85,13 +86,16 @@ public class RecommendationService {
   @Transactional
   public StudyPlan generatePlan(long userId) {
     User user = users.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("USER_NOT_FOUND"));
+        .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND", "Conta não encontrada."));
 
-    // Desativa plano anterior (se existir) — preserva histórico
+    // Desativa plano anterior (se existir) — preserva histórico.
+    // saveAndFlush força o UPDATE antes do INSERT abaixo: sem o flush o
+    // Hibernate pode descarregar o INSERT primeiro e violar a UNIQUE parcial
+    // uq_study_plans_active (detectado ao vivo na TASK 6.4, segundo POST).
     studyPlans.findByUserIdAndIsActiveTrue(userId)
         .ifPresent(plan -> {
           plan.setIsActive(false);
-          studyPlans.save(plan);
+          studyPlans.saveAndFlush(plan);
         });
 
     StudyPlan newPlan = new StudyPlan(userId, ALGORITHM_VERSION);
@@ -227,7 +231,8 @@ public class RecommendationService {
   @Transactional(readOnly = true)
   public StudyPlan getPlan(long userId) {
     return studyPlans.findByUserIdAndIsActiveTrue(userId)
-        .orElseThrow(() -> new IllegalArgumentException("NO_ACTIVE_PLAN"));
+        .orElseThrow(() -> new ResourceNotFoundException("NO_ACTIVE_PLAN",
+            "Nenhum roteiro vigente. Gere um roteiro primeiro."));
   }
 
   /**
@@ -243,8 +248,15 @@ public class RecommendationService {
    */
   @Transactional
   public StudyPlanItem updateItemStatus(Long itemId, String status) {
+    if (status == null
+        || (!status.equals("TODO") && !status.equals("DOING")
+            && !status.equals("DONE") && !status.equals("SKIPPED"))) {
+      throw new BadRequestException("INVALID_STATUS",
+          "Status inválido. Use TODO, DOING, DONE ou SKIPPED.");
+    }
     StudyPlanItem item = studyPlanItems.findById(itemId)
-        .orElseThrow(() -> new IllegalArgumentException("ITEM_NOT_FOUND"));
+        .orElseThrow(() -> new ResourceNotFoundException("ITEM_NOT_FOUND",
+            "Item do roteiro não encontrado."));
     item.setStatus(status);
     return studyPlanItems.save(item);
   }
