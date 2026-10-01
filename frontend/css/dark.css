@@ -85,15 +85,14 @@ html[data-theme="dark"] .skip-link {
   background: var(--color-surface);
   color: var(--color-ink-700);
   border-radius: var(--radius-sm);
-  min-width: var(--touch-min);
-  min-height: var(--touch-min);
+  min-width: 52px;
+  min-height: 52px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   line-height: 1;
-  margin-left: auto;
   transition: background var(--motion-fast), border-color var(--motion-fast);
 }
 
@@ -106,4 +105,66 @@ html[data-theme="dark"] .skip-link {
   background: var(--color-primary-700);
   border-color: var(--color-primary-700);
   color: #fff;
+}
+
+/* Seção CTA no dark: fundo escuro para manter contraste com texto claro */
+html[data-theme="dark"] .cta-band {
+  background: #0f172a;
+  color: #fff;
+}
+
+html[data-theme="dark"] .cta-band p {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"] .cta-band .btn--primary {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: #fff;
+}
+
+html[data-theme="dark"] .cta-band .btn--primary:hover {
+  background: var(--color-primary-900);
+  border-color: var(--color-primary-900);
+  color: #fff;
+}
+
+html[data-theme="dark"] .cta-band .btn--ghost {
+  color: #fff;
+}
+
+html[data-theme="dark"] .cta-band .btn--ghost:hover {
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+/* Alertas no dark: fundos mais escuros para não “estourar” */
+html[data-theme="dark"] .alert {
+  background: #0b1120;
+  border-color: #334155;
+  color: var(--color-ink-700);
+}
+
+html[data-theme="dark"] .alert strong {
+  color: var(--color-ink-900);
+}
+
+html[data-theme="dark"] .alert--info {
+  background: #0f172a;
+  border-color: #1b3a5c;
+}
+
+html[data-theme="dark"] .alert--warning {
+  background: #1a1508;
+  border-color: #7a4d0f;
+}
+
+html[data-theme="dark"] .alert--success {
+  background: #081a12;
+  border-color: #065f2a;
+}
+
+html[data-theme="dark"] .alert--danger {
+  background: #1a0f0f;
+  border-color: #7a1e1e;
 }

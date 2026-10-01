@@ -238,6 +238,13 @@ summary:focus-visible {
   margin-top: var(--space-12);
 }
 
+.site-footer > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .skip-link {
   position: absolute;
   left: var(--space-4);

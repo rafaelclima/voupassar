@@ -53,15 +53,20 @@ function wireTheme() {
   btn.className = "theme-toggle";
   btn.setAttribute("aria-label", "Alternar tema escuro/claro");
   btn.setAttribute("title", "Alternar tema");
-  btn.textContent = "◐";
+  btn.textContent = "☾";
 
-  // Inserir antes de .site-nav__links se existir, senão no .site-nav
-  const navLinks = document.querySelector(".site-nav__links");
-  if (navLinks) {
-    navLinks.insertAdjacentElement("beforebegin", btn);
+  // Inserir na extrema direita do header, após a navegação.
+  const headerInner = document.querySelector(".site-header__inner");
+  if (headerInner) {
+    headerInner.appendChild(btn);
   } else {
-    const nav = document.querySelector(".site-nav");
-    if (nav) nav.insertAdjacentElement("afterbegin", btn);
+    const navLinks = document.querySelector(".site-nav__links");
+    if (navLinks) {
+      navLinks.insertAdjacentElement("beforebegin", btn);
+    } else {
+      const nav = document.querySelector(".site-nav");
+      if (nav) nav.insertAdjacentElement("afterbegin", btn);
+    }
   }
 
   const getPref = () => {
@@ -73,7 +78,7 @@ function wireTheme() {
   const apply = (theme) => {
     html.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
     btn.setAttribute("aria-pressed", String(theme === "dark"));
-    btn.textContent = theme === "dark" ? "◑" : "◐";
+    btn.textContent = theme === "dark" ? "☀" : "☾";
   };
 
   const saved = getPref();
