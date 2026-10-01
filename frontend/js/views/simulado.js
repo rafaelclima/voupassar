@@ -820,6 +820,14 @@ function bindFinishButtons() {
     state.confirmAction = null;
     if (isOpen()) btnSubmit.focus?.();
   });
+  // Esc (evento "cancel" do <dialog> nativo) não passa pelo botão Voltar:
+  // devolve o foco ao encerrar para o teclado não cair em <body>.
+  // O fluxo Confirmar usa close() programático (sem "cancel") e gerencia o
+  // foco próprio (resultado), por isso não usamos "close" aqui.
+  confirmDlg.addEventListener("cancel", () => {
+    state.confirmAction = null;
+    setTimeout(() => { if (isOpen()) btnSubmit.focus?.(); }, 0);
+  });
   confirmYes.addEventListener("click", async () => {
     const action = state.confirmAction;
     confirmDlg.close();
@@ -909,6 +917,7 @@ async function renderFinishedState() {
     renderScoreGrid(res);
     renderResultItems(res);
     resultSection.scrollIntoView({ block: "start" });
+    document.getElementById("sim-result-t")?.focus?.({ preventScroll: true });
   } catch (err) {
     resultBox.textContent = "";
     if (err instanceof ApiError && err.code === "SIMULATION_NOT_FINISHED") {

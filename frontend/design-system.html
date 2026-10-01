@@ -102,7 +102,7 @@
           <section class="card" id="tipografia" aria-labelledby="tipo-t">
             <div class="card__header"><h2 id="tipo-t">Tipografia</h2></div>
             <div class="card__body flow">
-              <h1>Título H1 — 30px</h1>
+              <p style="font-size:var(--text-3xl);font-weight:700;line-height:var(--leading-heading);letter-spacing:-0.01em">Título H1 — 30px (exemplo visual; a página usa um único h1 real acima)</p>
               <h2>Título H2 — 24px</h2>
               <h3>Título H3 — 20px</h3>
               <p>Parágrafo: a leitura confortável vem de medida máxima (<span class="code-inline">--measure: 68ch</span>), altura de linha 1.5 e hierarquia clara — sem excesso de cores ou efeitos.</p>
@@ -327,6 +327,15 @@
         </div>
       </div>
     </div>
+        <noscript>
+        <style>.site-nav__links{display:flex !important}.site-nav__toggle{display:none !important}</style>
+        <div class="alert alert--warning mt-4" role="note">
+          <div>
+            <strong>JavaScript desligado</strong>
+            <p>Esta galeria precisa de JavaScript só para as demonstrações interativas. Os componentes continuam visíveis sem ele.</p>
+          </div>
+        </div>
+      </noscript>
   </main>
 
   <dialog class="modal" id="demo-modal" data-modal aria-labelledby="demo-modal-t">

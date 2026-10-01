@@ -73,8 +73,8 @@
 }
 
 .btn--sm {
-  min-height: 36px;
-  padding: 0.375rem 0.75rem;
+  min-height: var(--touch-min);
+  padding: 0.5rem 0.75rem;
   font-size: var(--text-sm);
 }
 

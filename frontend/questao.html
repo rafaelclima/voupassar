@@ -89,7 +89,7 @@
           <!-- FEEDBACK -->
           <section class="mt-4" aria-labelledby="questao-feedback-t">
             <h2 id="questao-feedback-t" class="questao-h2">Feedback</h2>
-            <div id="questao-feedback" class="questao-feedback" role="status" aria-live="polite" hidden></div>
+            <div id="questao-feedback" class="questao-feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
             <p class="muted mt-2" id="questao-feedback-empty"><small>O feedback aparece aqui após a confirmação — acerto ou erro, resposta correta e assunto.</small></p>
           </section>
 
@@ -118,6 +118,7 @@
       </div>
 
       <noscript>
+        <style>.site-nav__links{display:flex !important}.site-nav__toggle{display:none !important}</style>
         <div class="alert alert--warning mt-4" role="note">
           <div>
             <strong>JavaScript desligado</strong>

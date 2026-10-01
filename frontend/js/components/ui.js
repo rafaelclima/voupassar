@@ -50,7 +50,9 @@ export function toast(message, type = "info") {
     className: "icon-btn",
     attrs: { type: "button", "aria-label": "Fechar aviso" },
   });
-  close.style.cssText = "margin-left:auto;width:32px;height:32px;color:#fff;border-color:transparent;background:transparent";
+  // Alvo de toque herdado de .icon-btn (44px, WCAG 2.5.8): sem override
+  // menor aqui. Só empurra para a borda do toast.
+  close.style.cssText = "margin-left:auto;color:#fff;border-color:transparent;background:transparent";
   close.addEventListener("click", () => node.remove());
   node.appendChild(close);
   region.appendChild(node);
@@ -59,6 +61,8 @@ export function toast(message, type = "info") {
 }
 
 // ---------- Modal (dialog nativo) ----------
+let lastModalTrigger = null;
+
 /** Abre <dialog id> com foco no primeiro botão; Esc fecha (nativo). */
 export function openModal(id) {
   const dlg = document.getElementById(id);
@@ -66,9 +70,16 @@ export function openModal(id) {
     console.error(`[ui] modal #${id} não encontrado`);
     return null;
   }
+  lastModalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   if (!dlg.open) dlg.showModal();
   const focusable = dlg.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
   focusable?.focus();
+  // Devolve o foco a quem abriu quando o diálogo fechar (Esc, backdrop ou
+  // botão): sem isso o foco cai para <body> e o teclado "perde" a posição.
+  dlg.addEventListener("close", () => {
+    lastModalTrigger?.focus?.();
+    lastModalTrigger = null;
+  }, { once: true });
   return dlg;
 }
 
