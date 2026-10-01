@@ -2,6 +2,10 @@ package br.com.voupassar.simulations.service;
 
 import br.com.voupassar.auth.entity.User;
 import br.com.voupassar.auth.repository.UserRepository;
+import br.com.voupassar.content.entity.QuestionClassification;
+import br.com.voupassar.content.entity.Subtopic;
+import br.com.voupassar.content.entity.Topic;
+import br.com.voupassar.content.repository.QuestionClassificationRepository;
 import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ConflictException;
 import br.com.voupassar.exception.ResourceNotFoundException;
@@ -14,6 +18,7 @@ import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
 import br.com.voupassar.questions.dto.PageResponse;
 import br.com.voupassar.simulations.dto.CreateDisciplineSimulationRequest;
+import br.com.voupassar.simulations.dto.StudyFeedbackResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse.CadernoItem;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse.ScoreSummary;
@@ -49,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Simulado por disciplina (TASK 5.1) — escolher disciplina, quantidade e
  * dificuldade; iniciar; retomar ({@code IN_PROGRESS}); concluir; abandonar;
- * visualizar resultado.
+ * visualizar resultado — mais feedback imediato do Modo Estudo (TASK 5.2).
  *
  * <p>Regras de evidência:
  * <ul>
@@ -72,8 +77,13 @@ import org.springframework.transaction.annotation.Transactional;
  *       sensação de prova nos dois modos); a correção aparece só após
  *       concluir/abandonar. Não existe estado de pausa no DDL — "pausar" é
  *       manter {@code IN_PROGRESS} e retomar via {@code GET}.</li>
- *   <li>{@code REAL_EDITION} não é gerado aqui (TASK 5.5); {@code REVISAO}
- *       não gera simulado novo (ERD §2.6).</li>
+  *   <li>{@code REAL_EDITION} não é gerado aqui (TASK 5.5); {@code REVISAO}
+  *       não gera simulado novo (ERD §2.6).</li>
+  *   <li>Feedback imediato por posição (TASK 5.2): no Modo ESTUDO em qualquer
+  *       status e no Modo PROVA somente após encerrar; durante a prova o
+  *       gabarito permanece oculto (base da TASK 5.3). Vale a <b>última</b>
+  *       tentativa por questão, confrontada com o gabarito <b>congelado</b>;
+  *       sem resposta não há feedback.</li>
  * </ul>
  */
 @Service
@@ -94,6 +104,7 @@ public class SimulationService {
   private final SimulationAttemptRepository attempts;
   private final SimulationQuestionRepository caderno;
   private final QuestionAttemptRepository responses;
+  private final QuestionClassificationRepository classifications;
   private final Random random;
 
   @Autowired
@@ -104,8 +115,10 @@ public class SimulationService {
       SimulationRepository simulations,
       SimulationAttemptRepository attempts,
       SimulationQuestionRepository caderno,
-      QuestionAttemptRepository responses) {
-    this(users, disciplines, questions, simulations, attempts, caderno, responses, new SecureRandom());
+      QuestionAttemptRepository responses,
+      QuestionClassificationRepository classifications) {
+    this(users, disciplines, questions, simulations, attempts, caderno, responses,
+        classifications, new SecureRandom());
   }
 
   SimulationService(
@@ -116,6 +129,7 @@ public class SimulationService {
       SimulationAttemptRepository attempts,
       SimulationQuestionRepository caderno,
       QuestionAttemptRepository responses,
+      QuestionClassificationRepository classifications,
       Random random) {
     this.users = users;
     this.disciplines = disciplines;
@@ -124,6 +138,7 @@ public class SimulationService {
     this.attempts = attempts;
     this.caderno = caderno;
     this.responses = responses;
+    this.classifications = classifications;
     this.random = random;
   }
 
@@ -295,6 +310,97 @@ public class SimulationService {
           "Simulado ainda em andamento: conclua ou abandone para ver o resultado (gabarito oculto durante a execução).");
     }
     return toResultResponse(attempt, scoreBoard(attempt), "ABANDONED".equals(attempt.getStatus()));
+  }
+
+  /**
+   * Feedback imediato de uma posição do caderno (TASK 5.2 — Modo Estudo).
+   *
+   * <p>Mostra acerto/erro, resposta correta (gabarito congelado), explicação e
+   * conteúdo relacionado (assunto/subassunto vigentes) a partir da
+   * <b>última</b> tentativa vinculada a esta execução. Sem resposta, não há
+   * feedback (nunca inventado).
+   *
+   * <p>Disponível no Modo ESTUDO em qualquer status e no Modo PROVA somente
+   * após encerrar: durante a execução da prova o gabarito permanece oculto
+   * (preserva a sensação de prova — base da TASK 5.3).
+   */
+  @Transactional(readOnly = true)
+  public StudyFeedbackResponse getStudyFeedback(long userId, long attemptId, int position) {
+    requireActiveUser(userId);
+    SimulationAttempt attempt = requireOwnedAttempt(userId, attemptId);
+    if (position < 1) {
+      throw new BadRequestException(
+          "INVALID_POSITION", "Posição inválida: " + position + " (a primeira posição é 1).");
+    }
+    if ("PROVA".equals(attempt.getMode()) && "IN_PROGRESS".equals(attempt.getStatus())) {
+      throw new ConflictException(
+          "STUDY_FEEDBACK_UNAVAILABLE",
+          "Feedback imediato indisponível durante a execução no Modo Prova: "
+              + "conclua ou abandone para ver a correção (o gabarito fica oculto até encerrar).");
+    }
+
+    List<SimulationQuestion> rows =
+        caderno.findBySimulationAttemptIdOrderByPositionAsc(attemptId);
+    SimulationQuestion row = null;
+    for (SimulationQuestion r : rows) {
+      if (r.getPosition() != null && r.getPosition() == position) {
+        row = r;
+        break;
+      }
+    }
+    if (row == null) {
+      throw new ResourceNotFoundException(
+          "SIMULATION_QUESTION_NOT_FOUND",
+          "Posição " + position + " não encontrada neste simulado (" + rows.size() + " posições).");
+    }
+
+    Question question = requirePresent(
+        questionsById(List.of(row.getQuestion().getId())), row.getQuestion().getId());
+    QuestionAttempt last = null;
+    for (QuestionAttempt a : responses.findBySimulationAttemptIdAndUserId(attemptId, userId)) {
+      if (a.getQuestion() != null && question.getId().equals(a.getQuestion().getId())
+          && (last == null || compareRecency(a, last) > 0)) {
+        last = a;
+      }
+    }
+    if (last == null) {
+      throw new ConflictException(
+          "FEEDBACK_NOT_AVAILABLE",
+          "Posição " + position + " ainda sem resposta nesta execução: "
+              + "responda via POST /attempts com simulationAttemptId=" + attemptId
+              + " antes de ver o feedback.");
+    }
+
+    boolean wasAnnulled = question.isAnnulled()
+        || "X".equals(row.getFrozenAnswerKey())
+        || "X".equals(question.getAnswerKey())
+        || last.isAnnulled();
+    Boolean isCorrect = wasAnnulled ? null : last.getSelectedOption().equals(row.getFrozenAnswerKey());
+
+    List<QuestionClassification> actives =
+        classifications.findActiveByQuestionId(question.getId());
+    QuestionClassification classification = actives.isEmpty() ? null : actives.get(0);
+    Topic topic = classification == null ? null : classification.getTopic();
+    Subtopic subtopic = classification == null ? null : classification.getSubtopic();
+
+    List<String> notes = feedbackNotes(attempt, rows.size(), question, classification, wasAnnulled);
+    return new StudyFeedbackResponse(
+        attempt.getId(), position, question.getId(),
+        question.getDiscipline().getCode(), question.getDiscipline().getName(),
+        question.getSourceYear() == null ? null : question.getSourceYear().intValue(),
+        question.getSourceQuestionNumber() == null ? null : question.getSourceQuestionNumber().intValue(),
+        last.getSelectedOption(), isCorrect, wasAnnulled,
+        row.getFrozenAnswerKey(), question.getExplanation(),
+        topic == null ? null : topic.getId(),
+        topic == null ? null : topic.getCode(),
+        topic == null ? null : topic.getName(),
+        subtopic == null ? null : subtopic.getId(),
+        subtopic == null ? null : subtopic.getCode(),
+        subtopic == null ? null : subtopic.getName(),
+        classification == null ? null : classification.getStatus(),
+        classification == null ? null : classification.getConfidence(),
+        classification == null ? null : classification.getTaxonomyVersion(),
+        List.copyOf(notes));
   }
 
   // ---- internals ----
@@ -623,6 +729,37 @@ public class SimulationService {
         + " (correção do servidor, TASK 3.7); após encerrar, novas respostas retornam 409 SIMULATION_CLOSED.");
     notes.add("Anuladas ficam fora do aproveitamento (pontuação DESCONHECIDA, TASK 1.3 §4).");
     notes.add("Enunciados em GET /api/v1/questions/{id} (este caderno referencia, nunca duplica).");
+    return notes;
+  }
+
+  private static List<String> feedbackNotes(
+      SimulationAttempt attempt, int total, Question question,
+      QuestionClassification classification, boolean wasAnnulled) {
+    List<String> notes = new ArrayList<>();
+    notes.add("Correção contra o gabarito congelado na criação (frozen_answer_key), "
+        + "consistente com o placar do simulado mesmo após reclassificação posterior.");
+    if (wasAnnulled) {
+      notes.add("Questão anulada: conta como conteúdo respondido e fica fora do "
+          + "aproveitamento; regra de pontuação DESCONHECIDA (TASK 1.3 §4).");
+    }
+    if (question.getExplanation() == null) {
+      notes.add("Sem explicação redigida (NECESSITA REVISÃO) — nenhum texto gerado automaticamente.");
+    }
+    if (classification == null) {
+      notes.add("Sem classificação pedagógica vigente: assunto NÃO CONFIRMADO.");
+    } else if ("PENDING".equals(classification.getStatus())) {
+      notes.add("Classificação pedagógica " + classification.getTaxonomyVersion()
+          + " com revisão humana PENDENTE (TASK 12.2) — nunca verdade oficial do IFRN.");
+    }
+    notes.add("Enunciado e alternativas em GET /api/v1/questions/" + question.getId()
+        + " (este feedback referencia, nunca duplica).");
+    if (!"IN_PROGRESS".equals(attempt.getStatus())) {
+      notes.add("Execução " + attempt.getStatus() + ": o placar completo está em "
+          + "GET /api/v1/simulations/attempts/" + attempt.getId() + "/result.");
+    } else {
+      notes.add("Posição respondida de um caderno com " + total + " posições: "
+          + "retome via GET /api/v1/simulations/attempts/" + attempt.getId() + " até concluir.");
+    }
     return notes;
   }
 

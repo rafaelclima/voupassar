@@ -15,6 +15,7 @@ import br.com.voupassar.security.UserPrincipal;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptSummary;
 import br.com.voupassar.simulations.dto.SimulationResultResponse;
+import br.com.voupassar.simulations.dto.StudyFeedbackResponse;
 import br.com.voupassar.simulations.service.SimulationService;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -86,6 +87,8 @@ class SimulationControllerTest {
         .andExpect(status().isUnauthorized());
     mvc().perform(get("/api/v1/simulations/attempts/55/result"))
         .andExpect(status().isUnauthorized());
+    mvc().perform(get("/api/v1/simulations/attempts/55/feedback/1"))
+        .andExpect(status().isUnauthorized());
   }
 
   @Test
@@ -145,5 +148,22 @@ class SimulationControllerTest {
     mvc().perform(get("/api/v1/simulations/attempts/55/result"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.total").value(10));
+  }
+
+  @Test
+  void feedbackReturns200() throws Exception {
+    authenticate();
+    when(service.getStudyFeedback(1L, 55L, 1)).thenReturn(new StudyFeedbackResponse(
+        55L, 1, 21L, "MATEMATICA", "Matemática", 2026, 17,
+        "C", true, false, "C", "Porque 40% de 250 é 100.",
+        3L, "PORCENTAGEM", "Porcentagem", 11L, "CALCULO_PERCENTUAL", "Cálculo percentual",
+        "PENDING", "ALTA", "v1.1", List.of("nota")));
+
+    mvc().perform(get("/api/v1/simulations/attempts/55/feedback/1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.position").value(1))
+        .andExpect(jsonPath("$.isCorrect").value(true))
+        .andExpect(jsonPath("$.correctAnswer").value("C"))
+        .andExpect(jsonPath("$.topicCode").value("PORCENTAGEM"));
   }
 }

@@ -10,6 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import br.com.voupassar.auth.entity.User;
+import br.com.voupassar.content.entity.QuestionClassification;
+import br.com.voupassar.content.entity.Subtopic;
+import br.com.voupassar.content.entity.Topic;
+import br.com.voupassar.content.repository.QuestionClassificationRepository;
 import br.com.voupassar.auth.repository.UserRepository;
 import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ConflictException;
@@ -61,13 +65,15 @@ class SimulationServiceTest {
   @Mock SimulationAttemptRepository attempts;
   @Mock SimulationQuestionRepository caderno;
   @Mock QuestionAttemptRepository responses;
+  @Mock QuestionClassificationRepository classifications;
 
   private SimulationService service;
 
   @BeforeEach
   void setup() {
     service = new SimulationService(
-        users, disciplines, questions, simulations, attempts, caderno, responses, new Random(42));
+        users, disciplines, questions, simulations, attempts, caderno, responses,
+        classifications, new Random(42));
   }
 
   private static User user(long id, boolean active) {
@@ -405,5 +411,264 @@ class SimulationServiceTest {
 
     assertThrows(BadRequestException.class, () -> service.listAttempts(1L, -1, 20));
     assertThrows(BadRequestException.class, () -> service.listAttempts(1L, 0, 101));
+  }
+
+  // ---- feedback imediato (TASK 5.2) ----
+
+  private static Question explainedQuestion(
+      long id, Discipline d, String answerKey, boolean annulled, String explanation) {
+    Question q = question(id, d, answerKey, annulled);
+    ReflectionTestUtils.setField(q, "explanation", explanation);
+    return q;
+  }
+
+  private static QuestionClassification classification(
+      long id, Question q, Topic topic, Subtopic subtopic, String status) {
+    QuestionClassification c = new QuestionClassification();
+    ReflectionTestUtils.setField(c, "id", id);
+    ReflectionTestUtils.setField(c, "question", q);
+    ReflectionTestUtils.setField(c, "taxonomyVersion", "v1.1");
+    ReflectionTestUtils.setField(c, "topic", topic);
+    ReflectionTestUtils.setField(c, "subtopic", subtopic);
+    ReflectionTestUtils.setField(c, "confidence", "ALTA");
+    ReflectionTestUtils.setField(c, "status", status);
+    return c;
+  }
+
+  private static Topic topic(long id, String code, String name) {
+    Topic t = new Topic();
+    ReflectionTestUtils.setField(t, "id", id);
+    ReflectionTestUtils.setField(t, "code", code);
+    ReflectionTestUtils.setField(t, "name", name);
+    return t;
+  }
+
+  private static Subtopic subtopic(long id, Topic topic, String code, String name) {
+    Subtopic s = new Subtopic();
+    ReflectionTestUtils.setField(s, "id", id);
+    ReflectionTestUtils.setField(s, "topic", topic);
+    ReflectionTestUtils.setField(s, "code", code);
+    ReflectionTestUtils.setField(s, "name", name);
+    return s;
+  }
+
+  private static QuestionAttempt estudoResponse(
+      long id, Question q, User u, long simAttemptId,
+      String selected, Boolean correct, boolean annulled, String answeredAt) {
+    QuestionAttempt a = response(id, q, u, simAttemptId, selected, correct, annulled, answeredAt);
+    a.setMode("ESTUDO");
+    return a;
+  }
+
+  @Test
+  void estudoFeedbackRevealsFrozenKeyExplanationAndTopic() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 2 questões [ESTUDO]");
+    Question q1 = explainedQuestion(21L, d, "C", false, "Porque 40% de 250 é 100.");
+    Question q2 = explainedQuestion(22L, d, "B", false, null);
+    Topic t = topic(3L, "PORCENTAGEM", "Porcentagem");
+    Subtopic st = subtopic(11L, t, "CALCULO_PERCENTUAL", "Cálculo percentual");
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "C"), row(55L, 2, q2, "B")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(
+        estudoResponse(101L, q1, u, 55L, "C", true, false, "2026-10-01T10:05:00Z")));
+    when(classifications.findActiveByQuestionId(21L))
+        .thenReturn(List.of(classification(9L, q1, t, st, "PENDING")));
+
+    var out = service.getStudyFeedback(1L, 55L, 1);
+
+    assertEquals(55L, out.attemptId());
+    assertEquals(1, out.position());
+    assertEquals(21L, out.questionId());
+    assertEquals("C", out.selectedOption());
+    assertEquals(Boolean.TRUE, out.isCorrect());
+    assertEquals("C", out.correctAnswer());
+    assertEquals("Porque 40% de 250 é 100.", out.explanation());
+    assertEquals("PORCENTAGEM", out.topicCode());
+    assertEquals("Porcentagem", out.topicName());
+    assertEquals("CALCULO_PERCENTUAL", out.subtopicCode());
+    assertEquals("PENDING", out.classificationStatus());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("congelado")));
+  }
+
+  @Test
+  void feedbackUsesFrozenKeyWhenCurrentKeyChanged() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
+    // Gabarito "atual" mudou para D após a criação; o caderno congelou B.
+    Question q1 = explainedQuestion(21L, d, "D", false, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "B")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(
+        estudoResponse(101L, q1, u, 55L, "B", false, false, "2026-10-01T10:05:00Z")));
+    when(classifications.findActiveByQuestionId(21L)).thenReturn(List.of());
+
+    var out = service.getStudyFeedback(1L, 55L, 1);
+
+    assertEquals(Boolean.TRUE, out.isCorrect());
+    assertEquals("B", out.correctAnswer());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("congelado")));
+  }
+
+  @Test
+  void feedbackUsesLatestAttemptPerQuestion() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
+    Question q1 = explainedQuestion(21L, d, "C", false, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "C")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    // Errou e depois acertou: vale a última.
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(
+        estudoResponse(101L, q1, u, 55L, "A", false, false, "2026-10-01T10:05:00Z"),
+        estudoResponse(102L, q1, u, 55L, "C", true, false, "2026-10-01T10:06:00Z")));
+    when(classifications.findActiveByQuestionId(21L)).thenReturn(List.of());
+
+    var out = service.getStudyFeedback(1L, 55L, 1);
+
+    assertEquals("C", out.selectedOption());
+    assertEquals(Boolean.TRUE, out.isCorrect());
+  }
+
+  @Test
+  void provaInProgressFeedbackIs409() {
+    activeUser();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 2 questões [PROVA]");
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "PROVA", "IN_PROGRESS")));
+
+    ConflictException ex =
+        assertThrows(ConflictException.class, () -> service.getStudyFeedback(1L, 55L, 1));
+    assertEquals("STUDY_FEEDBACK_UNAVAILABLE", ex.getCode());
+  }
+
+  @Test
+  void provaFinishedFeedbackIs200() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 1 questão [PROVA]");
+    Question q1 = explainedQuestion(21L, d, "B", false, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "PROVA", "SUBMITTED")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "B")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(
+        response(101L, q1, u, 55L, "D", false, false, "2026-10-01T10:05:00Z")));
+    when(classifications.findActiveByQuestionId(21L)).thenReturn(List.of());
+
+    var out = service.getStudyFeedback(1L, 55L, 1);
+
+    assertEquals("D", out.selectedOption());
+    assertEquals(Boolean.FALSE, out.isCorrect());
+    assertEquals("B", out.correctAnswer());
+  }
+
+  @Test
+  void feedbackWithoutAnswerIs409() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 2 questões [ESTUDO]");
+    Question q1 = explainedQuestion(21L, d, "A", false, null);
+    Question q2 = explainedQuestion(22L, d, "B", false, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "A"), row(55L, 2, q2, "B")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1, q2));
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of());
+
+    ConflictException ex =
+        assertThrows(ConflictException.class, () -> service.getStudyFeedback(1L, 55L, 2));
+    assertEquals("FEEDBACK_NOT_AVAILABLE", ex.getCode());
+  }
+
+  @Test
+  void unknownPositionIs404AndInvalidPositionIs400() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
+    Question q1 = explainedQuestion(21L, d, "A", false, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "A")));
+
+    assertThrows(ResourceNotFoundException.class, () -> service.getStudyFeedback(1L, 55L, 9));
+    assertThrows(BadRequestException.class, () -> service.getStudyFeedback(1L, 55L, 0));
+  }
+
+  @Test
+  void foreignFeedbackAttemptIs404() {
+    activeUser();
+    when(attempts.findByIdAndUserId(99L, 1L)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class, () -> service.getStudyFeedback(1L, 99L, 1));
+  }
+
+  @Test
+  void annulledFeedbackHasNullCorrect() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
+    Question q1 = explainedQuestion(21L, d, "X", true, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "X")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    QuestionAttempt a =
+        estudoResponse(101L, q1, u, 55L, "A", null, true, "2026-10-01T10:05:00Z");
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(a));
+    when(classifications.findActiveByQuestionId(21L)).thenReturn(List.of());
+
+    var out = service.getStudyFeedback(1L, 55L, 1);
+
+    assertTrue(out.wasAnnulled());
+    assertNull(out.isCorrect());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("anulada")));
+  }
+
+  @Test
+  void estudoFeedbackWithoutClassificationMarksUnconfirmed() {
+    activeUser();
+    Discipline d = mat();
+    User u = user(1L, true);
+    Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
+    Question q1 = explainedQuestion(21L, d, "A", false, null);
+    when(attempts.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
+    when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
+        .thenReturn(List.of(row(55L, 1, q1, "A")));
+    when(questions.findAllById(any())).thenReturn(List.of(q1));
+    when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(
+        estudoResponse(101L, q1, u, 55L, "A", true, false, "2026-10-01T10:05:00Z")));
+    when(classifications.findActiveByQuestionId(21L)).thenReturn(List.of());
+
+    var out = service.getStudyFeedback(1L, 55L, 1);
+
+    assertNull(out.topicCode());
+    assertNull(out.classificationStatus());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("NÃO CONFIRMADO")));
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("NECESSITA REVISÃO")));
   }
 }

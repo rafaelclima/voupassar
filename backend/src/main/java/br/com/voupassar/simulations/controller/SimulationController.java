@@ -5,6 +5,7 @@ import br.com.voupassar.exception.UnauthorizedException;
 import br.com.voupassar.questions.dto.PageResponse;
 import br.com.voupassar.security.UserPrincipal;
 import br.com.voupassar.simulations.dto.CreateDisciplineSimulationRequest;
+import br.com.voupassar.simulations.dto.StudyFeedbackResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptResponse;
 import br.com.voupassar.simulations.dto.SimulationAttemptSummary;
 import br.com.voupassar.simulations.dto.SimulationResultResponse;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Simulados por disciplina (TASK 5.1).
+ * Simulados por disciplina (TASK 5.1) com feedback do Modo Estudo (TASK 5.2).
  *
  * <p>Rotas autenticadas (Bearer), escopadas ao dono do token. Sem regra de
  * negócio aqui (AGENTS.md §19) — tudo no {@link SimulationService}. As
@@ -41,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/v1/simulations", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Simulados",
-    description = "Simulado por disciplina: escolher disciplina/quantidade/dificuldade, iniciar, retomar, concluir e ver resultado (TASK 5.1).")
+    description = "Simulado por disciplina: escolher disciplina/quantidade/dificuldade, iniciar, retomar, concluir e ver resultado (TASK 5.1), com feedback imediato do Modo Estudo por posição (TASK 5.2).")
 public class SimulationController {
 
   private final SimulationService service;
@@ -159,6 +160,31 @@ public class SimulationController {
       @PathVariable long id,
       @AuthenticationPrincipal UserPrincipal principal) {
     return service.getResult(requireAuth(principal), id);
+  }
+
+  @Operation(summary = "Feedback imediato de uma posição (Modo Estudo).",
+      description = "Acerto/erro, resposta correta (gabarito congelado), explicação e "
+          + "assunto da última tentativa vinculada a esta execução. No Modo ESTUDO em "
+          + "qualquer status; no Modo PROVA só após encerrar (durante a prova retorna "
+          + "409 STUDY_FEEDBACK_UNAVAILABLE). Sem resposta na posição retorna 409 "
+          + "FEEDBACK_NOT_AVAILABLE.")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Feedback da posição."),
+    @ApiResponse(responseCode = "400", description = "Posição inválida.",
+        content = @Content(schema = @Schema(implementation = ApiError.class))),
+    @ApiResponse(responseCode = "401", description = "Sem token ou token inválido.",
+        content = @Content(schema = @Schema(implementation = ApiError.class))),
+    @ApiResponse(responseCode = "404", description = "Execução ou posição não encontradas.",
+        content = @Content(schema = @Schema(implementation = ApiError.class))),
+    @ApiResponse(responseCode = "409", description = "Prova em andamento ou posição sem resposta.",
+        content = @Content(schema = @Schema(implementation = ApiError.class)))
+  })
+  @GetMapping("/attempts/{id}/feedback/{position}")
+  public StudyFeedbackResponse feedback(
+      @PathVariable long id,
+      @PathVariable int position,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    return service.getStudyFeedback(requireAuth(principal), id, position);
   }
 
   private static long requireAuth(UserPrincipal principal) {
