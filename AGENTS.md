@@ -799,6 +799,23 @@ Para informações sobre o IFRN:
 * quando necessário, utilizar o portal oficial do IFRN;
 * registrar a origem da informação.
 
+## Ferramentas de verificação do frontend
+
+O ambiente dispõe do MCP `chrome-devtools` para testes de frontend com
+navegador real (snapshot de acessibilidade, navegação, clique, preenchimento
+de formulários, console e network). Sempre que uma task entregar ou alterar
+telas do `frontend/`, além de `scripts/analysis/check_frontend.py`, validar
+com o navegador via MCP quando ele estiver disponível:
+
+* guarda de autenticação (sem sessão → painel de acesso);
+* fluxo principal da tela contra o backend local;
+* estados de loading, vazio e erro;
+* responsividade básica (mobile e desktop);
+* mensagens do console sem erros inesperados.
+
+Se o MCP não estiver acessível na sessão, registrar a pendência e seguir
+com a validação estática (`node --check`, `check_frontend.py`, serve 200).
+
 ---
 
 # 32. PRINCÍPIO FINAL

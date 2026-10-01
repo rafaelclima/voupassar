@@ -1,0 +1,276 @@
+/* VouPassar — área de estudos (TASK 6.5)
+ * Só layout da página estudos.html. Tokens, cards, tabelas, badges,
+ * alerts, loading e botões vêm do design system (base/components/utilities).
+ * Mobile-first: 1 coluna; grade conteúdo+lateral a partir de 64rem.
+ */
+
+.study-head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.study-head p {
+  max-width: var(--measure);
+}
+
+.study-filters {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-surface);
+}
+
+.study-filters__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: end;
+}
+
+.study-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+.study-main {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  min-width: 0;
+}
+
+.study-side {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+/* Navegador de conteúdo */
+.browser-disc {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.browser-disc + .browser-disc {
+  margin-top: var(--space-3);
+}
+
+.browser-disc__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.browser-disc__name {
+  font-weight: 700;
+}
+
+.browser-disc__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.browser-topics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.browser-topics__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-line-200);
+  padding-top: var(--space-2);
+}
+
+.browser-topics__name {
+  font-weight: 600;
+}
+
+.browser-topics__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+/* Cartão de questão (prática livre ESTUDO) */
+.question-card {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.question-card + .question-card {
+  margin-top: var(--space-4);
+}
+
+.question-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.question-card__id {
+  font-weight: 700;
+  color: var(--color-primary-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.question-card__statement {
+  white-space: pre-wrap;
+}
+
+.question-card__figure {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.question-options {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.question-options legend {
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.option-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+
+.option-row input {
+  margin-top: 0.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+}
+
+.option-row__letter {
+  font-weight: 700;
+  flex: none;
+}
+
+.question-feedback {
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.question-feedback[data-tone="success"] {
+  border: 1px solid var(--color-success-700);
+  background: var(--color-success-50, #f0f7f0);
+}
+
+.question-feedback[data-tone="danger"] {
+  border: 1px solid var(--color-danger-700);
+  background: var(--color-danger-50, #fdf0f0);
+}
+
+.question-feedback[data-tone="warning"] {
+  border: 1px solid var(--color-warning-700);
+  background: var(--color-warning-50, #fdf8ec);
+}
+
+.question-notes {
+  list-style: disc;
+  padding-left: var(--space-4);
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+}
+
+/* Paginação */
+.study-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.study-pagination__info {
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progresso lateral */
+.progress-stats {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.progress-stats__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  border-top: 1px solid var(--color-line-200);
+  padding-top: var(--space-2);
+}
+
+.progress-stats__row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.progress-stats__value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 48rem) {
+  .study-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .study-filters__actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  .study-filters {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .study-grid {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    align-items: start;
+  }
+}

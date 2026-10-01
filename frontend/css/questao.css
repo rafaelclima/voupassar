@@ -1,0 +1,153 @@
+/* VouPassar — tela de questão dedicada (TASK 6.6)
+ * Só layout da página questao.html. Tokens, cards, badges, alerts,
+ * loading e botões vêm do design system (base/components/utilities).
+ * Mobile-first: 1 coluna, leitura confortável (measure), alvos ≥44px.
+ */
+
+.questao-wrap {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.questao-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.questao-h2 {
+  font-size: var(--text-md);
+  margin-bottom: var(--space-2);
+}
+
+.questao-statement {
+  white-space: pre-wrap;
+  max-width: var(--measure);
+  line-height: var(--leading-body);
+  font-size: var(--text-lg);
+}
+
+/* Seleção: radios grandes, clicáveis, foco visível herdado */
+.questao-options {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.questao-options legend {
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.questao-option {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+
+.questao-option:hover {
+  border-color: var(--color-primary-600);
+}
+
+.questao-option input {
+  margin-top: 0.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  accent-color: var(--color-primary-700);
+}
+
+.questao-option__letter {
+  font-weight: 700;
+  flex: none;
+}
+
+.questao-option--correct {
+  border-color: var(--color-success-700);
+  background: var(--color-success-50, #ecfdf3);
+}
+
+.questao-option--wrong {
+  border-color: var(--color-danger-700);
+  background: var(--color-danger-50, #fdf0f0);
+}
+
+/* Feedback + explicação */
+.questao-feedback {
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-md);
+  border: 1px solid var(--color-line-200);
+  background: var(--color-surface);
+}
+
+.questao-feedback[data-tone="success"] {
+  border-color: var(--color-success-700);
+  background: var(--color-success-50, #ecfdf3);
+}
+
+.questao-feedback[data-tone="danger"] {
+  border-color: var(--color-danger-700);
+  background: var(--color-danger-50, #fdf0f0);
+}
+
+.questao-feedback[data-tone="warning"] {
+  border-color: var(--color-warning-700);
+  background: var(--color-warning-50, #fdf8ec);
+}
+
+.questao-notes {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Proveniência: lista de definição compacta */
+.questao-source {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.questao-source__row {
+  display: grid;
+  gap: var(--space-1);
+  border-top: 1px solid var(--color-line-200);
+  padding-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.questao-source__row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.questao-source__term {
+  font-weight: 600;
+  color: var(--color-ink-900);
+}
+
+.questao-source__def {
+  color: var(--color-ink-700);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 48rem) {
+  .questao-source__row {
+    grid-template-columns: 12rem 1fr;
+  }
+
+  .questao-statement {
+    font-size: var(--text-xl);
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard).
+"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão).
 
 Verifica `frontend/` sem rodar navegador:
   - arquivos obrigatórios existem;
@@ -37,6 +37,8 @@ REQUIRED_FILES = [
     "recuperar-senha.html",
     "redefinir-senha.html",
     "dashboard.html",
+    "estudos.html",
+    "questao.html",
     "css/tokens.css",
     "css/base.css",
     "css/components.css",
@@ -44,10 +46,14 @@ REQUIRED_FILES = [
     "css/landing.css",
     "css/auth.css",
     "css/dashboard.css",
+    "css/estudos.css",
+    "css/questao.css",
     "js/config.js",
     "js/api/client.js",
     "js/api/auth.js",
     "js/api/dashboard.js",
+    "js/api/estudos.js",
+    "js/api/questao.js",
     "js/state/store.js",
     "js/state/session.js",
     "js/components/ui.js",
@@ -59,6 +65,8 @@ REQUIRED_FILES = [
     "js/views/recuperar-senha.js",
     "js/views/redefinir-senha.js",
     "js/views/dashboard.js",
+    "js/views/estudos.js",
+    "js/views/questao.js",
     "assets/favicon.svg",
 ]
 
@@ -136,7 +144,7 @@ def main() -> int:
     if ":focus-visible" not in base:
         fail("base.css sem :focus-visible")
 
-    for page in ["index.html", "design-system.html", "dashboard.html", *REQUIRED_AUTH_FORMS]:
+    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", *REQUIRED_AUTH_FORMS]:
         p = FRONT / page
         if not p.is_file():
             continue
@@ -223,6 +231,55 @@ def main() -> int:
         if shared and "dashboard.html" not in shared:
             fail("js/views/auth-shared.js sem link para o dashboard (TASK 6.4)")
 
+    # TASK 6.5 — estudos: conteúdo + filtros + questões + progresso + navegação
+    study = (FRONT / "estudos.html").read_text(encoding="utf-8") if (FRONT / "estudos.html").exists() else ""
+    if study:
+        for sid in ["study-guard", "study-error", "study-loading", "study-content",
+                    "study-filters", "f-disciplina", "f-topico", "f-subtopico",
+                    "f-ano", "f-dificuldade", "study-browser", "study-list",
+                    "study-pagination", "study-progress", "study-plan", "study-notes",
+                    "study-count", "btn-clear", "btn-filter"]:
+            if f'id="{sid}"' not in study:
+                fail(f"estudos.html sem bloco #{sid} (TASK 6.5)")
+        if "css/estudos.css" not in study:
+            fail("estudos.html sem css/estudos.css")
+        if "js/views/estudos.js" not in study:
+            fail("estudos.html sem js/views/estudos.js")
+        study_js = (FRONT / "js" / "views" / "estudos.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "estudos.js").exists() else ""
+        if "2021" not in study and "2021" not in study_js:
+            fail("estudos (html/js) omite a ausência de 2021 (AGENTS.md §3)")
+        if "estudos.html" not in dash:
+            fail("dashboard.html sem link para estudos.html (TASK 6.5)")
+
+    # TASK 6.6 — questão dedicada: leitura + seleção + confirmação + feedback + explicação
+    questao = (FRONT / "questao.html").read_text(encoding="utf-8") if (FRONT / "questao.html").exists() else ""
+    if questao:
+        for sid in ["questao-guard", "questao-error", "questao-loading", "questao-content",
+                    "questao-back", "questao-title", "questao-meta", "questao-badges",
+                    "questao-statement", "questao-figure", "questao-topic",
+                    "questao-form", "questao-options", "questao-hint",
+                    "questao-submit", "questao-blank", "questao-reset",
+                    "questao-feedback", "questao-feedback-empty",
+                    "questao-explanation", "questao-source", "questao-notes"]:
+            if f'id="{sid}"' not in questao:
+                fail(f"questao.html sem bloco #{sid} (TASK 6.6)")
+        if "css/questao.css" not in questao:
+            fail("questao.html sem css/questao.css")
+        if "js/views/questao.js" not in questao:
+            fail("questao.html sem js/views/questao.js")
+        if "voupassar-api" not in questao:
+            fail("questao.html sem meta voupassar-api (config.js)")
+        questao_js = (FRONT / "js" / "views" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "questao.js").exists() else ""
+        for token in ["fetchQuestion", "submitAttempt", "openStudySession", "BLANK", "NECESSITA REVISÃO", "voltar"]:
+            if token not in questao_js:
+                fail(f"js/views/questao.js sem {token!r} (TASK 6.6)")
+        questao_api = (FRONT / "js" / "api" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "questao.js").exists() else ""
+        if "/api/v1/questions" not in questao_api or "/api/v1/attempts" not in questao_api:
+            fail("js/api/questao.js sem endpoints de questão/tentativa (TASK 6.6)")
+        study_js = (FRONT / "js" / "views" / "estudos.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "estudos.js").exists() else ""
+        if "questao.html" not in study_js:
+            fail("js/views/estudos.js sem link para questao.html (TASK 6.6)")
+
     # JS: sem innerHTML; URL de API só em config.js/meta
     for js in (FRONT / "js").rglob("*.js"):
         src = js.read_text(encoding="utf-8")
@@ -238,7 +295,8 @@ def main() -> int:
             fail(f"{js.relative_to(REPO_ROOT)} com localhost hardcoded")
 
     for html_file in [FRONT / "index.html", FRONT / "design-system.html",
-                      FRONT / "dashboard.html",
+                      FRONT / "dashboard.html", FRONT / "estudos.html",
+                      FRONT / "questao.html",
                       *(FRONT / p for p in REQUIRED_AUTH_FORMS)]:
         if not html_file.is_file():
             continue

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Área de estudos do VouPassar — navegue por disciplinas e assuntos das provas reais do IFRN, pratique questões com correção imediata e acompanhe seu progresso." />
+  <meta name="voupassar-api" content="http://localhost:8080" />
+  <meta name="theme-color" content="#0f2e47" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/utilities.css" />
+  <link rel="stylesheet" href="./css/estudos.css" />
+  <title>Estudos — VouPassar</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="./index.html" aria-label="VouPassar — início">
+        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <span>VouPassar</span>
+      </a>
+      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
+      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
+        <div class="site-nav__links" id="nav-links">
+          <a href="./index.html">Início</a>
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./estudos.html" aria-current="page">Estudos</a>
+          <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <div class="container section">
+      <div class="study-head">
+        <p><span class="badge badge--primary">Área de estudos</span></p>
+        <h1 id="study-title">Estudar por conteúdo</h1>
+        <p class="lead" id="study-subtitle">Escolha disciplina e assunto, pratique questões oficiais com correção imediata e veja seu progresso no recorte.</p>
+      </div>
+
+      <div id="study-guard" hidden></div>
+      <div id="study-error" class="mb-4"></div>
+
+      <div id="study-loading" class="loading-block" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Carregando conteúdos…</span>
+      </div>
+
+      <div id="study-content" hidden>
+        <!-- FILTROS -->
+        <section aria-labelledby="sec-filtros-t">
+          <h2 id="sec-filtros-t">Filtros</h2>
+          <p class="muted"><small>Ordem fixa das questões (ano-fonte, número). A edição de 2021 não existe no acervo e não aparece como opção.</small></p>
+          <form id="study-filters" class="study-filters mt-4" aria-label="Filtrar questões por conteúdo">
+            <div class="field">
+              <label class="field__label" for="f-disciplina">Disciplina</label>
+              <select class="select" id="f-disciplina" name="disciplina">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-topico">Assunto</label>
+              <select class="select" id="f-topico" name="topico" disabled>
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-subtopico">Subassunto</label>
+              <select class="select" id="f-subtopico" name="subtopico" disabled>
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-ano">Edição</label>
+              <select class="select" id="f-ano" name="ano">
+                <option value="">Todas</option>
+                <option value="2020">2020</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-dificuldade">Dificuldade</label>
+              <select class="select" id="f-dificuldade" name="dificuldade">
+                <option value="">Todas</option>
+                <option value="FACIL">Fácil</option>
+                <option value="MEDIA">Média</option>
+                <option value="DIFICIL">Difícil</option>
+              </select>
+            </div>
+            <div class="study-filters__actions">
+              <button type="submit" class="btn btn--primary btn--sm" id="btn-filter">Filtrar</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="btn-clear">Limpar</button>
+            </div>
+          </form>
+        </section>
+
+        <div class="study-grid mt-8">
+          <div class="study-main">
+            <!-- CONTEÚDO -->
+            <section aria-labelledby="sec-conteudo-t">
+              <h2 id="sec-conteudo-t">Conteúdo</h2>
+              <p class="muted"><small>Assuntos observados nas provas (taxonomia v1.1). Classificação com revisão humana pendente.</small></p>
+              <div id="study-browser" class="mt-4"></div>
+            </section>
+
+            <!-- QUESTÕES -->
+            <section class="mt-8" aria-labelledby="sec-questoes-t">
+              <h2 id="sec-questoes-t">Questões</h2>
+              <p class="muted"><small id="study-count" role="status">Nenhum filtro aplicado ainda.</small></p>
+              <div id="study-list" class="mt-4"></div>
+              <nav id="study-pagination" class="study-pagination mt-4" aria-label="Paginação das questões"></nav>
+            </section>
+          </div>
+
+          <aside class="study-side" aria-label="Progresso no recorte">
+            <!-- PROGRESSO -->
+            <section aria-labelledby="sec-progresso-t" class="card">
+              <div class="card__header"><h2 id="sec-progresso-t" style="font-size:var(--text-md)">Progresso</h2></div>
+              <div class="card__body"><div id="study-progress"></div></div>
+            </section>
+            <section aria-labelledby="sec-roteiro-t" class="card mt-4">
+              <div class="card__header"><h2 id="sec-roteiro-t" style="font-size:var(--text-md)">No seu roteiro</h2></div>
+              <div class="card__body"><div id="study-plan"></div></div>
+            </section>
+          </aside>
+        </div>
+
+        <!-- NOTAS DE EVIDÊNCIA -->
+        <section class="mt-8" aria-labelledby="sec-notas-t">
+          <h2 id="sec-notas-t">Leitura honesta</h2>
+          <div id="study-notes" class="dash-notes mt-4"></div>
+        </section>
+      </div>
+
+      <noscript>
+        <div class="alert alert--warning mt-4" role="note">
+          <div>
+            <strong>JavaScript desligado</strong>
+            <p>A área de estudos precisa de JavaScript para buscar conteúdos e questões na API. Ative para continuar.</p>
+          </div>
+        </div>
+      </noscript>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container split">
+      <p class="muted"><small>VouPassar · Preparação orientada por evidências · <span data-current-year>2026</span></small></p>
+      <p class="muted"><small><a href="./design-system.html">Design system</a> · <a href="./dashboard.html">Dashboard</a> · <a href="./index.html">Início</a></small></p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/views/estudos.js"></script>
+</body>
+</html>
