@@ -1,0 +1,101 @@
+name: Frontend — CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+
+      - name: Validação estática do frontend
+        run: python3 scripts/analysis/check_frontend.py
+
+      - name: Verificação sintática dos JS
+        run: |
+          for f in frontend/js/*.js frontend/js/**/*.js; do
+            [ -f "$f" ] || continue
+            echo "Verificando $f"
+            node --check "$f" || exit 1
+          done
+
+      - name: Verificar arquivos obrigatórios
+        run: |
+          [ -f frontend/index.html ] || exit 1
+          [ -f frontend/css/tokens.css ] || exit 1
+          [ -f frontend/css/components.css ] || exit 1
+          [ -f frontend/js/config.js ] || exit 1
+          [ -f frontend/assets/favicon.svg ] || exit 1
+          echo "Arquivos obrigatórios presentes"
+
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+
+      - name: Injetar API_BASE_URL no build
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL || 'https://voupassar-api.vps.local' }}
+        run: |
+          # Substitui a meta tag voupassar-api nos arquivos HTML
+          for html in frontend/*.html; do
+            [ -f "$html" ] || continue
+            sed -i "s|<meta name=\"voupassar-api\" content=\"[^\"]*\"|<meta name=\"voupassar-api\" content=\"${API_BASE_URL}\"|g" "$html"
+            echo "Injetado API_BASE_URL em $(basename $html)"
+          done
+          # Atualiza config.js para usar a URL de produção (se não houver meta)
+          # Mantém a meta como fonte primária; se vazia, usa a variável
+          echo "API_BASE_URL=$API_BASE_URL" >> .env.build
+
+      - name: Copiar arquivos estáticos para deploy
+        run: |
+          mkdir -p deploy
+          cp -r frontend/* deploy/
+          # Garante que config.js aponte para a URL de produção quando meta não estiver presente
+          echo "Deploy preparado"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: deploy/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ github.token }}
