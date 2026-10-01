@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão) + 6.7 (simulado).
+"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão) + 6.7 (simulado) + 6.8 (perfil).
 
 Verifica `frontend/` sem rodar navegador:
   - arquivos obrigatórios existem;
@@ -40,6 +40,7 @@ REQUIRED_FILES = [
     "estudos.html",
     "questao.html",
     "simulado.html",
+    "perfil.html",
     "css/tokens.css",
     "css/base.css",
     "css/components.css",
@@ -50,6 +51,7 @@ REQUIRED_FILES = [
     "css/estudos.css",
     "css/questao.css",
     "css/simulado.css",
+    "css/perfil.css",
     "js/config.js",
     "js/api/client.js",
     "js/api/auth.js",
@@ -57,6 +59,7 @@ REQUIRED_FILES = [
     "js/api/estudos.js",
     "js/api/questao.js",
     "js/api/simulado.js",
+    "js/api/perfil.js",
     "js/state/store.js",
     "js/state/session.js",
     "js/components/ui.js",
@@ -71,6 +74,7 @@ REQUIRED_FILES = [
     "js/views/estudos.js",
     "js/views/questao.js",
     "js/views/simulado.js",
+    "js/views/perfil.js",
     "assets/favicon.svg",
 ]
 
@@ -148,7 +152,7 @@ def main() -> int:
     if ":focus-visible" not in base:
         fail("base.css sem :focus-visible")
 
-    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", "simulado.html", *REQUIRED_AUTH_FORMS]:
+    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", "simulado.html", "perfil.html", *REQUIRED_AUTH_FORMS]:
         p = FRONT / page
         if not p.is_file():
             continue
@@ -329,6 +333,43 @@ def main() -> int:
         if "As telas de prova chegam" in dash_js:
             fail("js/views/dashboard.js com placeholder vencido da TASK 6.7")
 
+    # TASK 6.8 — perfil: dados + estatísticas + evolução + histórico +
+    # dominados + atenção + metas + conquistas (Fase 7 pendente honesto)
+    perfil = (FRONT / "perfil.html").read_text(encoding="utf-8") if (FRONT / "perfil.html").exists() else ""
+    if perfil:
+        for sid in ["perfil-guard", "perfil-error", "perfil-loading", "perfil-content",
+                    "perfil-dados", "perfil-form", "pf-nome", "pf-ano",
+                    "pf-alvo", "pf-objetivo", "perfil-save",
+                    "perfil-stats", "perfil-modes", "perfil-disciplines",
+                    "perfil-metas", "perfil-strengths", "perfil-weaknesses",
+                    "evo-granularity", "perfil-evolution",
+                    "perfil-history-count", "perfil-history", "perfil-more",
+                    "perfil-achievements", "perfil-notes"]:
+            if f'id="{sid}"' not in perfil:
+                fail(f"perfil.html sem bloco #{sid} (TASK 6.8)")
+        if "css/perfil.css" not in perfil:
+            fail("perfil.html sem css/perfil.css")
+        if "js/views/perfil.js" not in perfil:
+            fail("perfil.html sem js/views/perfil.js")
+        if "voupassar-api" not in perfil:
+            fail("perfil.html sem meta voupassar-api (config.js)")
+        perfil_js = (FRONT / "js" / "views" / "perfil.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "perfil.js").exists() else ""
+        for token in ["fetchProfile", "updateProfile", "fetchProfileStats",
+                      "fetchHistory", "fetchDiagnosis", "fetchEvolution",
+                      "perfil-more", "Fase 7"]:
+            if token not in perfil_js:
+                fail(f"js/views/perfil.js sem {token!r} (TASK 6.8)")
+        perfil_api = (FRONT / "js" / "api" / "perfil.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "perfil.js").exists() else ""
+        for token in ["/api/v1/profile", "/api/v1/profile/stats",
+                      "/api/v1/profile/history", "/api/v1/diagnosis",
+                      "/api/v1/performance/evolution", "/api/v1/performance/overview"]:
+            if token not in perfil_api:
+                fail(f"js/api/perfil.js sem endpoint {token!r} (TASK 6.8)")
+        for page in ["dashboard.html", "estudos.html", "questao.html", "simulado.html"]:
+            nav = (FRONT / page).read_text(encoding="utf-8") if (FRONT / page).exists() else ""
+            if nav and "perfil.html" not in nav:
+                fail(f"{page} sem link para perfil.html (TASK 6.8)")
+
     # JS: sem innerHTML; URL de API só em config.js/meta
     for js in (FRONT / "js").rglob("*.js"):
         src = js.read_text(encoding="utf-8")
@@ -346,6 +387,7 @@ def main() -> int:
     for html_file in [FRONT / "index.html", FRONT / "design-system.html",
                       FRONT / "dashboard.html", FRONT / "estudos.html",
                       FRONT / "questao.html", FRONT / "simulado.html",
+                      FRONT / "perfil.html",
                       *(FRONT / p for p in REQUIRED_AUTH_FORMS)]:
         if not html_file.is_file():
             continue

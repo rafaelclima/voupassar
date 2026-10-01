@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Perfil do estudante no VouPassar — dados, estatísticas, evolução, histórico, conteúdos dominados e pontos de atenção." />
+  <meta name="voupassar-api" content="http://localhost:8080" />
+  <meta name="theme-color" content="#0f2e47" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/utilities.css" />
+  <link rel="stylesheet" href="./css/perfil.css" />
+  <title>Perfil — VouPassar</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="./index.html" aria-label="VouPassar — início">
+        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <span>VouPassar</span>
+      </a>
+      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
+      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
+        <div class="site-nav__links" id="nav-links">
+          <a href="./index.html">Início</a>
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./estudos.html">Estudos</a>
+          <a href="./simulado.html">Simulado</a>
+          <a href="./perfil.html" aria-current="page">Perfil</a>
+          <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <div class="container section">
+      <div class="perfil-head">
+        <p><span class="badge badge--primary">Área do estudante</span></p>
+        <h1 id="perfil-title">Perfil</h1>
+        <p class="lead" id="perfil-subtitle">Seus dados, estatísticas, evolução, histórico, conteúdos dominados e pontos de atenção.</p>
+      </div>
+
+      <div id="perfil-guard" hidden></div>
+      <div id="perfil-error" class="mb-4"></div>
+
+      <div id="perfil-loading" class="loading-block" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Carregando seu perfil…</span>
+      </div>
+
+      <div id="perfil-content" hidden>
+        <!-- 1. DADOS -->
+        <section aria-labelledby="sec-dados-t">
+          <h2 id="sec-dados-t">Dados</h2>
+          <p class="muted"><small>Somente o essencial. E-mail e senha não mudam aqui — a senha troca pelo fluxo de recuperação.</small></p>
+          <div id="perfil-dados" class="mt-4"></div>
+          <form id="perfil-form" class="perfil-form mt-4" aria-label="Editar dados do perfil" novalidate>
+            <div class="field">
+              <label class="field__label" for="pf-nome">Nome de exibição</label>
+              <input class="input" id="pf-nome" name="displayName" type="text" autocomplete="name" required minlength="2" maxlength="80" />
+              <p class="field__hint">De 2 a 80 caracteres. É assim que vamos chamar você.</p>
+            </div>
+            <div class="perfil-form__grid">
+              <div class="field">
+                <label class="field__label" for="pf-ano">Ano escolar <span class="muted">(opcional)</span></label>
+                <input class="input" id="pf-ano" name="schoolYear" type="text" maxlength="40" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label class="field__label" for="pf-alvo">Ano-alvo <span class="muted">(opcional)</span></label>
+                <input class="input" id="pf-alvo" name="targetYear" type="number" min="2000" max="2100" inputmode="numeric" />
+                <p class="field__hint">Ex.: 2027. Entre 2000 e 2100.</p>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="pf-objetivo">Objetivo <span class="muted">(opcional)</span></label>
+              <textarea class="textarea" id="pf-objetivo" name="studyGoal" maxlength="500" rows="3"></textarea>
+              <p class="field__hint" id="pf-objetivo-count" role="status">500 caracteres restantes.</p>
+            </div>
+            <div class="btn-group">
+              <button type="submit" class="btn btn--primary btn--sm" id="perfil-save">Salvar dados</button>
+              <a class="btn btn--ghost btn--sm" href="./recuperar-senha.html">Trocar senha</a>
+            </div>
+          </form>
+        </section>
+
+        <!-- 2. ESTATÍSTICAS -->
+        <section class="mt-8" aria-labelledby="sec-stats-t">
+          <h2 id="sec-stats-t">Estatísticas</h2>
+          <p class="muted"><small>Só fatos registrados (<span class="code-inline">question_attempts</span>, imutável). Anuladas contam como conteúdo e ficam fora do aproveitamento — regra de pontuação desconhecida.</small></p>
+          <div class="perfil-stats mt-4" id="perfil-stats" role="list" aria-label="Resumo de desempenho"></div>
+        </section>
+
+        <div class="perfil-grid perfil-grid--2 mt-8">
+          <section aria-labelledby="sec-modos-t">
+            <h2 id="sec-modos-t">Por modo</h2>
+            <div id="perfil-modes" class="mt-4"></div>
+          </section>
+          <section aria-labelledby="sec-disc-t">
+            <h2 id="sec-disc-t">Por disciplina</h2>
+            <div id="perfil-disciplines" class="mt-4"></div>
+          </section>
+        </div>
+
+        <!-- 3. METAS -->
+        <section class="mt-8" aria-labelledby="sec-metas-t">
+          <h2 id="sec-metas-t">Metas</h2>
+          <div id="perfil-metas" class="mt-4"></div>
+        </section>
+
+        <div class="perfil-grid perfil-grid--2 mt-8">
+          <!-- 4. CONTEÚDOS DOMINADOS -->
+          <section aria-labelledby="sec-dom-t">
+            <h2 id="sec-dom-t">Conteúdos dominados</h2>
+            <p class="muted"><small>Pontos fortes do diagnóstico (≥ 70% com sinal suficiente). Estimativa por limiares — nunca verdade oficial do IFRN.</small></p>
+            <div id="perfil-strengths" class="mt-4"></div>
+          </section>
+
+          <!-- 5. PONTOS DE ATENÇÃO -->
+          <section aria-labelledby="sec-ate-t">
+            <h2 id="sec-ate-t">Pontos de atenção</h2>
+            <p class="muted"><small>Pontos fracos e fila de prioridades do diagnóstico, em ordem determinística e com motivo auditável.</small></p>
+            <div id="perfil-weaknesses" class="mt-4"></div>
+          </section>
+        </div>
+
+        <!-- 6. EVOLUÇÃO -->
+        <section class="mt-8" aria-labelledby="sec-evo-t">
+          <h2 id="sec-evo-t">Evolução</h2>
+          <p class="muted"><small>Série temporal em calendário UTC, sem interpolar lacunas (só períodos com tentativas). O dia local pode divergir em horas.</small></p>
+          <div class="evo-controls mt-4">
+            <div class="field" style="margin-bottom:0">
+              <label class="field__label" for="evo-granularity">Agrupar por</label>
+              <select class="select" id="evo-granularity">
+                <option value="DAY">Dia</option>
+                <option value="WEEK" selected>Semana (segunda-feira)</option>
+                <option value="MONTH">Mês (dia 1º)</option>
+              </select>
+            </div>
+          </div>
+          <div id="perfil-evolution" class="mt-4"></div>
+        </section>
+
+        <!-- 7. HISTÓRICO -->
+        <section class="mt-8" aria-labelledby="sec-hist-t">
+          <h2 id="sec-hist-t">Histórico</h2>
+          <p class="muted"><small id="perfil-history-count" role="status">Tentativas mais recentes primeiro, com proveniência mínima (sem enunciado nem gabarito aqui).</small></p>
+          <div id="perfil-history" class="mt-4"></div>
+          <div class="mt-4">
+            <button type="button" class="btn btn--secondary btn--sm" id="perfil-more" hidden>Carregar mais</button>
+          </div>
+        </section>
+
+        <!-- 8. CONQUISTAS -->
+        <section class="mt-8" aria-labelledby="sec-conq-t">
+          <h2 id="sec-conq-t">Conquistas</h2>
+          <div id="perfil-achievements" class="mt-4"></div>
+        </section>
+
+        <!-- NOTAS DE EVIDÊNCIA -->
+        <section class="mt-8" aria-labelledby="sec-notes-t">
+          <h2 id="sec-notes-t">Leitura honesta dos números</h2>
+          <div id="perfil-notes" class="perfil-notes mt-4"></div>
+        </section>
+      </div>
+
+      <noscript>
+        <div class="alert alert--warning mt-4" role="note">
+          <div>
+            <strong>JavaScript desligado</strong>
+            <p>O perfil precisa de JavaScript para buscar seus dados na API. Ative para continuar.</p>
+          </div>
+        </div>
+      </noscript>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container split">
+      <p class="muted"><small>VouPassar · Preparação orientada por evidências · <span data-current-year>2026</span></small></p>
+      <p class="muted"><small><a href="./design-system.html">Design system</a> · <a href="./dashboard.html">Dashboard</a> · <a href="./index.html">Início</a></small></p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/views/perfil.js"></script>
+</body>
+</html>

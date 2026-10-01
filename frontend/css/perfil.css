@@ -1,0 +1,201 @@
+/* VouPassar — perfil (TASK 6.8)
+ * Só layout da página perfil.html. Tokens, cards, tabelas, badges,
+ * alerts, loading e botões vêm do design system (base/components/utilities).
+ * Mobile-first: 1 coluna; 2 colunas a partir de 48rem; stats em 4 colunas
+ * a partir de 64rem.
+ */
+
+.perfil-head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.perfil-head p {
+  max-width: var(--measure);
+}
+
+.perfil-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.perfil-stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.perfil-stats .stat-value--empty {
+  color: var(--color-ink-500);
+}
+
+@media (min-width: 48rem) {
+  .perfil-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .perfil-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .perfil-form__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 64rem) {
+  .perfil-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Formulário de dados: empilhado no mobile, sem CSS fora do DS */
+.perfil-form {
+  display: grid;
+  gap: var(--space-3);
+  max-width: var(--measure);
+}
+
+.perfil-form__grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+}
+
+.perfil-dados__list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.perfil-dados__row {
+  display: grid;
+  gap: var(--space-1);
+  border-top: 1px solid var(--color-line-200);
+  padding-top: var(--space-2);
+}
+
+.perfil-dados__row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.perfil-dados__label {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.perfil-dados__value {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Listas de diagnóstico (dominados / atenção) */
+.mastery-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.mastery-list__item {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.mastery-list__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.mastery-list__reason {
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+}
+
+/* Evolução: barras CSS puras (sem lib, sem canvas) */
+.evo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+  margin-bottom: var(--space-3);
+}
+
+.evo-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.evo-bars__row {
+  display: grid;
+  grid-template-columns: 7rem 1fr 4.5rem;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+
+.evo-bars__label {
+  color: var(--color-ink-700);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evo-bars__value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-900);
+}
+
+/* Histórico de tentativas */
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.history-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+}
+
+.history-list__title {
+  font-weight: 600;
+}
+
+.history-list__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.perfil-notes {
+  display: grid;
+  gap: var(--space-3);
+}
