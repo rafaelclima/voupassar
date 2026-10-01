@@ -91,6 +91,15 @@ public interface QuestionAttemptRepository extends JpaRepository<QuestionAttempt
   List<QuestionAttempt> findAllByUserIdWithQuestion(@Param("userId") Long userId);
 
   /**
+   * Tentativas do aluno vinculadas a uma execução de simulado (TASK 5.1).
+   *
+   * <p>Base do placar do simulado: o resultado considera a <b>última</b>
+   * tentativa por questão (maior {@code answeredAt}, desempate por maior
+   * {@code id}) — o fato é imutável, correção só via nova tentativa.
+   */
+  List<QuestionAttempt> findBySimulationAttemptIdAndUserId(Long simulationAttemptId, Long userId);
+
+  /**
    * Histórico paginado (mais recentes primeiro), com questão + disciplina em
    * fetch para montar a página sem N+1.
    */

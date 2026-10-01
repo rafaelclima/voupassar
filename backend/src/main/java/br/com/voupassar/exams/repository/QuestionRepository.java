@@ -84,4 +84,25 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       @Param("difficulty") String difficulty,
       @Param("sourceType") String sourceType,
       Pageable pageable);
+
+  /**
+   * Candidatas ao simulado por disciplina (TASK 5.1).
+   *
+   * <p>Anuladas ficam fora da seleção: com {@code isCorrect} NULL quebrariam
+   * o aproveitamento (pontuação DESCONHECIDA, TASK 1.3 §4). O recorte por
+   * dificuldade herda a limitação da estimativa (palpite com confiança BAIXA
+   * global): questões sem estimativa saem só no recorte sem filtro.
+   * Ordem fixa por id — o sorteio sem reposição acontece no serviço.
+   */
+  @Query("""
+      SELECT q.id FROM Question q
+      JOIN q.discipline d
+      WHERE d.code = :disciplineCode
+        AND q.annulled = false
+        AND (:difficulty IS NULL OR q.difficultyEstimate = :difficulty)
+      ORDER BY q.id ASC
+      """)
+  List<Long> findCandidateIdsByDiscipline(
+      @Param("disciplineCode") String disciplineCode,
+      @Param("difficulty") String difficulty);
 }

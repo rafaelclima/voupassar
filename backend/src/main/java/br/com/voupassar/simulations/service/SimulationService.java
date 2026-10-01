@@ -1,0 +1,696 @@
+package br.com.voupassar.simulations.service;
+
+import br.com.voupassar.auth.entity.User;
+import br.com.voupassar.auth.repository.UserRepository;
+import br.com.voupassar.exception.BadRequestException;
+import br.com.voupassar.exception.ConflictException;
+import br.com.voupassar.exception.ResourceNotFoundException;
+import br.com.voupassar.exception.UnauthorizedException;
+import br.com.voupassar.exams.entity.Discipline;
+import br.com.voupassar.exams.entity.Question;
+import br.com.voupassar.exams.repository.DisciplineRepository;
+import br.com.voupassar.exams.repository.QuestionRepository;
+import br.com.voupassar.profile.entity.QuestionAttempt;
+import br.com.voupassar.profile.repository.QuestionAttemptRepository;
+import br.com.voupassar.questions.dto.PageResponse;
+import br.com.voupassar.simulations.dto.CreateDisciplineSimulationRequest;
+import br.com.voupassar.simulations.dto.SimulationAttemptResponse;
+import br.com.voupassar.simulations.dto.SimulationAttemptResponse.CadernoItem;
+import br.com.voupassar.simulations.dto.SimulationAttemptResponse.ScoreSummary;
+import br.com.voupassar.simulations.dto.SimulationAttemptSummary;
+import br.com.voupassar.simulations.dto.SimulationResultResponse;
+import br.com.voupassar.simulations.dto.SimulationResultResponse.ResultItem;
+import br.com.voupassar.simulations.entity.Simulation;
+import br.com.voupassar.simulations.entity.SimulationAttempt;
+import br.com.voupassar.simulations.entity.SimulationQuestion;
+import br.com.voupassar.simulations.repository.SimulationAttemptRepository;
+import br.com.voupassar.simulations.repository.SimulationQuestionRepository;
+import br.com.voupassar.simulations.repository.SimulationRepository;
+import java.security.SecureRandom;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Simulado por disciplina (TASK 5.1) — escolher disciplina, quantidade e
+ * dificuldade; iniciar; retomar ({@code IN_PROGRESS}); concluir; abandonar;
+ * visualizar resultado.
+ *
+ * <p>Regras de evidência:
+ * <ul>
+ *   <li>Seleção por amostra aleatória simples <b>sem reposição</b> sobre as
+ *       candidatas elegíveis (disciplina + filtro de dificuldade,
+ *       não-anuladas), via {@link SecureRandom}; a ordem sorteada vira a
+ *       ordem do caderno e é <b>congelada</b> em {@code simulation_questions}
+ *       (posição + gabarito vigente) — reprodutível e auditável após a
+ *       criação, sem expor enunciado duplicado (resolve-se via TASK 3.4).</li>
+ *   <li>Anuladas ficam fora da seleção (pontuação DESCONHECIDA, TASK 1.3
+ *       §4); quantidade acima do disponível → {@code 400
+ *       INSUFFICIENT_QUESTIONS} com o disponível explícito (nunca redução
+ *       silenciosa).</li>
+ *   <li>Correção 100% no servidor a partir do fato imutável {@code
+ *       question_attempts} (TASK 3.7) confrontado com o gabarito
+ *       <b>congelado</b>; vale a <b>última</b> tentativa por questão; o
+ *       cliente nunca escreve nota ({@code score_json} é carimbado no
+ *       servidor ao encerrar).</li>
+ *   <li>Durante {@code IN_PROGRESS} o gabarito fica oculto (preserva a
+ *       sensação de prova nos dois modos); a correção aparece só após
+ *       concluir/abandonar. Não existe estado de pausa no DDL — "pausar" é
+ *       manter {@code IN_PROGRESS} e retomar via {@code GET}.</li>
+ *   <li>{@code REAL_EDITION} não é gerado aqui (TASK 5.5); {@code REVISAO}
+ *       não gera simulado novo (ERD §2.6).</li>
+ * </ul>
+ */
+@Service
+public class SimulationService {
+
+  /** Teto de questões por simulado e de itens por página: protege banco e VPS modesta. */
+  public static final int MAX_COUNT = 100;
+
+  private static final Set<String> MODES = Set.of("ESTUDO", "PROVA");
+  private static final Set<String> DIFFICULTIES = Set.of("FACIL", "MEDIA", "DIFICIL");
+
+  private static final Logger log = LoggerFactory.getLogger(SimulationService.class);
+
+  private final UserRepository users;
+  private final DisciplineRepository disciplines;
+  private final QuestionRepository questions;
+  private final SimulationRepository simulations;
+  private final SimulationAttemptRepository attempts;
+  private final SimulationQuestionRepository caderno;
+  private final QuestionAttemptRepository responses;
+  private final Random random;
+
+  @Autowired
+  public SimulationService(
+      UserRepository users,
+      DisciplineRepository disciplines,
+      QuestionRepository questions,
+      SimulationRepository simulations,
+      SimulationAttemptRepository attempts,
+      SimulationQuestionRepository caderno,
+      QuestionAttemptRepository responses) {
+    this(users, disciplines, questions, simulations, attempts, caderno, responses, new SecureRandom());
+  }
+
+  SimulationService(
+      UserRepository users,
+      DisciplineRepository disciplines,
+      QuestionRepository questions,
+      SimulationRepository simulations,
+      SimulationAttemptRepository attempts,
+      SimulationQuestionRepository caderno,
+      QuestionAttemptRepository responses,
+      Random random) {
+    this.users = users;
+    this.disciplines = disciplines;
+    this.questions = questions;
+    this.simulations = simulations;
+    this.attempts = attempts;
+    this.caderno = caderno;
+    this.responses = responses;
+    this.random = random;
+  }
+
+  /**
+   * Cria e inicia um simulado por disciplina (caderno congelado, {@code
+   * IN_PROGRESS}).
+   */
+  @Transactional
+  public SimulationAttemptResponse createByDiscipline(long userId, CreateDisciplineSimulationRequest req) {
+    User user = requireActiveUser(userId);
+    Discipline discipline = requireDiscipline(req.disciplineCode());
+    int count = requireCount(req.questionCount());
+    String difficulty = normalizeDifficulty(req.difficulty());
+    String mode = normalizeMode(req.mode());
+
+    List<Long> candidates = questions.findCandidateIdsByDiscipline(discipline.getCode(), difficulty);
+    if (candidates.size() < count) {
+      throw new BadRequestException(
+          "INSUFFICIENT_QUESTIONS",
+          "Disponíveis " + candidates.size() + " questões"
+              + describeFilter(discipline.getCode(), difficulty)
+              + " (solicitadas " + count + "). Reduza a quantidade ou remova o filtro de dificuldade.");
+    }
+
+    List<Long> pool = new ArrayList<>(candidates);
+    Collections.shuffle(pool, random);
+    List<Long> selected = List.copyOf(pool.subList(0, count));
+    Map<Long, Question> byId = questionsById(selected);
+
+    Simulation simulation = new Simulation();
+    simulation.setOwner(user);
+    simulation.setType("BY_DISCIPLINE");
+    simulation.setExamId(null);
+    simulation.setFilterJson(filterJson(discipline.getCode(), count, difficulty, mode));
+    simulation.setTitle(title(discipline.getName(), count, difficulty, mode));
+    simulations.save(simulation);
+
+    SimulationAttempt attempt = new SimulationAttempt();
+    attempt.setSimulation(simulation);
+    attempt.setUser(user);
+    attempt.setMode(mode);
+    attempt.setStatus("IN_PROGRESS");
+    attempt.setStartedAt(OffsetDateTime.now());
+    attempts.save(attempt);
+
+    List<SimulationQuestion> rows = new ArrayList<>(count);
+    for (int i = 0; i < selected.size(); i++) {
+      Question q = requirePresent(byId, selected.get(i));
+      SimulationQuestion row = new SimulationQuestion();
+      row.setSimulationAttemptId(attempt.getId());
+      row.setPosition((short) (i + 1));
+      row.setQuestion(q);
+      row.setFrozenAnswerKey(q.getAnswerKey());
+      rows.add(row);
+    }
+    caderno.saveAll(rows);
+
+    log.info("simulado criado user_id={} attempt_id={} discipline={} count={} difficulty={} mode={}",
+        userId, attempt.getId(), discipline.getCode(), count, difficulty, mode);
+    return toAttemptResponse(attempt, simulation, rows, byId, Map.of(), false);
+  }
+
+  /** Consulta uma execução do dono do token (retomar o caderno em andamento ou rever o encerrado). */
+  @Transactional(readOnly = true)
+  public SimulationAttemptResponse getAttempt(long userId, long attemptId) {
+    requireActiveUser(userId);
+    SimulationAttempt attempt = requireOwnedAttempt(userId, attemptId);
+    return loadAttemptResponse(attempt, !"IN_PROGRESS".equals(attempt.getStatus()));
+  }
+
+  /** Lista as execuções do dono do token (mais recentes primeiro). */
+  @Transactional(readOnly = true)
+  public PageResponse<SimulationAttemptSummary> listAttempts(long userId, int page, int size) {
+    requireActiveUser(userId);
+    if (page < 0) {
+      throw new BadRequestException("Página inválida: " + page + " (0-based).");
+    }
+    if (size < 1 || size > MAX_COUNT) {
+      throw new BadRequestException(
+          "Tamanho de página inválido: " + size + " (permitido 1–" + MAX_COUNT + ").");
+    }
+    Page<SimulationAttempt> result =
+        attempts.findByUserIdOrderByStartedAtDescIdDesc(userId, PageRequest.of(page, size));
+    List<SimulationAttempt> content = result.getContent();
+
+    List<Long> attemptIds = content.stream().map(SimulationAttempt::getId).toList();
+    Map<Long, List<SimulationQuestion>> rowsByAttempt = Map.of();
+    Map<Long, Question> questionsById = Map.of();
+    Map<Long, Simulation> simulationsById = Map.of();
+    if (!attemptIds.isEmpty()) {
+      List<SimulationQuestion> rows =
+          caderno.findBySimulationAttemptIdInOrderBySimulationAttemptIdAscPositionAsc(attemptIds);
+      rowsByAttempt = groupByAttempt(rows);
+      Set<Long> questionIds = new HashSet<>();
+      for (SimulationQuestion r : rows) {
+        questionIds.add(r.getQuestion().getId());
+      }
+      questionsById = questionsById(new ArrayList<>(questionIds));
+      Set<Long> simulationIds = new HashSet<>();
+      for (SimulationAttempt a : content) {
+        simulationIds.add(a.getSimulation().getId());
+      }
+      simulationsById = simulationsById(new ArrayList<>(simulationIds));
+    }
+
+    List<SimulationAttemptSummary> out = new ArrayList<>(content.size());
+    for (SimulationAttempt a : content) {
+      List<SimulationQuestion> rows = rowsByAttempt.getOrDefault(a.getId(), List.of());
+      Simulation s = simulationsById.get(a.getSimulation().getId());
+      String title = s == null ? "Simulado" : s.getTitle();
+      String discCode = null;
+      if (!rows.isEmpty()) {
+        Question first = questionsById.get(rows.get(0).getQuestion().getId());
+        if (first != null) {
+          discCode = first.getDiscipline().getCode();
+        }
+      }
+      out.add(new SimulationAttemptSummary(
+          a.getId(), a.getSimulation().getId(), title, discCode,
+          a.getMode(), a.getStatus(), rows.size(), a.getStartedAt(), a.getSubmittedAt()));
+    }
+    return new PageResponse<>(
+        List.copyOf(out), result.getNumber(), result.getSize(),
+        result.getTotalElements(), result.getTotalPages(), result.isFirst(), result.isLast());
+  }
+
+  /** Conclui a execução ({@code IN_PROGRESS → SUBMITTED}) com o placar calculado no servidor. */
+  @Transactional
+  public SimulationResultResponse submitAttempt(long userId, long attemptId) {
+    requireActiveUser(userId);
+    SimulationAttempt attempt = requireOwnedAttempt(userId, attemptId);
+    requireInProgress(attempt);
+    attempt.setStatus("SUBMITTED");
+    attempt.setSubmittedAt(OffsetDateTime.now());
+    ScoredBoard board = scoreBoard(attempt);
+    attempt.setScoreJson(scoreJson(board, attempt.getMode(), attempt.getStatus()));
+    attempts.save(attempt);
+
+    log.info("simulado concluído user_id={} attempt_id={} scored={} correct={}",
+        userId, attemptId, board.scored, board.correct);
+    return toResultResponse(attempt, board, false);
+  }
+
+  /** Desiste da execução ({@code IN_PROGRESS → ABANDONED}) com o placar parcial do servidor. */
+  @Transactional
+  public SimulationResultResponse abandonAttempt(long userId, long attemptId) {
+    requireActiveUser(userId);
+    SimulationAttempt attempt = requireOwnedAttempt(userId, attemptId);
+    requireInProgress(attempt);
+    attempt.setStatus("ABANDONED");
+    attempt.setSubmittedAt(OffsetDateTime.now());
+    ScoredBoard board = scoreBoard(attempt);
+    attempt.setScoreJson(scoreJson(board, attempt.getMode(), attempt.getStatus()));
+    attempts.save(attempt);
+
+    log.info("simulado abandonado user_id={} attempt_id={} answered={}",
+        userId, attemptId, board.answered);
+    return toResultResponse(attempt, board, true);
+  }
+
+  /** Visualiza o resultado (só após concluir ou abandonar). */
+  @Transactional(readOnly = true)
+  public SimulationResultResponse getResult(long userId, long attemptId) {
+    requireActiveUser(userId);
+    SimulationAttempt attempt = requireOwnedAttempt(userId, attemptId);
+    if ("IN_PROGRESS".equals(attempt.getStatus())) {
+      throw new ConflictException(
+          "SIMULATION_NOT_FINISHED",
+          "Simulado ainda em andamento: conclua ou abandone para ver o resultado (gabarito oculto durante a execução).");
+    }
+    return toResultResponse(attempt, scoreBoard(attempt), "ABANDONED".equals(attempt.getStatus()));
+  }
+
+  // ---- internals ----
+
+  private User requireActiveUser(long userId) {
+    User user = users.findById(userId)
+        .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND", "Conta não encontrada."));
+    if (!user.isActive()) {
+      throw new UnauthorizedException("INVALID_REFRESH_TOKEN", "Sessão inválida. Entre novamente.");
+    }
+    return user;
+  }
+
+  private SimulationAttempt requireOwnedAttempt(long userId, long attemptId) {
+    return attempts.findByIdAndUserId(attemptId, userId)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "SIMULATION_ATTEMPT_NOT_FOUND", "Execução de simulado não encontrada."));
+  }
+
+  private static void requireInProgress(SimulationAttempt attempt) {
+    if (!"IN_PROGRESS".equals(attempt.getStatus())) {
+      throw new ConflictException(
+          "SIMULATION_CLOSED", "Simulado já encerrado (status " + attempt.getStatus() + ").");
+    }
+  }
+
+  private Discipline requireDiscipline(String code) {
+    if (code == null || code.isBlank()) {
+      throw new BadRequestException("Disciplina é obrigatória.");
+    }
+    String normalized = code.trim().toUpperCase();
+    if (!normalized.matches("[A-Z_]{1,64}")) {
+      throw new BadRequestException("Código de disciplina inválido: " + code + ".");
+    }
+    return disciplines.findByCode(normalized)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "DISCIPLINE_NOT_FOUND", "Disciplina " + normalized + " não encontrada."));
+  }
+
+  private static int requireCount(Integer count) {
+    if (count == null) {
+      throw new BadRequestException("Quantidade é obrigatória.");
+    }
+    if (count < 1 || count > MAX_COUNT) {
+      throw new BadRequestException(
+          "INVALID_QUESTION_COUNT", "Quantidade inválida: " + count + " (permitido 1–" + MAX_COUNT + ").");
+    }
+    return count;
+  }
+
+  private static String normalizeDifficulty(String difficulty) {
+    if (difficulty == null || difficulty.isBlank()) {
+      return null;
+    }
+    String normalized = difficulty.trim().toUpperCase();
+    if (!DIFFICULTIES.contains(normalized)) {
+      throw new BadRequestException(
+          "INVALID_DIFFICULTY",
+          "Dificuldade inválida: " + difficulty + " (permitido FACIL, MEDIA, DIFICIL).");
+    }
+    return normalized;
+  }
+
+  private static String normalizeMode(String mode) {
+    String m = mode == null ? "" : mode.trim().toUpperCase();
+    if (!MODES.contains(m)) {
+      throw new BadRequestException("INVALID_MODE", "Modo deve ser ESTUDO ou PROVA.");
+    }
+    return m;
+  }
+
+  private static String describeFilter(String disciplineCode, String difficulty) {
+    return " em " + disciplineCode + (difficulty == null ? "" : " com dificuldade " + difficulty);
+  }
+
+  private static String title(String disciplineName, int count, String difficulty, String mode) {
+    return "Simulado " + disciplineName + " — " + count + (count == 1 ? " questão" : " questões")
+        + (difficulty == null ? "" : " " + difficulty) + " [" + mode + "]";
+  }
+
+  private static String filterJson(String disciplineCode, int count, String difficulty, String mode) {
+    return "{\"type\":\"BY_DISCIPLINE\",\"discipline\":\"" + disciplineCode
+        + "\",\"questionCount\":" + count
+        + ",\"difficulty\":" + (difficulty == null ? "null" : "\"" + difficulty + "\"")
+        + ",\"mode\":\"" + mode + "\"}";
+  }
+
+  private static String scoreJson(ScoredBoard board, String mode, String status) {
+    return "{\"total\":" + board.total
+        + ",\"answered\":" + board.answered
+        + ",\"unanswered\":" + board.unanswered
+        + ",\"scored\":" + board.scored
+        + ",\"correct\":" + board.correct
+        + ",\"incorrect\":" + board.incorrect
+        + ",\"annulled\":" + board.annulled
+        + ",\"accuracy\":" + (board.accuracy == null
+            ? "null" : String.format(Locale.US, "%.4f", board.accuracy))
+        + ",\"mode\":\"" + mode + "\",\"status\":\"" + status + "\"}";
+  }
+
+  private Map<Long, Question> questionsById(List<Long> ids) {
+    Map<Long, Question> out = new HashMap<>(ids.size() * 2);
+    for (Question q : questions.findAllById(ids)) {
+      out.put(q.getId(), q);
+    }
+    return out;
+  }
+
+  private Map<Long, Simulation> simulationsById(List<Long> ids) {
+    Map<Long, Simulation> out = new HashMap<>(ids.size() * 2);
+    for (Simulation s : simulations.findAllById(ids)) {
+      out.put(s.getId(), s);
+    }
+    return out;
+  }
+
+  private static Question requirePresent(Map<Long, Question> byId, Long id) {
+    Question q = byId.get(id);
+    if (q == null) {
+      throw new IllegalStateException("Questão candidata " + id + " não encontrada.");
+    }
+    return q;
+  }
+
+  private static Map<Long, List<SimulationQuestion>> groupByAttempt(List<SimulationQuestion> rows) {
+    Map<Long, List<SimulationQuestion>> out = new LinkedHashMap<>();
+    for (SimulationQuestion r : rows) {
+      out.computeIfAbsent(r.getSimulationAttemptId(), k -> new ArrayList<>()).add(r);
+    }
+    return out;
+  }
+
+  /**
+   * Última tentativa por questão (maior {@code answeredAt}, desempate por
+   * maior {@code id}) — o fato é imutável, correção só via nova tentativa.
+   */
+  private static Map<Long, QuestionAttempt> latestByQuestion(List<QuestionAttempt> all) {
+    Map<Long, QuestionAttempt> out = new HashMap<>(all.size() * 2);
+    for (QuestionAttempt a : all) {
+      QuestionAttempt current = out.get(a.getQuestion().getId());
+      if (current == null || compareRecency(a, current) > 0) {
+        out.put(a.getQuestion().getId(), a);
+      }
+    }
+    return out;
+  }
+
+  private static int compareRecency(QuestionAttempt a, QuestionAttempt b) {
+    if (a.getAnsweredAt() == null && b.getAnsweredAt() == null) {
+      return Long.compare(a.getId() == null ? 0L : a.getId(), b.getId() == null ? 0L : b.getId());
+    }
+    if (a.getAnsweredAt() == null) {
+      return -1;
+    }
+    if (b.getAnsweredAt() == null) {
+      return 1;
+    }
+    int cmp = a.getAnsweredAt().compareTo(b.getAnsweredAt());
+    if (cmp != 0) {
+      return cmp;
+    }
+    return Long.compare(a.getId() == null ? 0L : a.getId(), b.getId() == null ? 0L : b.getId());
+  }
+
+  /** Monta o placar a partir do caderno congelado + última resposta por questão. */
+  private ScoredBoard scoreBoard(SimulationAttempt attempt) {
+    List<SimulationQuestion> rows =
+        caderno.findBySimulationAttemptIdOrderByPositionAsc(attempt.getId());
+    List<Long> ids = rows.stream().map(r -> r.getQuestion().getId()).toList();
+    Map<Long, Question> byId = questionsById(ids);
+    Map<Long, QuestionAttempt> latest =
+        latestByQuestion(responses.findBySimulationAttemptIdAndUserId(attempt.getId(), attempt.getUser().getId()));
+
+    List<PerQuestion> items = new ArrayList<>(rows.size());
+    long scored = 0;
+    long correct = 0;
+    long annulled = 0;
+    long answered = 0;
+    for (SimulationQuestion row : rows) {
+      Question q = requirePresent(byId, row.getQuestion().getId());
+      QuestionAttempt last = latest.get(q.getId());
+      boolean isAnnulled = q.isAnnulled() || "X".equals(q.getAnswerKey())
+          || (last != null && last.isAnnulled());
+      Boolean isCorrect = null;
+      if (last != null) {
+        answered++;
+        if (!isAnnulled) {
+          scored++;
+          isCorrect = last.getCorrect();
+          if (Boolean.TRUE.equals(isCorrect)) {
+            correct++;
+          }
+        } else {
+          annulled++;
+        }
+      } else if (isAnnulled) {
+        // Sem resposta e questão hoje anulada: conta no resumo como anulada,
+        // sem pontuar (regra DESCONHECIDA) — nunca como erro inventado.
+        annulled++;
+      }
+      items.add(new PerQuestion(row, q, last, isAnnulled, isCorrect));
+    }
+    long total = rows.size();
+    long unanswered = total - answered;
+    long incorrect = Math.max(0L, scored - correct);
+    Double accuracy = scored == 0 ? null : correct / (double) scored;
+    return new ScoredBoard(items, total, answered, unanswered, scored, correct, incorrect, annulled, accuracy);
+  }
+
+  private SimulationAttemptResponse loadAttemptResponse(SimulationAttempt attempt, boolean reveal) {
+    List<SimulationQuestion> rows =
+        caderno.findBySimulationAttemptIdOrderByPositionAsc(attempt.getId());
+    List<Long> ids = rows.stream().map(r -> r.getQuestion().getId()).toList();
+    Map<Long, Question> byId = questionsById(ids);
+    Map<Long, QuestionAttempt> latest = Map.of();
+    if (reveal) {
+      latest = latestByQuestion(
+          responses.findBySimulationAttemptIdAndUserId(attempt.getId(), attempt.getUser().getId()));
+    } else {
+      // Em andamento: só o conjunto de respondidas (progresso), sem correção.
+      Set<Long> answeredIds = new HashSet<>();
+      for (QuestionAttempt a : responses.findBySimulationAttemptIdAndUserId(
+          attempt.getId(), attempt.getUser().getId())) {
+        answeredIds.add(a.getQuestion().getId());
+      }
+      Map<Long, QuestionAttempt> flags = new HashMap<>();
+      for (Long qid : answeredIds) {
+        flags.put(qid, null);
+      }
+      latest = flags;
+    }
+    return toAttemptResponse(attempt, attempt.getSimulation(), rows, byId, latest, reveal);
+  }
+
+  private SimulationAttemptResponse toAttemptResponse(
+      SimulationAttempt attempt,
+      Simulation simulation,
+      List<SimulationQuestion> rows,
+      Map<Long, Question> byId,
+      Map<Long, QuestionAttempt> latest,
+      boolean reveal) {
+    List<CadernoItem> items = new ArrayList<>(rows.size());
+    String discCode = null;
+    String discName = null;
+    for (SimulationQuestion row : rows) {
+      Question q = requirePresent(byId, row.getQuestion().getId());
+      if (discCode == null) {
+        discCode = q.getDiscipline().getCode();
+        discName = q.getDiscipline().getName();
+      }
+      boolean answered = latest.containsKey(q.getId());
+      QuestionAttempt last = latest.get(q.getId());
+      boolean isAnnulled = q.isAnnulled() || "X".equals(q.getAnswerKey())
+          || (last != null && last.isAnnulled());
+      items.add(new CadernoItem(
+          row.getPosition().intValue(),
+          q.getId(),
+          q.getDiscipline().getCode(),
+          q.getSourceYear() == null ? null : q.getSourceYear().intValue(),
+          q.getSourceQuestionNumber() == null ? null : q.getSourceQuestionNumber().intValue(),
+          answered,
+          reveal ? row.getFrozenAnswerKey() : null,
+          reveal && last != null ? last.getSelectedOption() : null,
+          reveal && last != null && !isAnnulled ? last.getCorrect() : null,
+          isAnnulled && answered));
+    }
+
+    ScoreSummary score = null;
+    if (reveal) {
+      ScoredBoard board = scoreBoard(attempt);
+      score = new ScoreSummary(board.total, board.answered, board.unanswered,
+          board.scored, board.correct, board.incorrect, board.annulled, board.accuracy);
+    }
+
+    List<String> notes = attemptNotes(attempt, reveal);
+    return new SimulationAttemptResponse(
+        attempt.getId(), simulation.getId(), simulation.getType(), simulation.getTitle(),
+        discCode, discName, attempt.getMode(), attempt.getStatus(), rows.size(),
+        attempt.getStartedAt(), attempt.getSubmittedAt(),
+        List.copyOf(items), score, List.copyOf(notes));
+  }
+
+  private SimulationResultResponse toResultResponse(
+      SimulationAttempt attempt, ScoredBoard board, boolean abandoned) {
+    List<ResultItem> items = new ArrayList<>(board.items.size());
+    String discCode = null;
+    for (PerQuestion p : board.items) {
+      Question q = p.question;
+      if (discCode == null) {
+        discCode = q.getDiscipline().getCode();
+      }
+      boolean unanswered = p.last == null;
+      items.add(new ResultItem(
+          p.row.getPosition().intValue(),
+          q.getId(),
+          q.getDiscipline().getCode(),
+          q.getSourceYear() == null ? null : q.getSourceYear().intValue(),
+          q.getSourceQuestionNumber() == null ? null : q.getSourceQuestionNumber().intValue(),
+          p.last == null ? null : p.last.getSelectedOption(),
+          p.isCorrect,
+          p.wasAnnulled,
+          p.row.getFrozenAnswerKey(),
+          unanswered));
+    }
+    List<String> notes = resultNotes(attempt, board, abandoned);
+    return new SimulationResultResponse(
+        attempt.getId(), attempt.getSimulation().getId(), attempt.getSimulation().getTitle(),
+        discCode, attempt.getMode(), attempt.getStatus(),
+        board.total, board.answered, board.unanswered, board.scored,
+        board.correct, board.incorrect, board.annulled, board.accuracy,
+        List.copyOf(items), List.copyOf(notes));
+  }
+
+  private static List<String> attemptNotes(SimulationAttempt attempt, boolean reveal) {
+    List<String> notes = new ArrayList<>();
+    if (!reveal) {
+      notes.add("Gabarito oculto durante a execução (preserva a sensação de prova). "
+          + "No Modo Estudo o feedback imediato vem de POST /attempts; "
+          + "no Modo Prova a correção aparece só após concluir.");
+      notes.add("Sem estado de pausa no servidor: retome este caderno via GET até concluir ou abandonar.");
+    } else {
+      notes.add("Caderno congelado na criação (posição + gabarito vigente): a correção usa o "
+          + "frozen_answer_key, nunca o gabarito atual.");
+    }
+    notes.add("Responda via POST /attempts com simulationAttemptId=" + attempt.getId()
+        + " (correção do servidor, TASK 3.7); após encerrar, novas respostas retornam 409 SIMULATION_CLOSED.");
+    notes.add("Anuladas ficam fora do aproveitamento (pontuação DESCONHECIDA, TASK 1.3 §4).");
+    notes.add("Enunciados em GET /api/v1/questions/{id} (este caderno referencia, nunca duplica).");
+    return notes;
+  }
+
+  private static List<String> resultNotes(
+      SimulationAttempt attempt, ScoredBoard board, boolean abandoned) {
+    List<String> notes = new ArrayList<>();
+    if (abandoned) {
+      notes.add("Execução abandonada: placar parcial (vale a última resposta por questão).");
+    } else {
+      notes.add("Execução concluída: vale a última tentativa por questão vinculada a esta execução.");
+    }
+    if (board.unanswered > 0) {
+      notes.add(board.unanswered + " questão(ões) sem resposta: contam como não respondidas, nunca como erro inventado.");
+    }
+    if (board.annulled > 0) {
+      notes.add("Anuladas (" + board.annulled + ") ficam fora do aproveitamento; regra de pontuação DESCONHECIDA (TASK 1.3 §4).");
+    }
+    if (board.scored == 0) {
+      notes.add("Sem tentativas pontuáveis: aproveitamento NULL (nunca zero inventado).");
+    }
+    notes.add("Confronto contra o gabarito congelado (frozen_answer_key), não contra o gabarito atual.");
+    notes.add("Modo " + attempt.getMode() + ": o diagnóstico (TASK 4.2) e a revisão (TASK 4.5) "
+        + "já incorporam estas respostas via question_attempts.");
+    return notes;
+  }
+
+  /** Uma posição do caderno com a última resposta resolvida. */
+  private static final class PerQuestion {
+    final SimulationQuestion row;
+    final Question question;
+    final QuestionAttempt last;
+    final boolean wasAnnulled;
+    final Boolean isCorrect;
+
+    PerQuestion(SimulationQuestion row, Question question, QuestionAttempt last,
+        boolean wasAnnulled, Boolean isCorrect) {
+      this.row = row;
+      this.question = question;
+      this.last = last;
+      this.wasAnnulled = wasAnnulled;
+      this.isCorrect = isCorrect;
+    }
+  }
+
+  /** Placar calculado no servidor (nunca vindo do cliente). */
+  private static final class ScoredBoard {
+    final List<PerQuestion> items;
+    final long total;
+    final long answered;
+    final long unanswered;
+    final long scored;
+    final long correct;
+    final long incorrect;
+    final long annulled;
+    final Double accuracy;
+
+    ScoredBoard(List<PerQuestion> items, long total, long answered, long unanswered,
+        long scored, long correct, long incorrect, long annulled, Double accuracy) {
+      this.items = items;
+      this.total = total;
+      this.answered = answered;
+      this.unanswered = unanswered;
+      this.scored = scored;
+      this.correct = correct;
+      this.incorrect = incorrect;
+      this.annulled = annulled;
+      this.accuracy = accuracy;
+    }
+  }
+
+}
