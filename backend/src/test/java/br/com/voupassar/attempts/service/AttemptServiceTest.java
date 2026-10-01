@@ -267,10 +267,66 @@ class AttemptServiceTest {
     var out = service.submitAttempt(1L,
         new CreateAttemptRequest(12L, "c", "prova", 30, null, 55L));
 
-    assertEquals(Boolean.TRUE, out.isCorrect());
+    // TASK 5.3: POST em PROVA IN_PROGRESS oculta o resultado (persiste correto no fato).
+    assertNull(out.isCorrect());
     assertEquals("PROVA", out.mode());
     assertEquals(Long.valueOf(55L), out.simulationAttemptId());
-    assertTrue(out.notes().stream().anyMatch(n -> n.contains("Fase 5")));
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("oculto durante a execução")));
+
+    ArgumentCaptor<QuestionAttempt> cap = ArgumentCaptor.forClass(QuestionAttempt.class);
+    verify(attempts).save(cap.capture());
+    assertEquals(Boolean.TRUE, cap.getValue().getCorrect());
+  }
+
+  @Test
+  void provaPostPersistsCorrectButHidesAndGetRevealsAfterFinish() {
+    activeUser();
+    stubAttemptSave(101L);
+    when(questions.findById(12L)).thenReturn(Optional.of(question(12L, "C", false)));
+    when(simulations.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(sim(55L, "PROVA", "IN_PROGRESS")));
+
+    var posted = service.submitAttempt(1L,
+        new CreateAttemptRequest(12L, "C", "PROVA", 30, null, 55L));
+    assertNull(posted.isCorrect());
+
+    // GET durante a prova segue oculto.
+    Question q = question(12L, "C", false);
+    QuestionAttempt a = new QuestionAttempt();
+    ReflectionTestUtils.setField(a, "id", 101L);
+    a.setQuestion(q);
+    a.setSelectedOption("C");
+    a.setCorrect(Boolean.TRUE);
+    a.setAnnulled(false);
+    a.setMode("PROVA");
+    a.setSimulationAttemptId(55L);
+    when(attempts.findByIdAndUserId(101L, 1L)).thenReturn(Optional.of(a));
+    // Simulação ainda IN_PROGRESS → oculto.
+    when(simulations.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(sim(55L, "PROVA", "IN_PROGRESS")));
+    var during = service.getAttempt(1L, 101L);
+    assertNull(during.isCorrect());
+    assertTrue(during.notes().stream().anyMatch(n -> n.contains("oculto durante a execução")));
+
+    // Após encerrar → revela.
+    when(simulations.findByIdAndUserId(55L, 1L))
+        .thenReturn(Optional.of(sim(55L, "PROVA", "SUBMITTED")));
+    var after = service.getAttempt(1L, 101L);
+    assertEquals(Boolean.TRUE, after.isCorrect());
+    assertTrue(after.notes().stream().anyMatch(n -> n.contains("encerrada")));
+  }
+
+  @Test
+  void estudoPostStillRevealsImmediately() {
+    activeUser();
+    stubAttemptSave(102L);
+    when(questions.findById(12L)).thenReturn(Optional.of(question(12L, "C", false)));
+    when(sessions.findByIdAndUserId(7L, 1L))
+        .thenReturn(Optional.of(session(7L, 1L, "ESTUDO", "IN_PROGRESS")));
+
+    var out = service.submitAttempt(1L,
+        new CreateAttemptRequest(12L, "C", "ESTUDO", 10, 7L, null));
+    assertEquals(Boolean.TRUE, out.isCorrect());
   }
 
   @Test

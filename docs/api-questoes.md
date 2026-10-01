@@ -44,8 +44,10 @@ ausência do dataset (AGENTS.md §3). Questão inexistente →
   relevância sem algoritmo auditável (Fase 4).
 * Origem válida sem linhas (ex. `sourceType=AUTHORAL` hoje) = página vazia
   legítima (`totalElements: 0`), não erro.
-* O Modo Prova (ocultar gabarito durante a execução) é responsabilidade da
-  camada de simulados (Fase 5), não deste banco de leitura.
+* Modo Prova (TASK 5.3, AGENTS.md §9): questão em simulado `PROVA` ainda
+  `IN_PROGRESS` deste aluno sai com `answerKey/explanation` nulos + nota de
+  gabarito oculto (via `searchForUser`/`getByIdForUser`); após
+  concluir/abandonar revela normalmente. Ver `docs/api-modo-prova.md`.
 
 ## OpenAPI
 

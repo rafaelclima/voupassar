@@ -60,6 +60,7 @@ class QuestionServiceTest {
   @Mock TopicRepository topics;
   @Mock SubtopicRepository subtopics;
   @Mock ExamRepository exams;
+  @Mock br.com.voupassar.simulations.repository.SimulationQuestionRepository caderno;
 
   QuestionService service;
 
@@ -347,5 +348,78 @@ class QuestionServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> service.getById(999L));
     assertEquals("QUESTION_NOT_FOUND", ex.getCode());
     assertThrows(BadRequestException.class, () -> service.getById(0L));
+  }
+
+  // ---- Modo Prova (TASK 5.3) ----
+
+  private QuestionService serviceWithCaderno() {
+    return new QuestionService(
+        questions, options, classifications, disciplines, topics, subtopics, exams, caderno);
+  }
+
+  @Test
+  void getByIdForUserHidesKeyWhenInProvaInProgress() {
+    Question q = question(1L, 21, "A", false);
+    ReflectionTestUtils.setField(q, "explanation", "Porque 2+2=4.");
+    when(questions.findById(1L)).thenReturn(Optional.of(q));
+    when(options.findByQuestionIdOrdered(1L))
+        .thenReturn(
+            List.of(
+                option(q, "A", "4"),
+                option(q, "B", "5"),
+                option(q, "C", "6"),
+                option(q, "D", "7")));
+    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(q)));
+    when(caderno.existsInProvaInProgress(1L, 1L)).thenReturn(true);
+
+    QuestionResponse out = serviceWithCaderno().getByIdForUser(1L, 1L);
+
+    assertNull(out.answerKey());
+    assertNull(out.explanation());
+    assertEquals("Quanto é 2 + 2?", out.statement());
+    assertEquals(4, out.options().size());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("Gabarito oculto")));
+  }
+
+  @Test
+  void getByIdForUserRevealsWhenNotInProva() {
+    Question q = question(1L, 21, "A", false);
+    when(questions.findById(1L)).thenReturn(Optional.of(q));
+    when(options.findByQuestionIdOrdered(1L))
+        .thenReturn(
+            List.of(
+                option(q, "A", "4"),
+                option(q, "B", "5"),
+                option(q, "C", "6"),
+                option(q, "D", "7")));
+    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(q)));
+    when(caderno.existsInProvaInProgress(1L, 1L)).thenReturn(false);
+
+    QuestionResponse out = serviceWithCaderno().getByIdForUser(1L, 1L);
+
+    assertEquals("A", out.answerKey());
+  }
+
+  @Test
+  void searchForUserMasksOnlyProvaQuestions() {
+    Question q1 = question(1L, 21, "A", false);
+    Question q2 = question(2L, 22, "B", false);
+    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
+        .thenReturn(new PageImpl<>(List.of(q1, q2), PageRequest.of(0, 20), 2));
+    when(options.findByQuestionIdsOrdered(List.of(1L, 2L)))
+        .thenReturn(
+            List.of(
+                option(q1, "A", "4"), option(q1, "B", "5"), option(q1, "C", "6"), option(q1, "D", "7"),
+                option(q2, "A", "4"), option(q2, "B", "5"), option(q2, "C", "6"), option(q2, "D", "7")));
+    when(classifications.findActiveByQuestionIds(List.of(1L, 2L)))
+        .thenReturn(List.of(classification(q1), classification(q2)));
+    when(caderno.findInProvaInProgress(1L, List.of(1L, 2L))).thenReturn(java.util.Set.of(2L));
+
+    var out = serviceWithCaderno().searchForUser(1L, null, null, null, null, null, null, 0, 20);
+
+    assertEquals(2, out.content().size());
+    assertEquals("A", out.content().get(0).answerKey());
+    assertNull(out.content().get(1).answerKey());
+    assertTrue(out.content().get(1).notes().stream().anyMatch(n -> n.contains("Gabarito oculto")));
   }
 }

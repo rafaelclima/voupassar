@@ -29,7 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Tentativas e sessões de estudo (TASK 3.7) — escrita do fato de resposta.
+ * Tentativas e sessões de estudo (TASK 3.7) — escrita do fato de resposta,
+ * com ocultação do Modo Prova (TASK 5.3).
  *
  * <p>Regras de evidência:
  * <ul>
@@ -44,8 +45,14 @@ import org.springframework.transaction.annotation.Transactional;
  *       simulationAttemptId} (ERD §5 item 6 — resposta órfã proibida). Cada
  *       vínculo é validado por posse (dono do token), status ({@code
  *       IN_PROGRESS}) e coerência de modo com a tentativa.</li>
- *   <li>O resultado é sempre devolvido (decisão da TASK 3.7); ocultar o
- *       gabarito no Modo Prova é responsabilidade da Fase 5.</li>
+ *   <li>Modo Prova (TASK 5.3, AGENTS.md §9): durante a execução ({@code
+ *       IN_PROGRESS}) o {@code POST} devolve {@code isCorrect=NULL} com nota
+ *       de gabarito oculto — o valor correto permanece persistido no fato
+ *       imutável e reaparece após encerrar (via {@code GET} da tentativa ou
+ *       via resultado do simulado). {@code wasAnnulled} segue verídico
+ *       (anulada não tem resposta correta a vazar). Fora de prova
+ *       ({@code ESTUDO}/{@code REVISAO}, ou {@code PROVA} já encerrada) o
+ *       resultado é devolvido normalmente.</li>
  *   <li>Tentativas são imutáveis (trigger): sem PUT/DELETE — correção só via
  *       nova tentativa.</li>
  *   <li>A cada registro, o agregado {@code student_topic_performance} é
@@ -178,19 +185,26 @@ public class AttemptService {
     attempts.save(a);
     performance.rebuildTopicPerformance(userId);
 
-    log.info("tentativa user_id={} attempt_id={} question_id={} mode={} annulled={}",
-        userId, a.getId(), question.getId(), mode, annulled);
-    return toAttempt(a);
+    // TASK 5.3: o POST só é aceito com vínculo IN_PROGRESS (validado acima);
+    // em PROVA a resposta é registrada mas o resultado fica oculto até encerrar.
+    boolean hidden = "PROVA".equals(mode);
+    log.info("tentativa user_id={} attempt_id={} question_id={} mode={} annulled={} hidden={}",
+        userId, a.getId(), question.getId(), mode, annulled, hidden);
+    return toAttempt(a, hidden);
   }
 
-  /** Consulta uma tentativa do dono do token. */
+  /**
+   * Consulta uma tentativa do dono do token (TASK 5.3: em PROVA com execução
+   * ainda {@code IN_PROGRESS} o resultado segue oculto — sem atalho para
+   * furar a prova via GET; após encerrar, revela normalmente).
+   */
   @Transactional(readOnly = true)
   public AttemptResponse getAttempt(long userId, long attemptId) {
     requireActiveUser(userId);
     QuestionAttempt a = attempts.findByIdAndUserId(attemptId, userId)
         .orElseThrow(() -> new ResourceNotFoundException(
             "ATTEMPT_NOT_FOUND", "Tentativa não encontrada."));
-    return toAttempt(a);
+    return toAttempt(a, isHiddenDuringProva(userId, a));
   }
 
   // ---- internals ----
@@ -239,8 +253,13 @@ public class AttemptService {
         s.getId(), s.getMode(), s.getStatus(), s.getStartedAt(), s.getFinishedAt());
   }
 
-  private static AttemptResponse toAttempt(QuestionAttempt a) {
-    List<String> notes = new ArrayList<>(3);
+  /**
+   * Revela o resultado salvo, salvo quando {@code hidden}: em prova em
+   * andamento {@code isCorrect} sai NULL (oculto) — o valor persistido no
+   * fato imutável é preservado e reaparece após encerrar.
+   */
+  private static AttemptResponse toAttempt(QuestionAttempt a, boolean hidden) {
+    List<String> notes = new ArrayList<>(4);
     if (a.isAnnulled()) {
       notes.add("Questão anulada no gabarito oficial: conta como conteúdo respondido e fica fora do aproveitamento; regra de pontuação DESCONHECIDA.");
     }
@@ -248,13 +267,17 @@ public class AttemptService {
       notes.add("Resposta em branco: conta como erro (questão pontuável não anulada).");
     }
     if ("PROVA".equals(a.getMode())) {
-      notes.add("Modo Prova: o resultado já está corrigido no servidor; ocultar o gabarito durante a execução é responsabilidade da camada de simulados (Fase 5).");
+      if (hidden) {
+        notes.add("Modo Prova: resultado oculto durante a execução (preserva a sensação de prova — AGENTS.md §9); conclua ou abandone a execução/sessão para ver a correção.");
+      } else {
+        notes.add("Modo Prova: execução encerrada — correção revelada (confronto contra o gabarito vigente na tentativa; no simulado vale o gabarito congelado).");
+      }
     }
     return new AttemptResponse(
         a.getId(),
         a.getQuestion().getId(),
         a.getSelectedOption(),
-        a.getCorrect(),
+        hidden ? null : a.getCorrect(),
         a.isAnnulled(),
         a.getMode(),
         a.getTimeSpentSeconds(),
@@ -262,5 +285,39 @@ public class AttemptService {
         a.getSimulationAttemptId(),
         a.getAnsweredAt(),
         List.copyOf(notes));
+  }
+
+  /**
+   * TASK 5.3: esconder quando a tentativa é {@code PROVA} e ao menos um
+   * vínculo ainda está aberto ({@code IN_PROGRESS}). Vínculo encerrado ou
+   * ausente = prova já terminou = revelar.
+   */
+  private boolean isHiddenDuringProva(long userId, QuestionAttempt a) {
+    if (!"PROVA".equals(a.getMode())) {
+      return false;
+    }
+    if (a.getSimulationAttemptId() != null) {
+      var sim = simulations.findByIdAndUserId(a.getSimulationAttemptId(), userId);
+      if (sim.isPresent() && "IN_PROGRESS".equals(sim.get().getStatus())) {
+        return true;
+      }
+    }
+    if (a.getStudySessionId() != null) {
+      var session = sessions.findByIdAndUserId(a.getStudySessionId(), userId);
+      if (session.isPresent() && "IN_PROGRESS".equals(session.get().getStatus())) {
+        return true;
+      }
+    }
+    // Sem vínculo aberto (ambos encerrados, ou tentativa legada sem vínculo
+    // rastreável): nada em execução para proteger — revelar.
+    // Se houver ao menos um vínculo e todos os rastreáveis estiverem
+    // encerrados, também revelar; se nenhum vínculo, revelar (nunca inventar
+    // ocultação sem evidência de prova em andamento).
+    if (a.getSimulationAttemptId() == null && a.getStudySessionId() == null) {
+      return false;
+    }
+    // Há vínculo(s) mas nenhum IN_PROGRESS encontrado: verificar se ao menos
+    // um vínculo existe e está encerrado (revelar) vs. vínculo sumiu (revelar).
+    return false;
   }
 }

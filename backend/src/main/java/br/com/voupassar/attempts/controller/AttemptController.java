@@ -25,13 +25,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Tentativas (TASK 3.7) — registro do fato de resposta com correção do servidor.
+ * Tentativas (TASK 3.7) — registro do fato de resposta com correção do servidor,
+ * mais ocultação do Modo Prova (TASK 5.3).
  *
  * <p>Rotas autenticadas (Bearer), escopadas ao dono do token. Sem regra de
  * negócio aqui (AGENTS.md §19) — tudo no {@link AttemptService}. O fato é
  * imutável: existe POST (registrar) e GET unitário (consultar); sem PUT nem
- * DELETE. O histórico paginado continua em {@code GET /profile/history}
- * (TASK 3.6) e os agregados em {@code GET /profile/stats}.
+ * DELETE. Em {@code PROVA} com execução/sessão {@code IN_PROGRESS} o
+ * {@code isCorrect} sai NULL (oculto até encerrar). O histórico paginado
+ * continua em {@code GET /profile/history} (TASK 3.6) e os agregados em
+ * {@code GET /profile/stats}.
  */
 @RestController
 @RequestMapping(path = "/api/v1/attempts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,11 +47,12 @@ public class AttemptController {
     this.service = service;
   }
 
-  @Operation(summary = "Registrar tentativa (correção no servidor, sempre devolvida).",
+  @Operation(summary = "Registrar tentativa (correção no servidor; oculta em PROVA em andamento).",
       description = "Informa questão + resposta + modo + vínculo (sessão ou "
           + "simulado). O servidor calcula isCorrect/wasAnnulled pelo gabarito "
           + "e carimba answeredAt. Anuladas saem com isCorrect null (pontuação "
-          + "DESCONHECIDA).")
+          + "DESCONHECIDA). Em PROVA com execução/sessão IN_PROGRESS o isCorrect "
+          + "sai null (resultado oculto até concluir/abandonar/encerrar — TASK 5.3).")
   @ApiResponses({
     @ApiResponse(responseCode = "201", description = "Tentativa registrada e corrigida."),
     @ApiResponse(responseCode = "400", description = "Dados inválidos (opção/modo/tempo/vínculo).",
@@ -68,7 +72,9 @@ public class AttemptController {
     return service.submitAttempt(requireAuth(principal), req);
   }
 
-  @Operation(summary = "Consultar tentativa do dono do token.")
+  @Operation(summary = "Consultar tentativa do dono do token.",
+      description = "Em PROVA com execução/sessão ainda IN_PROGRESS o isCorrect "
+          + "sai null (oculto até encerrar — TASK 5.3); após encerrar revela normalmente.")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Tentativa."),
     @ApiResponse(responseCode = "401", description = "Sem token ou token inválido.",

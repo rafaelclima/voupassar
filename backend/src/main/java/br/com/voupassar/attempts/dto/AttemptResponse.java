@@ -5,12 +5,14 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
- * Tentativa registrada (TASK 3.7) — fato imutável com correção do servidor.
+ * Tentativa registrada (TASK 3.7) — fato imutável com correção do servidor,
+ * mais ocultação do Modo Prova (TASK 5.3).
  *
  * <p>{@code isCorrect} é NULL quando {@code wasAnnulled} (pontuação de
- * anuladas DESCONHECIDA, TASK 1.3 §4). O resultado é sempre devolvido pela
- * API (decisão da TASK 3.7): ocultar o gabarito durante o Modo Prova é
- * responsabilidade da camada de simulados (Fase 5), nunca desta escrita.
+ * anuladas DESCONHECIDA, TASK 1.3 §4) e também quando a tentativa é {@code
+ * PROVA} com execução/sessão ainda {@code IN_PROGRESS} (resultado oculto
+ * até encerrar — AGENTS.md §9; o valor correto segue persistido e reaparece
+ * após concluir/abandonar/encerrar).
  */
 public record AttemptResponse(
     @Schema(example = "101") long id,

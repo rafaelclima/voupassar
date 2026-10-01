@@ -71,10 +71,10 @@ timestamp, path}`, sem stack trace; `traceId` também no header `X-Trace-Id`.
   verdade oficial do IFRN.
 * **Enunciado e alternativas** não são duplicados: resolve-se via
   `GET /api/v1/questions/{id}` (TASK 3.4).
-* **Fora de escopo (não inventados):** regras de ocultação do `POST
-  /attempts` no Modo Prova e da consulta de questão durante a prova (TASK
-  5.3); experiência dedicada de revisão (TASK 5.4, já existe a fila em
-  `/review/queue`); simulado de edição real (TASK 5.5).
+* **Fora de escopo (não inventados):** experiência dedicada de revisão
+  (TASK 5.4, já existe a fila em `/review/queue`); simulado de edição real
+  (TASK 5.5). A ocultação do `POST /attempts` e da consulta de questão no
+  Modo Prova é a TASK 5.3 (`docs/api-modo-prova.md`).
 
 ## OpenAPI
 

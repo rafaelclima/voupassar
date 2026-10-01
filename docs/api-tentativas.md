@@ -47,9 +47,12 @@ simulado já encerrados → `409 SESSION/SIMULATION_CLOSED`. Tudo no envelope
   e coerência de modo com a tentativa (`MODE_MISMATCH` se divergir).
   Simulado: só valida existência/posse/status/modo — criar, submeter e
   congelar caderno é a Fase 5.
-* **Resultado sempre devolvido** (decisão da TASK 3.7): ocultar o gabarito
-  durante o Modo Prova é responsabilidade da camada de simulados
-  (Fase 5) — a API sinaliza isso em `notes` quando `mode = PROVA`.
+* **Resultado devolvido, salvo em prova em andamento** (TASK 3.7 + TASK 5.3):
+  em `PROVA` com execução/sessão ainda `IN_PROGRESS`, `POST /attempts`
+  persiste a correção mas devolve `isCorrect: null` + nota de gabarito
+  oculto (AGENTS.md §9); `GET /attempts/{id}` aplica a mesma regra (sem
+  atalho via GET); após encerrar revela normalmente. Ver
+  `docs/api-modo-prova.md`.
 * **Imutabilidade:** `question_attempts` tem trigger anti-UPDATE/DELETE —
   sem PUT nem DELETE; correção só via nova tentativa.
 * **Fora de escopo (não inventados):** pausar/retomar sessão, correção de
