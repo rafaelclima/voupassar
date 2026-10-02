@@ -24,12 +24,15 @@ const DISCIPLINES = {
 
 export function disciplineLabel(code, fallback) {
   if (fallback) return fallback;
-  return DISCIPLINES[code] || "Disciplina";
+  // Sem código e sem nome: devolve "" para que o chamador decida o texto
+  // ("Edição real", "caderno misto" ou ocultar o selo). Nunca despejar um
+  // rótulo genérico que impeça o fallback do chamador.
+  return DISCIPLINES[code] || "";
 }
 
 const MODES = {
   ESTUDO: "Estudo",
-  PROVA: "Simulado",
+  PROVA: "Prova",
   REVISAO: "Revisão",
 };
 
@@ -167,6 +170,17 @@ export function translateTopicCodes(text) {
  *  "responder em branco" — o aluno lê português, nunca o enum cru. */
 export function choiceLabel(choice) {
   return choice === "BLANK" ? "em branco" : String(choice ?? "—");
+}
+
+/** Título de simulado vindo do backend ("Simulado Matemática — 3 questões
+ *  [PROVA]"): o sufixo [MODO] é enum cru da API e o modo já aparece em selo
+ *  próprio na tela — por isso ele é removido da exibição, sem inventar nada.
+ *  Sem título válido, usa o fallback informado. */
+export function simulationTitle(title, fallback) {
+  const clean = String(title ?? "")
+    .replace(/\s*\[(ESTUDO|PROVA|REVISAO)\]\s*$/i, "")
+    .trim();
+  return clean || fallback || "Simulado";
 }
 
 export function plural(n, one, many) {

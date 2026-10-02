@@ -25,7 +25,7 @@ import {
   fetchRecentSimulations,
 } from "../api/dashboard.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { disciplineLabel, modeLabel, statusLabel, masteryLabel, topicLabel, plural } from "../vocab.js";
+import { disciplineLabel, modeLabel, statusLabel, masteryLabel, topicLabel, plural, simulationTitle } from "../vocab.js";
 
 const guard = document.getElementById("dash-guard");
 const errorBox = document.getElementById("dash-error");
@@ -859,9 +859,10 @@ function renderSimulations(page, loadError) {
   for (const s of items) {
     const li = el("li", { className: "sim-list__item" });
     const left = el("div");
-    left.appendChild(el("p", { className: "sim-list__title", text: s.title || "Simulado" }));
+    left.appendChild(el("p", { className: "sim-list__title", text: simulationTitle(s.title, "Simulado") }));
     const bits = [];
-    if (s.disciplineCode) bits.push(disciplineLabel(s.disciplineCode));
+    const discLabel = s.disciplineCode ? disciplineLabel(s.disciplineCode) : "";
+    if (discLabel) bits.push(discLabel);
     const mode = modeLabel(s.mode);
     if (mode) bits.push(mode);
     bits.push(`${s.questionCount} questões`);

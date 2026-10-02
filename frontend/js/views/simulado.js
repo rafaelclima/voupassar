@@ -34,7 +34,7 @@ import {
   submitAttempt,
 } from "../api/simulado.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel } from "../vocab.js";
+import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural } from "../vocab.js";
 
 const PAGE_SIZE = 20;
 
@@ -398,7 +398,7 @@ function renderHistory(total) {
   for (const s of state.historyItems) {
     const li = el("li", { className: "sim-list__item" });
     const left = el("div");
-    left.appendChild(el("p", { className: "sim-list__title", text: s.title || `Simulado #${s.attemptId}` }));
+    left.appendChild(el("p", { className: "sim-list__title", text: simulationTitle(s.title, `Simulado #${s.attemptId}`) }));
     left.appendChild(
       el("p", {
         className: "sim-list__meta",
@@ -473,9 +473,10 @@ function execKindLabel(a) {
 }
 
 function renderExecHeader(a) {
-  document.title = `${a.title || `Simulado #${a.attemptId}`} — VouPassar`;
+  const title = simulationTitle(a.title, `Simulado #${a.attemptId}`);
+  document.title = `${title} — VouPassar`;
   modeBadge.textContent = `Simulado · Modo ${modeLabel(a.mode) || "—"} · ${statusLabel(a.status)}`;
-  execTitle.textContent = a.title || `Simulado #${a.attemptId}`;
+  execTitle.textContent = title;
   const bits = [
     execKindLabel(a),
     disciplineLabel(a.disciplineCode, a.disciplineName) || "caderno misto",
@@ -677,6 +678,10 @@ function renderSimCard(item, detail) {
       btnBlank.disabled = false;
     } finally {
       setButtonLoading(btnAnswer, false);
+      // setButtonLoading(false) sempre remove o disabled: numa questão já
+      // respondida o "Responder" precisa continuar desativado (o caminho
+      // correto é "Alterar resposta"), senão o aluno reenvia sem querer.
+      if (state.answeredLocal.get(item.position) || item.answered) btnAnswer.disabled = true;
       if (state.answeredLocal.get(item.position) || item.answered) btnBlank.disabled = true;
     }
   }
@@ -844,8 +849,8 @@ function askConfirm(action) {
   const total = state.attempt?.questionCount ?? 0;
   const pending = Math.max(0, total - done);
   confirmText.textContent = action === "submit"
-    ? `Concluir com ${done} respondidas e ${pending} pendentes? Não será possível responder após encerrar.`
-    : `Abandonar com ${done} respondidas? O placar parcial será registrado e não será possível responder.`;
+    ? `Concluir com ${plural(done, "respondida", "respondidas")} e ${plural(pending, "pendente", "pendentes")}? Não será possível responder após encerrar.`
+    : `Abandonar com ${plural(done, "respondida", "respondidas")}? O placar parcial será registrado e não será possível responder.`;
   confirmYes.textContent = action === "submit" ? "Concluir agora" : "Abandonar mesmo assim";
   if (typeof confirmDlg.showModal === "function") {
     confirmDlg.showModal();

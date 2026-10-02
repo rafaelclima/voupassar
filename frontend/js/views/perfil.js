@@ -621,8 +621,9 @@ function topicTitle(item) {
 function topicMeta(item) {
   const parts = [];
   if (item?.disciplineName) parts.push(item.disciplineName);
-  else if (item?.disciplineCode && disciplineLabel(item.disciplineCode) !== "Disciplina") {
-    parts.push(disciplineLabel(item.disciplineCode));
+  else {
+    const discLabel = item?.disciplineCode ? disciplineLabel(item.disciplineCode) : "";
+    if (discLabel) parts.push(discLabel);
   }
   const topic = topicLabel(item?.topicCode);
   if (topic) parts.push(topic);
