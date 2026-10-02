@@ -1,32 +1,71 @@
 /* VouPassar — landing (TASK 6.2)
- * Estilos exclusivos da index.html. Base e componentes vêm de
- * base.css / components.css / utilities.css (nada duplicado aqui).
- * Mobile-first; 1 breakpoint em 48rem, 1 em 64rem.
+ *
+ * Estilos exclusivos do index.html. Tipografia, cores, botões, cards,
+ * badges e containers vêm de tokens/base/components/utilities — aqui só
+ * existe o que é Composição de página: ritmo de seções, hero, passos,
+ * painel de marca e banda de CTA.
+ *
+ * Mobile-first: 1 coluna até 48rem, 2 colunas de cards em 48rem,
+ * grade do hero em 64rem.
+ *
+ * Regra desta página: NENHUM bloco de marca usa --color-primary-9xx.
+ * A escala primary é invertida no tema escuro (--color-primary-900 passa
+ * de navy para azul claro), então usá-la como fundo de um bloco com texto
+ * branco deixa o texto ilegível. Fundos de marca usam a família navy,
+ * que não é invertida. Foi exatamente o que aconteceu com a antiga
+ * .cta-band: fundo claro com texto branco, contraste 1,1:1.
  */
 
+/* ============ Hero ============
+ * Duas colunas em telas largas: a mensagem à esquerda, o painel de marca
+ * à direita. O degradê é sutil (135deg entre os dois navy da marca) e
+ * serve só para separar o hero do resto da página.
+ */
 .hero {
-  padding-block: var(--space-8) var(--space-6);
+  padding-block: var(--space-12) var(--space-16);
+  background:
+    radial-gradient(
+      120% 100% at 100% 0%,
+      color-mix(in srgb, var(--color-hero-to) 14%, transparent) 0%,
+      transparent 60%
+    ),
+    var(--color-bg-50);
+  border-bottom: 1px solid var(--color-line-100);
 }
 
 .hero__grid {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-10);
   grid-template-columns: 1fr;
+  align-items: center;
 }
 
 .hero h1 {
   font-size: var(--text-3xl);
-  max-width: 20ch;
+  max-width: 18ch;
+  margin-top: var(--space-4);
+}
+
+.hero .lead {
+  margin-top: var(--space-5);
 }
 
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  margin-top: var(--space-8);
 }
 
 .hero__actions .btn {
   flex: 1 1 100%;
+}
+
+.hero__note {
+  margin-top: var(--space-5);
+  max-width: var(--measure-narrow);
+  color: var(--color-ink-500);
+  font-size: var(--text-sm);
 }
 
 @media (min-width: 36rem) {
@@ -35,70 +74,122 @@
   }
 }
 
-.trust {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: 1fr;
-  margin-top: var(--space-6);
-}
-
-.trust .card__body {
-  padding: var(--space-3) var(--space-4);
-}
-
-.api-status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-ink-700);
-  border: 1px solid var(--color-line-200);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  margin-top: var(--space-4);
-  max-width: 100%;
-}
-
-.api-status__dot {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 50%;
-  background: var(--color-ink-500);
-  flex-shrink: 0;
-}
-
-.api-status[data-state="ok"] .api-status__dot {
-  background: var(--color-success-700);
-}
-
-.api-status[data-state="error"] .api-status__dot {
-  background: var(--color-danger-700);
-}
-
-.api-status .btn {
-  margin-left: auto;
-}
-
-/* Navegação mobile com toggle: regras globais em base.css (TASK 8.2).
- * O header da landing usa a mesma marcação das demais páginas, então
- * nenhum estilo de navegação vive mais aqui. */
-
 @media (min-width: 48rem) {
   .hero {
-    padding-block: var(--space-12) var(--space-8);
+    padding-block: var(--space-16) var(--space-20);
   }
 
   .hero h1 {
     font-size: var(--text-4xl);
   }
+}
 
-  .trust {
+@media (min-width: 64rem) {
+  .hero__grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-16);
+  }
+}
+
+/* ============ Painel de marca (visual do hero) ============
+ * A logo completa é servida num painel claro nos DOIS temas. É a única
+ * peça da página com superfície fixa em claro: a arte é navy e ficaria
+ * invisível sobre navy. Nos tokens, --color-brandcard-* é intencionalmente
+ * declarado só em :root, sem par no bloco escuro, como --color-hero-*.
+ */
+.brand-panel {
+  background: linear-gradient(158deg, var(--color-brandcard-from) 0%, var(--color-brandcard-to) 100%);
+  border: 1px solid var(--color-brandcard-line);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+
+/* 10rem = 160px. O arquivo tem 320px de largura nativa, ou seja, 2x
+ * exatos: serve a tela de retina sem sobrar pixel nem faltar. Os outros
+ * lockups do acervo (o antigo logo-mark.png de 1073px e o
+ * logo-full.png de 204px) tinham o wordmark cortado na base — este deriva
+ * de docs/brand/logo-mestre.png, que está íntegro. */
+.brand-panel__logo {
+  width: 10rem;
+  height: auto;
+  display: block;
+  margin-inline: auto;
+}
+
+.brand-panel__caption {
+  display: block;
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-brandcard-muted);
+}
+
+/* Números de evidência dentro do painel: a coluna de texto fica só com
+ * a proposta, e os dados ficam agrupados com a marca que os garante.
+ *
+ * Cores fixas (--color-brandcard-*) e não ink/primary: o fundo do painel
+ * é claro nos dois temas, então texto que segue o tema vira azul-claro
+ * sobre quase branco no dark (1,32:1 — invisível). Vale notar que o
+ * Lighthouse NÃO pega isso: o axe não resolve fundo em gradiente e
+ * simplesmente pula o elemento em vez de reportar contraste ruim. */
+.brand-panel__stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-brandcard-line);
+  text-align: start;
+}
+
+.brand-panel__stats .stat-value {
+  font-size: var(--text-2xl);
+  color: var(--color-brandcard-ink);
+}
+
+.brand-panel__stats .stat-label {
+  color: var(--color-brandcard-muted);
+}
+
+@media (min-width: 30rem) {
+  .brand-panel__stats {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Passos "como funciona" */
+/* ============ Cabeçalho de seção ============
+ * Centralizado como na referência: eyebrow + título + frase de apoio.
+ * O título é branco sobre surface, então precisa puxar a cor de texto —
+ * base.css não sabe que a seção é tintada.
+ */
+.landing-section__head {
+  max-width: 44rem;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+  text-align: center;
+}
+
+.landing-section__head h2 {
+  margin-top: var(--space-2);
+}
+
+.landing-section__head .lead {
+  margin-top: var(--space-3);
+  margin-inline: auto;
+}
+
+/* Seção alternada: o ritmo da referência (uma faixa clara, uma tintada)
+ * é o que dá a sensação de "desenhada" em vez de uma lista de caixas.
+ * Sem isso, oito blocos cinza seguidos leem como um formulário. */
+.landing-section--tint {
+  background: var(--color-bg-100);
+}
+
+/* ============ Passos ============
+ * Quatro passos com conector horizontal entre os numerais, como na
+ * referência. Em uma coluna o conector some (não há vizinho ao lado).
+ */
 .steps {
   list-style: none;
   padding: 0;
@@ -110,70 +201,136 @@
 
 .steps > li {
   counter-increment: step;
+  position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  position: relative;
-  padding-top: var(--space-8);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  box-shadow: var(--shadow-xs);
 }
 
 .steps > li::before {
   content: counter(step);
   position: absolute;
-  top: var(--space-3);
-  left: var(--space-4);
+  top: calc(var(--space-5) * -1 - 0.875rem);
+  left: var(--space-5);
   width: 1.75rem;
   height: 1.75rem;
-  border-radius: 50%;
-  background: var(--color-primary-700);
-  color: #fff;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-600);
+  color: var(--color-on-primary);
   font-weight: 700;
   font-size: var(--text-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 0 4px var(--color-bg-100);
+}
+
+.steps h3 {
+  margin-top: var(--space-2);
+}
+
+.steps p {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
 }
 
 @media (min-width: 48rem) {
   .steps {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
   }
 }
 
 @media (min-width: 64rem) {
   .steps {
     grid-template-columns: repeat(4, 1fr);
+    padding-top: var(--space-5);
   }
 
-  .hero__grid {
-    grid-template-columns: 1.2fr 0.8fr;
-    align-items: start;
+  /* Conector: linha de 1px atrás dos numerais, só quando há vizinhos. */
+  .steps::before {
+    content: "";
+    position: absolute;
+    inset-inline: 12.5%;
+    top: calc(var(--space-5) + 0.875rem);
+    height: 1px;
+    background: var(--color-line-300);
   }
+
+  .steps {
+    position: relative;
+  }
+
+  .steps > li::before {
+    top: calc(var(--space-5) * -1 - 0.875rem);
+  }
+}
+
+/* ============ Cartões de proposta e funcionalidades ============ */
+.card-grid--feature > .card {
+  height: 100%;
+}
+
+.card-grid--feature .card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
 }
 
 .feature-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-50);
-  border: 1px solid var(--color-primary-100);
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
-  margin-bottom: var(--space-2);
+  font-size: 1.375rem;
+  line-height: 1;
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-100);
+  color: var(--color-primary-600);
+  flex-shrink: 0;
 }
 
+/* Segundo cartão com o acento da marca, para a grade não ficar uniforme
+ * demais sem sair da paleta. */
+.card-grid--feature > .card:nth-child(2) .feature-icon {
+  background: var(--color-accent-100);
+  border-color: var(--color-accent-300);
+  color: var(--color-accent-600);
+}
+
+.card-grid--feature > .card:nth-child(3) .feature-icon {
+  background: var(--color-success-50);
+  border-color: var(--color-success-200);
+  color: var(--color-success-700);
+}
+
+/* O parágrafo ocupa o resto, deixando os títulos alinhados na grade
+ * mesmo com textos de comprimentos diferentes. */
+.card-grid--feature .card__body > p:last-child {
+  margin-top: auto;
+}
+
+/* ============ FAQ ============ */
 .faq details {
   background: var(--color-surface);
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.faq details[open] {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
 }
 
 .faq details + details {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 .faq summary {
@@ -182,42 +339,209 @@
   min-height: var(--touch-min);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  list-style: none;
 }
 
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Indicador de abertura desenhado em CSS: evita um glifo que muda de
+ * posição entre navegadores e não depende de fonte de ícone. */
+.faq summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-right: 2px solid var(--color-primary-600);
+  border-bottom: 2px solid var(--color-primary-600);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.18s ease;
+}
+
+.faq details[open] summary::after {
+  transform: rotate(-135deg) translateY(-2px);
+}
+
+.faq details p {
+  margin-top: var(--space-3);
+  color: var(--color-ink-700);
+}
+
+/* ============ Banda de CTA ============
+ * Fundo na família navy — nunca primary-9xx. Ver a regra no topo do
+ * arquivo. O texto branco sobre navy-900 mede 15,8:1 (claro) e 18,4:1
+ * (escuro), muito acima de 4,5:1.
+ */
 .cta-band {
-  background: var(--color-primary-900);
-  color: #fff;
-  border-radius: var(--radius-lg);
-  padding: var(--space-8) var(--space-4);
+  background: linear-gradient(
+    135deg,
+    var(--color-hero-from) 0%,
+    var(--color-hero-to) 100%
+  );
+  color: var(--color-on-navy);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-12) var(--space-6);
   text-align: center;
+  box-shadow: var(--shadow-brand);
 }
 
 .cta-band h2 {
-  color: #fff;
+  color: var(--color-hero-ink);
 }
 
-.cta-band p {
-  color: #d0d5dd;
+/* Texto de apoio usa --color-hero-*, nunca --color-primary-*: a escala
+ * primary é invertida no dark (primary-200 vira #14304a, azul-escuro), e
+ * o fundo da banda NÃO é invertido — a combinação daria contraste 1,4:1. */
+.cta-band .lead {
   margin-inline: auto;
+  color: var(--color-hero-muted);
 }
 
+.cta-band .btn-group {
+  justify-content: center;
+  margin-top: var(--space-8);
+}
+
+/* Hierarquia dentro da banda: principal preenchida, secundária em
+ * contorno. Sem isto os dois botões ficam visualmente idênticos e não há
+ * como o aluno saber qual é a ação principal. */
 .cta-band .btn--primary {
   background: #fff;
   border-color: #fff;
-  color: var(--color-primary-900);
+  color: var(--color-hero-from);
+  box-shadow: none;
 }
 
 .cta-band .btn--primary:hover {
-  background: var(--color-primary-100);
-  border-color: var(--color-primary-100);
-  color: var(--color-primary-900);
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-50);
+  color: var(--color-hero-from);
 }
 
-.cta-band .btn--ghost {
-  color: #fff;
+.cta-band .btn--on-navy {
+  background: transparent;
+  border-color: rgb(255 255 255 / 0.6);
+  color: var(--color-hero-ink);
+  box-shadow: none;
 }
 
-.cta-band .btn--ghost:hover {
+.cta-band .btn--on-navy:hover {
   background: rgb(255 255 255 / 0.12);
+  border-color: #fff;
   color: #fff;
 }
+
+.cta-band .access-cards {
+  margin-top: var(--space-12);
+  text-align: start;
+}
+
+.cta-band .access-cards .card {
+  background: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.18);
+}
+
+.cta-band .access-cards h3 {
+  color: #fff;
+}
+
+.cta-band .access-cards p,
+.cta-band .access-cards .muted {
+  color: var(--color-hero-muted);
+}
+
+.cta-band .access-cards a:not(.btn) {
+  color: #fff;
+}
+
+@media (min-width: 48rem) {
+  .cta-band {
+    padding: var(--space-16) var(--space-12);
+  }
+}
+
+/* ============ Rodapé em colunas ============
+ * A referência tem colunas de links; o rodapé anterior era uma linha
+ * centralizada. Reaproveita .site-footer (navy em ambos os temas) e só
+ * troca o arranjo para grid.
+ *
+ * O seletor precisa de .site-footer > antes de .landing-foot: base.css
+ * declara `.site-footer > div` como flex-column centralizado, que tem
+ * especificidade 0,1,1 e venceria um .landing-foot sozinho (0,1,0).
+ */
+.site-footer > .landing-foot {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+  text-align: start;
+  align-items: start;
+}
+
+.landing-foot__brand img {
+  width: 7.5rem;
+  height: auto;
+  display: block;
+  margin-bottom: var(--space-3);
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+}
+
+.landing-foot__brand p {
+  text-align: start;
+  max-width: 32ch;
+}
+
+.landing-foot__col h2 {
+  color: #fff;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin-bottom: var(--space-3);
+}
+
+.landing-foot__col ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.landing-foot__col a {
+  font-size: var(--text-sm);
+  color: #c2d2e0;
+}
+
+.landing-foot__col a:hover {
+  color: var(--color-primary-300);
+}
+
+.landing-foot__bottom {
+  grid-column: 1 / -1;
+  padding-top: var(--space-6);
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  justify-content: space-between;
+}
+
+.landing-foot__bottom p {
+  text-align: start;
+}
+
+@media (min-width: 48rem) {
+  .site-footer > .landing-foot {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: var(--space-10);
+  }
+}
+
+/* ============ Navegação mobile ============
+ * Toggle e menu: regras globais em base.css (TASK 8.2). O header da
+ * landing usa a mesma marcação das demais páginas, então nenhum estilo
+ * de navegação vive aqui.
+ */

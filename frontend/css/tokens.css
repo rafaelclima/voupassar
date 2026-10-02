@@ -45,6 +45,23 @@
   --color-hero-ink: #ffffff;
   --color-hero-muted: #dbe9f7;
 
+  /* Painel de marca da landing: a arte é navy e ficaria invisível sobre
+   * navy, então este é o único bloco da página com superfície clara
+   * FIXA — clareia em ambos os temas, como uma peça impressa sobre a
+   * página. Sem par no bloco [data-theme="dark"], igual aos tokens hero.
+   *
+   * Consequência: o texto dentro do painel NÃO pode usar a escala
+   * primary/ink, que é invertida no dark. Sem estes tokens, os números
+   * saíam em azul-claro sobre fundo quase branco (1,32:1). */
+  --color-brandcard-from: #ffffff;
+  --color-brandcard-to: #e9f1fa;
+  --color-brandcard-ink: #0e1720;
+  /* #5e7288 (o ink-500 do claro) dava 4,35:1 na ponta mais escura do
+   * gradiente (#e9f1fa), 0,15 abaixo de 4,5:1. #556a80 mede 4,97:1 e
+   * ainda lê como texto de apoio. */
+  --color-brandcard-muted: #556a80;
+  --color-brandcard-line: #e3eaf1;
+
   /* ============ Acento (único matiz fora da marca) ============ */
   --color-accent-700: #4c2e8f;
   --color-accent-600: #5b36b0;

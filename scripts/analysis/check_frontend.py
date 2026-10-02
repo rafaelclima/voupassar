@@ -67,7 +67,6 @@ REQUIRED_FILES = [
     "js/state/session.js",
     "js/components/ui.js",
     "js/main.js",
-    "js/views/landing.js",
     "js/views/auth-shared.js",
     "js/views/login.js",
     "js/views/cadastro.js",
@@ -458,7 +457,7 @@ def main() -> int:
                 fail(f"{name} expõe detalhe interno {token!r} ao aluno")
 
     ALUNO_JS = ["dashboard.js", "estudos.js", "questao.js",
-                "simulado.js", "perfil.js", "landing.js"]
+                "simulado.js", "perfil.js"]
     # Bug real que já ocorreu: interpolar direto no texto um campo enum da
     # API, fazendo "FACIL", "PROVA" ou "LP" aparecerem na tela. A tradução
     # mora em js/vocab.js — aqui na view o valor tem que passar por ela.
