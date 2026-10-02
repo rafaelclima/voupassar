@@ -126,11 +126,36 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
   /**
    * Fila de curadoria (TASK 12.1): questões por status de validação.
    *
+   * <p>Opcionalmente também pelo status da classificação ativa
+   * ({@code classificationStatus} = {@code null} = sem filtro) — é o que
+   * permite ao curador achar, por exemplo, as 39 classificações em REVIEWED
+   * espalhadas pelas 240 questões. O filtro é por {@code EXISTS} sobre
+   * {@code question_classifications}, então a paginação e a contagem seguem
+   * o conjunto filtrado (nunca pós-paginação, que mentiria no total).
+   *
    * <p>Ordenação determinística pela chamadora (ano-fonte, número, id).
    * Entidade segue {@code @Immutable} para leitura; a escrita da curadoria
    * usa {@link #updateStatuses} abaixo (UPDATE dirigido, auditável).
    */
-  Page<Question> findByValidationStatus(String validationStatus, Pageable pageable);
+  @Query(
+      value = """
+          SELECT q FROM Question q
+          WHERE q.validationStatus = :validationStatus
+            AND (:classificationStatus IS NULL OR EXISTS (
+              SELECT 1 FROM QuestionClassification c
+              WHERE c.question = q AND c.status = :classificationStatus))
+          """,
+      countQuery = """
+          SELECT COUNT(q) FROM Question q
+          WHERE q.validationStatus = :validationStatus
+            AND (:classificationStatus IS NULL OR EXISTS (
+              SELECT 1 FROM QuestionClassification c
+              WHERE c.question = q AND c.status = :classificationStatus))
+          """)
+  Page<Question> findByValidationStatus(
+      @Param("validationStatus") String validationStatus,
+      @Param("classificationStatus") String classificationStatus,
+      Pageable pageable);
 
   long countByValidationStatus(String validationStatus);
 

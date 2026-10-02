@@ -170,6 +170,25 @@ public interface QuestionClassificationRepository
   List<QuestionClassification> findActiveByQuestionId(@Param("questionId") Long questionId);
 
   /**
+   * Classificação mais recente de cada questão do lote, <b>qualquer que seja
+   * o status</b> (TASK 12.2 — triagem de curadoria).
+   *
+   * <p>Diferente de {@link #findActiveByQuestionIds}: a fila do admin precisa
+   * também mostrar o que foi rejeitado, senão o item apareceria sem
+   * classificação e a UI afirmaria falsamente "sem classificação ativa".
+   * As demais consultas (recomendação, filtros de assunto) seguem contando
+   * só as não-rejeitadas — rejeição significa "não usar para recomendar".
+   */
+  @Query("""
+      SELECT c FROM QuestionClassification c
+      LEFT JOIN FETCH c.topic t
+      LEFT JOIN FETCH c.subtopic s
+      WHERE c.question.id IN :ids
+      ORDER BY c.question.id ASC, c.id DESC
+      """)
+  List<QuestionClassification> findLatestByQuestionIds(@Param("ids") List<Long> ids);
+
+  /**
    * Fila de curadoria (TASK 12.1): classificações por status, mais recentes
    * primeiro dentro da página ordenada pela chamadora.
    */

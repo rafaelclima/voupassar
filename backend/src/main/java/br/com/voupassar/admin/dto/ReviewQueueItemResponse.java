@@ -27,4 +27,6 @@ public record ReviewQueueItemResponse(
     @Schema(example = "ARITMETICA") String topicCode,
     @Schema(example = "SISTEMAS_NUMERACAO") String subtopicCode,
     @Schema(example = "ALTA") String classificationConfidence,
-    @Schema(example = "PENDING") String classificationStatus) {}
+    @Schema(example = "PENDING") String classificationStatus,
+    @Schema(example = "Assunto confirmado contra o caderno, pág. 12.") String classificationObservation,
+    @Schema(example = "MMC sugerido pelo enunciado…") String classificationEvidence) {}

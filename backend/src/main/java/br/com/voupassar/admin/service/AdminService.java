@@ -41,6 +41,8 @@ public class AdminService {
   private static final Set<String> QUESTION_PUBLICATION =
       Set.of("PUBLICAVEL", "NAO_PUBLICAVEL", "PENDENTE_REVISAO", "SOMENTE_REFERENCIA");
   private static final Set<String> CLASSIFICATION_REVIEW = Set.of("REVIEWED", "APPROVED", "REJECTED");
+  private static final Set<String> CLASSIFICATION_STATUSES =
+      Set.of("PENDING", "REVIEWED", "APPROVED", "REJECTED");
 
   private static final int SAMPLE_LIMIT = 20;
 
@@ -54,19 +56,30 @@ public class AdminService {
   }
 
   /**
-   * Fila de revisão: questões por status de validação (padrão PENDING).
+   * Fila de revisão: questões por status de validação (padrão PENDING) e,
+   * opcionalmente, por status da classificação ativa.
    *
    * <p>Ordem fixa (ano-fonte, número, id) — a mesma da API pública.
    */
   @Transactional(readOnly = true)
-  public PageResponse<ReviewQueueItemResponse> reviewQueue(String validationStatus, int page, int size) {
+  public PageResponse<ReviewQueueItemResponse> reviewQueue(
+      String validationStatus, String classificationStatus, int page, int size) {
     String status = validationStatus == null ? "PENDING" : validationStatus.trim().toUpperCase();
     if (!QUESTION_VALIDATION.contains(status)) {
       throw new BadRequestException("validationStatus deve ser PENDING, REVIEWED, APPROVED ou REJECTED.");
     }
+    String classification =
+        classificationStatus == null || classificationStatus.isBlank()
+            ? null
+            : classificationStatus.trim().toUpperCase();
+    if (classification != null && !CLASSIFICATION_STATUSES.contains(classification)) {
+      throw new BadRequestException(
+          "classificationStatus deve ser PENDING, REVIEWED, APPROVED ou REJECTED.");
+    }
     Page<Question> result =
         questions.findByValidationStatus(
             status,
+            classification,
             PageRequest.of(page, size, Sort.by("sourceYear").ascending()
                 .and(Sort.by("sourceQuestionNumber").ascending())
                 .and(Sort.by("id").ascending())));
@@ -195,21 +208,28 @@ public class AdminService {
         byClassification);
   }
 
+  /**
+   * Classificação de triagem: a mais recente da questão, <b>inclusive
+   * REJECTED</b>. A fila do curador precisa mostrar o que foi rejeitado e
+   * por quê; usar só as não-rejeitadas faria o item parecer sem
+   * classificação (falsa inconsistência na tela). Só a ausência real de
+   * qualquer classificação é reportada como inconsistência.
+   */
   private Map<Long, QuestionClassification> activeByQuestion(List<Long> ids) {
     Map<Long, QuestionClassification> map = new LinkedHashMap<>();
     if (ids.isEmpty()) {
       return map;
     }
-    for (QuestionClassification c : classifications.findActiveByQuestionIds(ids)) {
+    for (QuestionClassification c : classifications.findLatestByQuestionIds(ids)) {
       map.putIfAbsent(c.getQuestion().getId(), c);
     }
     return map;
   }
 
   private QuestionClassification firstActive(long questionId) {
-    List<QuestionClassification> actives =
-        classifications.findActiveByQuestionId(questionId);
-    return actives.isEmpty() ? null : actives.get(0);
+    List<QuestionClassification> latest =
+        classifications.findLatestByQuestionIds(List.of(questionId));
+    return latest.isEmpty() ? null : latest.get(0);
   }
 
   private static ReviewQueueItemResponse toItem(Question q, QuestionClassification c) {
@@ -229,7 +249,9 @@ public class AdminService {
         c == null || c.getTopic() == null ? null : c.getTopic().getCode(),
         c == null || c.getSubtopic() == null ? null : c.getSubtopic().getCode(),
         c == null ? null : c.getConfidence(),
-        c == null ? null : c.getStatus());
+        c == null ? null : c.getStatus(),
+        c == null ? null : c.getObservation(),
+        c == null ? null : c.getEvidence());
   }
 
   private static InconsistencyResponse sample(String check, String description, List<Long> ids) {

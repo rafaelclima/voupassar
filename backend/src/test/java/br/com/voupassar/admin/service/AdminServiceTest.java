@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,7 +69,7 @@ class AdminServiceTest {
   @Test
   void reviewQueueDefaultsToPendingAndMapsActiveClassification() {
     Question q = question("PENDING", "PENDENTE_REVISAO");
-    when(questions.findByValidationStatus(eq("PENDING"), any(Pageable.class)))
+    when(questions.findByValidationStatus(eq("PENDING"), isNull(), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(q)));
     QuestionClassification c = org.mockito.Mockito.mock(QuestionClassification.class);
     Topic t = org.mockito.Mockito.mock(Topic.class);
@@ -81,20 +82,58 @@ class AdminServiceTest {
     when(c.getSubtopic()).thenReturn(s);
     when(c.getConfidence()).thenReturn("ALTA");
     when(c.getStatus()).thenReturn("PENDING");
-    when(classifications.findActiveByQuestionIds(List.of(1L))).thenReturn(List.of(c));
+    when(c.getObservation()).thenReturn("Texto 2 é imagem não transcrita; requer revisão visual.");
+    when(c.getEvidence()).thenReturn("O elemento linguístico Segundo [1] indica sentido de conformidade.");
+    when(classifications.findLatestByQuestionIds(List.of(1L))).thenReturn(List.of(c));
 
-    PageResponse<ReviewQueueItemResponse> page = service.reviewQueue(null, 0, 20);
+    PageResponse<ReviewQueueItemResponse> page = service.reviewQueue(null, null, 0, 20);
 
     assertThat(page.totalElements()).isEqualTo(1);
     ReviewQueueItemResponse item = page.content().get(0);
     assertThat(item.topicCode()).isEqualTo("ARITMETICA");
     assertThat(item.classificationId()).isEqualTo(10L);
+    assertThat(item.classificationObservation()).contains("revisão visual");
+    assertThat(item.classificationEvidence()).contains("conformidade");
   }
 
   @Test
   void reviewQueueRejectsUnknownStatus() {
-    assertThatThrownBy(() -> service.reviewQueue("LIXO", 0, 20))
+    assertThatThrownBy(() -> service.reviewQueue("LIXO", null, 0, 20))
         .isInstanceOf(BadRequestException.class);
+  }
+
+  @Test
+  void reviewQueueRejectsUnknownClassificationStatus() {
+    assertThatThrownBy(() -> service.reviewQueue("PENDING", "LIXO", 0, 20))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("classificationStatus");
+  }
+
+  @Test
+  void reviewQueueNormalizesClassificationFilterAndReachesRepository() {
+    Question q = question("PENDING", "PENDENTE_REVISAO");
+    when(questions.findByValidationStatus(eq("PENDING"), eq("REVIEWED"), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(q)));
+    when(classifications.findLatestByQuestionIds(List.of(1L))).thenReturn(List.of());
+
+    PageResponse<ReviewQueueItemResponse> page = service.reviewQueue("pending", "reviewed", 0, 20);
+
+    verify(questions).findByValidationStatus(eq("PENDING"), eq("REVIEWED"), any(Pageable.class));
+    assertThat(page.totalElements()).isEqualTo(1);
+  }
+
+  @Test
+  void reviewQueueKeepsNullsWhenQuestionHasNoActiveClassification() {
+    Question q = question("PENDING", "PENDENTE_REVISAO");
+    when(questions.findByValidationStatus(eq("PENDING"), isNull(), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(q)));
+    when(classifications.findLatestByQuestionIds(List.of(1L))).thenReturn(List.of());
+
+    ReviewQueueItemResponse item = service.reviewQueue("PENDING", null, 0, 20).content().get(0);
+
+    assertThat(item.classificationId()).isNull();
+    assertThat(item.classificationObservation()).isNull();
+    assertThat(item.classificationEvidence()).isNull();
   }
 
   @Test
@@ -132,7 +171,7 @@ class AdminServiceTest {
     Question q = question("PENDING", "PENDENTE_REVISAO");
     when(questions.findById(1L)).thenReturn(Optional.of(q));
     when(questions.updateStatuses(1L, "REVIEWED", "PENDENTE_REVISAO")).thenReturn(1);
-    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of());
+    when(classifications.findLatestByQuestionIds(List.of(1L))).thenReturn(List.of());
 
     ReviewQueueItemResponse item =
         service.updateQuestionStatus(1L, new UpdateQuestionStatusRequest("REVIEWED", null), 7L);

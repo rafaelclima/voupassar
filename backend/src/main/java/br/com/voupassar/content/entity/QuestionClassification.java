@@ -51,6 +51,15 @@ public class QuestionClassification {
   @Column(name = "status", nullable = false)
   private String status;
 
+  @Column(name = "origin", nullable = false)
+  private String origin;
+
+  @Column(name = "evidence", nullable = false)
+  private String evidence;
+
+  @Column(name = "observation")
+  private String observation;
+
   public QuestionClassification() {}
 
   public Long getId() {
@@ -79,5 +88,17 @@ public class QuestionClassification {
 
   public String getStatus() {
     return status;
+  }
+
+  public String getOrigin() {
+    return origin;
+  }
+
+  public String getEvidence() {
+    return evidence;
+  }
+
+  public String getObservation() {
+    return observation;
   }
 }

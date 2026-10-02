@@ -2,6 +2,7 @@ package br.com.voupassar.admin;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -60,7 +61,7 @@ class AdminSecurityTest {
   }
 
   private void stubQueue() {
-    when(service.reviewQueue(anyString(), anyInt(), anyInt()))
+    when(service.reviewQueue(anyString(), nullable(String.class), anyInt(), anyInt()))
         .thenReturn(new PageResponse<>(List.of(), 0, 20, 0, 0, true, true));
   }
 

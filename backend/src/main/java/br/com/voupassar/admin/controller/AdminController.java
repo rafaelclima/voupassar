@@ -56,9 +56,12 @@ public class AdminController {
       summary = "Fila de revisão: questões por status de validação.",
       description =
           "Resumo para triagem (detalhe integral no GET /questions/{id}). "
+              + "Filtro opcional classificationStatus (PENDING/REVIEWED/APPROVED/"
+              + "REJECTED) para localizar as classificações em um status específico. "
               + "Ordem fixa: ano-fonte, número, id.")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Página da fila."),
+    @ApiResponse(responseCode = "400", description = "Status inválido.", content = @Content(schema = @Schema(implementation = ApiError.class))),
     @ApiResponse(responseCode = "401", description = "Sem Bearer.", content = @Content(schema = @Schema(implementation = ApiError.class))),
     @ApiResponse(responseCode = "403", description = "Sem papel CURATOR/ADMIN.", content = @Content(schema = @Schema(implementation = ApiError.class)))
   })
@@ -66,13 +69,17 @@ public class AdminController {
   public PageResponse<ReviewQueueItemResponse> reviewQueue(
       @Parameter(description = "Status de validação.", example = "PENDING")
           @RequestParam(defaultValue = "PENDING") String validationStatus,
+      @Parameter(
+              description = "Status da classificação ativa (opcional; vazio = todas).",
+              example = "REVIEWED")
+          @RequestParam(required = false) String classificationStatus,
       @Parameter(description = "Página 0-based.", example = "0")
           @RequestParam(defaultValue = "0") int page,
       @Parameter(description = "Itens por página (1–100).", example = "20")
           @RequestParam(defaultValue = "20") int size,
       @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
     requireAuth(principal);
-    return service.reviewQueue(validationStatus, page, size);
+    return service.reviewQueue(validationStatus, classificationStatus, page, size);
   }
 
   @Operation(
