@@ -95,12 +95,15 @@ auth + guarda de papel com `?next=` seguro; `node --check` OK; 200 no
 serve; `check_frontend.py` OK estendido com cobertura admin. Backend
 inalterado (`AdminServiceTest` + `AdminSecurityTest` seguem verdes).
 
-> Pendência de validação (2026-10-02, AGENTS.md §31): o navegador do MCP
-> não está acessível nesta sessão (servidor Playwright exige Chrome em
-> `/opt/google/chrome/chrome`; só há `/usr/bin/chromium`, sem permissão
-> para symlink). Validação feita de forma estática (`node --check`,
-> `check_frontend.py`, serve 200) + API ao vivo (`/admin/metrics` sem
-> token → `401` em envelope). Falta conferir em navegador real: painel de
-> acesso sem sessão, painel 403 com STUDENT, fila/métricas/curadoria com
-> CURATOR, estados loading/vazio/erro, responsivo mobile/desktop e console
-> sem erros.
+> Validação em navegador real — RESOLVIDA (2026-10-02, Playwright):
+> sem sessão → painel de acesso com `login.html?next=admin.html`;
+> STUDENT → painel 403 honesto (sem autopromoção); CURATOR → métricas
+> (240/5/36), 4 checagens, fila PENDING paginada (240, 12 págs) e forms de
+> curadoria; `PATCH .../status` com `PUBLICAVEL` sem `APPROVED` → `400`
+> com mensagem amigável (sem mutação). Mobile 360px e desktop 1280px OK,
+> console sem erros inesperados. Notas de ambiente: (1) o backend em
+> execução precedia a API admin (jar de 01/10) — rebuild da imagem
+> `voupassar-backend` + restart resolveu; (2) CORS local exige
+> `CORS_ALLOWED_ORIGINS` com `http://localhost:8888` (env de teste, sem
+> mudança de código). Pendência anterior (MCP indisponível) substituída
+> por esta validação.

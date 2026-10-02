@@ -202,7 +202,7 @@ async function loadAll() {
     }
     const warnings = settled
       .map((r, i) => ({ r, i }))
-      .filter(({ r }) => r.status === "rejected" && i !== 0 && !(i === 4 && r.reason?.status === 404));
+      .filter(({ r, i }) => r.status === "rejected" && i !== 0 && !(i === 4 && r.reason?.status === 404));
     if (warnings.length > 0 && !state.overview && state.allTopics.length === 0) {
       throw warnings[0].r.reason;
     }
@@ -220,6 +220,7 @@ async function loadAll() {
     content.hidden = false;
   } catch (err) {
     loadingBox.hidden = true;
+    console.error("[estudos] falha na carga inicial:", err);
     if (err instanceof ApiError && err.status === 401) {
       showGuard();
       return;

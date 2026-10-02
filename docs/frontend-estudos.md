@@ -89,3 +89,18 @@ Critérios 6.5: 4 blocos presentes e alimentados pela API real; guarda de
 auth com `?next=` seguro; prática ESTUDO com correção do servidor e
 `Tentar novamente`; paginação + URL; `node --check` OK; 200 no serve;
 `check_frontend.py` OK estendido com cobertura estudos.
+
+## 6. Correção pós-validação em navegador (2026-10-02, Playwright)
+
+Bug real encontrado com usuário novo (sem `study_plan`): `loadAll()`
+quebrava em `ReferenceError: i is not defined` (`estudos.js`, filtro de
+`warnings` — `.filter(({ r }) => ... i ...)` sem desestruturar `i`) e a
+página exibia erro fatal em vez do conteúdo. Todo usuário sem roteiro era
+afetado (o `404` do plano é o caminho normal, não exceção). Correção em
+uma linha (`.filter(({ r, i }) => ...)`); `console.error` de diagnóstico
+mantido no `catch` de `loadAll`. Revalidado no navegador: filtros,
+catálogo (2 disciplinas, 10 assuntos), lista paginada (240, 24 págs),
+`2020 Q1` e plano ausente tratado como estado vazio — sem `pageerror`.
+Conta de teste `pwtest_*@example.com` (id 20) + 1 tentativa mantidas no
+banco dev (tentativas são imutáveis por trigger — remoção bloqueada por
+desenho); concessão temporária de `CURATOR` revogada.
