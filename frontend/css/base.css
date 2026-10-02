@@ -127,7 +127,11 @@ small,
   font-weight: 700;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  color: var(--color-primary-600);
+  /* primary-700 e não -600: a escala primary é invertida no dark, então
+   * -600 rendia #3d8fd1 sobre #12283c = 4,33:1, abaixo de 4,5:1.
+   * -700 é mais escuro no claro e mais claro no escuro, então os dois
+   * temas ganham contraste com o mesmo token. */
+  color: var(--color-primary-700);
 }
 
 .lead {
@@ -265,6 +269,11 @@ summary:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
+  /* Não encolhe: .site-nav tem width:100%, então em telas estreitas o
+   * flex shrink comprimia a caixa da marca e o texto "VouPassar"
+   * transbordava por baixo do botão de menu (34px a 390px de largura).
+   * flex-shrink:0 devolve a largura real ao wordmark. */
+  flex-shrink: 0;
   font-weight: 800;
   font-size: var(--text-lg);
   letter-spacing: var(--tracking-tighter);
@@ -305,8 +314,12 @@ summary:focus-visible {
   margin-left: auto;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--space-2);
-  width: 100%;
+  /* min-width:0 permite que a nav encolha e encolha o menu em vez de
+   * empurrar a marca para fora. */
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .site-nav__toggle {
@@ -341,6 +354,26 @@ summary:focus-visible {
   display: flex;
 }
 
+/* Aberto no mobile: painel suspenso logo abaixo do cabeçalho, com a
+ * largura toda. O .site-header é sticky, e sticky também serve de
+ * bloco contenedor para o absolute — por isso top:100% cai certinho
+ * na borda inferior do header.
+ *
+ * Fazer o menu descer por wrap/flex-basis seemed mais simples, mas
+ * empurrava o botão de tema para uma segunda linha, porque ele é
+ * irmão da nav e fica depois dela no DOM. */
+.site-nav.is-open .site-nav__links {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: var(--space-3) var(--container-pad) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line-200);
+  box-shadow: var(--shadow-md);
+}
+
 .site-nav__links a:not(.btn) {
   padding: var(--space-3);
   border-radius: var(--radius-sm);
@@ -364,6 +397,17 @@ summary:focus-visible {
   .site-nav {
     width: auto;
     gap: var(--space-3);
+  }
+
+  /* Acima de 48rem o menu é sempre horizontal: o painel suspenso do
+   * mobile volta a ser uma faixa de links na mesma linha. */
+  .site-nav.is-open .site-nav__links {
+    position: static;
+    width: auto;
+    padding: 0;
+    background: none;
+    border-bottom: 0;
+    box-shadow: none;
   }
 
   .site-nav__toggle {
@@ -450,6 +494,15 @@ summary:focus-visible {
   color: #93a8bb;
   font-size: var(--text-sm);
   max-width: none;
+}
+
+/* base.css declara `small { color: var(--color-ink-500) }` como seletor
+ * de tipo, que ganha da cor herdada do rodapé. Resultado: <small> no
+ * rodapé saía em #5e7288 sobre #081f33 — 3,37:1, abaixo de 4,5:1, em
+ * todas as telas que usam <small> no rodapé. Precisa do seletor de
+ * classe para vencer. */
+.site-footer small {
+  color: #93a8bb;
 }
 
 /* ============ Skip link ============ */
