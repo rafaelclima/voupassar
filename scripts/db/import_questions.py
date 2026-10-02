@@ -392,11 +392,11 @@ def sql_insert_children(items: list[dict], refs: dict,
             stmts.append(
                 "INSERT INTO question_classifications (question_id, "
                 "taxonomy_version, topic_id, subtopic_id, skill, "
-                "reasoning_type, confidence, evidence, origin, status) "
+                "reasoning_type, confidence, evidence, origin, status, observation) "
                 f"VALUES ({qid}, '{TAXONOMY_VERSION}', {topic_id}, {sub_id}, "
                 f"{esc(it['skill'])}, {esc(it['reasoning'])}, "
                 f"{esc(it['confidence'])}, {esc(it['evidence'])}, "
-                "'CLASSIFICACAO_DERIVADA_FONTE', 'PENDING');")
+                "'CLASSIFICACAO_DERIVADA_FONTE', 'PENDING', " + obs + ");")
         has_fig = it["needs_review"] and (it["edition"], it["number"]) \
             not in NON_FIGURE_REVIEW
         if has_fig and tag_counts.get(qid, 0) == 0:

@@ -18,7 +18,6 @@
 | Alterar publicação | select de publicação no mesmo form (`PENDENTE_REVISAO/SOMENTE_REFERENCIA/PUBLICAVEL/NAO_PUBLICAVEL`) | mesmo `PATCH` de questão (regra `PUBLICAVEL exige APPROVED` no servidor) |
 | Visualizar inconsistências | `#sec-inc-t` (4 checagens com contagem + amostra de ids) | `GET /admin/inconsistencies` |
 | Consultar métricas | `#sec-metrics-t` (4 stat cards + 3 tabelas por status) | `GET /admin/metrics` |
-
 O conteúdo integral (enunciado, alternativas, proveniência) continua no
 `GET /questions/{id}` existente — cada item da fila linka
 `questao.html?id=` para conferência contra o caderno antes de aprovar.
@@ -36,16 +35,27 @@ gabarito, assunto vigente, confiança, os dois status).
 * **Carga paralela:** `Promise.allSettled` (métricas + inconsistências +
   fila) — cada seção falha isolada; o resto continua. Falhas viram resumo
   no topo (`#admin-error`, com `traceId`) + vazio na seção.
-* **Fila:** filtro `validationStatus` (`PENDING/REVIEWED/APPROVED/REJECTED`,
-  padrão `PENDING`) + paginação (`page` 0-based, `size` 20, anterior/
-  próxima com `disabled` nos limites). Recarrega só a fila ao filtrar ou
-  paginar, com `role=status` na contagem.
-* **Curadoria:** cada item tem dois forms inline. Salvar mostra loading no
-  botão, `toast` de confirmação e recarrega fila + métricas (contagens
-  continuam honestas após a escrita). Erro `400` do servidor (ex.
-  `PUBLICAVEL sem APPROVED`, regressão de `APPROVED`) aparece via
-  `friendlyMessage` — a regra vive no backend, o hint textual no form só
-  resume.
+* **Fila:** filtro `validationStatus` da questão (`PENDING/REVIEWED/APPROVED/
+  REJECTED`, padrão `PENDING`) **e** filtro `classificationStatus` da
+  classificação ativa (`Todas/PENDING/REVIEWED/APPROVED/REJECTED`) + paginação
+  (`page` 0-based, `size` 20, anterior/próxima com `disabled` nos limites).
+  O filtro de classificação é o que torna a curadoria operável de fato: sem
+  ele, as 39 classificações em REVIEWED ficam espalhadas por 240 itens.
+  Recarrega só a fila ao filtrar ou paginar, com `role=status` na contagem.
+* **Curadoria:** cada item tem dois forms inline. Cada item mostra também
+  `Observação IA` e `Evidência` (campos novos do `ReviewQueueItemResponse`
+  na TASK 12.2) — o revisor decide sem abrir a questão. Estado vigente fora
+  da lista de transições aparece como option desativado `X (vigente)`, nunca
+  select vazio. Salvar mostra loading no botão, `toast` de confirmação e
+  recarrega fila + métricas (contagens continuam honestas após a escrita).
+  Erro `400` do servidor (ex. `PUBLICAVEL sem APPROVED`, regressão de
+  `APPROVED`) aparece via `friendlyMessage` — a regra vive no backend, o hint
+  textual no form só resume.
+* **Item rejeitado continua legível:** a fila do admin mostra a classificação
+  mais recente de cada questão, inclusive `REJECTED` (a API pública de
+  conteúdo e o motor de recomendação seguem usando só as não-rejeitadas). Sem
+  isso o item apareceria sem classificação e a UI afirmaria falsamente
+  "sem classificação ativa".
 * **Sem classificação ativa** (`classificationId` nulo) → nota de
   inconsistência no lugar do form (nunca form quebrado nem assunto
   inventado).
@@ -107,3 +117,12 @@ inalterado (`AdminServiceTest` + `AdminSecurityTest` seguem verdes).
 > `CORS_ALLOWED_ORIGINS` com `http://localhost:8888` (env de teste, sem
 > mudança de código). Pendência anterior (MCP indisponível) substituída
 > por esta validação.
+>
+> Revalidação da TASK 12.2 (2026-10-02, Playwright): filtro
+> `classificationStatus` — `REVIEWED` → "39 questão(ões) … página 1 de 2",
+> `APPROVED` → "200 … página 1 de 10", `REJECTED` → "1 … página 1 de 1",
+> todos batendo com `GET /admin/metrics`. Item `REJECTED` (id 120 = 2023 Q40)
+> exibindo assunto `ARITMETICA/DIVISIBILIDADE_MMC_MDC`, confiança e a
+> observação do conflito com o gabarito — sem o falso aviso de "sem
+> classificação". Select de revisão com `REJECTED` selecionado. 360px sem
+> overflow horizontal; console limpo.

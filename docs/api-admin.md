@@ -32,6 +32,13 @@ O token em uso precisa ser reemitido (login/refresh) para carregar o novo papel.
 | PATCH | `/admin/questions/{id}/status` | CURATOR+ | Atualiza `validationStatus` e/ou `publicationStatus` |
 | PATCH | `/admin/classifications/{id}` | CURATOR+ | `REVIEWED/APPROVED/REJECTED` + `observation`; carimba `reviewed_by/at` |
 
+Item da fila (`ReviewQueueItemResponse`) traz, além dos status de curadoria,
+o contexto da classificação para o revisor decidir sem abrir a questão:
+`classificationObservation` (motivo da pendência, quando houver) e
+`classificationEvidence` (trecho da fonte que sustenta o assunto). Ambos são
+`null` quando a questão não tem classificação ativa (inconsistência) — nunca
+texto inventado para preencher o campo.
+
 Exemplos:
 
 ```bash
@@ -67,8 +74,14 @@ Estado esperado hoje (TASK 11.1): tudo zero. Checagem de fontes
 (`PRIMARY+GABARITO`) segue file-level na auditoria 11.1 (sem entidade JPA para
 `question_sources` — pendência honesta, não gap silencioso).
 
-## 4. Pendências (não bloqueiam a 12.1)
+## 4. Pendências
 
-* Tela web de admin (fila/métricas/curadoria em UI) — API pronta, UI futura.
-* Curadoria efetiva das 38 classificações `NECESSITA_REVISAO` (TASK 12.2).
+* Curadoria humana **final** das classificações — a pré-curadoria assistida
+  foi executada em 2026-10-02 (200 `APPROVED` com referendo humano pendente,
+  39 `REVIEWED`, 1 `REJECTED`); ver `docs/curadoria.md`. As 240 questões
+  seguem `PENDING`/`PENDENTE_REVISAO`: publicar exige conferência visual das
+  figuras e explicação redigida.
 * Entidade JPA de `question_sources` para trazer a checagem de fontes à API.
+* `question_classifications.observation` passou a ser gravada pelo importador
+  (TASK 12.2); banco existente reconciliado por
+  `scripts/db/backfill_classification_observations.py`.

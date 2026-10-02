@@ -16,10 +16,10 @@
 | Assuntos distintos (banco v1.1) | 10 (2 LP + 8 MAT) |
 | Subassuntos distintos | 42 |
 | Vinculadas ao gabarito | 240/240 (100%); anuladas 5 |
-| Classificações com revisão humana `APPROVED` | **0/240 (0%)** — 240 `PENDING` |
+| Classificações com revisão humana `APPROVED` | **0/240 confirmadas** — 200 `APPROVED` nesta data são pré-curadoria LLM (referendo humano pendente); 39 `REVIEWED`; 1 `REJECTED` |
 | Classificações `NECESSITA_REVISAO` na origem | 38/240 (15,8%) |
 | Confiança do assunto | ALTA 170 (70,8%) · MEDIA 46 (19,2%) · BAIXA 24 (10%) |
-| Publicáveis | 0 — 240 `PENDENTE_REVISAO` (curadoria TASK 12.2 pendente) |
+| Publicáveis | 0 — 240 `PENDENTE_REVISAO` (curadoria final TASK 12.2 pendente; pré-curadoria aplicada 2026-10-02) |
 | Edição 2021 | ausente do dataset (documentado; séries pulam 2021, nada interpolado) |
 
 ## 1. Por edição
@@ -134,8 +134,8 @@ conteúdo de matemática financeira observado. Séries por edição em `content-
 | Nível | Valor | O que significa |
 |---|---|---|
 | Vinculação ao gabarito | 240/240 (100%) | toda questão tem resposta oficial transcrita |
-| Classificação com `status=APPROVED` | **0/240 (0%)** | nenhuma revisão humana concluída (TASK 12.2 pendente) |
-| Classificação `PENDING` | 240/240 (100%) | estado honesto atual do banco |
+| Classificação com `status=APPROVED` no banco | 200/240 (83,3%) — pré-curadoria LLM 2026-10-02; 39 REVIEWED; 1 REJECTED; **0 confirmadas por humano** |
+| Classificação `PENDING` | 0/240 | pré-curadoria esvaziou a fila |
 | `NECESSITA_REVISAO` na origem | 38/240 (15,8%) | 35 figuras/gráficos/charges + 3 conceituais (`summary.md §3`) |
 | Confiança ALTA do assunto | 170/240 (70,8%) | usável com filtro; não é aprovação |
 | Dificuldade estimada | FACIL 108 · MEDIA 121 · DIFICIL 11, **todas confiança BAIXA** | palpite sem dados de desempenho; fora do mapa |
@@ -144,21 +144,29 @@ conteúdo de matemática financeira observado. Séries por edição em `content-
 
 ## 6. Pendências (herdadas, não bloqueiam a 11.2)
 
-1. Curadoria humana das 38 classificações `NECESSITA_REVISAO` (TASK 12.2).
+1. **Curadoria humana final** das 39 classificações em `REVIEWED` e do
+   referendo das 200 em `APPROVED` (pré-curadoria LLM de 2026-10-02 — ver
+   `docs/curadoria.md`). As 36 questões `has_figure` e os itens conceituais
+   seguem exigindo o caderno em mãos.
 2. Conferência visual amostral das grades e das 36 questões `has_figure` no PDF
    renderizado (ex. 2020 Q38 frações achatadas).
 3. Casos conceituais: 2020 Q26 e 2024 Q17 (anuladas, causa oficial DESCONHECIDA);
-   2023 Q40 (MMC sugere 2032, gabarito oficial A=2044 — não reinterpretar sem o PDF).
+   2023 Q40 (MMC sugere 2032, gabarito oficial A=2044 — classificação marcada
+   `REJECTED` em 2026-10-02, não reinterpretar sem o PDF).
 4. Decisão de curadoria: nome do gabarito 2025 (`…2024…` no nome, conteúdo 2025).
 5. Cobertura fina: `MATEMATICA_FINANCEIRA` (5, ausente 2020) e `GRANDEZAS_MEDIDAS`
    (3, só 2023/2024/2026) são esparsos — fato do dataset, não falha de importação.
+6. Explicações ainda 0/240 redigidas — publicação `PUBLICAVEL` depende
+   delas, não só do status de curadoria.
 
 ## 7. Veredito
 
 Cobertura **completa em extensão** (240/240 questões, 6 edições, 20+20 por edição,
 10 assuntos / 42 subassuntos presentes no banco e no mapa v1.1) e **pendente em
-confirmação** (0% `APPROVED`, 15,8% `NECESSITA_REVISAO`, 0% publicável). Nenhum buraco
-de importação: os assuntos esparsos e as ausências (2021, MAT_FIN 2020, GR_MED em 3
-edições) são características do dataset, não perda de dados. Próximo passo natural:
-**TASK 12.1/12.2** (admin + curadoria) para converter `PENDING` em `APPROVED` com
-revisão humana.
+confirmação humana** (200/240 `APPROVED` por pré-curadoria LLM ainda sem
+referendo, 39 `REVIEWED`, 1 `REJECTED`, 15,8% `NECESSITA_REVISAO` na origem,
+0% publicável). Nenhum buraco de importação: os assuntos esparsos e as
+ausências (2021, MAT_FIN 2020, GR_MED em 3 edições) são características do
+dataset, não perda de dados. A TASK 12.2 entregou a curadoria assistida com
+decisão item a item auditável (`docs/curadoria.md`); falta o referendo humano
+com o PDF e a redação das correções.
