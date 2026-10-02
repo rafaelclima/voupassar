@@ -3,6 +3,7 @@ package br.com.voupassar.content.repository;
 import br.com.voupassar.content.entity.QuestionClassification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -167,4 +168,47 @@ public interface QuestionClassificationRepository
       ORDER BY c.id DESC
       """)
   List<QuestionClassification> findActiveByQuestionId(@Param("questionId") Long questionId);
+
+  /**
+   * Fila de curadoria (TASK 12.1): classificações por status, mais recentes
+   * primeiro dentro da página ordenada pela chamadora.
+   */
+  @Query("""
+      SELECT c FROM QuestionClassification c
+      LEFT JOIN FETCH c.topic t
+      LEFT JOIN FETCH c.subtopic s
+      WHERE c.status = :status
+      """)
+  List<QuestionClassification> findByStatusWithTaxonomy(@Param("status") String status);
+
+  long countByStatus(String status);
+
+  /**
+   * Classificações ativas sem tópico (inconsistência — TASK 12.1).
+   */
+  @Query("""
+      SELECT c.id FROM QuestionClassification c
+      WHERE c.topic IS NULL AND c.status <> 'REJECTED'
+      ORDER BY c.id ASC
+      """)
+  List<Long> findIdsWithoutTopic();
+
+  /**
+   * Escrita da curadoria (TASK 12.1): revisa uma classificação carimbando
+   * revisor e instante. Entidade segue {@code @Immutable} para leitura;
+   * este UPDATE dirigido é a única escrita, auditável por
+   * {@code reviewed_by/at}. Retorna linhas afetadas (0 = inexistente).
+   */
+  @Modifying
+  @Query(
+      value =
+          "UPDATE question_classifications SET status = :status,"
+              + " observation = :observation, reviewed_by = :reviewedBy,"
+              + " reviewed_at = now() WHERE id = :id",
+      nativeQuery = true)
+  int review(
+      @Param("id") long id,
+      @Param("status") String status,
+      @Param("observation") String observation,
+      @Param("reviewedBy") long reviewedBy);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -121,4 +122,66 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       ORDER BY q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
       """)
   List<Question> findByEditionYearOrdered(@Param("year") Short year);
+
+  /**
+   * Fila de curadoria (TASK 12.1): questões por status de validação.
+   *
+   * <p>Ordenação determinística pela chamadora (ano-fonte, número, id).
+   * Entidade segue {@code @Immutable} para leitura; a escrita da curadoria
+   * usa {@link #updateStatuses} abaixo (UPDATE dirigido, auditável).
+   */
+  Page<Question> findByValidationStatus(String validationStatus, Pageable pageable);
+
+  long countByValidationStatus(String validationStatus);
+
+  long countByPublicationStatus(String publicationStatus);
+
+  long countByAnnulledTrue();
+
+  long countByHasFigureTrue();
+
+  /**
+   * Escrita da curadoria (TASK 12.1): atualiza os dois status sem carregar a
+   * entidade imutável. Retorna linhas afetadas (0 = questão inexistente).
+   */
+  @Modifying
+  @Query(
+      value =
+          "UPDATE questions SET validation_status = :validationStatus,"
+              + " publication_status = :publicationStatus WHERE id = :id",
+      nativeQuery = true)
+  int updateStatuses(
+      @Param("id") long id,
+      @Param("validationStatus") String validationStatus,
+      @Param("publicationStatus") String publicationStatus);
+
+  /**
+   * Questões objetivas com contagem de alternativas diferente de 4
+   * (inconsistência — TASK 12.1). Retorna ids em ordem crescente.
+   */
+  @Query("""
+      SELECT q.id FROM Question q
+      WHERE (SELECT COUNT(o) FROM QuestionOption o WHERE o.question = q) <> 4
+      ORDER BY q.id ASC
+      """)
+  List<Long> findIdsWithOptionCountMismatch();
+
+  /**
+   * Não-anuladas cuja resposta não está entre as alternativas
+   * (inconsistência — TASK 12.1).
+   */
+  @Query("""
+      SELECT q.id FROM Question q
+      WHERE q.annulled = false
+        AND NOT EXISTS (
+          SELECT 1 FROM QuestionOption o WHERE o.question = q AND o.label = q.answerKey)
+      ORDER BY q.id ASC
+      """)
+  List<Long> findIdsWithAnswerNotInOptions();
+
+  /**
+   * Enunciados vazios ou só-espaço (inconsistência — TASK 12.1).
+   */
+  @Query("SELECT q.id FROM Question q WHERE TRIM(BOTH FROM q.statement) = '' ORDER BY q.id ASC")
+  List<Long> findIdsWithEmptyStatement();
 }
