@@ -33,7 +33,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-EXTRACTOR_VERSION = "1.0.0"
+EXTRACTOR_VERSION = "1.1.0"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PROVAS_DIR = REPO_ROOT / "data" / "provas"
 OUT_DIR = REPO_ROOT / "data" / "extracted"
@@ -53,6 +53,52 @@ Q_START = re.compile(r"^\s*0?([1-9]|[12][0-9]|3[0-9]|40)\.\s+(?=\S)")
 # "A) texto" ou "A)" isolado (fracao vertical com texto na linha seguinte).
 # Tolera U+200B, NBSP e "A." ocasional.
 ALT_START = re.compile(r"^\s*([A-D])[\).]\s*(?:(?=\S)|$)")
+
+# Rodape de pagina do caderno (v1.1.0): boilerplate do IFRN que o
+# pdftotext -layout entrega no meio do bloco da questao e colava na
+# alternativa D (ultima da pagina). Variantes observadas 2020-2026:
+#   "Processo Seletivo – ... Forma Integrada 2022 ... 13" (nº da pagina
+#   colado no fim) e "PROCESSO SELETIVO ... EDITAL Nº ... – PROEN/IFRN"
+#   (2024 usa "– PROEN/RN"). Auditoria em 2026-10-02: TODA linha de bloco
+#   contendo "processo seletivo" casa este padrao — zero falso positivo —
+#   por isso a regra dispensa recorte por posicao na pagina. Numero de
+#   pagina isolado ("4", "11") so sai quando vizinho de rodape (fração
+#   "5/2400" e numero de figura jamais sao tocados).
+FOOTER_LINE = re.compile(
+    r"processo\s+seletivo\b.*(edital|proen|forma\s+integrada)"
+    r"|^\s*edital\s+n[ºo]?\b.*(proen|ifrn)"
+    r"|^\s*ifrn\s+[–—-]\s*exame\s+de\s+sele[cç][aã]o\s+[–—-]\s+20\d\d\b",
+    re.I,
+)
+LONE_PAGE_NUMBER = re.compile(r"^\s*\d{1,3}\s*$")
+
+
+def strip_page_furniture(block_lines: list[str]) -> tuple[list[str], int]:
+    """Remove rodape + nº de pagina vizinho do bloco. Retorna (linhas, n)."""
+    is_footer = [bool(FOOTER_LINE.search(l)) for l in block_lines]
+    if not any(is_footer):
+        return block_lines, 0
+    drop = [False] * len(block_lines)
+    for i, f in enumerate(is_footer):
+        if f:
+            drop[i] = True
+    for i, line in enumerate(block_lines):
+        if drop[i] or not LONE_PAGE_NUMBER.match(line):
+            continue
+        # 2026 poe o rodape no TOPO da pagina e o nº embaixo ("4" p4 +
+        # PROCESSO/EDITAL p5); as demais edicoes colam o nº no rodape.
+        # Logo o nº de pagina pode estar ANTES ou DEPOIS do rodape.
+        # A varredura ignora SÓ brancos: linhas de rodape marcadas contam
+        # como vizinhas (se fossem puladas, o nº perderia a referencia).
+        for step in (-1, 1):
+            j = i + step
+            while 0 <= j < len(block_lines) and not block_lines[j].strip():
+                j += step
+            if 0 <= j < len(block_lines) and is_footer[j]:
+                drop[i] = True
+                break
+    kept = [l for l, d in zip(block_lines, drop) if not d]
+    return kept, sum(drop)
 
 
 def check_bins() -> dict[str, str]:
@@ -170,7 +216,15 @@ def extract_edition(edition: str) -> dict:
         if buf_num is None:
             buf = []
             return
-        parsed, warns = parse_options(buf)
+        # v1.1.0: rodape/nº de pagina fora do parse (raw_block preserva a
+        # evidencia original para auditoria).
+        clean_buf, furniture = strip_page_furniture(buf)
+        parsed, warns = parse_options(clean_buf)
+        if furniture:
+            warns.append(
+                f"rodape de pagina removido do bloco ({furniture} linhas; "
+                "ver raw_block)"
+            )
         disc = buf_disc
         dsource = disc_source if disc_source != "UNKNOWN" else "UNKNOWN"
         if dsource == "UNKNOWN":  # fallback auditavel por faixa numerica

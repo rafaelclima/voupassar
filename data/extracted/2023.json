@@ -5,8 +5,8 @@
     "source_sha256": "99caba7636afdc10163c5e0bfddc0e1adbcf62443173e0196f08672b485772d8",
     "source_pages": 14,
     "extractor": "scripts/analysis/extract_questions.py",
-    "extractor_version": "1.0.0",
-    "generated_at_utc": "2026-09-30T15:09:38.930061+00:00",
+    "extractor_version": "1.1.0",
+    "generated_at_utc": "2026-10-02T19:56:15.157609+00:00",
     "tool_versions": {
       "pdfinfo": "pdfinfo version 26.08.0",
       "pdftotext": "pdftotext version 26.08.0"
@@ -64,7 +64,7 @@
         "A": "foi criada para reparar o mal causado, historicamente, aos índios marginalizados pelo Estado brasileiro.",
         "B": "cumpriu o papel de rever o crime de lesa-humanidade cometido pelo Estado brasileiro durante a escravidão.",
         "C": "foi pensada por corporações do setor privado comprometidas com a pluralidade de etnias e de gêneros no país.",
-        "D": "reconfigurou as feições das universidades brasileiras, tornando-as menos elitizadas em dez anos. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                      3 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "reconfigurou as feições das universidades brasileiras, tornando-as menos elitizadas em dez anos."
       },
       "raw_block": "03. De acordo com o Texto 1, a Lei das Cotas\n\n\n   A) foi criada para reparar o mal causado, historicamente, aos índios marginalizados pelo Estado\n      brasileiro.\n   B) cumpriu o papel de rever o crime de lesa-humanidade cometido pelo Estado brasileiro durante a\n      escravidão.\n   C) foi pensada por corporações do setor privado comprometidas com a pluralidade de etnias e de\n      gêneros no país.\n   D) reconfigurou as feições das universidades brasileiras, tornando-as menos elitizadas em dez anos.\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                      3\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                                  EDITAL Nº 40/2022 – PROEN/IFRN"
     },
@@ -136,7 +136,7 @@
         "A": "Entre os argumentos tem a alegação de que a regra privilegia pretos e pardos e prejudica os direitos dos brancos, o que torna desigual, a disputa por uma vaga nas universidades.",
         "B": "Entre os argumentos, têm a alegação de que a regra favorece pretos e pardos, prejudicando os direitos dos brancos, o qual torna desigual a disputa por uma vaga nas universidades.",
         "C": "Existia entre os argumentos a alegação de que a regra privilegia pretos e pardos, prejudicando os direitos dos brancos, o que torna desigual a disputa por uma vaga nas universidades.",
-        "D": "Haviam entre os argumentos a alegação de que a regra, privilegia pretos e pardos, e prejudica os direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades. 4                             Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "Haviam entre os argumentos a alegação de que a regra, privilegia pretos e pardos, e prejudica os direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades."
       },
       "raw_block": "07. Observando a norma-padrão da língua portuguesa, o primeiro período está corretamente reescrito e\n    mantém seu sentido original na opção\n\n\n    A) Entre os argumentos tem a alegação de que a regra privilegia pretos e pardos e prejudica os direitos\n       dos brancos, o que torna desigual, a disputa por uma vaga nas universidades.\n    B) Entre os argumentos, têm a alegação de que a regra favorece pretos e pardos, prejudicando os\n       direitos dos brancos, o qual torna desigual a disputa por uma vaga nas universidades.\n    C) Existia entre os argumentos a alegação de que a regra privilegia pretos e pardos, prejudicando os\n       direitos dos brancos, o que torna desigual a disputa por uma vaga nas universidades.\n    D) Haviam entre os argumentos a alegação de que a regra, privilegia pretos e pardos, e prejudica os\n       direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades.\n\n\n\n\n4                             Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
     },
@@ -226,7 +226,7 @@
         "A": "público.",
         "B": "étnica.",
         "C": "abomináveis.",
-        "D": "completará. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                     5 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN Considere o trecho para responder às questões 13 a 15. Mesmo com todos os efeitos positivos, (1) a Lei das Cotas tem sido rechaçada por grupos conservadores e neonazistas (2), inconformados com a presença dos negros nas universidades (3) ou em postos de mando em algumas empresas (4)."
+        "D": "completará. Considere o trecho para responder às questões 13 a 15. Mesmo com todos os efeitos positivos, (1) a Lei das Cotas tem sido rechaçada por grupos conservadores e neonazistas (2), inconformados com a presença dos negros nas universidades (3) ou em postos de mando em algumas empresas (4)."
       },
       "raw_block": "12. O vocábulo ESCÁRNIO (4) é acentuado pelo mesmo motivo de\n\n   A) público.\n   B) étnica.\n   C) abomináveis.\n   D) completará.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                     5\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n\nConsidere o trecho para responder às questões 13 a 15.\n\n        Mesmo com todos os efeitos positivos, (1) a Lei das Cotas tem sido rechaçada por grupos\n    conservadores e neonazistas (2), inconformados com a presença dos negros nas universidades (3)\n    ou em postos de mando em algumas empresas (4).\n\n"
     },
@@ -316,7 +316,7 @@
         "A": "apresenta uma crítica à ideia racista de que negro não precisa estudar em uma universidade.",
         "B": "tem o propósito de narrar um episódio de preconceito racial cometido contra uma criança negra.",
         "C": "tem a intenção de informar o leitor sobre a criação da Lei das Cotas para negros nas universidades.",
-        "D": "apresenta uma descrição de como se configura o racismo estrutural no cenário brasileiro. 6                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "apresenta uma descrição de como se configura o racismo estrutural no cenário brasileiro."
       },
       "raw_block": "17. Sobre o Texto 2, é correto afirmar que\n\n\n    A) apresenta uma crítica à ideia racista de que negro não precisa estudar em uma universidade.\n    B) tem o propósito de narrar um episódio de preconceito racial cometido contra uma criança negra.\n    C) tem a intenção de informar o leitor sobre a criação da Lei das Cotas para negros nas universidades.\n    D) apresenta uma descrição de como se configura o racismo estrutural no cenário brasileiro.\n\n\n\n\n6                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
     },
@@ -370,7 +370,7 @@
         "A": "a intenção comunicativa.",
         "B": "o uso da linguagem não verbal.",
         "C": "o uso da linguagem verbal.",
-        "D": "a variante linguística do registro informal. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023     7 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "a variante linguística do registro informal."
       },
       "raw_block": "20. Os Textos 1 e 2 apresentam em comum\n\n\n   A) a intenção comunicativa.\n   B) o uso da linguagem não verbal.\n   C) o uso da linguagem verbal.\n   D) a variante linguística do registro informal.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023     7\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
     },
@@ -442,7 +442,7 @@
         "A": "75√3⁄2.",
         "B": "75√3⁄5.",
         "C": "25√3⁄4.",
-        "D": "5√3⁄2. 8                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN Observe, na Figura 2, o organograma de distribuição de vagas de uma universidade. Figura 2 PPI: Pretos, pardos ou indígenas PcD: Pessoas com deficiência"
+        "D": "5√3⁄2. Observe, na Figura 2, o organograma de distribuição de vagas de uma universidade. Figura 2 PPI: Pretos, pardos ou indígenas PcD: Pessoas com deficiência"
       },
       "raw_block": "24. A área, em cm2, correspondente a cada um desses hexágonos (Figura 1) é de\n\n    A) 75√3⁄2.\n\n    B) 75√3⁄5.\n\n    C) 25√3⁄4.\n\n    D) 5√3⁄2.\n\n\n\n8                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n    PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                                  EDITAL Nº 40/2022 – PROEN/IFRN\nObserve, na Figura 2, o organograma de distribuição de vagas de uma universidade.\n\n                                                     Figura 2\n\n\n\n\n                        PPI: Pretos, pardos ou indígenas\n                        PcD: Pessoas com deficiência\n"
     },
@@ -496,7 +496,7 @@
         "A": "𝑦 = 830𝑥 + 2500.",
         "B": "𝑦 = 2500𝑥 + 830.",
         "C": "𝑦 = 830𝑥 − 2500.",
-        "D": "𝑦 = 2500𝑥 − 830. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                 9 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN Considere o Gráfico 1 para responder às questões 28 e 29. Gráfico 1: Posicionamento em relação à reserva de vagas para negros, por faixa etária, em percentual."
+        "D": "𝑦 = 2500𝑥 − 830. Considere o Gráfico 1 para responder às questões 28 e 29. Gráfico 1: Posicionamento em relação à reserva de vagas para negros, por faixa etária, em percentual."
       },
       "raw_block": "27. Após a aprovação de alunos que obtiveram acesso ao ensino superior por meio de reserva de vagas para\n    pessoas com deficiência, uma instituição de ensino realiza uma previsão orçamentária para a contratação\n    dos profissionais que atuarão no apoio a esses estudantes. O custo total é descrito em 𝒚 reais, e equivale\n    a um valor inicial de contratação de R$ 2500,00, acrescido de R$ 830,00 mensais, referentes à\n    remuneração dos profissionais durante 𝒙 meses, estabelecidos de acordo com a necessidade e nível dos\n    estudantes. A lei de formação, que representa o custo total de 𝒚 reais para pagamento dos profissionais,\n    é dada por\n    A) 𝑦 = 830𝑥 + 2500.\n    B) 𝑦 = 2500𝑥 + 830.\n    C) 𝑦 = 830𝑥 − 2500.\n    D) 𝑦 = 2500𝑥 − 830.\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                 9\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                            EDITAL Nº 40/2022 – PROEN/IFRN\n\nConsidere o Gráfico 1 para responder às questões 28 e 29.\n\n      Gráfico 1: Posicionamento em relação à reserva de vagas para negros, por faixa etária, em\n                                            percentual.\n\n\n\n"
     },
@@ -550,7 +550,7 @@
         "A": "9890.",
         "B": "12432.",
         "C": "11798.",
-        "D": "9898. 10                          Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "9898."
       },
       "raw_block": "30. Conforme informações do Índice Folha de Equilíbrio Racial (IFER), para que seja atingido um equilíbrio\n    entre brancos e negros (pretos ou pardos) com ensino superior completo, é preciso que, dentre cada 1500\n    habitantes de 30 anos ou mais que têm o curso superior completo, 645 sejam pretos ou pardos.\n    Considerando uma população de 23 mil habitantes com ensino superior completo e faixa etária de 30\n    anos ou mais, o número necessário de indivíduos pretos ou pardos nessa população para que essa\n    proporção seja atingida é\n\n     A) 9890.\n     B) 12432.\n     C) 11798.\n     D) 9898.\n\n\n10                          Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
     },
@@ -640,7 +640,7 @@
         "A": "72.",
         "B": "100.",
         "C": "144.",
-        "D": "200. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                11 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "200."
       },
       "raw_block": "35. Um grupo resolveu fazer um evento com apresentações culturais em apoio à continuidade da Lei das\n    Cotas. Esse evento durou 48 horas ininterruptas e, a cada 20 minutos, uma apresentação cultural\n    diferente subia ao palco. O número de apresentações distintas ocorridas no evento foi\n\n    A) 72.\n    B) 100.\n    C) 144.\n    D) 200.\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023                                11\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                            EDITAL Nº 40/2022 – PROEN/IFRN\n"
     },
@@ -730,7 +730,7 @@
         "A": "2044.",
         "B": "2034.",
         "C": "2024.",
-        "D": "2054. 12                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023 EDITAL Nº 40/2022 – PROEN/IFRN"
+        "D": "2054."
       },
       "raw_block": "40. Uma universidade subdividiu os 50% de vagas destinadas às cotas raciais em vagas para candidatos que\n    se enquadrem no critério racial e sejam de baixa renda, vagas para candidatos que se enquadrem no\n    critério racial e fizeram todo o ensino médio em escola pública e vagas em que apenas o critério racial é\n    exigido. Para avaliar se essa subdivisão estava tendo efeitos positivos na inserção social, um pesquisador\n    estudou, a cada dois anos, as vagas de baixa renda; a cada três anos, as vagas de escola pública; e, a\n    cada quatro anos, as vagas que exigiam apenas o critério racial. Se, em 2020, ele estudou as três\n    categorias, após 2020, um ano em que ele estudará as três categorias juntas novamente será\n\n     A) 2044.\n     B) 2034.\n     C) 2024.\n     D) 2054.\n\n\n\n12                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2023\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2023\n                           EDITAL Nº 40/2022 – PROEN/IFRN\n"
     }
@@ -740,5 +740,16 @@
     "page": 13,
     "proposal_excerpt": "PRODUÇÃO TEXTUAL PROPOSTA Considere os textos desta prova e o seu conhecimento prévio sobre a temática em foco para produzir um artigo de opinião em que se posicione sobre a seguinte questão: A Lei das Cotas privilegia pretos e pardos em detrimento dos direitos dos brancos, tornando desigual a disputa por uma vaga nas universidades? Assine seu artigo com o pseudônimo Negritude Iorubá. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes nos textos da prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto"
   },
-  "warnings": []
+  "warnings": [
+    "Q3: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q12: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q17: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q24: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q27: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q30: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q35: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
+  ]
 }

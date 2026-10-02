@@ -5,8 +5,8 @@
     "source_sha256": "ffcfa54064c148c026d99c2a73ada3fdfee4a5c78d664ba4db06c7a8ffdf1bfe",
     "source_pages": 15,
     "extractor": "scripts/analysis/extract_questions.py",
-    "extractor_version": "1.0.0",
-    "generated_at_utc": "2026-09-30T15:09:38.725583+00:00",
+    "extractor_version": "1.1.0",
+    "generated_at_utc": "2026-10-02T19:56:14.937615+00:00",
     "tool_versions": {
       "pdfinfo": "pdfinfo version 26.08.0",
       "pdftotext": "pdftotext version 26.08.0"
@@ -118,7 +118,7 @@
         "A": "manifesta a concordância do autor com o fato de se desmatar para plantar maconha.",
         "B": "indica um limite espacial para a plantação de maconha na mata devastada.",
         "C": "expressa a indignação do autor em relação ao motivo pelo qual a terra foi devastada.",
-        "D": "limita a três as atividades que provocaram o desmatamento da mata nativa. 4                                              Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "limita a três as atividades que provocaram o desmatamento da mata nativa."
       },
       "raw_block": "06. No trecho, o uso do vocábulo ATÉ\n\n    A) manifesta a concordância do autor com o fato de se desmatar para plantar maconha.\n    B) indica um limite espacial para a plantação de maconha na mata devastada.\n    C) expressa a indignação do autor em relação ao motivo pelo qual a terra foi devastada.\n    D) limita a três as atividades que provocaram o desmatamento da mata nativa.\n\n\n4                                              Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
     },
@@ -208,7 +208,7 @@
         "A": "complemento nominal e complementa o sentido do termo “bacia”",
         "B": "aposto explicativo e explica o sentido do termo “rios”.",
         "C": "adjunto adnominal e especifica o termo “bacia”.",
-        "D": "adjunto adverbial e determina o local dos rios. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 5 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "adjunto adverbial e determina o local dos rios."
       },
       "raw_block": "11. O termo destacado DO TAPAJÓS é um\n\n    A) complemento nominal e complementa o sentido do termo “bacia”\n    B) aposto explicativo e explica o sentido do termo “rios”.\n    C) adjunto adnominal e especifica o termo “bacia”.\n    D) adjunto adverbial e determina o local dos rios.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 5\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                           EDITAL Nº 041/2021 – PROEN/IFRN\n\n"
     },
@@ -298,7 +298,7 @@
         "A": "expressa a coloquialidade da linguagem oral.",
         "B": "demonstra o tom autoritário da fala do Juiz.",
         "C": "caracteriza o uso linguístico de uma região.",
-        "D": "indica a classe social e o gênero do Juiz. 6                                                Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "indica a classe social e o gênero do Juiz."
       },
       "raw_block": "16. A linguagem utilizada pelo Juiz no Texto 3\n\n    A) expressa a coloquialidade da linguagem oral.\n    B) demonstra o tom autoritário da fala do Juiz.\n    C) caracteriza o uso linguístico de uma região.\n    D) indica a classe social e o gênero do Juiz.\n\n\n\n\n6                                                Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n\n\n"
     },
@@ -370,7 +370,7 @@
         "A": "o tipo textual.",
         "B": "a temática.",
         "C": "o gênero textual.",
-        "D": "a variação linguística. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022         7 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "a variação linguística."
       },
       "raw_block": "20. É comum aos três textos desta avaliação\n\n    A) o tipo textual.\n    B) a temática.\n    C) o gênero textual.\n    D) a variação linguística.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022         7\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                           EDITAL Nº 041/2021 – PROEN/IFRN\n\n"
     },
@@ -442,7 +442,7 @@
         "A": "14.800.000.",
         "B": "14.400.000.",
         "C": "15.400.000.",
-        "D": "15.800.000. 8                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "15.800.000."
       },
       "raw_block": "24. Segundo o texto 1, o Ibama aplicou R$ 10 milhões em multas contra acampamentos ilegais localizados\n    na terra indígena Alto Rio Guamá. Supondo que os invasores não pagaram as multas e que, sobre elas,\n    sejam cobrados juros mensais, no regime de juros simples, de 2% ao mês, o montante da dívida a ser\n    paga, ao final de 2 anos, será de\n\n    A) 14.800.000.\n    B) 14.400.000.\n    C) 15.400.000.\n    D) 15.800.000.\n\n\n\n\n8                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
     },
@@ -532,7 +532,7 @@
         "A": "30.",
         "B": "60.",
         "C": "45.",
-        "D": "75. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                   9 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "75."
       },
       "raw_block": "29. Um orgão ambientalista observou que um grupo de garimpeiros ilegais estava desmatando o equivalente\n    a 300 campos de futebol em 30 dias e que, após uma campanha de fiscalização, o grupo de garimpeiros\n    se reduziu a dois terços do número original. Admitindo que os garimpeiros restantes, após a campanha\n    de fiscalização, mantiveram o mesmo ritmo de desmatamento de antes, o tempo, em dias, que eles\n    levarão para desmatar o equivalente a 300 campos de futebol será\n\n    A) 30.\n    B) 60.\n    C) 45.\n    D) 75.\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                   9\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
     },
@@ -604,7 +604,7 @@
         "A": "20.10². ᶟ",
         "B": "2.10 .",
         "C": "0,2.10⁴.",
-        "D": "0,02.10⁵. 10                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "0,02.10⁵."
       },
       "raw_block": "33. No Texto 1, cerca de dois mil índios vivem na terra indígena Alto Rio Guamá. A representação desse\n    mesmo quantitativo em notação científica é dada por\n\n\n     A) 20.10².\n\n             ᶟ\n     B) 2.10 .\n\n     C) 0,2.10⁴.\n\n     D) 0,02.10⁵.\n\n\n\n\n10                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
     },
@@ -658,7 +658,7 @@
         "A": "146.",
         "B": "126.",
         "C": "128.",
-        "D": "138. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                             11 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "138."
       },
       "raw_block": "36. De acordo com o Texto 1, no ano de 2017, houve 96 invasões em terras indígenas, em 2018, o número\n    subiu para 111 e, em 2019, foi para 160, somente no mês de janeiro. Supondo que tivesse sido preservado\n    o mesmo percentual de aumento do ano de 2018, o número aproximado de invasões, para todo o ano de\n    2019, teria sido igual a\n\n    A) 146.\n    B) 126.\n    C) 128.\n    D) 138.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                             11\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
     },
@@ -712,7 +712,7 @@
         "A": ". ̅̅̅̅ 𝐴𝐵 ̅̅̅̅.𝐴𝐶 𝐴𝐵    ̅̅̅̅",
         "B": ". ̅̅̅̅ 𝐶𝐸 ̅̅̅̅ 𝐴𝐵 .𝐶𝐷̅̅̅̅",
         "C": ".                                                                   Figura 4 ̅̅̅̅ 𝐵𝐶                                                                      Figura adaptada para fins pedagógicos. ̅̅̅̅  ̅̅̅̅                                                                                         Disponível em: 𝐵𝐶 .𝐶𝐸",
-        "D": ". ̅̅̅̅ 𝐴𝐶                                                  https://congressoemfoco.uol.com.br/tema/meio- ambiente/governo-estuda-medidas-para-regularizar- garimpo-clandestino/ 12                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": ". ̅̅̅̅ 𝐴𝐶                                                  https://congressoemfoco.uol.com.br/tema/meio- ambiente/governo-estuda-medidas-para-regularizar- garimpo-clandestino/"
       },
       "raw_block": "39. Para medir a largura ̅̅̅̅\n                         𝐷𝐸 de um lago, dentro de um\n    garimpo desativado, foi utilizado o esquema da\n    Figura 4. Observando-se que o ∆𝐴𝐵𝐶~ ∆𝐸𝐷𝐶 , a\n    expressão que determina o valor de ̅̅̅̅\n                                       𝐷𝐸 é dada por\n\n\n          ̅̅̅̅ .𝐸𝐶\n          𝐴𝐶    ̅̅̅̅\n     A)              .\n             ̅̅̅̅\n             𝐴𝐵\n          ̅̅̅̅.𝐴𝐶\n          𝐴𝐵    ̅̅̅̅\n     B)              .\n             ̅̅̅̅\n             𝐶𝐸\n          ̅̅̅̅\n          𝐴𝐵 .𝐶𝐷̅̅̅̅\n     C)              .                                                                   Figura 4\n             ̅̅̅̅\n             𝐵𝐶                                                                      Figura adaptada para fins pedagógicos.\n          ̅̅̅̅  ̅̅̅̅                                                                                         Disponível em:\n          𝐵𝐶 .𝐶𝐸\n     D)              .\n             ̅̅̅̅\n             𝐴𝐶                                                  https://congressoemfoco.uol.com.br/tema/meio-\n                                                             ambiente/governo-estuda-medidas-para-regularizar-\n                                                                                          garimpo-clandestino/\n\n\n\n\n12                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022\n\n      PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                            EDITAL Nº 041/2021 – PROEN/IFRN\n"
     },
@@ -730,7 +730,7 @@
         "A": "(110101101)2 .",
         "B": "(101101111)2 .",
         "C": "(101111010)2 .",
-        "D": "(111100110)2 . Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 13 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022 EDITAL Nº 041/2021 – PROEN/IFRN"
+        "D": "(111100110)2 ."
       },
       "raw_block": "40. O Texto 1 registra os números de invasões em terras indígenas nos anos de 2017, 2018 e no período de\n    janeiro a setembro de 2019. O valor total de invasões registradas nos três anos tem a sua representação\n    no sistema binário dada por\n\n\n    A) (110101101)2 .\n    B) (101101111)2 .\n    C) (101111010)2 .\n    D) (111100110)2 .\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2022                                 13\n\n     PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2022\n                           EDITAL Nº 041/2021 – PROEN/IFRN\n"
     }
@@ -740,5 +740,16 @@
     "page": 14,
     "proposal_excerpt": "PRODUÇÃO TEXTUAL Proposta Considerando os textos desta prova, o seu conhecimento prévio e a polêmica levantada pelos textos sobre a posse das terras indígenas, escreva um artigo de opinião, assumindo um ponto de vista sobre a seguinte questão: as terras indígenas devem ser protegidas pelo governo brasileiro? Assine a sua produção textual com o pseudônimo de Potiguar da Silva. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto será avaliado, levando-"
   },
-  "warnings": []
+  "warnings": [
+    "Q6: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q11: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q16: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q24: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q29: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q33: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q36: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q39: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
+  ]
 }

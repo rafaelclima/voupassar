@@ -5,8 +5,8 @@
     "source_sha256": "3f35c8024ea875051f99cdf82c2271ceb9ce92d1de9e7f9222f6fe4ddd24cdc2",
     "source_pages": 14,
     "extractor": "scripts/analysis/extract_questions.py",
-    "extractor_version": "1.0.0",
-    "generated_at_utc": "2026-09-30T15:09:39.343183+00:00",
+    "extractor_version": "1.1.0",
+    "generated_at_utc": "2026-10-02T19:56:15.603062+00:00",
     "tool_versions": {
       "pdfinfo": "pdfinfo version 26.08.0",
       "pdftotext": "pdftotext version 26.08.0"
@@ -46,7 +46,7 @@
         "A": "ao fato de que os adolescentes se sentem nervosos se seus telefones não estão perto deles.",
         "B": "ao fato de que seu uso inadequado pode ter um impacto negativo na saúde emocional.",
         "C": "a uma recomendação do Programa de Avaliação Internacional de Estudantes (PISA).",
-        "D": "a um acordo para cumprir o protocolo do Programa Acesso Mais Seguro. IFRN – Exame de Seleção – 2025                                                                                        3 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "a um acordo para cumprir o protocolo do Programa Acesso Mais Seguro."
       },
       "raw_block": "02. A leitura do Texto 1 permite afirmar que a proibição de celulares e outros dispositivos eletrônicos nas\n    escolas do Rio de Janeiro deveu-se\n\n    A) ao fato de que os adolescentes se sentem nervosos se seus telefones não estão perto deles.\n    B) ao fato de que seu uso inadequado pode ter um impacto negativo na saúde emocional.\n    C) a uma recomendação do Programa de Avaliação Internacional de Estudantes (PISA).\n    D) a um acordo para cumprir o protocolo do Programa Acesso Mais Seguro.\nIFRN – Exame de Seleção – 2025                                                                                        3\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 23/2024 – PROEN/IFRN\n"
     },
@@ -136,7 +136,7 @@
         "A": "em (1), ele antecede uma citação.",
         "B": "em (3), ele antecede uma citação.",
         "C": "em ambas as ocorrências, eles antecedem uma explicação.",
-        "D": "em ambas as ocorrências, eles antecedem uma enumeração. IFRN – Exame de Seleção – 2025                                                                                  4 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "em ambas as ocorrências, eles antecedem uma enumeração."
       },
       "raw_block": "07. Sobre o uso dos dois-pontos no trecho, é correto afirmar que\n\n    A) em (1), ele antecede uma citação.\n    B) em (3), ele antecede uma citação.\n    C) em ambas as ocorrências, eles antecedem uma explicação.\n    D) em ambas as ocorrências, eles antecedem uma enumeração.\n\nIFRN – Exame de Seleção – 2025                                                                                  4\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
     },
@@ -226,7 +226,7 @@
         "A": "as crianças brincam entre si com os celulares.",
         "B": "os celulares são usados pelas crianças para brincar.",
         "C": "o uso dos celulares isola as crianças umas das outras.",
-        "D": "a interação entre as crianças é estimulada pelo uso dos celulares. IFRN – Exame de Seleção – 2025                                                                              5 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "a interação entre as crianças é estimulada pelo uso dos celulares."
       },
       "raw_block": "12. O trecho sublinhado AS CRIANÇAS NÃO PODEM CONTINUAR FICANDO ISOLADAS NAS SUAS\n    PRÓPRIAS TELAS, SEM INTERAGIR UMAS COM AS OUTRAS, SEM BRINCAR (3) permite afirmar\n    que\n\n    A) as crianças brincam entre si com os celulares.\n    B) os celulares são usados pelas crianças para brincar.\n    C) o uso dos celulares isola as crianças umas das outras.\n    D) a interação entre as crianças é estimulada pelo uso dos celulares.\n\nIFRN – Exame de Seleção – 2025                                                                              5\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                       EDITAL Nº 23/2024 – PROEN/IFRN\n\n\n"
     },
@@ -334,7 +334,7 @@
         "A": "sua temática é a mesma do Texto 1.",
         "B": "tanto ele como o Texto 1 são do tipo descritivo.",
         "C": "ele tem a mesma intenção comunicativa do Texto 1.",
-        "D": "seu registro de linguagem é o mesmo que o do Texto 1. IFRN – Exame de Seleção – 2025                                                                  6 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "seu registro de linguagem é o mesmo que o do Texto 1."
       },
       "raw_block": "18. Sobre o Texto 2, é correto afirmar que\n\n    A) sua temática é a mesma do Texto 1.\n    B) tanto ele como o Texto 1 são do tipo descritivo.\n    C) ele tem a mesma intenção comunicativa do Texto 1.\n    D) seu registro de linguagem é o mesmo que o do Texto 1.\n\n\n\n\nIFRN – Exame de Seleção – 2025                                                                  6\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 23/2024 – PROEN/IFRN\n"
     },
@@ -370,7 +370,7 @@
         "A": "registro informal.",
         "B": "recorte temático.",
         "C": "gênero textual.",
-        "D": "tipo textual. IFRN – Exame de Seleção – 2025                                                              7 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "tipo textual."
       },
       "raw_block": "20. Os Textos 1 e 2 apresentam em comum\n\n    A) registro informal.\n    B) recorte temático.\n    C) gênero textual.\n    D) tipo textual.\n\n\n\n\nIFRN – Exame de Seleção – 2025                                                              7\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n"
     },
@@ -460,7 +460,7 @@
         "A": "300.",
         "B": "500.",
         "C": "600.",
-        "D": "400. IFRN – Exame de Seleção – 2025                                                                              8 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "400."
       },
       "raw_block": "25. Considere que uma escola está monitorando o cumprimento da nova política que proíbe o uso de\n    celulares durante as aulas. Em uma pesquisa com 150 alunos, foi constatado que 30 deles estavam\n    usando celulares durante as aulas, apesar da proibição. A escola deseja estimar quantos alunos estariam\n    usando celulares em um total de 2000 alunos. Considerando a mesma proporção da pesquisa, a\n    estimativa de alunos que usariam celulares durante as aulas é\n\n    A) 300.\n    B) 500.\n    C) 600.\n    D) 400.\n\n\nIFRN – Exame de Seleção – 2025                                                                              8\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                  EDITAL Nº 23/2024 – PROEN/IFRN\n"
     },
@@ -496,7 +496,7 @@
         "A": "4,8.",
         "B": "5,2.",
         "C": "5,0.",
-        "D": "4,0. IFRN – Exame de Seleção – 2025                                                                         9 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "4,0."
       },
       "raw_block": "27. Considere que uma escola está planejando a instalação de novas câmeras de segurança em suas salas\n    de aula para garantir o cumprimento do decreto mencionado no Texto 1. Para determinar a quantidade\n    de câmeras necessárias, a escola precisa calcular a área de cada um desses espaços. Cada sala de aula\n    tem a forma de um retângulo e a escola pretende instalar uma câmera para até 10 metros quadrados.\n\n\n\n\n    Considerando a sala de aula apresentada na figura acima, o número mínimo de câmeras necessárias\n    para cobrir toda a sala é\n\n    A) 4,8.\n    B) 5,2.\n    C) 5,0.\n    D) 4,0.\n\nIFRN – Exame de Seleção – 2025                                                                         9\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
     },
@@ -586,7 +586,7 @@
         "A": "R$ 2700,00.",
         "B": "R$ 3300,00.",
         "C": "R$ 3000,00.",
-        "D": "R$ 6000,00. IFRN – Exame de Seleção – 2025                                                                             10 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "R$ 6000,00."
       },
       "raw_block": "32. Para promover o uso consciente de tecnologia na sala de aula e reduzir a dependência de celulares, uma\n    escola comprou 30 tablets educativos. O preço unitário de cada tablet era de R$ 200,00, mas a escola\n    obteve um desconto de 55%. O valor total investido na compra dos tablets foi de\n\n    A) R$ 2700,00.\n    B) R$ 3300,00.\n    C) R$ 3000,00.\n    D) R$ 6000,00.\n\nIFRN – Exame de Seleção – 2025                                                                             10\n\n         IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
     },
@@ -658,7 +658,7 @@
         "A": ". 30 732",
         "B": ". 900 741",
         "C": ". 900 24",
-        "D": ". 30 IFRN – Exame de Seleção – 2025                                                                            11 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "."
       },
       "raw_block": "36. A fração que mais se aproxima desse percentual é\n\n          25\n    A)      .\n          30\n          732\n    B)          .\n          900\n          741\n    C)          .\n          900\n          24\n    D)      .\n          30\n\n\n\nIFRN – Exame de Seleção – 2025                                                                            11\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n"
     },
@@ -730,7 +730,7 @@
         "A": "60.",
         "B": "72.",
         "C": "71.",
-        "D": "65. IFRN – Exame de Seleção – 2025                                                                           12 IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 23/2024 – PROEN/IFRN"
+        "D": "65."
       },
       "raw_block": "40. Considerando que todos os celulares devem estar alinhados na mesma orientação (horizontal ou vertical),\n    a quantidade máxima de celulares com dimensões 150 mm x 75 mm que podem ser dispostos sobre uma\n    mesa de 1,0 m por 0,8 m, sem sobreposição e sem ultrapassar os limites da mesa é de\n\n\n\n\n    A) 60.\n    B) 72.\n    C) 71.\n    D) 65.\n\n\nIFRN – Exame de Seleção – 2025                                                                           12\n\n         IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                       EDITAL Nº 23/2024 – PROEN/IFRN\n\n"
     }
@@ -740,5 +740,16 @@
     "page": 13,
     "proposal_excerpt": "PRODUÇÃO TEXTUAL ESCRITA PRODUÇÃO TEXTUAL Considerando a temática em foco, a leitura dos textos desta prova e seus conhecimentos prévios sobre o tema em discussão, escreva um ARTIGO DE OPINIÃO em que se posicione sobre a seguinte questão: O USO DE CELULARES DEVE SER PROIBIDO NAS ESCOLAS BRASILEIRAS? Assine o seu artigo, exclusivamente, com o pseudônimo O REI DA NET. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique- se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Lembre-se de que seu texto será avaliado, levando-se em consideração os seguintes critérios: A) produção do gênero textual proposto no comando da questão; B) presença de marcas características"
   },
-  "warnings": []
+  "warnings": [
+    "Q2: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q12: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q18: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q25: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q27: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q32: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q36: rodape de pagina removido do bloco (4 linhas; ver raw_block)",
+    "Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
+  ]
 }

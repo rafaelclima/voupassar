@@ -135,6 +135,14 @@ tratados pelo schema (tentativas em anuladas: `is_correct IS NULL`).
 6. **Conferência visual amostral das grades no PDF renderizado** — contagem regex validada
    (40/40 por edição), leitura humana residual pendente (TASK 1.3 §4).
 7. Observabilidade do banco (backup/restore) é TASK 13.2, fora deste escopo.
+8. **Trechos compartilhados presos na alternativa D (7 itens, 2026-10-02)** — o bloco da
+   questão engole o texto-base das questões seguintes ("Considere o trecho…", figura ou
+   gráfico): 2020 Q3 (trecho p/ Q4–Q7); 2023 Q12 (trecho p/ Q13–Q15), Q24 (Figura 2),
+   Q27 (Gráfico 1 p/ Q28–Q29); 2024 Q24 (trecho p/ Q25–Q27); 2026 Q7 (trecho p/ Q8–Q10),
+   Q10 (trecho p/ Q11–Q14). O rodapé do meio foi removido (V6), mas o trecho real foi
+   **mantido em D sem perda de dado** — realocar para as questões dependentes é decisão
+   de modelagem + curadoria humana (TASK 12.2), não desta limpeza. 2023 Q24/Q27 já estão
+   na fila de revisão (figuras); os demais seguem `PENDING`/`PENDENTE_REVISAO`.
 
 ## 8. Veredito TASK 11.1
 

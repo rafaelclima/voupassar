@@ -5,8 +5,8 @@
     "source_sha256": "f53d78a34d1e669108bef0051783093a7ebfec20e87a94aa9b9f7f370154ba22",
     "source_pages": 15,
     "extractor": "scripts/analysis/extract_questions.py",
-    "extractor_version": "1.0.0",
-    "generated_at_utc": "2026-09-30T15:09:38.511523+00:00",
+    "extractor_version": "1.1.0",
+    "generated_at_utc": "2026-10-02T19:56:14.712945+00:00",
     "tool_versions": {
       "pdfinfo": "pdfinfo version 26.08.0",
       "pdftotext": "pdftotext version 26.08.0"
@@ -64,7 +64,7 @@
         "A": "as agressões só não são graves por serem oriundas de pessoas que estão fisicamente distantes.",
         "B": "os ataques sofridos na Internet podem se tornar muito ofensivos e prejudiciais à vida das vítimas.",
         "C": "o surgimento do cyberbullying deve-se ao acesso irrestrito de crianças e jovens aos smartphones.",
-        "D": "o sofrimento das vítimas do cyberbullying no Brasil pode ser amenizado por entidades protetivas. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                    3 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN Considere o trecho a seguir para responder às questões de 4 a 7. Quando entrou em um colégio novo, na Zona Oeste do Rio, os problemas começaram para Laura, de 13 anos. “Ela é popular. Faz amizade fácil e é bonita. Aquilo provocou a ira de um grupo de colegas”, lembra Rita, de 46 anos, mãe da jovem."
+        "D": "o sofrimento das vítimas do cyberbullying no Brasil pode ser amenizado por entidades protetivas. Considere o trecho a seguir para responder às questões de 4 a 7. Quando entrou em um colégio novo, na Zona Oeste do Rio, os problemas começaram para Laura, de 13 anos. “Ela é popular. Faz amizade fácil e é bonita. Aquilo provocou a ira de um grupo de colegas”, lembra Rita, de 46 anos, mãe da jovem."
       },
       "raw_block": "03. De acordo com o Texto 1,\n\n\n    A) as agressões só não são graves por serem oriundas de pessoas que estão fisicamente distantes.\n    B) os ataques sofridos na Internet podem se tornar muito ofensivos e prejudiciais à vida das vítimas.\n    C) o surgimento do cyberbullying deve-se ao acesso irrestrito de crianças e jovens aos smartphones.\n    D) o sofrimento das vítimas do cyberbullying no Brasil pode ser amenizado por entidades protetivas.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                    3\n\n          PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                 EDITAL Nº 29/2019-PROEN/IFRN\n\nConsidere o trecho a seguir para responder às questões de 4 a 7.\n\nQuando entrou em um colégio novo, na Zona Oeste do Rio, os problemas começaram para Laura, de 13\nanos. “Ela é popular. Faz amizade fácil e é bonita. Aquilo provocou a ira de um grupo de colegas”, lembra\nRita, de 46 anos, mãe da jovem.\n"
     },
@@ -154,7 +154,7 @@
         "A": "os casos apresentados no texto são isolados, pois não há pesquisas que comprovem a existência de cyberbullying no Brasil.",
         "B": "o uso indiscriminado dos smartphones pelos jovens influencia muito pouco a disseminação das agressões a jovens.",
         "C": "as agressões feitas na Internet podem causar maior impacto na vida das crianças do que aquelas realizadas presencialmente.",
-        "D": "a maioria dos pais percebe, com antecedência, que os filhos estão vivendo alguma agressão por meio das redes sociais. 4                                            Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "a maioria dos pais percebe, com antecedência, que os filhos estão vivendo alguma agressão por meio das redes sociais."
       },
       "raw_block": "08. De acordo com o Texto 1,\n\n\n    A) os casos apresentados no texto são isolados, pois não há pesquisas que comprovem a existência de\n       cyberbullying no Brasil.\n    B) o uso indiscriminado dos smartphones pelos jovens influencia muito pouco a disseminação das\n       agressões a jovens.\n    C) as agressões feitas na Internet podem causar maior impacto na vida das crianças do que aquelas\n       realizadas presencialmente.\n    D) a maioria dos pais percebe, com antecedência, que os filhos estão vivendo alguma agressão por meio\n       das redes sociais.\n\n\n4                                            Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020\n\n            PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                   EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -244,7 +244,7 @@
         "A": "substantivo e substantivo.",
         "B": "adjetivo e adjetivo",
         "C": "adjetivo e substantivo.",
-        "D": "substantivo e adjetivo. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                 5 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "substantivo e adjetivo."
       },
       "raw_block": "13. Os elementos linguísticos pesquisadora [4] e Estadual [5], respectivamente, assumem valor de\n\n\n    A) substantivo e substantivo.\n    B) adjetivo e adjetivo\n    C) adjetivo e substantivo.\n    D) substantivo e adjetivo.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                 5\n\n          PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                 EDITAL Nº 29/2019-PROEN/IFRN"
     },
@@ -352,7 +352,7 @@
         "A": "argumentação caracterizada pela defesa de um ponto de vista.",
         "B": "narração caracterizada pela veracidade dos fatos.",
         "C": "argumentação caracterizada pela linguagem verbal.",
-        "D": "narração caracterizada pela presença de personagem. 6                                                 Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "narração caracterizada pela presença de personagem."
       },
       "raw_block": "19. No Texto 2, há o predomínio da\n\n\n    A) argumentação caracterizada pela defesa de um ponto de vista.\n    B) narração caracterizada pela veracidade dos fatos.\n    C) argumentação caracterizada pela linguagem verbal.\n    D) narração caracterizada pela presença de personagem.\n\n6                                                 Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020\n\n            PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                   EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -370,7 +370,7 @@
         "A": "notícia e tirinha.",
         "B": "artigo de opinião e cartaz.",
         "C": "editorial e cartum.",
-        "D": "reportagem e charge. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020               7 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "reportagem e charge."
       },
       "raw_block": "20. Os Textos 1 e 2, respectivamente, são\n\n\n    A) notícia e tirinha.\n    B) artigo de opinião e cartaz.\n    C) editorial e cartum.\n    D) reportagem e charge.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020               7\n\n          PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                 EDITAL Nº 29/2019-PROEN/IFRN\n\n"
     },
@@ -442,7 +442,7 @@
         "A": "8 cm.",
         "B": "11 cm.",
         "C": "12 cm.",
-        "D": "13 cm. 8                                               Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "13 cm."
       },
       "raw_block": "24. Ao organizar uma campanha de conscientização contra o cyberbullying, um grupo de alunos resolve\n    divulgar os males dessa prática. Dispondo de um papel para cartão com 88 cm de comprimento por 104\n    cm de largura, eles pretendem produzir cartões quadrados com a maior dimensão possível e de tal forma\n    que não sobrem pedaços do papel para cartão. Assim, o lado dos cartões recortados deverá medir\n\n\n    A) 8 cm.\n    B) 11 cm.\n    C) 12 cm.\n    D) 13 cm.\n\n\n\n\n8                                               Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020\n\n              PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                     EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -514,7 +514,7 @@
         "A": "12.000 pessoas.",
         "B": "14.000 pessoas.",
         "C": "16.000 pessoas.",
-        "D": "18.000 pessoas. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                 9 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "18.000 pessoas."
       },
       "raw_block": "28. Em uma campanha contra o cyberbullying, uma escola promoveu uma palestra para pais e alunos.\n    Querendo estimar o público presente, o professor de Matemática observou que o pátio, que tinha forma\n    retangular com 50 m de comprimento por 80 m de largura, estava lotado. Sabendo que, em média, o pátio\n    comporta 4 pessoas por metro quadrado, ele conclui que estavam presentes\n\n\n    A) 12.000 pessoas.\n    B) 14.000 pessoas.\n    C) 16.000 pessoas.\n    D) 18.000 pessoas.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                 9\n\n           PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                  EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -586,7 +586,7 @@
         "A": "120,00.",
         "B": "210,00.",
         "C": "280,00.",
-        "D": "140,00. 10                                                 Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "140,00."
       },
       "raw_block": "32. A jovem Laura, mencionada no Texto 1, passou a ter acompanhamento psicológico após as agressões\n    sofridas na Internet. Considere que, para pagar os custos da terapia, a mãe e o pai da adolescente\n    pagaram juntos um total de 300,00 reais mensais. Supondo que a razão entre a contribuição do pai e a\n                             4\n     contribuição da mãe é        , o valor a mais, em reais, que a mãe de Laura paga, mensalmente, em relação\n                             11\n     ao pai, é de\n\n\n     A) 120,00.\n     B) 210,00.\n     C) 280,00.\n     D) 140,00.\n\n\n\n\n10                                                 Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020\n\n            PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                   EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -622,7 +622,7 @@
         "A": "852.",
         "B": "965.",
         "C": "754.",
-        "D": "698. Considere o Gráfico 1 para responder às questões 35 e 36. Gráfico 1 Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                               11 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "698. Considere o Gráfico 1 para responder às questões 35 e 36. Gráfico 1"
       },
       "raw_block": "34. Na tentativa de superar os traumas das agressões sofridas\n    em ataques de cyberbullying, uma adolescente residente em\n    Natal mudou-se para a casa dos avós no Piauí. Curiosa para\n    saber a distância real entre as duas cidades, ela utilizou o\n    mapa da Figura 1, cuja distância, em linha reta, entre as duas\n    capitais mede 6 cm e, a escala adotada é 1:14.200.000. Com\n    base nesses valores, em km, a distância real entre Natal e\n    Piauí é de\n\n\n    A) 852.\n    B) 965.\n    C) 754.\n    D) 698.\n\n\nConsidere o Gráfico 1 para responder às questões 35 e 36.\n\n\n\n\n                                                           Gráfico 1\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                               11\n\n            PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                   EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -676,7 +676,7 @@
         "A": ". 50 127𝑥",
         "B": ". 20 117𝑥",
         "C": ". 10 157𝑥",
-        "D": ". 50 12                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "."
       },
       "raw_block": "37. De acordo com o Texto 1, o percentual de crianças e adolescentes ofendidos na Internet cresce ano a\n    ano, passando de 15% em 2014 para 20% em 2015 até chegar em 23% no ano de 2016. Considere que\n    uma pesquisa foi feita em 2014 numa cidade A, em 2015 numa cidade B e, em 2016, numa cidade C,\n    sempre com a mesma quantidade x de jovens. Considere também que os percentuais obtidos\n    corresponderam aos resultados indicados no Texto 1, para cada ano. A expressão que representa o\n    número total de crianças e adolescentes pesquisados nas três cidades que não sofreram, nesses três\n    anos, agressões na Internet é\n\n          121𝑥\n     A)          .\n          50\n\n\n\n          127𝑥\n     B)          .\n          20\n\n\n\n          117𝑥\n     C)          .\n          10\n\n\n\n          157𝑥\n     D)          .\n          50\n\n\n\n\n12                                             Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020\n\n              PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                     EDITAL Nº 29/2019-PROEN/IFRN\n"
     },
@@ -730,7 +730,7 @@
         "A": "segunda-feira, às 06 horas.",
         "B": "segunda-feira, às 14 horas.",
         "C": "terça-feira, às 06 horas.",
-        "D": "terça-feira, às 14 horas. Processo Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                13 PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020 EDITAL Nº 29/2019-PROEN/IFRN"
+        "D": "terça-feira, às 14 horas."
       },
       "raw_block": "40. Laura começou um tratamento médico após ter sofrido sérias agressões nas redes sociais. Na prescrição\n    médica, foram receitados dois medicamentos: um deles deve ser ingerido de 8 em 8 horas e o outro, de\n    10 em 10 horas. Supondo que Laura ingeriu os dois medicamentos às 14 horas do domingo, ela irá ingerir\n    novamente os dois medicamentos juntos\n\n\n    A) segunda-feira, às 06 horas.\n    B) segunda-feira, às 14 horas.\n    C) terça-feira, às 06 horas.\n    D) terça-feira, às 14 horas.\n\n\n\n\nProcesso Seletivo – Curso Técnico de Nível Médio na Forma Integrada 2020                                13\n\n          PROCESSO SELETIVO – CURSO TÉCNICO DE NÍVEL MÉDIO NA FORMA INTEGRADA 2020\n                                 EDITAL Nº 29/2019-PROEN/IFRN\n"
     }
@@ -741,9 +741,20 @@
     "proposal_excerpt": "PRODUÇÃO TEXTUAL Considerando os textos desta prova e seu conhecimento prévio sobre a temática em foco, escreva um artigo de opinião em que se posicione sobre a seguinte questão: a responsabilidade de resolver o problema do cyberbullying é da escola? Assine seu artigo com o pseudônimo de Ariel da Net. Para escrever seu texto, preferencialmente, use caneta esferográfica de tinta preta, escreva com letra legível e se identifique apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação, a não ser sob forma de citação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Você será penalizado em até 10 (dez) pontos se, em sua produção textual, desrespeitar os direitos humanos. Sua produção só será corrigida se tiver mais de 08 (oito) linhas autorais. Lembre-se de"
   },
   "warnings": [
+    "Q3: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q8: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q13: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q19: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q24: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q28: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q32: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q34: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q37: rodape de pagina removido do bloco (4 linhas; ver raw_block)",
     "Q38: alternativa A sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
     "Q38: alternativa B sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
     "Q38: alternativa C sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
-    "Q38: alternativa D sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)"
+    "Q38: alternativa D sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
+    "Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
   ]
 }

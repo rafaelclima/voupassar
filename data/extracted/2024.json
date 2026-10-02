@@ -5,8 +5,8 @@
     "source_sha256": "8bf3f5931abdfb0e07868d061d9c30b877e3dd4869d5e4481f2cf5044b770020",
     "source_pages": 15,
     "extractor": "scripts/analysis/extract_questions.py",
-    "extractor_version": "1.0.0",
-    "generated_at_utc": "2026-09-30T15:09:39.140724+00:00",
+    "extractor_version": "1.1.0",
+    "generated_at_utc": "2026-10-02T19:56:15.383089+00:00",
     "tool_versions": {
       "pdfinfo": "pdfinfo version 26.08.0",
       "pdftotext": "pdftotext version 26.08.0"
@@ -64,7 +64,7 @@
         "A": "apresentar o significado de expressões.",
         "B": "explicar o significado de siglas.",
         "C": "introduzir explicações acessórias.",
-        "D": "dar destaque às informações. 4                                                     Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "dar destaque às informações."
       },
       "raw_block": "03. No parágrafo 3 do Texto 1, o uso dos parênteses se justifica porque assume a função de\n\n      A) apresentar o significado de expressões.\n      B) explicar o significado de siglas.\n      C) introduzir explicações acessórias.\n      D) dar destaque às informações.\n\n\n4                                                     Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -136,7 +136,7 @@
         "A": "um período simples e uma oração absoluta.",
         "B": "dois períodos compostos por subordinação e duas orações.",
         "C": "um período composto por subordinação e seis orações.",
-        "D": "dois períodos: um simples e um composto por coordenação e três orações. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                            5 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "dois períodos: um simples e um composto por coordenação e três orações."
       },
       "raw_block": "07. Na sua organização sintática, o trecho apresenta\n\n    A) um período simples e uma oração absoluta.\n    B) dois períodos compostos por subordinação e duas orações.\n    C) um período composto por subordinação e seis orações.\n    D) dois períodos: um simples e um composto por coordenação e três orações.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                            5\n\n    PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                       EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -244,7 +244,7 @@
         "A": "à Cúpula.",
         "B": "ao desmatamento zero.",
         "C": "ao café da manhã.",
-        "D": "à COP28. 6                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "à COP28."
       },
       "raw_block": "13. O elemento linguístico EVENTO (5) refere-se\n\n     A) à Cúpula.\n     B) ao desmatamento zero.\n     C) ao café da manhã.\n     D) à COP28.\n\n\n6                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -334,7 +334,7 @@
         "A": "sempre crescente de 2014 a 2017.",
         "B": "sempre crescente de 2017 a 2022.",
         "C": "decrescente em 2012 em relação a 2011.",
-        "D": "decrescente em 2022 em relação a 2021. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                                7 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "decrescente em 2022 em relação a 2021."
       },
       "raw_block": "18. Segundo o Texto 3, o desmatamento da Amazônia foi\n\n    A) sempre crescente de 2014 a 2017.\n    B) sempre crescente de 2017 a 2022.\n    C) decrescente em 2012 em relação a 2011.\n    D) decrescente em 2022 em relação a 2021.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                                7\n\n    PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                     EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -370,7 +370,7 @@
         "A": "Texto 1 configura-se, quanto ao gênero textual, como um editorial.",
         "B": "Texto 2 configura-se, predominantemente, como um texto descritivo.",
         "C": "Texto 3 configura-se, quanto ao gênero textual, como um gráfico.",
-        "D": "Texto 3 configura-se, predominantemente, como um texto argumentativo. 8                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "Texto 3 configura-se, predominantemente, como um texto argumentativo."
       },
       "raw_block": "20. Sobre os textos 1, 2 e 3, é correto afirmar que o\n\n     A) Texto 1 configura-se, quanto ao gênero textual, como um editorial.\n     B) Texto 2 configura-se, predominantemente, como um texto descritivo.\n     C) Texto 3 configura-se, quanto ao gênero textual, como um gráfico.\n     D) Texto 3 configura-se, predominantemente, como um texto argumentativo.\n\n\n\n\n8                                            Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n\n"
     },
@@ -442,7 +442,7 @@
         "A": ". 5 4",
         "B": ". 5 2",
         "C": ". 7 4",
-        "D": ". 7 Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                              9 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN Considere o trecho para resolver as questões 25, 26 e 27. O tamanho dos aparelhos de televisão, em geral, é dado em polegadas e corresponde à medida da diagonal da tela do aparelho. Uma polegada é equivalente a 2,5 cm. No Texto 2, é possível ver uma televisão de formato retangular, sobre uma mesa. Suponha que as dimensões dessa tela plana são 95 cm de largura e 53 cm de altura."
+        "D": ". Considere o trecho para resolver as questões 25, 26 e 27. O tamanho dos aparelhos de televisão, em geral, é dado em polegadas e corresponde à medida da diagonal da tela do aparelho. Uma polegada é equivalente a 2,5 cm. No Texto 2, é possível ver uma televisão de formato retangular, sobre uma mesa. Suponha que as dimensões dessa tela plana são 95 cm de largura e 53 cm de altura."
       },
       "raw_block": "24. Segundo o Texto 1, “[...]Cada uma das plenárias-síntese terá 7 expositores: 4 da sociedade civil e 3\n    governamentais, sendo pelo menos 1 brasileiro em cada categoria [...]”. Considerando uma plenária que\n    tinha exatamente um brasileiro nos membros da sociedade civil e um nos membros governamentais, a\n    razão entre o número de brasileiros e o número de estrangeiros nessa plenária foi de\n\n         2\n    A)    .\n         5\n\n         4\n    B)    .\n         5\n\n         2\n    C)    .\n         7\n\n         4\n    D)    .\n         7\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                              9\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                    EDITAL Nº 078/2023 – PROEN/RN\n\nConsidere o trecho para resolver as questões 25, 26 e 27.\n\n          O tamanho dos aparelhos de televisão, em geral, é dado em polegadas e corresponde à medida da\n     diagonal da tela do aparelho. Uma polegada é equivalente a 2,5 cm. No Texto 2, é possível ver uma\n     televisão de formato retangular, sobre uma mesa. Suponha que as dimensões dessa tela plana são 95\n     cm de largura e 53 cm de altura.\n"
     },
@@ -532,7 +532,7 @@
         "A": "08 mulheres e 11 homens.",
         "B": "12 mulheres e 07 homens.",
         "C": "07 mulheres e 12 homens.",
-        "D": "11 mulheres e 08 homens. 10                                         Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "11 mulheres e 08 homens."
       },
       "raw_block": "29. O Ministério do Meio Ambiente e Mudança do Clima enviou uma comissão de 19 pessoas, entre homens\n    e mulheres, para o evento a Cúpula da Amazônia. O dobro do número de homens excede em 5 o número\n    de mulheres. Dessa forma, a comissão foi composta por\n\n     A) 08 mulheres e 11 homens.\n     B) 12 mulheres e 07 homens.\n     C) 07 mulheres e 12 homens.\n     D) 11 mulheres e 08 homens.\n\n\n\n10                                         Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -622,7 +622,7 @@
         "A": "220.",
         "B": "200.",
         "C": "180.",
-        "D": "160. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                           11 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "160."
       },
       "raw_block": "34. Suponha que, para cumprir com a meta de desmatamento zero em 2030, o governo brasileiro aumente o\n    quantitativo de servidores que trabalham na fiscalização em 20 pessoas por ano, a partir de 2025 até\n    2029. Se, após esses aumentos, a quantidade de servidores no órgão de fiscalização chegou a 300, o\n    número de servidores antes do primeiro aumento foi de\n\n    A) 220.\n    B) 200.\n    C) 180.\n    D) 160.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                           11\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                     EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -712,7 +712,7 @@
         "A": "7250 km.",
         "B": "8000 km.",
         "C": "7750 km.",
-        "D": "8250 km. 12                                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "8250 km."
       },
       "raw_block": "39. Um membro da comitiva francesa notou que o avião que o traria para a Cúpula da Amazônia , em Belém,\n    levaria 11h36min de voo a uma velocidade média de 625km/h. Dessa forma, ele deduziu que a distância\n    da França a Belém era de\n\n     A) 7250 km.\n     B) 8000 km.\n     C) 7750 km.\n     D) 8250 km.\n\n\n\n12                                           Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024\n\n  PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                           EDITAL Nº 078/2023 – PROEN/RN\n"
     },
@@ -730,7 +730,7 @@
         "A": "40.000.",
         "B": "30.000.",
         "C": "25.000.",
-        "D": "35.000. Processo Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                       13 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024 EDITAL Nº 078/2023 – PROEN/RN"
+        "D": "35.000."
       },
       "raw_block": "40. Como lembrança da Cúpula da Amazônia, uma empresa entregou uma miniatura retangular do parque\n    estadual Mangal das Garças. Sabendo que essa miniatura tinha dimensões de 2cm de comprimento por\n    8cm de largura e que foi feita numa escala de 1:5000, a área real do mangal das garças, que foi\n    representada, em m², na miniatura é\n\n    A) 40.000.\n    B) 30.000.\n    C) 25.000.\n    D) 35.000.\n\n\n\n\nProcesso Seletivo – Cursos Técnico de Nível Médio na Forma Integrada – 2024                       13\n\n     PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA 2024\n                                     EDITAL Nº 078/2023 – PROEN/RN\n"
     }
@@ -740,5 +740,16 @@
     "page": 14,
     "proposal_excerpt": "PRODUÇÃO TEXTUAL PROPOSTA Considerando a temática em foco, a leitura dos textos desta prova e seus conhecimentos prévios sobre o tema em discussão, escreva um ARTIGO DE OPINIÃO em que se posicione sobre a seguinte questão: a responsabilidade pela preservação da Amazônia é de todos os países? Assine o seu artigo, exclusivamente, com o pseudônimo Amazonense da Silva. ORIENTAÇÕES E CRITÉRIOS DE CORREÇÃO Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto será av"
   },
-  "warnings": []
+  "warnings": [
+    "Q3: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q13: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q18: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q24: rodape de pagina removido do bloco (4 linhas; ver raw_block)",
+    "Q29: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q34: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q39: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
+  ]
 }

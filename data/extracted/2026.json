@@ -5,8 +5,8 @@
     "source_sha256": "6a535a0b3a9207cc481ac373c4da9f38940c3558c6e1efac5e46443ce22aa3d1",
     "source_pages": 14,
     "extractor": "scripts/analysis/extract_questions.py",
-    "extractor_version": "1.0.0",
-    "generated_at_utc": "2026-09-30T15:09:39.599285+00:00",
+    "extractor_version": "1.1.0",
+    "generated_at_utc": "2026-10-02T19:56:15.869422+00:00",
     "tool_versions": {
       "pdfinfo": "pdfinfo version 26.08.0",
       "pdftotext": "pdftotext version 26.08.0"
@@ -46,7 +46,7 @@
         "A": "estabelecer metas ambiciosas para mitigar os efeitos das mudanças climáticas.",
         "B": "acompanhar os avanços nos preparativos da cidade-sede das conferências.",
         "C": "mitigar o aquecimento global e manter o aumento da temperatura abaixo de 2º.",
-        "D": "implementar os compromissos globais de combate às mudanças climáticas. 4 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "implementar os compromissos globais de combate às mudanças climáticas."
       },
       "raw_block": "2. Segundo o Texto 1, a Conferência das Partes (COP) tem como função\n\n    A)   estabelecer metas ambiciosas para mitigar os efeitos das mudanças climáticas.\n    B)   acompanhar os avanços nos preparativos da cidade-sede das conferências.\n    C)   mitigar o aquecimento global e manter o aumento da temperatura abaixo de 2º.\n    D)   implementar os compromissos globais de combate às mudanças climáticas.\n\n\n\n\n                                                       4\n\n             PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 48/2025-PROEN/IFRN\n\n\n"
     },
@@ -136,7 +136,7 @@
         "A": "antecipar para o leitor possíveis conclusões sobre o evento COP30.",
         "B": "apresentar, em linhas gerais, o recorte temático do texto ao leitor.",
         "C": "discutir os problemas enfrentados pela organização da COP30.",
-        "D": "sintetizar, em linhas gerais, as metas traçadas para a edição anterior. 5 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN O trecho a seguir deve ser utilizado para responder às questões de 8 a 10. A conferência é dividida em Zona Azul e Zona Verde. A Zona Azul, que(1) é gerenciada diretamente pela ONU, é onde(2) acontecem as negociações políticas e os encontros diplomáticos(3). Já a Zona Verde sedia painéis para o público geral, apresentação de ONG e outras atividades, inclusive as culturais."
+        "D": "sintetizar, em linhas gerais, as metas traçadas para a edição anterior. O trecho a seguir deve ser utilizado para responder às questões de 8 a 10. A conferência é dividida em Zona Azul e Zona Verde. A Zona Azul, que(1) é gerenciada diretamente pela ONU, é onde(2) acontecem as negociações políticas e os encontros diplomáticos(3). Já a Zona Verde sedia painéis para o público geral, apresentação de ONG e outras atividades, inclusive as culturais."
       },
       "raw_block": "7. O primeiro parágrafo do Texto 1 cumpre o papel de\n\n     A)   antecipar para o leitor possíveis conclusões sobre o evento COP30.\n     B)   apresentar, em linhas gerais, o recorte temático do texto ao leitor.\n     C)   discutir os problemas enfrentados pela organização da COP30.\n     D)   sintetizar, em linhas gerais, as metas traçadas para a edição anterior.\n\n\n\n\n                                                            5\n\n            PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 48/2025-PROEN/IFRN\n\n                    O trecho a seguir deve ser utilizado para responder às questões de 8 a 10.\n\n A conferência é dividida em Zona Azul e Zona Verde. A Zona Azul, que(1) é gerenciada diretamente pela ONU,\n é onde(2) acontecem as negociações políticas e os encontros diplomáticos(3). Já a Zona Verde sedia\n painéis para o público geral, apresentação de ONG e outras atividades, inclusive as culturais.\n"
     },
@@ -226,7 +226,7 @@
         "A": "fomentar.",
         "B": "arrefecer",
         "C": "implementar.",
-        "D": "postergar. 6 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "postergar."
       },
       "raw_block": "12. A expressão IMPULSIONAR (2) tem sentido de\n\n    A)   fomentar.\n    B)   arrefecer\n    C)   implementar.\n    D)   postergar.\n\n\n\n\n                                                        6\n\n            PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 48/2025-PROEN/IFRN\n"
     },
@@ -334,7 +334,7 @@
         "A": "articulação entre a linguagem verbal, materializada no título; em sintonia com a linguagem não verbal, materializada no sorriso do trabalhador ao cortar a última árvore.",
         "B": "presença da linguagem não verbal, que mostra o machado e a motosserra; e a área de mata devastada.",
         "C": "articulação entre a linguagem não verbal, materializada nas árvores cortadas, no machado e na motosserra; e a linguagem verbal, materializada no diálogo entre os dois trabalhadores e o título.",
-        "D": "presença da linguagem verbal, materializada no diálogo entre os trabalhadores, em contraste com o título do texto. 7 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "presença da linguagem verbal, materializada no diálogo entre os trabalhadores, em contraste com o título do texto."
       },
       "raw_block": "18. O sentido global do Texto 2 é construído pela\n\n    A) articulação entre a linguagem verbal, materializada no título; em sintonia com a linguagem não verbal,\n        materializada no sorriso do trabalhador ao cortar a última árvore.\n    B) presença da linguagem não verbal, que mostra o machado e a motosserra; e a área de mata devastada.\n    C) articulação entre a linguagem não verbal, materializada nas árvores cortadas, no machado e na\n        motosserra; e a linguagem verbal, materializada no diálogo entre os dois trabalhadores e o título.\n    D) presença da linguagem verbal, materializada no diálogo entre os trabalhadores, em contraste com o\n        título do texto.\n\n\n\n\n                                                          7\n\n            PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 48/2025-PROEN/IFRN\n"
     },
@@ -424,7 +424,7 @@
         "A": "17,5%.",
         "B": "10%.",
         "C": "12,5%.",
-        "D": "20%. 8 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "20%."
       },
       "raw_block": "23. Considerando, para efeito de cálculo, 40 mil visitantes, dos quais 7 mil são integrantes da ONU e de\n     delegações de países-membros, a probabilidade de que, ao escolher um visitante ao acaso, ele pertença ao\n     grupo integrantes da ONU e de delegações de países-membros, é\n\n    A)   17,5%.\n    B)   10%.\n    C)   12,5%.\n    D)   20%.\n\n\n\n\n                                                         8\n\n            PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 48/2025-PROEN/IFRN\n"
     },
@@ -514,7 +514,7 @@
         "A": "41%.",
         "B": "34%.",
         "C": "37%.",
-        "D": "31%. 9 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "31%."
       },
       "raw_block": "28. De acordo com o Texto 1, para preparar Belém para a COP30, estão em andamento 38 obras, distribuídas\n     em quatro categorias: 14 de infraestrutura, 8 de hospedagem, 8 de mobilidade e 8 de saneamento. O\n     percentual aproximado das obras que pertencem à categoria infraestrutura é\n\n    A)   41%.\n    B)   34%.\n    C)   37%.\n    D)   31%.\n\n\n\n\n                                                      9\n\n            PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                    EDITAL Nº 48/2025-PROEN/IFRN\n"
     },
@@ -568,7 +568,7 @@
         "A": "225 · (10 − 3π).",
         "B": "25 · (90 − 2π).",
         "C": "75 · (32 − 3π).",
-        "D": "75 · (32 − 2π). 10 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "75 · (32 − 2π)."
       },
       "raw_block": "31. Suponha que, para a COP30 em Belém, tenha sido projetada uma praça de convivência em formato\n     retangular, medindo 60 metros de comprimento por 40 metros de largura. No centro da praça, será construído\n     um espaço circular para apresentações culturais, com 15 metros de raio, que não poderá ser utilizado para\n     circulação.\n\n    Nesses termos, a área, em metros quadrados, disponível para circulação nessa praça é\n\n    A)   225 · (10 − 3π).\n    B)   25 · (90 − 2π).\n    C)   75 · (32 − 3π).\n    D)   75 · (32 − 2π).\n\n\n\n\n                                                      10\n\n             PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 48/2025-PROEN/IFRN\n\n\n"
     },
@@ -658,7 +658,7 @@
         "A": "22,5.",
         "B": "20.",
         "C": "18,5.",
-        "D": "25. 11 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "25."
       },
       "raw_block": "36. Uma equipe de 120 operários leva 15 meses para concluir determinada obra de mobilidade para a COP30.\n     Se essa equipe for reduzida para 80 operários, mantendo o mesmo ritmo de trabalho, o tempo necessário,\n     em meses, para a conclusão da mesma obra será\n\n    A)    22,5.\n    B)    20.\n    C)    18,5.\n    D)    25.\n\n\n\n\n                                                        11\n\n             PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 48/2025-PROEN/IFRN\n"
     },
@@ -730,7 +730,7 @@
         "A": "600 e 400.",
         "B": "400 e 600.",
         "C": "500 e 300.",
-        "D": "300 e 500. 12 PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA EDITAL Nº 48/2025-PROEN/IFRN"
+        "D": "300 e 500."
       },
       "raw_block": "40. Suponha que, para reduzir o consumo de copos descartáveis durante a COP30, sejam vendidos itens oficiais\n     reutilizáveis do evento, como: garrafas, no valor de R$ 40,00; e copos no valor de R$ 15,00. Sabendo que, ao\n     todo, serão comercializados 1000 itens e se espera uma arrecadação de R$ 25.000,00, o número de garrafas\n     e copos reutilizáveis que serão vendidos, respectivamente, será\n\n    A)   600 e 400.\n    B)   400 e 600.\n    C)   500 e 300.\n    D)   300 e 500.\n\n\n\n\n                                                       12\n\n             PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                     EDITAL Nº 48/2025-PROEN/IFRN\n\n\n"
     }
@@ -740,5 +740,15 @@
     "page": 13,
     "proposal_excerpt": "PRODUÇÃO TEXTUAL Considerando a temática em foco nesta prova, a leitura dos Textos 1 e 2 e seus conhecimentos prévios sobre o tema em discussão, escreva um ARTIGO DE OPINIÃO em que você se posicione sobre a seguinte questão: o Brasil deve assumir um papel central no combate às mudanças climáticas? Assine o seu artigo, exclusivamente, com o pseudônimo Amazonino Belém. Orientações e Critérios de Correção Ao escrever seu texto, use caneta esferográfica azul ou preta, escreva com letra legível e identifique-se apenas no local indicado. Você poderá utilizar informações presentes na prova, sem, contudo, se limitar a copiar integralmente trechos desta avaliação. Além disso, não faça desenhos e/ou marcas na Folha de Resposta da questão discursiva. Lembre-se de que seu texto será avaliado, levando-se em consideração os seguintes critérios: A) produção do gênero tex"
   },
-  "warnings": []
+  "warnings": [
+    "Q2: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q12: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q18: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q23: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q28: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q31: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q36: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
+  ]
 }

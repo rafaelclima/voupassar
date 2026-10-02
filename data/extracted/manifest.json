@@ -1,7 +1,7 @@
 {
   "extractor": "scripts/analysis/extract_questions.py",
-  "extractor_version": "1.0.0",
-  "generated_at_utc": "2026-09-30T15:09:39.600698+00:00",
+  "extractor_version": "1.1.0",
+  "generated_at_utc": "2026-10-02T19:56:15.870782+00:00",
   "tool_versions": {
     "pdfinfo": "pdfinfo version 26.08.0",
     "pdftotext": "pdftotext version 26.08.0"
@@ -16,7 +16,7 @@
       "n_complete_options": 40,
       "discursive_present": true,
       "discursive_page": 14,
-      "n_warnings": 4
+      "n_warnings": 15
     },
     {
       "edition": "2022",
@@ -27,7 +27,7 @@
       "n_complete_options": 40,
       "discursive_present": true,
       "discursive_page": 14,
-      "n_warnings": 0
+      "n_warnings": 10
     },
     {
       "edition": "2023",
@@ -38,7 +38,7 @@
       "n_complete_options": 40,
       "discursive_present": true,
       "discursive_page": 13,
-      "n_warnings": 0
+      "n_warnings": 10
     },
     {
       "edition": "2024",
@@ -49,7 +49,7 @@
       "n_complete_options": 40,
       "discursive_present": true,
       "discursive_page": 14,
-      "n_warnings": 0
+      "n_warnings": 10
     },
     {
       "edition": "2025",
@@ -60,7 +60,7 @@
       "n_complete_options": 40,
       "discursive_present": true,
       "discursive_page": 13,
-      "n_warnings": 0
+      "n_warnings": 10
     },
     {
       "edition": "2026",
@@ -71,7 +71,7 @@
       "n_complete_options": 40,
       "discursive_present": true,
       "discursive_page": 13,
-      "n_warnings": 0
+      "n_warnings": 9
     }
   ],
   "totals": {
@@ -79,9 +79,69 @@
     "objective_questions": 240
   },
   "warnings": [
+    "2020: Q3: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q8: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q13: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q19: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q24: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q28: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q32: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q34: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2020: Q37: rodape de pagina removido do bloco (4 linhas; ver raw_block)",
     "2020: Q38: alternativa A sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
     "2020: Q38: alternativa B sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
     "2020: Q38: alternativa C sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
-    "2020: Q38: alternativa D sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)"
+    "2020: Q38: alternativa D sem texto na mesma linha (possivel fracao/figura vertical; conferir raw_block)",
+    "2020: Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q6: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q11: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q16: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q24: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q29: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q33: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q36: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q39: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2022: Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q3: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q12: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q17: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q24: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q27: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q30: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q35: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2023: Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q3: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q13: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q18: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q24: rodape de pagina removido do bloco (4 linhas; ver raw_block)",
+    "2024: Q29: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q34: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q39: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2024: Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q2: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q12: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q18: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q20: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q25: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q27: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q32: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2025: Q36: rodape de pagina removido do bloco (4 linhas; ver raw_block)",
+    "2025: Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q2: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q7: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q12: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q18: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q23: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q28: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q31: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q36: rodape de pagina removido do bloco (3 linhas; ver raw_block)",
+    "2026: Q40: rodape de pagina removido do bloco (3 linhas; ver raw_block)"
   ]
 }
