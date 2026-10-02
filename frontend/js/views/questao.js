@@ -24,6 +24,7 @@ import { restoreSession, logout } from "../api/auth.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel, choiceLabel } from "../vocab.js";
+import { renderFigure, injectFigureNotice } from "../components/figure.js";
 
 const SESSION_KEY = "voupassar.studySessionId";
 
@@ -268,7 +269,17 @@ function renderAll(q) {
   }
 
   statementEl.textContent = q.statement || "(enunciado ainda não conferido)";
-  figureEl.hidden = !q.hasFigure;
+  // Figura: tenta renderizar via componente; se ainda não publicado,
+  // mantém aviso legível (não deixa usuário sem referência).
+  if (q.hasFigure) {
+    figureEl.hidden = false;
+    // Limpa conteúdo anterior e tenta renderizar (async)
+    figureEl.textContent = "";
+    renderFigure(q, figureEl);
+  } else {
+    figureEl.hidden = true;
+    figureEl.textContent = "";
+  }
 
   topicEl.textContent = "";
   topicEl.appendChild(

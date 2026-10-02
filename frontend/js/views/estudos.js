@@ -17,6 +17,7 @@
 
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
+import { injectFigureNotice } from "../components/figure.js";
 import {
   fetchDisciplines,
   fetchTopics,
@@ -586,7 +587,11 @@ function renderQuestionCard(q) {
 
   card.appendChild(el("p", { className: "question-card__statement", text: q.statement || "(enunciado ainda não conferido)" }));
   if (q.hasFigure) {
-    card.appendChild(el("p", { className: "question-card__figure", text: "Esta questão possui figura no caderno original (consulte o PDF-fonte)." }));
+    // Usa componente para aviso com referência de curadoria + página
+    const noticeP = el("p", { className: "question-card__figure" });
+    card.appendChild(noticeP);
+    // Deixa a mensagem inicial; o componente pode enriquecer se o manifest estiver disponível
+    injectFigureNotice(q, card);
   }
   const topicLine = q.topic?.name
     ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}`

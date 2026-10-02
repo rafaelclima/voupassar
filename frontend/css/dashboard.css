@@ -6,12 +6,36 @@
 
 .dash-head {
   display: grid;
-  gap: var(--space-3);
-  margin-bottom: var(--space-8);
+  gap: var(--space-4);
+  margin-bottom: var(--space-10);
 }
 
 .dash-head p {
   max-width: var(--measure-narrow);
+}
+
+/* Ritmo vertical da tela: as seções do dashboard usam .mt-10 no HTML,
+ * mas o respiro principal vem deste gap — assim nenhuma seção cola na
+ * outra mesmo se o utilitário mudar. 20px no mobile e 24px no desktop. */
+#dash-content {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+  align-content: start;
+}
+
+#dash-content .mt-10 {
+  margin-top: 0;
+}
+
+@media (min-width: 48rem) {
+  .dash-head {
+    margin-bottom: var(--space-12);
+  }
+
+  #dash-content {
+    gap: var(--space-6);
+  }
 }
 
 .dash-grid {
@@ -22,8 +46,23 @@
 
 .dash-stats {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   grid-template-columns: 1fr;
+}
+
+/* Cartões de resumo: um pouco mais de ar interno sem mexer no
+ * componente global .card (outras telas não mudam). */
+#dash-stats .card__body {
+  padding: var(--space-6);
+  gap: var(--space-2);
+}
+
+/* Cabeçalhos de seção do dashboard com um pouco mais de ar abaixo do
+ * que o padrão global (.section-head em base.css), sem afetar as
+ * outras telas. */
+#dash-content .section-head {
+  margin-bottom: var(--space-6);
+  gap: var(--space-4);
 }
 
 .dash-stats .stat-value--empty {
@@ -43,7 +82,7 @@
 
   .dash-grid--2 {
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-10);
+    gap: var(--space-12);
   }
 }
 
@@ -64,6 +103,12 @@
   color: var(--color-hero-ink);
   padding: var(--space-8);
   box-shadow: var(--shadow-brand);
+}
+
+@media (min-width: 48rem) {
+  .next-step {
+    padding: var(--space-10);
+  }
 }
 
 .next-step::after {
@@ -92,7 +137,7 @@
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--color-hero-muted);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .next-step__title {
@@ -101,7 +146,7 @@
   letter-spacing: var(--tracking-tighter);
   font-weight: 800;
   color: var(--color-hero-ink);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
   max-width: 20ch;
 }
 
@@ -109,14 +154,14 @@
   color: var(--color-hero-muted);
   font-size: var(--text-md);
   max-width: 54ch;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .next-step__meta {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .next-step .chip {
@@ -129,7 +174,7 @@
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 /* O CTA precisa ser o objeto mais brilhante da tela.
@@ -168,7 +213,7 @@
   color: var(--color-ink-900);
   border: 1.5px dashed var(--color-line-300);
   box-shadow: none;
-  padding: var(--space-6);
+  padding: var(--space-8);
 }
 
 .next-step--empty::after {
@@ -194,13 +239,13 @@
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .disc-item {
   display: grid;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--space-5);
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6);
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -263,16 +308,16 @@
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-5);
 }
 
 .priority-list__item {
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5) var(--space-6);
   background: var(--color-surface);
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   box-shadow: var(--shadow-xs);
 }
 
@@ -326,10 +371,10 @@
 .plan-items__row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--color-line-100);
 }
 
@@ -361,8 +406,8 @@
 
 .plan-progress {
   display: grid;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
 }
 
 /* ============ Evolução ============ */
@@ -371,7 +416,7 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   align-items: end;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .evo-controls .field {
@@ -383,14 +428,15 @@
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .evo-bars__row {
   display: grid;
-  grid-template-columns: 5.5rem 1fr 4.5rem;
-  gap: var(--space-3);
+  grid-template-columns: 5rem 1fr 6.5rem;
+  gap: var(--space-4);
   align-items: center;
+  padding-block: var(--space-1);
   font-size: var(--text-sm);
 }
 
@@ -407,6 +453,7 @@
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   color: var(--color-ink-900);
+  white-space: nowrap;
 }
 
 /* ============ Simulados ============ */
@@ -415,18 +462,18 @@
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-4);
 }
 
 .sim-list__item {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
   align-items: center;
   justify-content: space-between;
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5) var(--space-6);
   background: var(--color-surface);
 }
 

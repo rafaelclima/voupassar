@@ -52,4 +52,6 @@ public record QuestionResponse(
     @Schema(example = "PENDING") String classificationStatus,
     @Schema(example = "PENDING") String validationStatus,
     @Schema(example = "PENDENTE_REVISAO") String publicationStatus,
-    @Schema(description = "Notas de evidência/auditoria desta questão.") List<String> notes) {}
+    @Schema(description = "Notas de evidência/auditoria desta questão.") List<String> notes,
+    @Schema(description = "Figuras oficiais associadas (caminho + metadados). Vazio quando sem recorte publicado.")
+        java.util.List<FigureResponse> figures) {}

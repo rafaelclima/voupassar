@@ -1,0 +1,330 @@
+{
+  "version": 1,
+  "base": "./assets/figures",
+  "figures": {
+    "2020-16": {
+      "files": [
+        "2020/Q16.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 16 da prova 2020 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-17": {
+      "files": [
+        "2020/Q17.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 17 da prova 2020 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-18": {
+      "files": [
+        "2020/Q18.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 18 da prova 2020 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-19": {
+      "files": [
+        "2020/Q19.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 19 da prova 2020 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-20": {
+      "files": [
+        "2020/Q20.webp"
+      ],
+      "page": 7,
+      "alt": "Figura da questão 20 da prova 2020 (página 7 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 7 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-26": {
+      "files": [
+        "2020/Q26.webp"
+      ],
+      "page": 9,
+      "alt": "Figura da questão 26 da prova 2020 (página 9 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 9 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-35": {
+      "files": [
+        "2020/Q35.webp"
+      ],
+      "page": 12,
+      "alt": "Figura da questão 35 da prova 2020 (página 12 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 12 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2020-36": {
+      "files": [
+        "2020/Q36.webp"
+      ],
+      "page": 12,
+      "alt": "Figura da questão 36 da prova 2020 (página 12 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2020, p. 12 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-15": {
+      "files": [
+        "2022/Q15.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 15 da prova 2022 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-16": {
+      "files": [
+        "2022/Q16.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 16 da prova 2022 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-17": {
+      "files": [
+        "2022/Q17.webp"
+      ],
+      "page": 7,
+      "alt": "Figura da questão 17 da prova 2022 (página 7 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 7 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-18": {
+      "files": [
+        "2022/Q18.webp"
+      ],
+      "page": 7,
+      "alt": "Figura da questão 18 da prova 2022 (página 7 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 7 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-19": {
+      "files": [
+        "2022/Q19.webp"
+      ],
+      "page": 7,
+      "alt": "Figura da questão 19 da prova 2022 (página 7 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 7 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-31": {
+      "files": [
+        "2022/Q31.webp"
+      ],
+      "page": 10,
+      "alt": "Figura da questão 31 da prova 2022 (página 10 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 10 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-37": {
+      "files": [
+        "2022/Q37.webp"
+      ],
+      "page": 12,
+      "alt": "Figura da questão 37 da prova 2022 (página 12 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 12 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2022-39": {
+      "files": [
+        "2022/Q39.webp"
+      ],
+      "page": 12,
+      "alt": "Figura da questão 39 da prova 2022 (página 12 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2022, p. 12 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2023-23": {
+      "files": [
+        "2023/Q23.webp"
+      ],
+      "page": 8,
+      "alt": "Figura da questão 23 da prova 2023 (página 8 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2023, p. 8 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2023-24": {
+      "files": [
+        "2023/Q24.webp"
+      ],
+      "page": 8,
+      "alt": "Figura da questão 24 da prova 2023 (página 8 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2023, p. 8 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2023-25": {
+      "files": [
+        "2023/Q25.webp"
+      ],
+      "page": 9,
+      "alt": "Figura da questão 25 da prova 2023 (página 9 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2023, p. 9 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2023-28": {
+      "files": [
+        "2023/Q28.webp"
+      ],
+      "page": 10,
+      "alt": "Figura da questão 28 da prova 2023 (página 10 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2023, p. 10 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2023-29": {
+      "files": [
+        "2023/Q29.webp"
+      ],
+      "page": 10,
+      "alt": "Figura da questão 29 da prova 2023 (página 10 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2023, p. 10 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2024-18": {
+      "files": [
+        "2024/Q18.webp"
+      ],
+      "page": 7,
+      "alt": "Figura da questão 18 da prova 2024 (página 7 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2024, p. 7 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2024-31": {
+      "files": [
+        "2024/Q31.webp"
+      ],
+      "page": 11,
+      "alt": "Figura da questão 31 da prova 2024 (página 11 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2024, p. 11 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2024-32": {
+      "files": [
+        "2024/Q32.webp"
+      ],
+      "page": 11,
+      "alt": "Figura da questão 32 da prova 2024 (página 11 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2024, p. 11 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2024-33": {
+      "files": [
+        "2024/Q33.webp"
+      ],
+      "page": 11,
+      "alt": "Figura da questão 33 da prova 2024 (página 11 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2024, p. 11 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2025-15": {
+      "files": [
+        "2025/Q15.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 15 da prova 2025 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2025, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2025-16": {
+      "files": [
+        "2025/Q16.webp"
+      ],
+      "page": 6,
+      "alt": "Figura da questão 16 da prova 2025 (página 6 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2025, p. 6 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2025-26": {
+      "files": [
+        "2025/Q26.webp"
+      ],
+      "page": 9,
+      "alt": "Figura da questão 26 da prova 2025 (página 9 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2025, p. 9 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2025-27": {
+      "files": [
+        "2025/Q27.webp"
+      ],
+      "page": 9,
+      "alt": "Figura da questão 27 da prova 2025 (página 9 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2025, p. 9 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2025-33": {
+      "files": [
+        "2025/Q33.webp"
+      ],
+      "page": 11,
+      "alt": "Figura da questão 33 da prova 2025 (página 11 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2025, p. 11 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2025-36": {
+      "files": [
+        "2025/Q36.webp"
+      ],
+      "page": 11,
+      "alt": "Figura da questão 36 da prova 2025 (página 11 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2025, p. 11 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2026-18": {
+      "files": [
+        "2026/Q18.webp"
+      ],
+      "page": 7,
+      "alt": "Figura da questão 18 da prova 2026 (página 7 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2026, p. 7 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2026-19": {
+      "files": [
+        "2026/Q19.webp"
+      ],
+      "page": 8,
+      "alt": "Figura da questão 19 da prova 2026 (página 8 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2026, p. 8 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2026-20": {
+      "files": [
+        "2026/Q20.webp"
+      ],
+      "page": 8,
+      "alt": "Figura da questão 20 da prova 2026 (página 8 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2026, p. 8 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2026-30": {
+      "files": [
+        "2026/Q30.webp"
+      ],
+      "page": 10,
+      "alt": "Figura da questão 30 da prova 2026 (página 10 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2026, p. 10 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    },
+    "2026-39": {
+      "files": [
+        "2026/Q39.webp"
+      ],
+      "page": 12,
+      "alt": "Figura da questão 39 da prova 2026 (página 12 do caderno) — transcrição pendente de revisão.",
+      "credit": "Fonte: IFRN — Caderno 2026, p. 12 (recorte para estudo).",
+      "status": "PENDENTE_REVISAO"
+    }
+  }
+}

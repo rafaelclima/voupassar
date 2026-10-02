@@ -468,6 +468,7 @@ public class QuestionService {
         classification == null ? null : classification.getStatus(),
         q.getValidationStatus(),
         q.getPublicationStatus(),
-        List.copyOf(notes));
+        List.copyOf(notes),
+        java.util.List.of()); // figuras: vazio até sync_figures.py preencher
   }
 }

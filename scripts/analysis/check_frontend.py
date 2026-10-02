@@ -66,6 +66,7 @@ REQUIRED_FILES = [
     "js/state/store.js",
     "js/state/session.js",
     "js/components/ui.js",
+    "js/components/figure.js",
     "js/main.js",
     "js/views/auth-shared.js",
     "js/views/login.js",
@@ -79,6 +80,7 @@ REQUIRED_FILES = [
     "js/views/perfil.js",
     "js/views/admin.js",
     "assets/favicon.svg",
+    "assets/figures/manifest.json",
 ]
 
 REQUIRED_TOKENS = [
@@ -98,7 +100,8 @@ REQUIRED_COMPONENTS = [
     ".card", ".card__header", ".card__body", ".card__footer",
     ".table", ".badge", ".badge--success", ".badge--danger",
     ".alert", ".alert--success", ".alert--danger",
-    ".modal", ".empty", ".spinner", ".skeleton", ".progress",
+    ".modal",     ".empty", ".spinner", ".skeleton", ".progress",
+    ".qfigure", ".qfigure__img", ".qfigure__caption",
     ".error-summary",
 ]
 

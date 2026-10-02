@@ -19,6 +19,7 @@
 
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
+import { injectFigureNotice } from "../components/figure.js";
 import {
   fetchDisciplines,
   fetchEditions,
@@ -589,7 +590,9 @@ function renderSimCard(item, detail) {
 
   card.appendChild(el("p", { className: "sim-card__statement", text: detail?.statement || "(enunciado ainda não conferido)" }));
   if (detail?.hasFigure) {
-    card.appendChild(el("p", { className: "sim-card__figure", text: "Esta questão possui figura no caderno original (consulte o PDF-fonte)." }));
+    const figP = el("p", { className: "sim-card__figure" });
+    card.appendChild(figP);
+    injectFigureNotice(detail, card);
   }
 
   const fieldset = el("fieldset", { className: "sim-options" });
