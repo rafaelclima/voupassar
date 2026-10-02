@@ -1,3 +1,10 @@
 .env
 backend/target/
 *.class
+
+# Python
+__pycache__/
+*.pyc
+
+# Artefatos de teste de navegador (MCP)
+.playwright-mcp/
