@@ -1,0 +1,157 @@
+/* VouPassar — vocabulário da API em português
+ *
+ * A API responde com códigos técnicos (FACIL, ESTUDO, LP, AUTHORAL,
+ * PUBLICAVEL, PENDING…). Mostrar esses valores ao estudante é jargão:
+ * ninguém que estuda para o IFRN sabe o que "PUBLICAVEL" significa.
+ *
+ * Este módulo é o único lugar onde a tradução acontece. Todos os rótulos
+ * são fixos e não MDM: nenhuma informação é inventada aqui, apenas o
+ * código éposto em português. Se a API inventar um valor novo, o fallback
+ * mostra um texto neutro em vez de despejar o enum cru na tela.
+ *
+ * Regra do projeto (AGENTS.md §4): na dúvida, marcar como desconhecido —
+ * nunca apresentar o código interno como se fosse informação.
+ */
+
+/** Disciplina: o mesmo assunto chega com códigos diferentes em endpoints
+ *  diferentes (diagnóstico traz MATEMATICA, catálogo traz LINGUA_PORTUGUESA). */
+const DISCIPLINES = {
+  LP: "Língua Portuguesa",
+  LINGUA_PORTUGUESA: "Língua Portuguesa",
+  MAT: "Matemática",
+  MATEMATICA: "Matemática",
+};
+
+export function disciplineLabel(code, fallback) {
+  if (fallback) return fallback;
+  return DISCIPLINES[code] || "Disciplina";
+}
+
+const MODES = {
+  ESTUDO: "Estudo",
+  PROVA: "Simulado",
+  REVISAO: "Revisão",
+};
+
+export function modeLabel(mode) {
+  return MODES[mode] || "";
+}
+
+/** Origem da questão. Nunca devolver o enum cru. */
+const SOURCE_TYPES = {
+  OFFICIAL: "Oficial do IFRN",
+  AUTHORAL: "Criada pelo VouPassar",
+  ADAPTED: "Adaptada de uma prova",
+  INTERNAL_REVIEW: "Questão de revisão interna",
+  EXPERIMENTAL: "Questão experimental",
+};
+
+export function sourceTypeLabel(value, officialLabel = "Oficial do IFRN") {
+  if (!value) return "Origem desconhecida";
+  if (value === "OFFICIAL") return officialLabel;
+  return SOURCE_TYPES[value] || "Questão não oficial";
+}
+
+/** Dificuldade estimada. O "(estimativa)" fica explícito: não é dado do IFRN. */
+const DIFFICULTIES = {
+  FACIL: "Fácil",
+  MEDIA: "Média",
+  DIFICIL: "Difícil",
+};
+
+export function difficultyLabel(value) {
+  return DIFFICULTIES[value] || "";
+}
+
+/** Estado da classificação de assunto, em linguagem de aluno. */
+const CLASSIFICATIONS = {
+  PENDING: "Assunto ainda em revisão",
+  REVIEWED: "Assunto revisado",
+  APPROVED: "Assunto confirmado",
+  REJECTED: "Assunto em correção",
+  NAO_AVALIADO: "Assunto ainda sem classificação",
+  DESCONHECIDO: "Assunto ainda sem classificação",
+};
+
+export function classificationLabel(value) {
+  return CLASSIFICATIONS[value] || "Assunto ainda em revisão";
+}
+
+/** Confiança da classificação automática, sem jargão de modelo. */
+const CONFIDENCES = {
+  ALTA: "classificação confiável",
+  MEDIA: "classificação provável",
+  BAIXA: "classificação ainda incerta",
+};
+
+export function confidenceLabel(value) {
+  return CONFIDENCES[value] || "classificação ainda incerta";
+}
+
+/** Publicação da questão — só aparece para quem legenda conteúdo. */
+const PUBLICATIONS = {
+  PUBLICAVEL: "pode ser exibida",
+  NAO_PUBLICAVEL: "não pode ser exibida",
+  PENDENTE_REVISAO: "aguardando revisão",
+  SOMENTE_REFERENCIA: "somente referência",
+};
+
+export function publicationLabel(value) {
+  return PUBLICATIONS[value] || "aguardando revisão";
+}
+
+/** Status de item de roteiro / tentativa. */
+const STATUSES = {
+  TODO: "A fazer",
+  DOING: "Em andamento",
+  DONE: "Concluído",
+  SKIPPED: "Pulado",
+  SUBMITTED: "Concluído",
+  IN_PROGRESS: "Em andamento",
+  ABANDONED: "Abandonado",
+};
+
+export function statusLabel(status) {
+  return STATUSES[status] || "";
+}
+
+/** Nível de domínio de um assunto. */
+const MASTERY = {
+  DOMINADO: "Dominado",
+  CONSOLIDADO: "Consolidado",
+  FRAGIL: "Precisa treinar",
+  INICIAL: "Começando",
+  EM_DESENVOLVIMENTO: "Em andamento",
+  EM_OBSERVACAO: "Em observação",
+  NAO_AVALIADO: "Ainda sem dados",
+  DESCONHECIDO: "Ainda sem dados",
+};
+
+export function masteryLabel(level) {
+  return MASTERY[level] || "Ainda sem dados";
+}
+
+/** Assuntos do acervo, conferidos na tabela `topics` do banco.
+ *  Serve para traduzir o código que vem dentro das frases do backend
+ *  (ex.: "tema GRAMATICA_NORMA") sem precisar exibir o código cru. */
+const TOPICS = {
+  ALGEBRA: "Álgebra",
+  ARITMETICA: "Aritmética",
+  ESTATISTICA_DADOS: "Estatística e dados",
+  GEOMETRIA: "Geometria",
+  GRAMATICA_NORMA: "Gramática e norma",
+  GRANDEZAS_MEDIDAS: "Grandezas e medidas",
+  INTERPRETACAO_TEXTUAL: "Interpretação textual",
+  MATEMATICA_FINANCEIRA: "Matemática financeira",
+  PORCENTAGEM: "Porcentagem",
+  RAZAO_PROPORCAO: "Razão e proporção",
+};
+
+export function topicLabel(code, fallback) {
+  if (fallback) return fallback;
+  return TOPICS[code] || "";
+}
+
+export function plural(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}

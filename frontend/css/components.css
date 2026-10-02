@@ -1,7 +1,8 @@
-/* VouPassar — componentes (TASK 6.1)
- * Cobertura exigida: botões, inputs, cards, tabelas, badges,
- * feedbacks, modais, estados vazios, loading, erros.
- * Mobile-first; sem dependências; sem !important fora de utilitários.
+/* VouPassar — componentes
+ *
+ * Todos os nomes de classe emitidos por js/views/*.js e js/components/ui.js
+ * estão preservados aqui: o redesenho muda a aparência, nunca o contrato.
+ * Mobile-first; sem dependências; sem !important.
  */
 
 /* ============ Botões ============ */
@@ -11,54 +12,68 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: var(--touch-min);
-  padding: 0.625rem 1rem;
+  min-height: 48px;
+  padding: 0.6875rem 1.375rem;
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   font-size: var(--text-md);
-  line-height: 1.25;
-  border-radius: var(--radius-sm);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  border-radius: var(--radius-pill);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
-  transition: background var(--motion-fast), border-color var(--motion-fast),
-    color var(--motion-fast), box-shadow var(--motion-fast);
   white-space: nowrap;
+  transition: background var(--motion-fast), border-color var(--motion-fast),
+    color var(--motion-fast), box-shadow var(--motion-base),
+    transform var(--motion-fast);
+}
+
+.btn:active {
+  transform: translateY(1px);
 }
 
 .btn--primary {
-  background: var(--color-primary-700);
-  border-color: var(--color-primary-700);
-  color: #fff;
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-brand);
 }
 
 .btn--primary:hover {
-  background: var(--color-primary-900);
-  border-color: var(--color-primary-900);
-  color: #fff;
+  background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-brand);
+}
+
+.btn--primary:focus-visible {
+  box-shadow: var(--focus-ring), var(--shadow-brand);
 }
 
 .btn--secondary {
   background: var(--color-surface);
   border-color: var(--color-line-300);
   color: var(--color-ink-900);
+  box-shadow: var(--shadow-xs);
 }
 
 .btn--secondary:hover {
-  border-color: var(--color-primary-600);
-  color: var(--color-primary-900);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-800);
+  background: var(--color-primary-50);
 }
 
 .btn--ghost {
   background: transparent;
   border-color: transparent;
   color: var(--color-primary-700);
-  min-height: var(--touch-min);
+  padding-inline: var(--space-4);
 }
 
 .btn--ghost:hover {
   background: var(--color-primary-50);
-  color: var(--color-primary-900);
+  color: var(--color-primary-800);
 }
 
 .btn--danger {
@@ -68,19 +83,34 @@
 }
 
 .btn--danger:hover {
-  filter: brightness(0.92);
+  background: var(--color-danger-600);
+  border-color: var(--color-danger-600);
   color: #fff;
 }
 
+/* Variante clara sobre fundo de marca (rodapé, hero escuro). */
+.btn--on-navy {
+  background: var(--color-on-navy);
+  border-color: var(--color-on-navy);
+  color: var(--color-primary-800);
+  box-shadow: none;
+}
+
+.btn--on-navy:hover {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-100);
+  color: var(--color-primary-900);
+}
+
 .btn--sm {
-  min-height: var(--touch-min);
-  padding: 0.5rem 0.75rem;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
   font-size: var(--text-sm);
 }
 
 .btn--lg {
-  min-height: 52px;
-  padding: 0.875rem 1.5rem;
+  min-height: 56px;
+  padding: 1rem 1.875rem;
   font-size: var(--text-lg);
 }
 
@@ -91,9 +121,10 @@
 .btn[disabled],
 .btn--disabled,
 .btn[aria-disabled="true"] {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+  box-shadow: none;
 }
 
 .btn .spinner {
@@ -104,20 +135,21 @@
 .btn-group {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-/* ============ Formulários ============ */
+/* ============ Campos ============ */
 .field {
   display: grid;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
 .field__label {
-  font-weight: 600;
+  font-weight: 700;
   font-size: var(--text-sm);
   color: var(--color-ink-900);
+  letter-spacing: -0.01em;
 }
 
 .field__label .required {
@@ -134,18 +166,20 @@
 .select {
   font: inherit;
   width: 100%;
-  min-height: var(--touch-min);
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--color-line-300);
-  border-radius: var(--radius-sm);
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--color-line-300);
+  border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-ink-900);
-  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast),
+    background var(--motion-fast);
 }
 
 .textarea {
-  min-height: 120px;
+  min-height: 128px;
   resize: vertical;
+  line-height: 1.55;
 }
 
 .input::placeholder,
@@ -157,7 +191,15 @@
 .input:hover,
 .textarea:hover,
 .select:hover {
-  border-color: var(--color-ink-500);
+  border-color: var(--color-ink-400);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--color-primary-600);
+  box-shadow: var(--focus-ring);
+  outline: none;
 }
 
 .input[aria-invalid="true"],
@@ -169,7 +211,7 @@
 .input[aria-invalid="true"]:focus,
 .textarea[aria-invalid="true"]:focus,
 .select[aria-invalid="true"]:focus {
-  box-shadow: 0 0 0 3px rgb(180 35 24 / 0.25);
+  box-shadow: 0 0 0 3px rgb(192 38 38 / 0.22);
   outline: none;
 }
 
@@ -179,6 +221,7 @@
   display: flex;
   gap: var(--space-1);
   align-items: flex-start;
+  font-weight: 600;
 }
 
 .check-row,
@@ -186,8 +229,8 @@
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
   cursor: pointer;
   min-height: var(--touch-min);
 }
@@ -202,7 +245,7 @@
   width: 1.25rem;
   height: 1.25rem;
   margin-top: 0.15rem;
-  accent-color: var(--color-primary-700);
+  accent-color: var(--color-primary-600);
   flex-shrink: 0;
 }
 
@@ -217,19 +260,37 @@
   }
 }
 
-/* ============ Cards ============ */
+/* ============ Cartões ============ */
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  transition: box-shadow var(--motion-base), border-color var(--motion-base),
+    transform var(--motion-base);
+}
+
+/* Cartão que recebe hover só quando é clicável de verdade. */
+.card--interactive:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-200);
+  transform: translateY(-2px);
+}
+
+/* Cartão com faixa de cor no topo — usado para o "próximo passo". */
+.card--accent {
+  border-top: 4px solid var(--color-primary-600);
+}
+
+.card--accent-accent {
+  border-top: 4px solid var(--color-accent-500);
 }
 
 .card__header,
 .card__body,
 .card__footer {
-  padding: var(--space-4);
+  padding: var(--space-5);
 }
 
 .card__header {
@@ -243,32 +304,48 @@
 .card__header h2,
 .card__header h3 {
   font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
 }
 
 .card__footer {
   border-top: 1px solid var(--color-line-200);
   background: var(--color-bg-50);
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
 .card--stat .card__body {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .stat-value {
   font-size: var(--text-3xl);
-  font-weight: 700;
-  color: var(--color-primary-900);
-  line-height: 1;
+  font-weight: 800;
+  letter-spacing: var(--tracking-tighter);
+  color: var(--color-primary-800);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-value--empty {
+  color: var(--color-ink-400);
+}
+
+/* Rótulo em vez de número: mesmo peso visual, corpo menor para não
+ * quebrar em duas linhas nem esticar a altura do cartão. */
+.stat-value--text {
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
 }
 
 .stat-label {
   font-size: var(--text-sm);
   color: var(--color-ink-500);
+  font-weight: 600;
 }
 
 .card-grid {
@@ -277,17 +354,22 @@
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 40rem) {
   .card-grid--2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 64rem) {
   .card-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .card-grid--4 { grid-template-columns: repeat(4, 1fr); }
 }
 
 /* ============ Tabelas ============ */
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
 }
 
 .table {
@@ -299,28 +381,31 @@
 
 .table caption {
   text-align: left;
-  padding: var(--space-3) var(--space-4);
-  font-weight: 600;
+  padding: var(--space-4) var(--space-5);
+  font-weight: 700;
   color: var(--color-ink-900);
   background: var(--color-bg-50);
   border-bottom: 1px solid var(--color-line-200);
+  font-size: var(--text-sm);
 }
 
 .table th,
 .table td {
   text-align: left;
-  padding: 0.625rem 0.75rem;
-  border-bottom: 1px solid var(--color-line-200);
-  vertical-align: top;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid var(--color-line-100);
+  vertical-align: middle;
 }
 
 .table thead th {
   background: var(--color-bg-50);
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-wide);
   color: var(--color-ink-500);
   white-space: nowrap;
+  border-bottom: 1px solid var(--color-line-200);
 }
 
 .table tbody tr:last-child th,
@@ -338,51 +423,76 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ============ Badges ============ */
+.table tbody th {
+  font-weight: 700;
+  color: var(--color-ink-900);
+}
+
+/* ============ Chips e badges ============ */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 0.2rem 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-line-300);
+  border: 1px solid var(--color-line-200);
   background: var(--color-bg-100);
   color: var(--color-ink-700);
   white-space: nowrap;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .badge--primary {
   background: var(--color-primary-100);
-  border-color: var(--color-primary-700);
-  color: var(--color-primary-900);
+  border-color: transparent;
+  color: var(--color-primary-800);
+}
+
+.badge--accent {
+  background: var(--color-accent-100);
+  border-color: transparent;
+  color: var(--color-accent-700);
 }
 
 .badge--success {
   background: var(--color-success-50);
-  border-color: var(--color-success-200);
+  border-color: transparent;
   color: var(--color-success-700);
 }
 
 .badge--danger {
   background: var(--color-danger-50);
-  border-color: var(--color-danger-200);
+  border-color: transparent;
   color: var(--color-danger-700);
 }
 
 .badge--warning {
   background: var(--color-warning-50);
-  border-color: var(--color-warning-200);
+  border-color: transparent;
   color: var(--color-warning-700);
 }
 
 .badge--info {
   background: var(--color-info-50);
-  border-color: var(--color-info-200);
+  border-color: transparent;
   color: var(--color-info-700);
+}
+
+/* Chip neutro: assunto, disciplina, ano. Menos peso que badge. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-line-200);
+  background: var(--color-surface);
+  color: var(--color-ink-700);
 }
 
 .badge__dot {
@@ -393,21 +503,24 @@
   flex-shrink: 0;
 }
 
-/* ============ Feedbacks (alerts + toast) ============ */
+/* ============ Feedback ============ */
 .alert {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-line-300);
+  border: 1px solid var(--color-line-200);
   background: var(--color-surface);
   font-size: var(--text-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .alert strong {
   display: block;
   color: var(--color-ink-900);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-tight);
 }
 
 .alert p {
@@ -439,7 +552,7 @@
   flex-shrink: 0;
   width: 1.25rem;
   height: 1.25rem;
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
 }
 
 .toast-region {
@@ -454,35 +567,37 @@
 }
 
 .toast {
-  background: var(--color-ink-900);
+  background: var(--color-navy-800);
   color: #fff;
   border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
   font-size: var(--text-sm);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   display: flex;
   gap: var(--space-2);
   align-items: flex-start;
 }
 
-/* ============ Modal (usa <dialog> nativo) ============ */
+/* ============ Modal (<dialog> nativo) ============ */
 .modal {
-  border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-lg);
+  border: none;
+  border-radius: var(--radius-xl);
   padding: 0;
-  width: min(92vw, 32rem);
-  box-shadow: var(--shadow-md);
+  width: min(92vw, 34rem);
+  box-shadow: var(--shadow-lg);
   color: var(--color-ink-900);
+  background: var(--color-surface);
 }
 
 .modal::backdrop {
-  background: rgb(16 24 40 / 0.5);
+  background: rgb(8 31 51 / 0.55);
+  backdrop-filter: blur(2px);
 }
 
 .modal__header,
 .modal__body,
 .modal__footer {
-  padding: var(--space-4);
+  padding: var(--space-5);
 }
 
 .modal__header {
@@ -501,7 +616,7 @@
   background: var(--color-bg-50);
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-2);
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
@@ -510,7 +625,7 @@
   appearance: none;
   border: 1px solid var(--color-line-300);
   background: var(--color-surface);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   width: var(--touch-min);
   height: var(--touch-min);
   display: inline-flex;
@@ -521,41 +636,48 @@
   line-height: 1;
 }
 
+.icon-btn:hover {
+  background: var(--color-bg-100);
+}
+
 /* ============ Estados vazios ============ */
 .empty {
   text-align: center;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-10) var(--space-6);
   border: 1px dashed var(--color-line-300);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
 }
 
 .empty__icon {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   margin-inline: auto;
-  margin-bottom: var(--space-3);
-  color: var(--color-ink-500);
+  margin-bottom: var(--space-4);
+  color: var(--color-primary-400);
 }
 
-.empty h3 {
+.empty h3,
+.empty h2 {
   font-size: var(--text-lg);
   margin-bottom: var(--space-2);
+  letter-spacing: var(--tracking-tight);
 }
 
 .empty p {
   margin-inline: auto;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
   font-size: var(--text-sm);
+  max-width: 46ch;
 }
 
-/* ============ Loading ============ */
+/* ============ Carregamento ============ */
 .spinner {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
   border: 3px solid var(--color-line-200);
-  border-top-color: var(--color-primary-700);
+  border-top-color: var(--color-primary-600);
   animation: vp-spin 0.8s linear infinite;
   display: inline-block;
   vertical-align: middle;
@@ -593,16 +715,17 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4);
+  padding: var(--space-6);
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   color: var(--color-ink-700);
   font-size: var(--text-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .progress {
-  height: 8px;
+  height: 10px;
   border-radius: var(--radius-pill);
   background: var(--color-line-200);
   overflow: hidden;
@@ -610,17 +733,22 @@
 
 .progress__bar {
   height: 100%;
-  background: var(--color-primary-700);
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-600),
+    var(--color-accent-500)
+  );
   border-radius: inherit;
-  transition: width var(--motion-base);
+  transition: width var(--motion-slow);
 }
 
 /* ============ Erros ============ */
 .error-summary {
-  border: 2px solid var(--color-danger-700);
+  border: 1.5px solid var(--color-danger-700);
+  border-left-width: 5px;
   border-radius: var(--radius-md);
   background: var(--color-danger-50);
-  padding: var(--space-4);
+  padding: var(--space-5);
 }
 
 .error-summary h2 {
@@ -641,11 +769,12 @@
   padding: 0.1rem 0.35rem;
 }
 
-/* ============ Questão (prévia do domínio; telas completas na Fase 6) ============ */
+/* ============ Questão (telas de estudo, questão e simulado) ============ */
 .question {
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -653,56 +782,91 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-5);
   background: var(--color-bg-50);
   border-bottom: 1px solid var(--color-line-200);
 }
 
 .question__body {
-  padding: var(--space-4);
+  padding: var(--space-5);
 }
 
 .question__options {
   list-style: none;
   padding: 0;
   display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
+  gap: var(--space-3);
+  margin-top: var(--space-5);
 }
 
 .question__option {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
-  border: 1px solid var(--color-line-300);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  border: 1.5px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
   cursor: pointer;
   min-height: var(--touch-min);
+  background: var(--color-surface);
+  transition: border-color var(--motion-fast), background var(--motion-fast),
+    box-shadow var(--motion-fast);
 }
 
 .question__option:hover {
+  border-color: var(--color-primary-400);
+  background: var(--color-primary-50);
+}
+
+/* Alternativa marcada pelo aluno. */
+.question__option:has(input:checked) {
   border-color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  box-shadow: var(--focus-ring);
 }
 
 .question__option--correct {
-  border-color: var(--color-success-700);
+  border-color: var(--color-success-600);
   background: var(--color-success-50);
 }
 
 .question__option--wrong {
-  border-color: var(--color-danger-700);
+  border-color: var(--color-danger-600);
   background: var(--color-danger-50);
 }
 
 .question__key {
-  font-weight: 700;
+  font-weight: 800;
   flex-shrink: 0;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-line-300);
-  border-radius: 50%;
+  border: 1.5px solid var(--color-line-300);
+  border-radius: var(--radius-pill);
+  color: var(--color-ink-700);
+  background: var(--color-surface);
+}
+
+.question__option--correct .question__key {
+  border-color: var(--color-success-600);
+  background: var(--color-success-600);
+  color: #fff;
+}
+
+.question__option--wrong .question__key {
+  border-color: var(--color-danger-600);
+  background: var(--color-danger-600);
+  color: #fff;
+}
+
+/* Legenda do campo de alternativas: precisa continuar sendo <legend>,
+ * porque questao.js e simulado.js leem fieldset.querySelector("legend"). */
+.question__options legend,
+fieldset > legend {
+  padding: 0;
+  font-weight: 700;
+  color: var(--color-ink-900);
+  margin-bottom: var(--space-3);
 }

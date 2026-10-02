@@ -3,9 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script>
+    // Aplica o tema antes da primeira pintura: sem isso a página carrega
+    // clara e "pula" para a escura quando o main.js roda. Os tokens do
+    // tema escuro estão em css/tokens.css ([data-theme="dark"]).
+    try {
+      var t = localStorage.getItem("theme");
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
   <meta name="description" content="Perfil do estudante no VouPassar — dados, estatísticas, evolução, histórico, conteúdos dominados e pontos de atenção." />
   <meta name="voupassar-api" content="http://localhost:8080" />
-  <meta name="theme-color" content="#0f2e47" />
+  <meta name="theme-color" content="#0d2b45" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -20,7 +34,7 @@
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
       </a>
       <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
@@ -91,7 +105,7 @@
         <!-- 2. ESTATÍSTICAS -->
         <section class="mt-8" aria-labelledby="sec-stats-t">
           <h2 id="sec-stats-t">Estatísticas</h2>
-          <p class="muted"><small>Só fatos registrados (<span class="code-inline">question_attempts</span>, imutável). Anuladas contam como conteúdo e ficam fora do aproveitamento — regra de pontuação desconhecida.</small></p>
+          <p class="muted"><small>Contamos só o que você respondeu. Questão anulada pelo IFRN aparece, mas não entra no cálculo.</small></p>
           <div class="perfil-stats mt-4" id="perfil-stats" role="list" aria-label="Resumo de desempenho"></div>
         </section>
 
@@ -123,7 +137,7 @@
           <!-- 5. PONTOS DE ATENÇÃO -->
           <section aria-labelledby="sec-ate-t">
             <h2 id="sec-ate-t">Pontos de atenção</h2>
-            <p class="muted"><small>Pontos fracos e fila de prioridades do diagnóstico, em ordem determinística e com motivo auditável.</small></p>
+            <p class="muted"><small>Os assuntos com mais peso na prova e onde você ainda erra, com o motivo de cada um.</small></p>
             <div id="perfil-weaknesses" class="mt-4"></div>
           </section>
         </div>
@@ -131,7 +145,7 @@
         <!-- 6. EVOLUÇÃO -->
         <section class="mt-8" aria-labelledby="sec-evo-t">
           <h2 id="sec-evo-t">Evolução</h2>
-          <p class="muted"><small>Série temporal em calendário UTC, sem interpolar lacunas (só períodos com tentativas). O dia local pode divergir em horas.</small></p>
+          <p class="muted"><small>Seu aproveitamento ao longo do tempo. Só entram períodos em que você respondeu questões.</small></p>
           <div class="evo-controls mt-4">
             <div class="field" style="margin-bottom:0">
               <label class="field__label" for="evo-granularity">Agrupar por</label>
@@ -159,12 +173,6 @@
         <section class="mt-8" aria-labelledby="sec-conq-t">
           <h2 id="sec-conq-t">Conquistas</h2>
           <div id="perfil-achievements" class="mt-4"></div>
-        </section>
-
-        <!-- NOTAS DE EVIDÊNCIA -->
-        <section class="mt-8" aria-labelledby="sec-notes-t">
-          <h2 id="sec-notes-t">Leitura honesta dos números</h2>
-          <div id="perfil-notes" class="perfil-notes mt-4"></div>
         </section>
       </div>
 

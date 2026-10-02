@@ -1,10 +1,15 @@
-/* VouPassar — dashboard (TASK 6.4)
+/* VouPassar — dashboard
+ *
  * Página protegida: exige sessão (restoreSession). Sem sessão → painel de
  * acesso com link seguro para login (?next=dashboard.html). Com sessão,
- * busca em paralelo: overview (4.1), diagnosis (4.2), plan (4.3/4.4),
- * topics (3.3, para nomear itens do plano), simulations (5.1) e evolution
- * (4.1, com seletor DAY/WEEK/MONTH). Cada seção falha de forma isolada:
- * o restante continua visível. Sem innerHTML (só textContent via el()).
+ * busca em paralelo: overview, diagnosis, plan, topics, simulations e
+ * evolution. Cada seção falha de forma isolada: o restante continua
+ * visível. Sem innerHTML (só textContent via el()).
+ *
+ * Linguagem: o texto é escrito para um estudante do ensino fundamental.
+ * Termos internos do projeto (nomes de tabela, versão do algoritmo,
+ * identificadores de tarefa) NÃO aparecem aqui — ver AGENTS.md §4 para a
+ * regra de honestidade e docs/frontend-design-system.md §Copy.
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
@@ -20,11 +25,13 @@ import {
   fetchRecentSimulations,
 } from "../api/dashboard.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { disciplineLabel, modeLabel, statusLabel, masteryLabel, topicLabel, plural } from "../vocab.js";
 
 const guard = document.getElementById("dash-guard");
 const errorBox = document.getElementById("dash-error");
 const loadingBox = document.getElementById("dash-loading");
 const content = document.getElementById("dash-content");
+const titleEl = document.getElementById("dash-title");
 const subtitle = document.getElementById("dash-subtitle");
 const statsBox = document.getElementById("dash-stats");
 const discBox = document.getElementById("dash-disciplines");
@@ -36,7 +43,6 @@ const planRegenerateBtn = document.getElementById("plan-regenerate");
 const evoSelect = document.getElementById("evo-granularity");
 const evoBox = document.getElementById("dash-evolution");
 const simBox = document.getElementById("dash-simulations");
-const notesBox = document.getElementById("dash-notes");
 
 let topicById = new Map();
 let currentPlan = null;
@@ -53,7 +59,10 @@ async function main() {
     showGuard();
     return;
   }
-  subtitle.textContent = `Olá, ${user.displayName || "estudante"} — onde você está, o que precisa estudar, como está evoluindo e o que fazer agora.`;
+  const name = (user.displayName || "").split(" ")[0] || "você";
+  titleEl.textContent = `Olá, ${name}`;
+  subtitle.textContent =
+    "Aqui está o resumo do seu estudo e o próximo passo. Se for seu primeiro dia, comece pelo diagnóstico.";
   showLogoutButtons();
   await loadAll();
 }
@@ -85,10 +94,10 @@ function showGuard() {
   guard.hidden = false;
   guard.textContent = "";
   const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para ver seu dashboard" }));
+  box.appendChild(el("h2", { text: "Entre para ver seu painel" }));
   box.appendChild(
     el("p", {
-      text: "O dashboard mostra seu desempenho e roteiro. Ele precisa da sua sessão — entre ou crie uma conta para continuar.",
+      text: "Seu painel mostra o que estudar agora e como você está indo. Entre com sua conta para continuar.",
     }),
   );
   const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
@@ -117,6 +126,13 @@ function formatPercent(acc) {
   return `${(n * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
 }
 
+function formatPercentValue(acc) {
+  if (acc === null || acc === undefined) return null;
+  const n = Number(acc);
+  if (!Number.isFinite(n)) return null;
+  return Math.round(n * 100);
+}
+
 function formatDateTime(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -131,34 +147,7 @@ function formatBucketDate(isoDate) {
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
-function masteryBadge(level) {
-  const map = {
-    DOMINADO: "badge--success",
-    CONSOLIDADO: "badge--success",
-    FRAGIL: "badge--danger",
-    INICIAL: "badge--danger",
-    EM_DESENVOLVIMENTO: "badge--warning",
-    EM_OBSERVACAO: "badge--info",
-    NAO_AVALIADO: "",
-    DESCONHECIDO: "",
-  };
-  return map[level] || "";
-}
-
-function masteryLabel(level) {
-  const map = {
-    DOMINADO: "Dominado",
-    FRAGIL: "Frágil",
-    EM_DESENVOLVIMENTO: "Em desenvolvimento",
-    EM_OBSERVACAO: "Em observação",
-    NAO_AVALIADO: "Não avaliado",
-    DESCONHECIDO: "Desconhecido",
-    INICIAL: "Inicial",
-    CONSOLIDADO: "Consolidado",
-  };
-  return map[level] || String(level || "—");
-}
-
+/** Classe de badge conforme o status (apresentação, não vocabulário). */
 function statusBadge(status) {
   const map = {
     SUBMITTED: "badge--success",
@@ -172,17 +161,79 @@ function statusBadge(status) {
   return map[status] || "";
 }
 
-function statusLabel(status) {
-  const map = {
-    SUBMITTED: "Concluído",
-    IN_PROGRESS: "Em andamento",
-    ABANDONED: "Abandonado",
-    TODO: "A fazer",
-    DOING: "Em andamento",
-    DONE: "Concluído",
-    SKIPPED: "Pulado",
-  };
-  return map[status] || String(status || "—");
+/* ---------- texto de aluno ----------
+ * O backend monta as justificativas já carregadas de códigos internos
+ * ("tema GRAMATICA_NORMA com 60 questões", "score determinístico 0").
+ * Isso é documentação do motor, não explicação para o estudante. As frases
+ * abaixo são escritas a partir dos números que a API já devolve — acertos,
+ * tentativas pontuáveis e peso do assunto nas provas. Nenhum número é
+ * estimado aqui.
+ */
+
+/** Nome de um assunto a partir do catálogo carregado ou do dicionário. */
+function topicNameFor(code, fallbackName) {
+  const hit = [...topicById.values()].find((t) => t.code === code);
+  return hit?.name || topicLabel(code, fallbackName) || "";
+}
+
+/** Troca códigos UPPER_SNAKE conhecidos pelos nomes dos assuntos. */
+function humanize(text) {
+  if (!text) return "";
+  return String(text).replace(/\b[A-Z][A-Z0-9]*(_[A-Z0-9]+)+\b/g, (code) => {
+    const name = topicNameFor(code);
+    return name || code;
+  });
+}
+
+/** Dados do diagnóstico de um assunto, se ele estiver na fila de atenção. */
+function priorityFor(topicId) {
+  return (diagnosisCache?.priorities || []).find((p) => Number(p.topicId) === Number(topicId)) || null;
+}
+
+function studentReason(p) {
+  const scored = Number(p.scored ?? 0);
+  const acc = p.accuracy === null || p.accuracy === undefined ? null : Number(p.accuracy);
+  const share = Number(p.historicalQuestions ?? 0);
+  const editions = Number(p.editionsCount ?? 0);
+  const overall = diagnosisCache?.accuracy ?? null;
+
+  const peso = share
+    ? ` Ele aparece ${plural(share, "questão", "questões")} na prova${
+        editions ? `, em ${plural(editions, "edição", "edições")}` : ""
+      }.`
+    : "";
+
+  if (!scored) {
+    return `Você ainda não respondeu nada deste assunto.${peso}`;
+  }
+
+  const acertos = Math.round(acc * scored);
+  const base = `Você acertou ${plural(acertos, "questão", "questões")} de ${plural(scored, "tentativa", "tentativas")} (${formatPercent(acc)}).`;
+  if (overall !== null && acc < overall) {
+    return `${base} Está abaixo da sua média geral de ${formatPercent(overall)}.${peso}`;
+  }
+  return `${base}${peso}`;
+}
+
+/** Frase do "estude agora".
+ *
+ * Quando o assunto não está na fila de atenção, o diagnóstico não apontou
+ * fragilidade nele — e nesse caso não temos o percentual por assunto. A
+ * frase diz só o que sabemos: o peso na prova e o fato de ele constar do
+ * roteiro como revisão.
+ */
+function studentNextReason(topicId) {
+  const p = priorityFor(topicId);
+  const topic = topicById.get(Number(topicId));
+  const share = Number(topic?.questionCount ?? p?.historicalQuestions ?? 0);
+
+  if (p && Number(p.scored ?? 0) > 0) {
+    return studentReason(p);
+  }
+  const peso = share
+    ? `Ele aparece ${plural(share, "questão", "questões")} na prova`
+    : "Ele faz parte do seu roteiro";
+  return `${peso} e entra como revisão, para você não esquecer o que já aprendeu.`;
 }
 
 /* ---------- carga ---------- */
@@ -212,7 +263,7 @@ async function loadAll() {
   if (unauthorized) {
     showGuard();
     guard.querySelector("p")?.replaceChildren(
-      document.createTextNode("Sua sessão expirou. Entre novamente para ver o dashboard."),
+      document.createTextNode("Sua sessão expirou. Entre novamente para ver seu painel."),
     );
     return;
   }
@@ -220,21 +271,18 @@ async function loadAll() {
   const failures = [overview, diagnosis, topics, simulations, evolution]
     .filter((r) => r.status === "rejected")
     .map((r) => r.reason);
-  // Falha do plano (fora 404) não bloqueia o resto: vira estado local.
   if (plan.status === "rejected") failures.push(plan.reason);
   if (failures.length) {
     const first = failures[0];
     renderErrorSummary(errorBox, {
-      title: "Parte dos dados falhou — o restante segue abaixo.",
+      title: "Uma parte do painel não carregou — o resto está abaixo.",
       items: [friendlyMessage(first)],
       traceId: first instanceof ApiError ? first.traceId : null,
     });
   }
 
   if (topics.status === "fulfilled") {
-    topicById = new Map(
-      (topics.value || []).map((t) => [Number(t.id), t]),
-    );
+    topicById = new Map((topics.value || []).map((t) => [Number(t.id), t]));
   }
 
   overviewCache = overview.status === "fulfilled" ? overview.value : null;
@@ -253,24 +301,62 @@ async function loadAll() {
     simulations.status === "fulfilled" ? simulations.value : null,
     simulations.status === "rejected" ? simulations.reason : null,
   );
-  renderNotes(overviewCache, diagnosisCache);
 
   loadingBox.hidden = true;
   content.hidden = false;
 }
 
-/* ---------- 1. resumo ---------- */
+/* ---------- 1. o passo agora ---------- */
 
-function statCard({ label, value, hint }) {
+function nextStepShell({ eyebrow, title, why, empty = false }) {
+  const card = el("div", {
+    className: empty ? "next-step next-step--empty" : "next-step",
+  });
+  if (eyebrow) card.appendChild(el("p", { className: "next-step__eyebrow", text: eyebrow }));
+  if (title) card.appendChild(el("h3", { className: "next-step__title", text: title }));
+  if (why) card.appendChild(el("p", { className: "next-step__why", text: why }));
+  return card;
+}
+
+function renderNextStepEmpty(title, why) {
+  nextBox.textContent = "";
+  const card = nextStepShell({ eyebrow: "Próximo passo", title, why, empty: true });
+  const actions = el("div", { className: "next-step__actions" });
+  if (planGenerateBtn && !planGenerateBtn.hidden) {
+    actions.appendChild(
+      el("a", {
+        className: "btn btn--primary",
+        text: "Montar meu roteiro",
+        attrs: { href: "#sec-plan-t" },
+      }),
+    );
+  } else {
+    actions.appendChild(
+      el("a", {
+        className: "btn btn--primary",
+        text: "Ir para o diagnóstico",
+        attrs: { href: "./estudos.html" },
+      }),
+    );
+  }
+  card.appendChild(actions);
+  nextBox.appendChild(card);
+}
+
+/* ---------- 2. resumo ---------- */
+
+function statCard({ label, value, hint, empty = false, textual = false }) {
   const card = el("article", { className: "card", attrs: { role: "listitem" } });
   const body = el("div", { className: "card__body" });
-  const v = el("div", { className: "stat-value" });
-  v.textContent = value;
-  if (value === "—") v.classList.add("stat-value--empty");
+  body.appendChild(el("p", { className: "eyebrow", text: label }));
+  const v = el("div", { className: "stat-value", text: value });
+  if (empty) v.classList.add("stat-value--empty");
+  // Rótulo em vez de número ("Ainda sem dados") não deve usar o corpo
+  // gigante dos números, ou quebra em duas linhas e desalinha os cartões.
+  if (textual) v.classList.add("stat-value--text");
   body.appendChild(v);
-  body.appendChild(el("div", { className: "stat-label", text: label }));
   if (hint) {
-    const h = el("p", { className: "muted" });
+    const h = el("p", { className: "stat-label" });
     h.appendChild(el("small", { text: hint }));
     body.appendChild(h);
   }
@@ -282,8 +368,8 @@ function renderStats(overview, diagnosis) {
   statsBox.textContent = "";
   if (!overview && !diagnosis) {
     renderEmpty(statsBox, {
-      title: "Sem dados de desempenho",
-      description: "Não foi possível carregar seu retrato agora. Tente novamente em instantes.",
+      title: "Não deu para carregar seu progresso",
+      description: "Tente novamente em alguns instantes.",
     });
     return;
   }
@@ -291,113 +377,139 @@ function renderStats(overview, diagnosis) {
   const scored = overview?.scoredAttempts ?? diagnosis?.scoredAttempts ?? 0;
   const correct = overview?.correct ?? diagnosis?.correct ?? 0;
   const acc = overview?.accuracy ?? diagnosis?.accuracy ?? null;
-  const level = diagnosis?.overallLevel || "DESCONHECIDO";
+  const level = diagnosis?.overallLevel || "Ainda não informado";
   const last = overview?.lastAttemptAt || diagnosis?.lastAttemptAt || null;
+  const notScored = Math.max(0, total - scored);
 
   statsBox.appendChild(
     statCard({
-      label: "aproveitamento geral (pontuáveis)",
+      label: "Aproveitamento",
       value: formatPercent(acc),
-      hint: acc === null ? "Sem tentativas pontuáveis — DESCONHECIDO, nunca zero inventado." : `${correct} corretas em ${scored} pontuáveis.`,
+      empty: acc === null,
+      hint:
+        acc === null
+          ? "Responda questões para calcular."
+          : `${correct} acertos em ${scored} ${scored === 1 ? "questão" : "questões"}.`,
     }),
   );
   statsBox.appendChild(
     statCard({
-      label: "questões respondidas",
+      label: "Questões respondidas",
       value: String(total),
-      hint: scored === total ? "Todas pontuáveis." : `${total - scored} anulada(s) fora do cálculo (regra desconhecida).`,
+      hint: notScored ? `${notScored} sem valer nota.` : "Todas valem nota.",
     }),
   );
-  statsBox.appendChild(
+statsBox.appendChild(
     statCard({
-      label: "nível estimado",
+      label: "Seu nível",
       value: masteryLabel(level),
-      hint: "Estimativa inicial por limiares explícitos — nunca verdade oficial do IFRN.",
+      empty: !diagnosis,
+      textual: true,
+      hint: "Uma estimativa para você se orientar.",
     }),
   );
   statsBox.appendChild(
     statCard({
-      label: "última atividade",
+      label: "Última atividade",
       value: last ? formatDateTime(last) : "—",
-      hint: last ? "Horário UTC registrado pelo servidor." : "Nenhuma tentativa registrada ainda.",
+      empty: !last,
+      // Data e hora não são métrica: corpo de número quebraria em duas
+      // linhas e desalinharia os quatro cartões.
+      textual: true,
+      hint: last ? "" : "Nada por aqui ainda.",
     }),
   );
 }
 
-/* ---------- 2. disciplinas ---------- */
+/* ---------- 3. desempenho por disciplina ---------- */
 
 function renderDisciplines(overview) {
   discBox.textContent = "";
-  const rows = overview?.byDiscipline || [];
   if (!overview) {
     renderEmpty(discBox, {
-      title: "Desempenho indisponível",
-      description: "Não foi possível carregar o recorte por disciplina agora.",
+      title: "Ainda não deu para carregar",
+      description: "Seu desempenho por disciplina aparece aqui.",
     });
     return;
   }
+  const rows = overview?.byDiscipline || [];
   if (!rows.length) {
     renderEmpty(discBox, {
-      title: "Nenhuma tentativa por disciplina",
-      description: "Responda questões para ver seu aproveitamento em Língua Portuguesa e Matemática.",
+      title: "Nenhuma questão respondida",
+      description: "Assim que você responder questões, mostramos como vai em Língua Portuguesa e em Matemática.",
     });
     return;
   }
-  const wrap = el("div", {
-    className: "table-wrap",
-    attrs: { tabindex: "0", role: "region", "aria-label": "Aproveitamento por disciplina" },
-  });
-  const table = el("table", { className: "table" });
-  const caption = el("caption", {
-    text: "Aproveitamento por disciplina (factual, via discipline_id da questão)",
-  });
-  table.appendChild(caption);
-  const thead = el("thead");
-  const hr = el("tr");
-  for (const [text, num] of [["Disciplina", false], ["Respondidas", true], ["Pontuáveis", true], ["Corretas", true], ["Aproveitamento", true]]) {
-    const th = el("th", { text });
-    if (num) th.classList.add("num");
-    th.setAttribute("scope", "col");
-    hr.appendChild(th);
-  }
-  thead.appendChild(hr);
-  table.appendChild(thead);
-  const tbody = el("tbody");
+  const list = el("ul", { className: "disc-list" });
   for (const d of rows) {
-    const tr = el("tr");
-    const name = el("th", { text: d.disciplineName || d.disciplineCode });
-    name.setAttribute("scope", "row");
-    tr.appendChild(name);
-    for (const v of [d.attempts, d.scored, d.correct]) {
-      const td = el("td", { className: "num", text: String(v ?? 0) });
-      tr.appendChild(td);
+    const pct = formatPercentValue(d.accuracy);
+    const li = el("li", { className: "disc-item" });
+    const top = el("div", { className: "disc-item__top" });
+    top.appendChild(
+      el("span", {
+        className: "disc-item__name",
+        text: disciplineLabel(d.disciplineCode, d.disciplineName),
+      }),
+    );
+    const value = el("span", {
+      className: pct === null ? "disc-item__value disc-item__value--empty" : "disc-item__value",
+      text: formatPercent(d.accuracy),
+    });
+    top.appendChild(value);
+    li.appendChild(top);
+
+    if (pct !== null) {
+      const track = el("div", {
+        className: "disc-item__track",
+        attrs: {
+          role: "progressbar",
+          "aria-valuenow": String(pct),
+          "aria-valuemin": "0",
+          "aria-valuemax": "100",
+          "aria-label": `Aproveitamento em ${disciplineLabel(d.disciplineCode, d.disciplineName)}`,
+        },
+      });
+      const fill = el("div", { className: "disc-item__fill" });
+      fill.style.width = `${pct}%`;
+      track.appendChild(fill);
+      li.appendChild(track);
     }
-    tr.appendChild(el("td", { className: "num", text: formatPercent(d.accuracy) }));
-    tbody.appendChild(tr);
+
+    li.appendChild(
+      el("p", {
+        className: "disc-item__meta",
+        text: `${d.correct ?? 0} acertos em ${d.attempts ?? 0} respondidas`,
+      }),
+    );
+    list.appendChild(li);
   }
-  table.appendChild(tbody);
-  wrap.appendChild(table);
-  discBox.appendChild(wrap);
+  discBox.appendChild(list);
 }
 
-/* ---------- 3. prioridades ---------- */
+/* ---------- 4. o que treinar ---------- */
 
 function renderPriorities(diagnosis) {
   prioBox.textContent = "";
   if (!diagnosis) {
     renderEmpty(prioBox, {
-      title: "Diagnóstico indisponível",
-      description: "Não foi possível carregar a fila de atenção agora.",
+      title: "Ainda não deu para carregar",
+      description: "Aqui entram os assuntos que mais valem a pena treinar.",
     });
     return;
   }
-  const items = (diagnosis.priorities || []).slice(0, 5);
+  const all = diagnosis.priorities || [];
+  // Três bastam para dizer "o que treinar" sem transformar a coluna numa
+  // parede de cartões quase idênticos. A lista completa está no roteiro,
+  // logo abaixo.
+  const items = all.slice(0, 3);
   if (!items.length) {
     const box = el("div", { className: "alert alert--success", attrs: { role: "status" } });
     const inner = el("div");
-    inner.appendChild(el("strong", { text: "Nada pendente por aqui." }));
+    inner.appendChild(el("strong", { text: "Nada pendente por aqui" }));
     inner.appendChild(
-      el("p", { text: "Todos os assuntos avaliados estão dominados (>= 70% com sinal suficiente). Gere o roteiro para manter a revisão." }),
+      el("p", {
+        text: "Os assuntos avaliados estão em bom nível. Continue revisando de vez em quando para não esquecer.",
+      }),
     );
     box.appendChild(inner);
     prioBox.appendChild(box);
@@ -407,42 +519,47 @@ function renderPriorities(diagnosis) {
   for (const p of items) {
     const li = el("li", { className: "priority-list__item" });
     const top = el("div", { className: "priority-list__top" });
-    top.appendChild(el("span", { className: "priority-list__rank", text: `#${p.rank}` }));
-    top.appendChild(el("strong", { text: p.topicName || p.topicCode }));
-    const badge = el("span", {
-      className: `badge ${masteryBadge(levelOf(p))}`.trim(),
-      text: `${formatPercent(p.accuracy)} · ${p.scored} pontuáveis`,
-    });
-    top.appendChild(badge);
+    top.appendChild(el("span", { className: "priority-list__rank", text: String(p.rank) }));
+    top.appendChild(el("strong", { className: "priority-list__name", text: p.topicName || p.topicCode }));
     li.appendChild(top);
     li.appendChild(
-      el("p", { className: "priority-list__reason", text: p.reason || "Motivo auditável no diagnóstico." }),
-    );
-    const meta = el("p", { className: "muted" });
-    meta.appendChild(
-      el("small", {
-        text: `${p.disciplineName || p.disciplineCode} · ${p.historicalQuestions} questões no banco · ${p.editionsCount} edições`,
+      el("p", {
+        className: "priority-list__reason",
+        text: studentReason(p),
       }),
     );
+    const meta = el("p", { className: "disc-item__meta" });
+    const bits = [disciplineLabel(p.disciplineCode, p.disciplineName)];
+    if (p.historicalQuestions) bits.push(`${p.historicalQuestions} questões na prova`);
+    if (p.editionsCount) {
+      bits.push(`${p.editionsCount} ${p.editionsCount === 1 ? "edição" : "edições"}`);
+    }
+    meta.appendChild(el("small", { text: bits.join(" · ") }));
     li.appendChild(meta);
     list.appendChild(li);
   }
   prioBox.appendChild(list);
+  if (all.length > items.length) {
+    prioBox.appendChild(
+      el("p", {
+        className: "stat-label mt-2",
+        text: `Mostrando ${items.length} de ${all.length} assuntos. O roteiro completo está abaixo.`,
+      }),
+    );
+  }
 }
 
-function levelOf(priorityItem) {
-  // A fila mistura FRÁGIL/EM_DESENVOLVIMENTO/NAO_AVALIADO/EM_OBSERVACAO;
-  // o motivo textual carrega o detalhe — aqui só diferenciamos lacuna.
-  if ((priorityItem?.scored ?? 0) === 0) return "NAO_AVALIADO";
-  return "EM_DESENVOLVIMENTO";
-}
-
-/* ---------- 4. próximo estudo + plano ---------- */
+/* ---------- 5. roteiro + passo agora ---------- */
 
 function topicNameOf(item) {
   const t = topicById.get(Number(item?.topicId));
-  if (t) return { name: t.name, meta: `${t.disciplineName || t.disciplineCode} · ${t.code}` };
-  return { name: `Assunto #${item?.topicId ?? "?"}`, meta: "Nome DESCONHECIDO no catálogo — NECESSITA REVISÃO." };
+  if (t) {
+    return {
+      name: t.name,
+      meta: disciplineLabel(t.disciplineCode, t.disciplineName),
+    };
+  }
+  return { name: "Assunto do seu roteiro", meta: "" };
 }
 
 function nextStudyOf(plan) {
@@ -462,10 +579,10 @@ function renderPlan(plan, loadError) {
       title: "Roteiro indisponível",
       description: friendlyMessage(loadError),
     });
-    renderEmpty(nextBox, {
-      title: "Próximo estudo desconhecido",
-      description: "Não foi possível carregar o roteiro agora.",
-    });
+    renderNextStepEmpty(
+      "Não deu para carregar seu roteiro",
+      "Tente novamente em alguns instantes.",
+    );
     planRegenerateBtn.hidden = true;
     return;
   }
@@ -474,13 +591,14 @@ function renderPlan(plan, loadError) {
     planRegenerateBtn.hidden = true;
     planGenerateBtn.hidden = false;
     renderEmpty(planBox, {
-      title: "Nenhum roteiro vigente",
-      description: "Gere seu roteiro: o motor determinístico (v1-deterministico) ordena todos os assuntos por prioridade explicável.",
+      title: "Você ainda não tem um roteiro",
+      description:
+        "O roteiro é a lista de assuntos na ordem que vale mais a pena studying agora para você. Ele muda conforme seu desempenho.",
     });
-    renderEmpty(nextBox, {
-      title: "Nenhum próximo estudo",
-      description: "Gere o roteiro para descobrir por onde começar.",
-    });
+    renderNextStepEmpty(
+      "Comece pelo diagnóstico",
+      "Responda algumas questões para descobrirmos seus pontos fortes e o que treinar. A partir disso montamos seu roteiro.",
+    );
     return;
   }
 
@@ -489,33 +607,55 @@ function renderPlan(plan, loadError) {
   const items = [...(plan.items || plan.recommendations || [])].sort(
     (a, b) => (a.priority - b.priority) || (a.id - b.id),
   );
+
   if (!items.length) {
     renderEmpty(planBox, {
       title: "Roteiro vazio",
-      description: "O plano vigente não trouxe itens. Gere novamente.",
+      description: "Atualize o roteiro para receber uma nova lista de assuntos.",
     });
   } else {
     const done = items.filter((i) => i.status === "DONE").length;
-    const bar = el("div", { className: "progress", attrs: { role: "progressbar", "aria-valuenow": String(done), "aria-valuemin": "0", "aria-valuemax": String(items.length), "aria-label": "Progresso do roteiro" } });
+    const progress = el("div", { className: "plan-progress" });
+    const bar = el("div", {
+      className: "progress",
+      attrs: {
+        role: "progressbar",
+        "aria-valuenow": String(done),
+        "aria-valuemin": "0",
+        "aria-valuemax": String(items.length),
+        "aria-label": "Progresso do roteiro",
+      },
+    });
     const fill = el("div", { className: "progress__bar" });
     fill.style.width = `${items.length ? Math.round((done / items.length) * 100) : 0}%`;
     bar.appendChild(fill);
-    planBox.appendChild(bar);
-    const meta = el("p", { className: "muted mt-2" });
-    meta.appendChild(el("small", { text: `${done} de ${items.length} concluídos · algoritmo ${plan.algorithmVersion || "v1-deterministico"} · gerado em ${formatDateTime(plan.generatedAt)}` }));
-    planBox.appendChild(meta);
+    progress.appendChild(bar);
+    const meta = el("p", { className: "stat-label" });
+    meta.appendChild(
+      el("small", {
+        text: `${done} de ${items.length} concluídos · criado em ${formatDateTime(plan.generatedAt)}`,
+      }),
+    );
+    progress.appendChild(meta);
+    planBox.appendChild(progress);
 
-    const list = el("ol", { className: "plan-items mt-4" });
+    const list = el("ol", { className: "plan-items" });
     for (const item of items.slice(0, 8)) {
       const { name, meta: m } = topicNameOf(item);
-      const row = el("li", { className: "plan-items__row" });
+      const isDone = item.status === "DONE";
+      const row = el("li", {
+        className: isDone ? "plan-items__row plan-items__row--done" : "plan-items__row",
+      });
       const left = el("div");
-      left.appendChild(el("span", { className: "plan-items__name", text: `P${item.priority} · ${name}` }));
-      const sub = el("p", { className: "plan-items__meta", text: m });
-      left.appendChild(sub);
+      left.appendChild(el("span", { className: "plan-items__name", text: name }));
+      if (m) left.appendChild(el("p", { className: "plan-items__meta", text: m }));
       const right = el("div", { className: "cluster" });
-      right.appendChild(el("span", { className: `badge ${statusBadge(item.status)}`.trim(), text: statusLabel(item.status) }));
-      if (item.status !== "DONE") {
+      if (statusLabel(item.status)) {
+        right.appendChild(
+          el("span", { className: `badge ${statusBadge(item.status)}`.trim(), text: statusLabel(item.status) }),
+        );
+      }
+      if (!isDone) {
         const doneBtn = el("button", {
           className: "btn btn--ghost btn--sm",
           text: "Concluir",
@@ -530,37 +670,54 @@ function renderPlan(plan, loadError) {
     }
     planBox.appendChild(list);
     if (items.length > 8) {
-      const more = el("p", { className: "muted mt-2" });
-      more.appendChild(el("small", { text: `Mostrando 8 de ${items.length} — o roteiro completo cobre toda a taxonomia observada.` }));
+      const more = el("p", { className: "stat-label mt-2" });
+      more.appendChild(el("small", { text: `Mostrando 8 de ${items.length} assuntos.` }));
       planBox.appendChild(more);
     }
   }
 
-  // Próximo estudo em destaque.
+  renderNextStepOf(plan);
+}
+
+function renderNextStepOf(plan) {
   const next = nextStudyOf(plan);
   if (!next) {
-    renderEmpty(nextBox, {
-      title: "Roteiro concluído",
-      description: "Todos os itens estão concluídos ou pulados. Gere novamente após mais tentativas para atualizar as prioridades.",
-    });
+    renderNextStepEmpty(
+      "Roteiro concluído",
+      "Você marcou tudo o que tinha para fazer. Faça mais questões e atualize o roteiro para continuar.",
+    );
     return;
   }
   const { name, meta: m } = topicNameOf(next);
-  const card = el("div", { className: "plan-next" });
-  const title = el("p");
-  title.appendChild(el("strong", { text: `${name}` }));
-  card.appendChild(title);
-  card.appendChild(el("p", { className: "plan-items__meta", text: `${m} · prioridade P${next.priority} · ${statusLabel(next.status)}` }));
-  card.appendChild(el("p", { text: next.reason || "Motivo auditável no item do roteiro." }));
-  const actions = el("div", { className: "btn-group" });
-  if (next.status === "TODO") {
-    const start = el("button", { className: "btn btn--primary btn--sm", text: "Começar agora", attrs: { type: "button" } });
-    start.addEventListener("click", () => changeItemStatus(next, "DOING", start, "Em andamento — bom estudo."));
-    actions.appendChild(start);
+  const card = nextStepShell({
+    eyebrow: "Estude agora",
+    title: name,
+    why: studentNextReason(next.topicId),
+  });
+
+  const chips = el("div", { className: "next-step__meta" });
+  if (m) chips.appendChild(el("span", { className: "chip", text: m }));
+  chips.appendChild(el("span", { className: "chip", text: `${next.priority}º no roteiro` }));
+  if (statusLabel(next.status)) {
+    chips.appendChild(el("span", { className: "chip", text: statusLabel(next.status) }));
   }
+  card.appendChild(chips);
+
+  const actions = el("div", { className: "next-step__actions" });
+  actions.appendChild(
+    el("a", {
+      className: "btn btn--primary",
+      text: "Praticar este assunto",
+      attrs: { href: `./estudos.html?topico=${encodeURIComponent(next.topicId ?? "")}` },
+    }),
+  );
   if (next.status !== "DONE") {
-    const done = el("button", { className: "btn btn--secondary btn--sm", text: "Marcar como concluído", attrs: { type: "button" } });
-    done.addEventListener("click", () => changeItemStatus(next, "DONE", done, "Item concluído. O próximo estudo foi atualizado."));
+    const done = el("button", {
+      className: "btn btn--secondary",
+      text: "Já pratiquei",
+      attrs: { type: "button" },
+    });
+    done.addEventListener("click", () => changeItemStatus(next, "DONE", done, "Anotado! O roteiro foi atualizado."));
     actions.appendChild(done);
   }
   card.appendChild(actions);
@@ -582,38 +739,44 @@ async function changeItemStatus(item, status, button, okMessage) {
 }
 
 planGenerateBtn?.addEventListener("click", async () => {
-  setButtonLoading(planGenerateBtn, true, "Gerando…");
+  setButtonLoading(planGenerateBtn, true, "Montando…");
   try {
     currentPlan = await generatePlan();
     renderPlan(currentPlan, null);
-    toast("Roteiro gerado a partir do seu desempenho.", "success");
+    toast("Roteiro montado com base no seu desempenho.", "success");
   } catch (err) {
-    renderErrorSummary(errorBox, { title: friendlyMessage(err), traceId: err instanceof ApiError ? err.traceId : null });
+    renderErrorSummary(errorBox, {
+      title: friendlyMessage(err),
+      traceId: err instanceof ApiError ? err.traceId : null,
+    });
   } finally {
     setButtonLoading(planGenerateBtn, false);
   }
 });
 
 planRegenerateBtn?.addEventListener("click", async () => {
-  setButtonLoading(planRegenerateBtn, true, "Gerando…");
+  setButtonLoading(planRegenerateBtn, true, "Atualizando…");
   try {
     currentPlan = await generatePlan();
     renderPlan(currentPlan, null);
-    toast("Roteiro atualizado. O anterior foi preservado no histórico.", "success");
+    toast("Roteiro atualizado. O anterior continua no histórico.", "success");
   } catch (err) {
-    renderErrorSummary(errorBox, { title: friendlyMessage(err), traceId: err instanceof ApiError ? err.traceId : null });
+    renderErrorSummary(errorBox, {
+      title: friendlyMessage(err),
+      traceId: err instanceof ApiError ? err.traceId : null,
+    });
   } finally {
     setButtonLoading(planRegenerateBtn, false);
   }
 });
 
-/* ---------- 5. evolução ---------- */
+/* ---------- 6. evolução ---------- */
 
 evoSelect?.addEventListener("change", async () => {
   evoBox.textContent = "";
   const loading = el("div", { className: "loading-block", attrs: { role: "status" } });
   loading.appendChild(el("span", { className: "spinner", attrs: { "aria-hidden": "true" } }));
-  loading.appendChild(el("span", { text: "Atualizando evolução…" }));
+  loading.appendChild(el("span", { text: "Atualizando sua evolução…" }));
   evoBox.appendChild(loading);
   try {
     const data = await fetchEvolution(evoSelect.value);
@@ -626,55 +789,67 @@ evoSelect?.addEventListener("change", async () => {
 function renderEvolution(data, loadError) {
   evoBox.textContent = "";
   if (loadError) {
-    renderEmpty(evoBox, { title: "Evolução indisponível", description: friendlyMessage(loadError) });
+    renderEmpty(evoBox, { title: "Sua evolução não carregou", description: friendlyMessage(loadError) });
     return;
   }
   const buckets = data?.buckets || [];
   if (!buckets.length) {
     renderEmpty(evoBox, {
       title: "Sem evolução ainda",
-      description: "Responda questões para ver sua curva de aproveitamento por período.",
+      description: "Responda questões para ver seu aproveitamento ao longo do tempo.",
     });
     return;
   }
   const list = el("ol", { className: "evo-bars" });
   for (const b of buckets) {
+    const pct = formatPercentValue(b.accuracy) ?? 0;
+    const when = formatBucketDate(b.bucketStart);
     const row = el("li", { className: "evo-bars__row" });
-    row.appendChild(el("span", { className: "evo-bars__label", text: formatBucketDate(b.bucketStart) }));
+    row.appendChild(el("span", { className: "evo-bars__label", text: when }));
     const bar = el("div", {
       className: "progress",
-      attrs: { role: "progressbar", "aria-valuenow": String(Math.round((b.accuracy ?? 0) * 100)), "aria-valuemin": "0", "aria-valuemax": "100", "aria-label": `Aproveitamento em ${formatBucketDate(b.bucketStart)}` },
+      attrs: {
+        role: "progressbar",
+        "aria-valuenow": String(pct),
+        "aria-valuemin": "0",
+        "aria-valuemax": "100",
+        "aria-label": `Aproveitamento em ${when}`,
+      },
     });
     const fill = el("div", { className: "progress__bar" });
-    fill.style.width = `${Math.round((b.accuracy ?? 0) * 100)}%`;
+    fill.style.width = `${pct}%`;
     bar.appendChild(fill);
     row.appendChild(bar);
     row.appendChild(
-      el("span", { className: "evo-bars__value", text: `${formatPercent(b.accuracy)} · ${b.correct}/${b.scored}` }),
+      el("span", {
+        className: "evo-bars__value",
+        text: `${formatPercent(b.accuracy)} · ${b.correct}/${b.scored}`,
+      }),
     );
     list.appendChild(row);
   }
   evoBox.appendChild(list);
 }
 
-/* ---------- 6. simulados ---------- */
+/* ---------- 7. simulados ---------- */
 
 function renderSimulations(page, loadError) {
   simBox.textContent = "";
   if (loadError) {
-    renderEmpty(simBox, { title: "Simulados indisponíveis", description: friendlyMessage(loadError) });
+    renderEmpty(simBox, { title: "Seus simulados não carregaram", description: friendlyMessage(loadError) });
     return;
   }
   const items = page?.content || [];
   if (!items.length) {
     renderEmpty(simBox, {
-      title: "Nenhum simulado ainda",
-      description: "Seus simulados por disciplina e de edição real aparecem aqui.",
+      title: "Você ainda não fez nenhum simulado",
+      description:
+        "É a melhor forma de treinar no tempo da prova: você faz sem interrupção e só vê o gabarito no final.",
     });
     simBox.appendChild(
       el("a", {
         className: "btn btn--primary btn--sm mt-4",
-        text: "Fazer simulado",
+        text: "Fazer meu primeiro simulado",
         attrs: { href: "./simulado.html" },
       }),
     );
@@ -684,15 +859,20 @@ function renderSimulations(page, loadError) {
   for (const s of items) {
     const li = el("li", { className: "sim-list__item" });
     const left = el("div");
-    left.appendChild(el("p", { className: "sim-list__title", text: s.title || `Simulado #${s.attemptId}` }));
-    left.appendChild(
-      el("p", {
-        className: "sim-list__meta",
-        text: `${s.disciplineCode || "—"} · ${s.mode || "—"} · ${s.questionCount} questões · início ${formatDateTime(s.startedAt)}`,
-      }),
-    );
+    left.appendChild(el("p", { className: "sim-list__title", text: s.title || "Simulado" }));
+    const bits = [];
+    if (s.disciplineCode) bits.push(disciplineLabel(s.disciplineCode));
+    const mode = modeLabel(s.mode);
+    if (mode) bits.push(mode);
+    bits.push(`${s.questionCount} questões`);
+    bits.push(formatDateTime(s.startedAt));
+    left.appendChild(el("p", { className: "sim-list__meta", text: bits.join(" · ") }));
     const right = el("div", { className: "cluster" });
-    right.appendChild(el("span", { className: `badge ${statusBadge(s.status)}`.trim(), text: statusLabel(s.status) }));
+    if (statusLabel(s.status)) {
+      right.appendChild(
+        el("span", { className: `badge ${statusBadge(s.status)}`.trim(), text: statusLabel(s.status) }),
+      );
+    }
     li.appendChild(left);
     li.appendChild(right);
     list.appendChild(li);
@@ -705,29 +885,4 @@ function renderSimulations(page, loadError) {
       attrs: { href: "./simulado.html" },
     }),
   );
-}
-
-/* ---------- notas ---------- */
-
-function renderNotes(overview, diagnosis) {
-  notesBox.textContent = "";
-  const notes = [
-    ...(overview?.notes || []),
-    ...(diagnosis?.notes || []),
-  ];
-  const fixed = [
-    "Classificações de assunto são derivadas e aguardam curadoria humana (revisão PENDENTE) — nunca são verdade oficial do IFRN.",
-    "A edição de 2021 não existe no acervo e jamais é preenchida com dados inventados.",
-    "Questões anuladas contam como conteúdo respondido e ficam fora do aproveitamento (regra de pontuação DESCONHECIDA).",
-  ];
-  const seen = new Set();
-  for (const n of [...notes, ...fixed]) {
-    if (!n || seen.has(n)) continue;
-    seen.add(n);
-    const alert = el("div", { className: "alert alert--info", attrs: { role: "note" } });
-    const inner = el("div");
-    inner.appendChild(el("p", { text: n }));
-    alert.appendChild(inner);
-    notesBox.appendChild(alert);
-  }
 }

@@ -34,6 +34,7 @@ import {
   submitAttempt,
 } from "../api/simulado.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { disciplineLabel, modeLabel, statusLabel, difficultyLabel } from "../vocab.js";
 
 const PAGE_SIZE = 20;
 
@@ -80,7 +81,6 @@ const confirmText = document.getElementById("sim-confirm-text");
 const confirmYes = document.getElementById("sim-confirm-yes");
 const confirmNo = document.getElementById("sim-confirm-no");
 
-const notesBox = document.getElementById("sim-notes");
 
 const state = {
   user: null,
@@ -120,7 +120,6 @@ async function main() {
     hub.hidden = false;
     await loadHub();
   }
-  renderNotes();
 }
 
 function wireLogoutButtons() {
@@ -370,13 +369,6 @@ async function loadHistory(reset) {
   }
 }
 
-function statusLabel(s) {
-  if (s === "SUBMITTED") return "Concluído";
-  if (s === "IN_PROGRESS") return "Em andamento";
-  if (s === "ABANDONED") return "Abandonado";
-  return String(s || "—");
-}
-
 function statusBadge(s) {
   if (s === "SUBMITTED") return "badge--success";
   if (s === "IN_PROGRESS") return "badge--warning";
@@ -410,7 +402,7 @@ function renderHistory(total) {
     left.appendChild(
       el("p", {
         className: "sim-list__meta",
-        text: `${s.disciplineCode || "Edição real"} · ${s.mode || "—"} · ${s.questionCount} questões · início ${formatDateTime(s.startedAt)}`,
+        text: `${disciplineLabel(s.disciplineCode) || "Edição real"} · ${modeLabel(s.mode) || "—"} · ${s.questionCount} questões · início ${formatDateTime(s.startedAt)}`,
       }),
     );
     li.appendChild(left);
@@ -482,11 +474,11 @@ function execKindLabel(a) {
 
 function renderExecHeader(a) {
   document.title = `${a.title || `Simulado #${a.attemptId}`} — VouPassar`;
-  modeBadge.textContent = `Simulado · Modo ${a.mode || "—"} · ${statusLabel(a.status)}`;
+  modeBadge.textContent = `Simulado · Modo ${modeLabel(a.mode) || "—"} · ${statusLabel(a.status)}`;
   execTitle.textContent = a.title || `Simulado #${a.attemptId}`;
   const bits = [
     execKindLabel(a),
-    a.disciplineName || a.disciplineCode || "caderno misto",
+    disciplineLabel(a.disciplineCode, a.disciplineName) || "caderno misto",
     `${a.questionCount} ${a.questionCount === 1 ? "questão" : "questões"}`,
     `início ${formatDateTime(a.startedAt)}`,
   ];
@@ -496,7 +488,7 @@ function renderExecHeader(a) {
 
   execBadges.textContent = "";
   execBadges.appendChild(el("span", { className: "badge", text: execKindLabel(a) }));
-  execBadges.appendChild(el("span", { className: "badge", text: `Modo ${a.mode || "—"}` }));
+  execBadges.appendChild(el("span", { className: "badge", text: `Modo ${modeLabel(a.mode) || "—"}` }));
   execBadges.appendChild(el("span", { className: `badge ${statusBadge(a.status)}`.trim(), text: statusLabel(a.status) }));
 
   hiddenNote.textContent = "";
@@ -572,7 +564,12 @@ function positionTitle(item, detail) {
     : (detail?.examYear && detail?.questionNumber
       ? `${detail.examYear} Q${detail.questionNumber}`
       : `Questão #${item.questionId}`);
-  const disc = item.disciplineCode || detail?.discipline?.code || "";
+  // disciplineLabel evita que o código cru (LP, MAT, MATEMATICA) apareça
+  // como texto no cartão da questão.
+  const disc = disciplineLabel(
+    item.disciplineCode || detail?.discipline?.code,
+    detail?.discipline?.name,
+  );
   return { ref, disc };
 }
 
@@ -589,7 +586,7 @@ function renderSimCard(item, detail) {
   }
   card.appendChild(head);
 
-  card.appendChild(el("p", { className: "sim-card__statement", text: detail?.statement || "(enunciado ausente — NECESSITA REVISÃO)" }));
+  card.appendChild(el("p", { className: "sim-card__statement", text: detail?.statement || "(enunciado ainda não conferido)" }));
   if (detail?.hasFigure) {
     card.appendChild(el("p", { className: "sim-card__figure", text: "Esta questão possui figura no caderno original (consulte o PDF-fonte)." }));
   }
@@ -599,7 +596,7 @@ function renderSimCard(item, detail) {
   const group = `sim-${state.attemptId}-p${item.position}`;
   const options = Array.isArray(detail?.options) ? detail.options : [];
   if (options.length === 0) {
-    fieldset.appendChild(el("p", { className: "muted", text: "Sem alternativas registradas — NECESSITA REVISÃO." }));
+    fieldset.appendChild(el("p", { className: "muted", text: "Esta questão não tem alternativas registradas ainda." }));
   }
   for (const opt of options) {
     const label = el("label", { className: "sim-option" });
@@ -731,7 +728,7 @@ function showHiddenFeedback(box, choice, attempt) {
   if (attempt?.wasAnnulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choice}. Regra de pontuação DESCONHECIDA.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choice}. o IFRN não diz como pontuar questões anuladas.` }));
     return;
   }
   box.appendChild(el("p", { text: `Resposta ${choice} registrada — resultado oculto durante a prova. Conclua para ver a correção.` }));
@@ -745,7 +742,7 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
     if (fb.wasAnnulled) {
       box.dataset.tone = "warning";
       box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-      box.appendChild(el("p", { text: `Você marcou ${fb.selectedOption}. Regra de pontuação DESCONHECIDA.` }));
+      box.appendChild(el("p", { text: `Você marcou ${fb.selectedOption}. o IFRN não diz como pontuar questões anuladas.` }));
     } else if (fb.isCorrect === true) {
       box.dataset.tone = "success";
       box.appendChild(el("strong", { text: `Você acertou — alternativa ${fb.correctAnswer}.` }));
@@ -764,15 +761,15 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
     if (fb.explanation) {
       box.appendChild(el("p", { text: `Explicação: ${fb.explanation}` }));
     } else {
-      box.appendChild(el("p", { text: "Explicação ainda não redigida — NECESSITA REVISÃO." }));
+      box.appendChild(el("p", { text: "A explicação desta questão ainda não foi escrita." }));
     }
     const topicLine = fb.topicName
-      ? `Conteúdo: ${fb.topicName}${fb.subtopicName ? ` · ${fb.subtopicName}` : ""} (revisão humana pendente).`
-      : "Conteúdo: assunto NÃO CONFIRMADO (revisão pendente).";
+      ? `Conteúdo: ${fb.topicName}${fb.subtopicName ? ` · ${fb.subtopicName}` : ""}. Passa por revisão antes de virar oficial.`
+      : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
     box.appendChild(el("p", { text: topicLine }));
-    for (const n of (fb.notes ?? []).slice(0, 2)) {
-      box.appendChild(el("p", { text: n }));
-    }
+    // As `notes` que a API devolve são trilha de auditoria do servidor
+    // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
+    // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
   } catch (err) {
     box.dataset.tone = "muted";
     box.appendChild(el("p", { text: `Resposta ${choice} registrada, mas o feedback falhou: ${friendlyMessage(err)}` }));
@@ -952,15 +949,13 @@ function renderScoreGrid(res) {
   const note = el("p", { className: "muted mt-2" });
   note.appendChild(
     el("small", {
-      text: "Placar calculado no servidor (última resposta por questão; não respondidas como pendentes; anuladas fora do aproveitamento — regra DESCONHECIDA).",
+      text: "O placar considera sua última resposta em cada questão. Questão anulada pelo IFRN não entra no aproveitamento.",
     }),
   );
   resultBox.appendChild(note);
-  for (const n of (res.notes ?? []).slice(0, 3)) {
-    const p = el("p", { className: "muted" });
-    p.appendChild(el("small", { text: n }));
-    resultBox.appendChild(p);
-  }
+  // As `notes` que a API devolve são trilha de auditoria do servidor
+  // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
+  // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
 }
 
 function renderResultItems(res) {
@@ -986,19 +981,3 @@ function renderResultItems(res) {
 
 /* ---------- notas ---------- */
 
-function renderNotes() {
-  notesBox.textContent = "";
-  const fixed = [
-    "Por disciplina: sorteio sem reposição sobre questões não-anuladas; a ordem sorteada vira o caderno (posições 1..N).",
-    "Edição real: caderno integral em ordem original daquela edição, incluindo anuladas nas posições originais (fora do aproveitamento). A edição de 2021 não existe no acervo.",
-    "Modo Prova: resultado e gabarito ocultos durante a execução; correção só ao concluir ou abandonar. Anuladas contam como conteúdo e ficam fora do aproveitamento — regra de pontuação DESCONHECIDA.",
-    "Explicação ausente = NECESSITA REVISÃO, nunca texto inventado. Assuntos são classificação derivada com revisão humana PENDENTE.",
-  ];
-  for (const t of fixed) {
-    const card = el("div", { className: "card" });
-    const body = el("div", { className: "card__body" });
-    body.appendChild(el("p", { text: t, attrs: { style: "font-size:var(--text-sm)" } }));
-    card.appendChild(body);
-    notesBox.appendChild(card);
-  }
-}

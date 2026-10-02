@@ -8,10 +8,12 @@
 
 import { request } from "./client.js";
 
-export function fetchReviewQueue({ validationStatus = "PENDING", page = 0, size = 20 } = {}) {
-  return request("/api/v1/admin/review-queue", {
-    query: { validationStatus, page, size },
-  });
+export function fetchReviewQueue({ validationStatus = "PENDING", classificationStatus, page = 0, size = 20 } = {}) {
+  const query = { validationStatus, page, size };
+  if (classificationStatus) {
+    query.classificationStatus = classificationStatus;
+  }
+  return request("/api/v1/admin/review-queue", { query });
 }
 
 export function fetchInconsistencies() {

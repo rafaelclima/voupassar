@@ -29,6 +29,7 @@ import {
   fetchPlan,
 } from "../api/estudos.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { sourceTypeLabel, difficultyLabel, statusLabel } from "../vocab.js";
 
 const PAGE_SIZE = 10;
 const SESSION_KEY = "voupassar.studySessionId";
@@ -54,7 +55,6 @@ const countNote = document.getElementById("study-count");
 const pagerBox = document.getElementById("study-pagination");
 const progressBox = document.getElementById("study-progress");
 const planBox = document.getElementById("study-plan");
-const notesBox = document.getElementById("study-notes");
 
 const state = {
   user: null,
@@ -213,7 +213,6 @@ async function loadAll() {
     renderBrowser();
     renderProgress();
     renderPlan();
-    renderNotes();
     await loadQuestions();
 
     loadingBox.hidden = true;
@@ -571,22 +570,27 @@ function renderQuestionCard(q) {
   head.appendChild(el("span", { className: "question-card__id", text: questionTitle(q), attrs: { id: `q-${q.id}-t` } }));
   head.appendChild(el("span", {
     className: "badge",
-    text: q.sourceType === "OFFICIAL" ? "Oficial IFRN" : String(q.sourceType || "Origem desconhecida"),
+    text: sourceTypeLabel(q.sourceType),
   }));
   if (q.annulled) {
     head.appendChild(el("span", { className: "badge badge--warning", text: "Anulada" }));
-  } else if (q.difficultyEstimate) {
-    head.appendChild(el("span", { className: "badge", text: `Dificuldade ${q.difficultyEstimate}` }));
+  } else if (difficultyLabel(q.difficultyEstimate)) {
+    head.appendChild(
+      el("span", {
+        className: "badge",
+        text: `Dificuldade estimada: ${difficultyLabel(q.difficultyEstimate)}`,
+      }),
+    );
   }
   card.appendChild(head);
 
-  card.appendChild(el("p", { className: "question-card__statement", text: q.statement || "(enunciado ausente — NECESSITA REVISÃO)" }));
+  card.appendChild(el("p", { className: "question-card__statement", text: q.statement || "(enunciado ainda não conferido)" }));
   if (q.hasFigure) {
     card.appendChild(el("p", { className: "question-card__figure", text: "Esta questão possui figura no caderno original (consulte o PDF-fonte)." }));
   }
   const topicLine = q.topic?.name
     ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}`
-    : "Assunto: NÃO CONFIRMADO — classificação pendente de revisão.";
+    : "Assunto ainda sem classificação — passamos por revisão antes de mostrar.";
   card.appendChild(el("p", { className: "question-card__figure", text: topicLine }));
 
   const startedAt = Date.now();
@@ -653,14 +657,16 @@ function renderQuestionCard(q) {
   const feedback = el("div", { className: "question-feedback", attrs: { role: "status", hidden: "" } });
   card.appendChild(feedback);
 
-  const notes = el("ul", { className: "question-notes" });
-  for (const n of (q.notes ?? []).slice(0, 4)) {
-    notes.appendChild(el("li", { text: n }));
+  // q.notes traz a trilha de auditoria do backend ("curadoria TASK 12.2",
+  // "NECESSITA REVISÃO"): é documentação interna, não conteúdo de estudo,
+  // então não é exibida. O que importa para o aluno é a explicação.
+  if (!q.explanation) {
+    const notes = el("ul", { className: "question-notes" });
+    notes.appendChild(
+      el("li", { text: "A explicação desta questão ainda não foi escrita." }),
+    );
+    card.appendChild(notes);
   }
-  if ((q.notes ?? []).length === 0 && !q.explanation) {
-    notes.appendChild(el("li", { text: "Correção redigida ainda ausente — NECESSITA REVISÃO (nunca inventada)." }));
-  }
-  card.appendChild(notes);
 
   async function answer(selected) {
     const choice = selected === "BLANK" ? "BLANK" : selected;
@@ -748,7 +754,7 @@ function showFeedback(box, question, attempt, choice) {
   if (attempt?.wasAnnulled || question.annulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choice}. O gabarito oficial traz X (anulada). Regra de pontuação DESCONHECIDA.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choice}. O gabarito oficial traz X (anulada). o IFRN não diz como pontuar questões anuladas.` }));
   } else if (attempt?.isCorrect === true) {
     box.dataset.tone = "success";
     box.appendChild(el("strong", { text: `Você acertou — alternativa ${correct}.` }));
@@ -761,15 +767,13 @@ function showFeedback(box, question, attempt, choice) {
   if (question.explanation) {
     box.appendChild(el("p", { text: `Explicação: ${question.explanation}` }));
   } else {
-    box.appendChild(el("p", { text: "Explicação ainda não redigida — NECESSITA REVISÃO." }));
+    box.appendChild(el("p", { text: "A explicação desta questão ainda não foi escrita." }));
   }
   const topicLine = question.topic?.name
     ? `Conteúdo: ${question.topic.name}${question.subtopic?.name ? ` · ${question.subtopic.name}` : ""}.`
-    : "Conteúdo: assunto NÃO CONFIRMADO (revisão pendente).";
+    : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
   box.appendChild(el("p", { text: topicLine }));
-  for (const n of (attempt?.notes ?? []).slice(0, 2)) {
-    box.appendChild(el("p", { text: n }));
-  }
+  // attempt.notes é trilha de auditoria do servidor — ver comentário acima.
 }
 
 function renderPager(data) {
@@ -868,7 +872,11 @@ function renderProgress() {
     return;
   }
   const stats = el("div", { className: "progress-stats" });
-  stats.appendChild(statRow("Tentativas pontuáveis", `${over.correct}/${over.scored}`));
+  // O overview devolve scoredAttempts (não scored); usar o campo errado
+  // imprimia "99/undefined" para o aluno.
+  stats.appendChild(
+    statRow("Acertos em questões que valem nota", `${over.correct ?? 0}/${over.scoredAttempts ?? 0}`),
+  );
   stats.appendChild(statRow("Aproveitamento geral", formatPercent(over.accuracy)));
   stats.appendChild(statRow("Anuladas (fora do cálculo)", String(over.annulled ?? 0)));
   const f = state.filters;
@@ -928,9 +936,9 @@ function renderPlan() {
   }
   const name = state.allTopics.find((t) => String(t.id) === String(match.topicId))?.name
     || `Assunto #${match.topicId}`;
-  planBox.appendChild(el("p", { text: `Prioridade ${match.priority}: ${name} (${match.status})` }));
-  if (match.reason) {
-    planBox.appendChild(el("p", { className: "muted", text: match.reason }));
+  planBox.appendChild(el("p", { text: `${match.priority}. ${name}` }));
+  if (statusLabel(match.status)) {
+    planBox.appendChild(el("p", { className: "muted", text: statusLabel(match.status) }));
   }
   planBox.appendChild(el("a", {
     className: "btn btn--ghost btn--sm mt-2",
@@ -939,33 +947,3 @@ function renderPlan() {
   }));
 }
 
-function renderNotes() {
-  notesBox.textContent = "";
-  const fixed = [
-    "Provas reais: 240 questões oficiais (40 × 6 edições: 2020, 2022–2026). A edição de 2021 não existe no acervo.",
-    "Anuladas contam como conteúdo respondido e ficam fora do aproveitamento — regra de pontuação DESCONHECIDA.",
-    "Dificuldade estimada é palpite com confiança BAIXA (sem calibração). Explicação ausente = NECESSITA REVISÃO, nunca texto inventado.",
-    "Assuntos e frequências são classificação derivada com revisão humana PENDENTE — nunca verdade oficial do IFRN.",
-  ];
-  for (const t of fixed) {
-    const card = el("div", { className: "card" });
-    const body = el("div", { className: "card__body" });
-    body.appendChild(el("p", { text: t, attrs: { style: "font-size:var(--text-sm)" } }));
-    card.appendChild(body);
-    notesBox.appendChild(card);
-  }
-  for (const n of (state.overview?.notes ?? []).slice(0, 2)) {
-    const card = el("div", { className: "card" });
-    const body = el("div", { className: "card__body" });
-    body.appendChild(el("p", { text: n, attrs: { style: "font-size:var(--text-sm)" } }));
-    card.appendChild(body);
-    notesBox.appendChild(card);
-  }
-  for (const n of (state.diagnosis?.notes ?? []).slice(0, 2)) {
-    const card = el("div", { className: "card" });
-    const body = el("div", { className: "card__body" });
-    body.appendChild(el("p", { text: n, attrs: { style: "font-size:var(--text-sm)" } }));
-    card.appendChild(body);
-    notesBox.appendChild(card);
-  }
-}

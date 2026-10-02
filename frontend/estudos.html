@@ -3,9 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script>
+    // Aplica o tema antes da primeira pintura: sem isso a página carrega
+    // clara e "pula" para a escura quando o main.js roda. Os tokens do
+    // tema escuro estão em css/tokens.css ([data-theme="dark"]).
+    try {
+      var t = localStorage.getItem("theme");
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
   <meta name="description" content="Área de estudos do VouPassar — navegue por disciplinas e assuntos das provas reais do IFRN, pratique questões com correção imediata e acompanhe seu progresso." />
   <meta name="voupassar-api" content="http://localhost:8080" />
-  <meta name="theme-color" content="#0f2e47" />
+  <meta name="theme-color" content="#0d2b45" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -20,7 +34,7 @@
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
       </a>
       <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
@@ -110,7 +124,7 @@
             <!-- CONTEÚDO -->
             <section aria-labelledby="sec-conteudo-t">
               <h2 id="sec-conteudo-t">Conteúdo</h2>
-              <p class="muted"><small>Assuntos observados nas provas (taxonomia v1.1). Classificação com revisão humana pendente.</small></p>
+              <p class="muted"><small>Assuntos que aparecem nas provas do IFRN. A classificação de cada questão ainda passa por revisão humana.</small></p>
               <div id="study-browser" class="mt-4"></div>
             </section>
 
@@ -135,12 +149,6 @@
             </section>
           </aside>
         </div>
-
-        <!-- NOTAS DE EVIDÊNCIA -->
-        <section class="mt-8" aria-labelledby="sec-notas-t">
-          <h2 id="sec-notas-t">Leitura honesta</h2>
-          <div id="study-notes" class="dash-notes mt-4"></div>
-        </section>
       </div>
 
       <noscript>

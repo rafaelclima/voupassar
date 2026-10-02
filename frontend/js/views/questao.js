@@ -23,6 +23,7 @@ import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel } from "../vocab.js";
 
 const SESSION_KEY = "voupassar.studySessionId";
 
@@ -50,7 +51,6 @@ const feedbackBox = document.getElementById("questao-feedback");
 const feedbackEmpty = document.getElementById("questao-feedback-empty");
 const explanationBox = document.getElementById("questao-explanation");
 const sourceBox = document.getElementById("questao-source");
-const notesBox = document.getElementById("questao-notes");
 
 const state = {
   user: null,
@@ -229,9 +229,10 @@ function questionTitle(q) {
 }
 
 function sourceLabel(q) {
-  if (q.sourceType === "OFFICIAL") return "Oficial IFRN";
-  if (q.sourceType) return `Não-oficial (${q.sourceType}) — nunca é do IFRN`;
-  return "Origem desconhecida";
+  const label = sourceTypeLabel(q.sourceType);
+  if (!q.sourceType) return label;
+  // A distinção que importa para o aluno é oficial x não oficial.
+  return q.sourceType === "OFFICIAL" ? label : `${label} — não é questão do IFRN`;
 }
 
 function renderAll(q) {
@@ -252,14 +253,21 @@ function renderAll(q) {
   badgesEl.appendChild(el("span", { className: "badge", text: sourceLabel(q) }));
   if (q.annulled) {
     badgesEl.appendChild(el("span", { className: "badge badge--warning", text: "Anulada" }));
-  } else if (q.difficultyEstimate) {
-    badgesEl.appendChild(el("span", { className: "badge", text: `Dificuldade ${q.difficultyEstimate} (estimativa, confiança BAIXA)` }));
+  } else if (difficultyLabel(q.difficultyEstimate)) {
+    badgesEl.appendChild(
+      el("span", {
+        className: "badge",
+        text: `Dificuldade estimada: ${difficultyLabel(q.difficultyEstimate)}`,
+      }),
+    );
   }
   if (q.classificationStatus) {
-    badgesEl.appendChild(el("span", { className: "badge", text: `Classificação ${q.classificationStatus}` }));
+    badgesEl.appendChild(
+      el("span", { className: "badge", text: classificationLabel(q.classificationStatus) }),
+    );
   }
 
-  statementEl.textContent = q.statement || "(enunciado ausente — NECESSITA REVISÃO)";
+  statementEl.textContent = q.statement || "(enunciado ainda não conferido)";
   figureEl.hidden = !q.hasFigure;
 
   topicEl.textContent = "";
@@ -267,14 +275,13 @@ function renderAll(q) {
     el("small", {
       text: q.topic?.name
         ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""} (classificação derivada, revisão humana pendente)`
-        : "Assunto: NÃO CONFIRMADO — classificação pendente de revisão.",
+        : "Assunto ainda sem classificação — passamos por revisão antes de mostrar.",
     }),
   );
 
   renderOptions(q);
   renderExplanationPending(q);
   renderSource(q);
-  renderNotes(q);
 }
 
 function renderOptions(q) {
@@ -287,7 +294,7 @@ function renderOptions(q) {
   const group = `questao-${q.id}-opt`;
   const options = Array.isArray(q.options) ? q.options : [];
   if (options.length === 0) {
-    fieldset.appendChild(el("p", { className: "muted", text: "Sem alternativas registradas — NECESSITA REVISÃO." }));
+    fieldset.appendChild(el("p", { className: "muted", text: "Esta questão não tem alternativas registradas ainda." }));
   }
   for (const opt of options) {
     const label = el("label", { className: "questao-option" });
@@ -300,7 +307,7 @@ function renderOptions(q) {
   }
   if (q.annulled) {
     fieldset.appendChild(
-      el("p", { className: "muted", text: "Questão anulada pelo gabarito: conta como conteúdo respondido e fica fora do aproveitamento (regra de pontuação DESCONHECIDA)." }),
+      el("p", { className: "muted", text: "Questão anulada pelo IFRN: você pode responder, mas ela não entra no seu aproveitamento — o IFRN não publica como pontuar anuladas." }),
     );
     btnSubmit.disabled = true;
     btnBlank.disabled = true;
@@ -417,7 +424,7 @@ function showFeedback(q, attempt, choice) {
   if (attempt?.wasAnnulled || q.annulled) {
     feedbackBox.dataset.tone = "warning";
     feedbackBox.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    feedbackBox.appendChild(el("p", { text: `Você marcou ${choice}. O gabarito oficial traz X (anulada). Regra de pontuação DESCONHECIDA.` }));
+    feedbackBox.appendChild(el("p", { text: `Você marcou ${choice}. O gabarito oficial traz X, mas a questão está anulada e não conta para o seu aproveitamento.` }));
   } else if (attempt?.isCorrect === true) {
     feedbackBox.dataset.tone = "success";
     feedbackBox.appendChild(el("strong", { text: `Você acertou — alternativa ${correct}.` }));
@@ -431,12 +438,12 @@ function showFeedback(q, attempt, choice) {
   markOptions(q, choice, correct);
 
   const topicLine = q.topic?.name
-    ? `Conteúdo: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""} (revisão humana pendente).`
-    : "Conteúdo: assunto NÃO CONFIRMADO (revisão pendente).";
+    ? `Conteúdo: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}. Passa por revisão antes de virar oficial.`
+    : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
   feedbackBox.appendChild(el("p", { text: topicLine }));
-  for (const n of (attempt?.notes ?? []).slice(0, 2)) {
-    feedbackBox.appendChild(el("p", { text: n }));
-  }
+  // As `notes` que a API devolve são trilha de auditoria do servidor
+  // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
+  // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
   feedbackBox.focus?.();
 
   renderExplanationDone(q);
@@ -456,7 +463,7 @@ function renderExplanationPending(q) {
   explanationBox.textContent = "";
   explanationBox.appendChild(el("p", { className: "muted", text: "A explicação é revelada junto com o feedback." }));
   if (q && !q.explanation) {
-    explanationBox.appendChild(el("p", { className: "muted", text: "Correção redigida ainda ausente no banco — NECESSITA REVISÃO (nunca inventada)." }));
+    explanationBox.appendChild(el("p", { className: "muted", text: "A explicação desta questão ainda não foi escrita. Ela nunca é inventada: só aparece quando estiver conferida." }));
   }
 }
 
@@ -465,7 +472,7 @@ function renderExplanationDone(q) {
   if (q.explanation) {
     explanationBox.appendChild(el("p", { text: q.explanation }));
   } else {
-    explanationBox.appendChild(el("p", { text: "Explicação ainda não redigida — NECESSITA REVISÃO." }));
+    explanationBox.appendChild(el("p", { text: "A explicação desta questão ainda não foi escrita." }));
     explanationBox.appendChild(
       el("p", { className: "muted", text: "O acerto/erro acima vem do gabarito oficial; o passo a passo textual aguarda curadoria e não foi inventado." }),
     );
@@ -485,58 +492,37 @@ function renderSource(q) {
   sourceBox.textContent = "";
   const dl = el("dl", { className: "questao-source" });
   dl.appendChild(sourceRow("Identificador", `#${q.id}`));
-  dl.appendChild(sourceRow("Fonte", q.sourceType === "OFFICIAL" ? "Oficial IFRN (prova real)" : `Não-oficial (${q.sourceType || "desconhecida"})`));
+  dl.appendChild(sourceRow("Fonte", sourceLabel(q)));
   dl.appendChild(
     sourceRow(
       "Edição / número",
-      q.examYear && q.questionNumber ? `${q.examYear} · Q${q.questionNumber}` : "DESCONHECIDO — NECESSITA REVISÃO",
+      q.examYear && q.questionNumber ? `${q.examYear} · Q${q.questionNumber}` : "Origem ainda não registrada",
     ),
   );
-  dl.appendChild(sourceRow("Disciplina", q.discipline?.name || q.discipline?.code || "NÃO CONFIRMADA"));
+  dl.appendChild(sourceRow("Disciplina", q.discipline?.name || q.discipline?.code || "Ainda sem classificação"));
   dl.appendChild(
     sourceRow(
       "Páginas no PDF-fonte",
       typeof q.pageStart === "number"
         ? (q.pageEnd && q.pageEnd !== q.pageStart ? `${q.pageStart}–${q.pageEnd}` : String(q.pageStart))
-        : "DESCONHECIDA",
+        : "Não informada",
     ),
   );
   dl.appendChild(sourceRow("Figura", q.hasFigure ? "Sim — consulte o PDF-fonte (não redistribuído)" : "Não"));
   dl.appendChild(
     sourceRow(
       "Assunto",
-      q.topic?.name ? `${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}` : "NÃO CONFIRMADO",
+      q.topic?.name ? `${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}` : "Ainda sem classificação",
     ),
   );
   dl.appendChild(
     sourceRow(
       "Classificação",
-      `status ${q.classificationStatus || "DESCONHECIDO"} · confiança ${q.classificationConfidence || "DESCONHECIDA"} · taxonomia ${q.taxonomyVersion || "DESCONHECIDA"} (revisão humana pendente)`,
+      `${classificationLabel(q.classificationStatus)} · ${confidenceLabel(q.classificationConfidence)}`,
     ),
   );
-  dl.appendChild(sourceRow("Publicação", q.publicationStatus || "DESCONHECIDA"));
+  dl.appendChild(sourceRow("Publicação", publicationLabel(q.publicationStatus)));
   sourceBox.appendChild(dl);
-}
-
-function renderNotes(q) {
-  notesBox.textContent = "";
-  const items = [
-    ...((q.notes ?? []).slice(0, 6)),
-    "Modo Estudo: a correção é imediata e cada confirmação registra uma tentativa (fato imutável — correção só via nova tentativa).",
-    "Questões anuladas contam como conteúdo respondido e ficam fora do aproveitamento — regra de pontuação DESCONHECIDA.",
-    "Dificuldade estimada é palpite com confiança BAIXA (sem calibração). Explicação ausente = NECESSITA REVISÃO, nunca texto inventado.",
-    "Assuntos e frequências são classificação derivada com revisão humana PENDENTE — nunca verdade oficial do IFRN.",
-  ];
-  const seen = new Set();
-  for (const t of items) {
-    if (!t || seen.has(t)) continue;
-    seen.add(t);
-    const card = el("div", { className: "card" });
-    const body = el("div", { className: "card__body" });
-    body.appendChild(el("p", { text: t, attrs: { style: "font-size:var(--text-sm)" } }));
-    card.appendChild(body);
-    notesBox.appendChild(card);
-  }
 }
 
 /* ---------- sessão de estudo ---------- */

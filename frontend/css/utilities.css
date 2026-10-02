@@ -49,18 +49,8 @@
   }
 }
 
-.section {
-  padding-block: var(--space-8);
-}
-
-.section--tight {
-  padding-block: var(--space-4);
-}
-
-.lead {
-  font-size: var(--text-lg);
-  color: var(--color-ink-700);
-}
+/* .section, .section--tight e .lead foram para base.css: aqui só ficam
+ * utilitários de uso pontual, sem sobrepor o sistema novo. */
 
 .muted {
   color: var(--color-ink-500);

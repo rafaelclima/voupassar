@@ -219,13 +219,17 @@ def main() -> int:
         if "Telas chegam na TASK 6.3" in landing:
             fail("index.html com placeholder vencido da TASK 6.3")
 
-    # TASK 6.4 — dashboard: 6 blocos + guarda de auth + sem placeholder vencido
+    # TASK 6.4 — dashboard: blocos + guarda de auth + sem placeholder vencido
+    # O bloco "dash-notes" (notas técnicas de auditoria) foi removido das
+    # telas de aluno por decisão de produto: é documentação interna, não
+    # conteúdo de estudo. A honestidade do projeto continua na landing,
+    # na área administrativa e em docs/. Não reintroduzir o bloco aqui.
     dash = (FRONT / "dashboard.html").read_text(encoding="utf-8") if (FRONT / "dashboard.html").exists() else ""
     if dash:
         for sid in ["dash-guard", "dash-error", "dash-loading", "dash-content",
                     "dash-stats", "dash-disciplines", "dash-priorities",
                     "dash-next", "dash-plan", "dash-evolution",
-                    "dash-simulations", "dash-notes", "evo-granularity",
+                    "dash-simulations", "evo-granularity",
                     "plan-generate", "plan-regenerate"]:
             if f'id="{sid}"' not in dash:
                 fail(f"dashboard.html sem bloco #{sid} (TASK 6.4)")
@@ -249,7 +253,7 @@ def main() -> int:
         for sid in ["study-guard", "study-error", "study-loading", "study-content",
                     "study-filters", "f-disciplina", "f-topico", "f-subtopico",
                     "f-ano", "f-dificuldade", "study-browser", "study-list",
-                    "study-pagination", "study-progress", "study-plan", "study-notes",
+                    "study-pagination", "study-progress", "study-plan",
                     "study-count", "btn-clear", "btn-filter"]:
             if f'id="{sid}"' not in study:
                 fail(f"estudos.html sem bloco #{sid} (TASK 6.5)")
@@ -272,7 +276,7 @@ def main() -> int:
                     "questao-form", "questao-options", "questao-hint",
                     "questao-submit", "questao-blank", "questao-reset",
                     "questao-feedback", "questao-feedback-empty",
-                    "questao-explanation", "questao-source", "questao-notes"]:
+                    "questao-explanation", "questao-source"]:
             if f'id="{sid}"' not in questao:
                 fail(f"questao.html sem bloco #{sid} (TASK 6.6)")
         if "css/questao.css" not in questao:
@@ -306,7 +310,7 @@ def main() -> int:
                     "sim-progress-fill", "sim-hidden-note", "sim-questions",
                     "sim-submit", "sim-abandon", "sim-result-section",
                     "sim-result", "sim-confirm", "sim-confirm-text",
-                    "sim-confirm-yes", "sim-confirm-no", "sim-notes"]:
+                    "sim-confirm-yes", "sim-confirm-no"]:
             if f'id="{sid}"' not in sim:
                 fail(f"simulado.html sem bloco #{sid} (TASK 6.7)")
         if "css/simulado.css" not in sim:
@@ -348,7 +352,7 @@ def main() -> int:
                     "perfil-metas", "perfil-strengths", "perfil-weaknesses",
                     "evo-granularity", "perfil-evolution",
                     "perfil-history-count", "perfil-history", "perfil-more",
-                    "perfil-achievements", "perfil-notes"]:
+                    "perfil-achievements"]:
             if f'id="{sid}"' not in perfil:
                 fail(f"perfil.html sem bloco #{sid} (TASK 6.8)")
         if "css/perfil.css" not in perfil:
@@ -360,9 +364,16 @@ def main() -> int:
         perfil_js = (FRONT / "js" / "views" / "perfil.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "perfil.js").exists() else ""
         for token in ["fetchProfile", "updateProfile", "fetchProfileStats",
                       "fetchHistory", "fetchDiagnosis", "fetchEvolution",
-                      "perfil-more", "Fase 7"]:
+                      "perfil-more", "Conquistas em construção"]:
             if token not in perfil_js:
                 fail(f"js/views/perfil.js sem {token!r} (TASK 6.8)")
+        # A tela de perfil não pode expor identificadores de tarefa nem nomes de
+        # tabela/coluna da API no texto que o aluno lê. O check exigia a
+        # string "Fase 7", mas ela sobrevivia apenas em comentário de arquivo,
+        # o que tornava a verificação enganosa; agora checamos o texto real.
+        for leak in ["TASKs 7.1", "question_attempts", "discipline_id"]:
+            if leak in perfil_js:
+                fail(f"js/views/perfil.js expõe detalhe interno {leak!r} ao aluno")
         perfil_api = (FRONT / "js" / "api" / "perfil.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "perfil.js").exists() else ""
         for token in ["/api/v1/profile", "/api/v1/profile/stats",
                       "/api/v1/profile/history", "/api/v1/diagnosis",
@@ -418,6 +429,84 @@ def main() -> int:
             fail(f"{js.relative_to(REPO_ROOT)} com URL absoluta (centralizar em config.js)")
         if re.search(r"localhost:\d+", src) and js.name != "config.js":
             fail(f"{js.relative_to(REPO_ROOT)} com localhost hardcoded")
+
+    # Telas do aluno não podem mostrar detalhe interno do projeto. O bloco
+    # "Leitura honesta" foi removido por decisão de produto (é documentação do
+    # motor, não conteúdo de estudo); a honestidade do AGENTS.md §4 continua
+    # expressa em português natural e na área administrativa.
+    # A área admin fica de fora de propósito: lá os códigos são o vocabulário
+    # de trabalho de quem opera a curadoria.
+    ALUNO_HTML = ["index.html", "login.html", "cadastro.html",
+                  "dashboard.html", "estudos.html", "questao.html",
+                  "simulado.html", "perfil.html",
+                  "recuperar-senha.html", "redefinir-senha.html"]
+    VAZAMENTOS_HTML = [
+        "question_attempts", "discipline_id", "v1-deterministico",
+        "taxonomia v1.1", "TASKs ", "TASK ", "sessionStorage",
+        "localStorage", "bcrypt",
+    ]
+    for name in ALUNO_HTML:
+        f = FRONT / name
+        if not f.exists():
+            continue
+        src = f.read_text(encoding="utf-8")
+        # O script inline do <head> usa localStorage para guardar a preferência
+        # de tema; esse uso é legítimo e fica excluído da verificação.
+        src = re.sub(r"<script>.*?</script>", "", src, flags=re.S)
+        for token in VAZAMENTOS_HTML:
+            if token in src:
+                fail(f"{name} expõe detalhe interno {token!r} ao aluno")
+
+    ALUNO_JS = ["dashboard.js", "estudos.js", "questao.js",
+                "simulado.js", "perfil.js", "landing.js"]
+    # Bug real que já ocorreu: interpolar direto no texto um campo enum da
+    # API, fazendo "FACIL", "PROVA" ou "LP" aparecerem na tela. A tradução
+    # mora em js/vocab.js — aqui na view o valor tem que passar por ela.
+    # (Nomes de tabela/coluna e identificadores de task continuam banidos.)
+    INTERPOLACAO_ENUM = re.compile(
+        r"\$\{[^}]*\.(sourceType|difficultyEstimate|classificationStatus|"
+        r"publicationStatus|classificationConfidence|disciplineCode|mode|"
+        r"sourceDifficulty)[^}]*\}"
+    )
+    TRADUTORES = (
+        "disciplineLabel", "difficultyLabel", "modeLabel", "sourceTypeLabel",
+        "statusLabel", "masteryLabel", "classificationLabel",
+        "confidenceLabel", "publicationLabel", "topicLabel",
+    )
+    VAZAMENTOS_JS = [
+        "question_attempts", "discipline_id", "TASKs ",
+    ]
+    # As `notes` que a API devolve são trilha de auditoria do servidor
+    # ("curadoria TASK 12.2", "NECESSITA REVISÃO", "regra DESCONHECIDA").
+    # Já vazaram para a tela do aluno renderizando q.notes / attempt.notes;
+    # a verificação estática não pega isso, então a regra é explícita.
+    NOTAS_AUDITORIA = re.compile(
+        r"(q|attempt|fb|res|overview|diagnosis|stats|item|question)\??\.notes"
+    )
+    for name in ALUNO_JS:
+        f = FRONT / "js" / "views" / name
+        if not f.exists():
+            continue
+        code = "\n".join(
+            line for line in f.read_text(encoding="utf-8").splitlines()
+            if not line.strip().startswith(("*", "//"))
+        )
+        for token in VAZAMENTOS_JS:
+            if token in code:
+                fail(f"js/views/{name} expõe detalhe interno {token!r} ao aluno")
+        hit = NOTAS_AUDITORIA.search(code)
+        if hit:
+            fail(
+                f"js/views/{name} renderiza notas de auditoria da API "
+                f"({hit.group(0)}) na tela do aluno"
+            )
+        for expr in (m.group(0) for m in INTERPOLACAO_ENUM.finditer(code)):
+            if any(t in expr for t in TRADUTORES):
+                continue  # já passa pelo vocabulário
+            fail(
+                f"js/views/{name} interpola enum cru da API no texto "
+                f"({expr}) — traduzir via js/vocab.js"
+            )
 
     for html_file in [FRONT / "index.html", FRONT / "design-system.html",
                       FRONT / "dashboard.html", FRONT / "estudos.html",

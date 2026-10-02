@@ -1,23 +1,22 @@
-/* VouPassar — dashboard (TASK 6.4)
- * Só layout da página dashboard.html. Tokens, cards, tabelas, badges,
- * alerts, loading e botões vêm do design system (base/components/utilities).
- * Mobile-first: 1 coluna; 2 colunas a partir de 48rem; evolução vira
- * grade larga a partir de 64rem.
+/* VouPassar — dashboard
+ * Só o layout exclusivo desta tela. Botões, cards, badges, alerts e
+ * carregamento vêm do design system (tokens/base/components/utilities).
+ * Mobile-first: 1 coluna; 2 colunas a partir de 64rem.
  */
 
 .dash-head {
   display: grid;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
 }
 
 .dash-head p {
-  max-width: var(--measure);
+  max-width: var(--measure-narrow);
 }
 
 .dash-grid {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-8);
   grid-template-columns: 1fr;
 }
 
@@ -28,16 +27,12 @@
 }
 
 .dash-stats .stat-value--empty {
-  color: var(--color-ink-500);
+  color: var(--color-ink-400);
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 40rem) {
   .dash-stats {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dash-grid--2 {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -45,9 +40,224 @@
   .dash-stats {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .dash-grid--2 {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-10);
+  }
 }
 
-/* Lista de prioridades (diagnóstico) */
+/* ============ O passo agora ============
+ * O bloco mais importante da tela. Fundo na cor da marca, tipografia
+ * grande e uma ação evidente. É a resposta a "o que eu faço de manhã?".
+ */
+.next-step {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  background: linear-gradient(
+    135deg,
+    var(--color-hero-from) 0%,
+    var(--color-hero-via) 55%,
+    var(--color-hero-to) 100%
+  );
+  color: var(--color-hero-ink);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-brand);
+}
+
+.next-step::after {
+  /* Halo suave no canto: dá profundidade sem virar decoração chamativa. */
+  content: "";
+  position: absolute;
+  right: -6rem;
+  top: -6rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(255 255 255 / 0.12) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.next-step__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-hero-muted);
+  margin-bottom: var(--space-3);
+}
+
+.next-step__title {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+  font-weight: 800;
+  color: var(--color-hero-ink);
+  margin-bottom: var(--space-2);
+  max-width: 20ch;
+}
+
+.next-step__why {
+  color: var(--color-hero-muted);
+  font-size: var(--text-md);
+  max-width: 54ch;
+  margin-bottom: var(--space-6);
+}
+
+.next-step__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.next-step .chip {
+  background: rgb(255 255 255 / 0.12);
+  border-color: rgb(255 255 255 / 0.28);
+  color: var(--color-hero-ink);
+}
+
+.next-step__actions {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* O CTA precisa ser o objeto mais brilhante da tela.
+ * O seletor exclui a variante vazia de propósito: lá o cartão é claro, e
+ * inverter o botão (fundo navy, texto claro) produziria texto claro sobre
+ * fundo claro. */
+.next-step:not(.next-step--empty) .btn--primary {
+  background: var(--color-on-navy);
+  border-color: var(--color-on-navy);
+  color: var(--color-primary-800);
+  box-shadow: 0 8px 24px rgb(8 31 51 / 0.3);
+}
+
+.next-step:not(.next-step--empty) .btn--primary:hover {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-100);
+  color: var(--color-primary-900);
+}
+
+.next-step:not(.next-step--empty) .btn--secondary {
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.32);
+  color: var(--color-on-navy);
+  box-shadow: none;
+}
+
+.next-step:not(.next-step--empty) .btn--secondary:hover {
+  background: rgb(255 255 255 / 0.16);
+  border-color: rgb(255 255 255 / 0.5);
+  color: var(--color-on-navy);
+}
+
+/* Versão neutra quando ainda não há roteiro (estado vazio do bloco). */
+.next-step--empty {
+  background: var(--color-surface);
+  color: var(--color-ink-900);
+  border: 1.5px dashed var(--color-line-300);
+  box-shadow: none;
+  padding: var(--space-6);
+}
+
+.next-step--empty::after {
+  display: none;
+}
+
+.next-step--empty .next-step__eyebrow,
+.next-step--empty .next-step__why {
+  color: var(--color-ink-500);
+}
+
+.next-step--empty .next-step__title {
+  font-size: var(--text-xl);
+  color: var(--color-ink-900);
+}
+
+/* ============ Desempenho por disciplina ============
+ * Barra de aproveitamento por disciplina em vez de tabela: o aluno lê
+ * "quanto acerto" num relance, e os números exatos ficam na tabela.
+ */
+.disc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.disc-item {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.disc-item__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.disc-item__name {
+  font-weight: 700;
+  color: var(--color-ink-900);
+  letter-spacing: var(--tracking-tight);
+}
+
+.disc-item__value {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-tighter);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary-700);
+  line-height: 1;
+}
+
+.disc-item__value--empty {
+  color: var(--color-ink-400);
+}
+
+.disc-item__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.disc-item__track {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-line-200);
+  overflow: hidden;
+}
+
+.disc-item__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-600),
+    var(--color-accent-500)
+  );
+}
+
+/* ============ O que treinar ============ */
 .priority-list {
   list-style: none;
   padding: 0;
@@ -58,11 +268,12 @@
 
 .priority-list__item {
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
   background: var(--color-surface);
   display: grid;
   gap: var(--space-2);
+  box-shadow: var(--shadow-xs);
 }
 
 .priority-list__top {
@@ -72,10 +283,25 @@
   align-items: center;
 }
 
+/* Posição na fila: número em disco, não "#1" solto. */
 .priority-list__rank {
-  font-weight: 700;
-  color: var(--color-primary-900);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-100);
+  color: var(--color-primary-800);
+  font-size: var(--text-xs);
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
+}
+
+.priority-list__name {
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
 }
 
 .priority-list__reason {
@@ -83,32 +309,42 @@
   color: var(--color-ink-700);
 }
 
-/* Próximo estudo / plano */
-.plan-next {
-  display: grid;
-  gap: var(--space-3);
-}
-
+/* ============ Roteiro ============ */
 .plan-items {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 .plan-items__row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--color-line-200);
-  padding-top: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-line-100);
+}
+
+.plan-items__row:last-child {
+  border-bottom: none;
+}
+
+.plan-items__row:hover {
+  background: var(--color-primary-50);
 }
 
 .plan-items__name {
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink-900);
 }
 
 .plan-items__meta {
@@ -116,13 +352,30 @@
   color: var(--color-ink-500);
 }
 
-/* Evolução: barras CSS puras (sem lib, sem canvas) */
+/* Item já concluído recua visualmente. */
+.plan-items__row--done .plan-items__name {
+  color: var(--color-ink-500);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.plan-progress {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+/* ============ Evolução ============ */
 .evo-controls {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
   align-items: end;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.evo-controls .field {
+  margin-bottom: 0;
 }
 
 .evo-bars {
@@ -130,13 +383,13 @@
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .evo-bars__row {
   display: grid;
-  grid-template-columns: 7rem 1fr 4.5rem;
-  gap: var(--space-2);
+  grid-template-columns: 5.5rem 1fr 4.5rem;
+  gap: var(--space-3);
   align-items: center;
   font-size: var(--text-sm);
 }
@@ -152,10 +405,11 @@
 .evo-bars__value {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  font-weight: 700;
   color: var(--color-ink-900);
 }
 
-/* Simulados recentes */
+/* ============ Simulados ============ */
 .sim-list {
   list-style: none;
   padding: 0;
@@ -171,21 +425,17 @@
   align-items: center;
   justify-content: space-between;
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
   background: var(--color-surface);
 }
 
 .sim-list__title {
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
 }
 
 .sim-list__meta {
   font-size: var(--text-sm);
   color: var(--color-ink-500);
-}
-
-.dash-notes {
-  display: grid;
-  gap: var(--space-3);
 }

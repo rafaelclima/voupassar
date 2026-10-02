@@ -1,93 +1,246 @@
-/* VouPassar — Design tokens (TASK 6.1)
- * Mobile-first, só Custom Properties. Sem framework.
- * Paleta sóbria: azul petróleo + neutros; sem gradientes.
- * Contraste-alvo WCAG AA (texto normal ≥ 4.5:1).
+/* VouPassar — Design tokens
+ *
+ * Paleta extraída do arquivo de marca (frontend/assets/logo.png):
+ *   navy  #0D2B45  (o azul profundo do chapéu/livro)
+ *   blue  #0F5084  (o azul do "V" de check e do livro)
+ * Toda a escala --color-primary-* é derivada dessas duas posições.
+ * O violeta --color-accent-* é o único matiz fora da marca e é usado
+ * com parcimônia (destaque, progresso, foco), nunca como fundo dominante.
+ *
+ * Regra de casa: nenhum par de cor texto/fundo é usado sem estar
+ * verificado por contraste (WCAG AA, >= 4.5:1 para texto normal).
+ * Os pares foram medidos; ver docs/frontend-design-system.md.
  */
 
 :root {
-  /* ---- Cores primárias (confiança / seriedade) ---- */
-  --color-primary-900: #0f2e47;
-  --color-primary-700: #164a73;
-  --color-primary-600: #1b5a8a;
-  --color-primary-100: #e3edf5;
-  --color-primary-50: #f0f5f9;
+  /* ============ Marca: escala azul derivada da logo ============ */
+  --color-primary-900: #0b2740;
+  --color-primary-800: #0d2b45;
+  --color-primary-700: #0f3e63;
+  --color-primary-600: #0f5084;
+  --color-primary-500: #1a6bb0;
+  --color-primary-400: #3d8fd1;
+  --color-primary-300: #7fb4e4;
+  --color-primary-200: #b9d6f2;
+  --color-primary-100: #dcebfa;
+  --color-primary-50: #eff6fe;
 
-  /* ---- Neutros ---- */
-  --color-ink-900: #101828;
-  --color-ink-700: #344054;
-  --color-ink-500: #667085;
-  --color-line-300: #d0d5dd;
-  --color-line-200: #eaecf0;
-  --color-bg-100: #f2f4f7;
-  --color-bg-50: #f9fafb;
+  /* Navy da marca: fundo de blocos de destaque e rodapé */
+  --color-navy-900: #081f33;
+  --color-navy-800: #0d2b45;
+  --color-navy-700: #103352;
+
+  /* Bloco de marca em destaque (cartão "estude agora").
+   * Estes tokens NÃO são redefinidos no tema escuro, de propósito: um bloco
+   * de marca precisa ser reconhecível igual nos dois temas. A escala
+   * --color-primary-* é invertida no escuro porque ali ela vira cor de
+   * TEXTO sobre fundo escuro — usá-la como fundo ali quebrava o contraste.
+   * Texto branco sobre este gradiente: 8,4:1 a 14,5:1. */
+  --color-hero-from: #0d2b45;
+  --color-hero-via: #0f3e63;
+  --color-hero-to: #0f5084;
+  /* Texto sobre o bloco de marca: branco no título (8,4:1 a 14,5:1) e
+   * #dbe9f7 nas linhas de apoio (6,8:1 a 11,7:1). Medidos nos três
+   * tons do gradiente. */
+  --color-hero-ink: #ffffff;
+  --color-hero-muted: #dbe9f7;
+
+  /* ============ Acento (único matiz fora da marca) ============ */
+  --color-accent-700: #4c2e8f;
+  --color-accent-600: #5b36b0;
+  --color-accent-500: #6d43cc;
+  --color-accent-400: #8d63e0;
+  --color-accent-300: #b69bf0;
+  --color-accent-100: #ede6fc;
+
+  /* Texto LEGÍVEL sobre as cores sólidas. Nenhum componente presume
+   * branco: no tema escuro estes tokens invertem (o azul claro do marca
+   * com texto navy passa de 3.47:1 para 4.82:1). */
+  --color-on-primary: #ffffff;
+  --color-on-accent: #ffffff;
+  --color-on-navy: #ffffff;
+
+  /* ============ Neutros (levemente frios, para acompanhar o azul) ============ */
+  --color-ink-900: #0e1720;
+  --color-ink-700: #34465a;
+  --color-ink-500: #5e7288;
+  --color-ink-400: #8a9caf;
+  --color-line-300: #c9d4df;
+  --color-line-200: #e3eaf1;
+  --color-line-100: #eff3f7;
+  --color-bg-100: #f4f7fa;
+  --color-bg-50: #fafcfd;
   --color-surface: #ffffff;
 
-  /* ---- Feedback (texto escuro sobre fundo claro) ---- */
-  --color-success-700: #067647;
-  --color-success-50: #ecfdf3;
-  --color-success-200: #abefc6;
-  --color-danger-700: #b42318;
-  --color-danger-50: #fef3f2;
-  --color-danger-200: #fecdca;
-  --color-warning-700: #b54708;
-  --color-warning-50: #fffaeb;
-  --color-warning-200: #fedf89;
-  --color-info-700: #175cd3;
-  --color-info-50: #eff8ff;
-  --color-info-200: #b2ddff;
+  /* ============ Feedback ============ */
+  --color-success-700: #0b7a4b;
+  --color-success-600: #0f9460;
+  --color-success-50: #e6f6ee;
+  --color-success-200: #a8e0c4;
 
-  /* ---- Tipografia (pilha do sistema: zero webfonts, zero peso de rede) ---- */
-  --font-sans: -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
-    "Helvetica Neue", arial, "Noto Sans", sans-serif;
+  --color-danger-700: #c02626;
+  --color-danger-600: #d63a3a;
+  --color-danger-50: #fdecec;
+  --color-danger-200: #f8c6c6;
+
+  --color-warning-700: #a35b00;
+  --color-warning-600: #bd7000;
+  --color-warning-50: #fff4e3;
+  --color-warning-200: #f7d9a8;
+
+  --color-info-700: #0f5084;
+  --color-info-50: #eff6fe;
+  --color-info-200: #b9d6f2;
+
+  /* ============ Tipografia ============
+   * Plus Jakarta Sans variável (400–800), servida do próprio repositório
+   * em assets/fonts/. Subconjuntos latin e latin-ext, 49 KB no total,
+   * uma única requisição por arquivo, cacheada para sempre.
+   */
+  --font-sans: "Plus Jakarta Sans", -apple-system, blinkmacystemfont,
+    "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
   --font-mono: ui-monospace, sfmono-regular, menlo, consolas,
     "Liberation Mono", monospace;
 
-  --text-xs: 0.75rem;   /* 12 */
-  --text-sm: 0.875rem;  /* 14 */
-  --text-md: 1rem;      /* 16 base */
-  --text-lg: 1.125rem;  /* 18 */
-  --text-xl: 1.25rem;   /* 20 */
-  --text-2xl: 1.5rem;   /* 24 */
-  --text-3xl: 1.875rem; /* 30 */
-  --text-4xl: 2.25rem;  /* 36 */
+  --text-2xs: 0.6875rem; /* 11 — micro-rótulos, só uppercase */
+  --text-xs: 0.75rem;    /* 12 */
+  --text-sm: 0.875rem;   /* 14 */
+  --text-md: 1rem;       /* 16 — base */
+  --text-lg: 1.125rem;   /* 18 */
+  --text-xl: 1.25rem;    /* 20 */
+  --text-2xl: 1.5rem;    /* 24 */
+  --text-3xl: clamp(1.75rem, 1.45rem + 1.4vw, 2.25rem);   /* 28 → 36 */
+  --text-4xl: clamp(2rem, 1.55rem + 2.2vw, 3rem);         /* 32 → 48 */
+  --text-display: clamp(2.5rem, 1.7rem + 4vw, 4.5rem);    /* 40 → 72 */
 
-  --leading-body: 1.5;
-  --leading-heading: 1.25;
+  --leading-body: 1.6;
+  --leading-heading: 1.15;
+  --leading-tight: 1.05;
   --measure: 68ch;
+  --measure-narrow: 54ch;
 
-  /* ---- Espaçamento (base 4px) ---- */
-  --space-1: 0.25rem; /* 4 */
-  --space-2: 0.5rem;  /* 8 */
-  --space-3: 0.75rem; /* 12 */
-  --space-4: 1rem;    /* 16 */
-  --space-6: 1.5rem;  /* 24 */
-  --space-8: 2rem;    /* 32 */
-  --space-12: 3rem;   /* 48 */
-  --space-16: 4rem;   /* 64 */
+  /* Tracking: o que faz um título parecer tipografia de verdade. */
+  --tracking-tight: -0.015em;
+  --tracking-tighter: -0.03em;
+  --tracking-wide: 0.06em;
 
-  /* ---- Raios, sombras, foco ---- */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* ============ Espaçamento (base 4px) ============ */
+  --space-1: 0.25rem;  /* 4 */
+  --space-2: 0.5rem;   /* 8 */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.25rem;  /* 20 */
+  --space-6: 1.5rem;   /* 24 */
+  --space-8: 2rem;     /* 32 */
+  --space-10: 2.5rem;  /* 40 */
+  --space-12: 3rem;    /* 48 */
+  --space-16: 4rem;    /* 64 */
+  --space-20: 5rem;    /* 80 */
+  --section-gap: var(--space-12);
+
+  /* ============ Raios ============ */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
-  --shadow-md: 0 2px 8px rgb(16 24 40 / 0.08);
+  /* ============ Elevação (sombreada com o navy da marca, não com preto) ============ */
+  --shadow-xs: 0 1px 2px rgb(13 43 69 / 0.06);
+  --shadow-sm: 0 1px 2px rgb(13 43 69 / 0.05), 0 2px 6px rgb(13 43 69 / 0.04);
+  --shadow-md: 0 2px 4px rgb(13 43 69 / 0.04), 0 8px 20px rgb(13 43 69 / 0.07);
+  --shadow-lg: 0 4px 8px rgb(13 43 69 / 0.04), 0 18px 40px rgb(13 43 69 / 0.1);
+  --shadow-brand: 0 8px 24px rgb(15 80 132 / 0.24);
+  --shadow-accent: 0 8px 24px rgb(93 54 176 / 0.22);
 
-  --focus-ring: 0 0 0 3px rgb(27 90 138 / 0.35);
+  /* ============ Foco ============ */
+  --focus-ring: 0 0 0 3px rgb(15 80 132 / 0.32);
+  --focus-ring-accent: 0 0 0 3px rgb(109 67 204 / 0.32);
 
-  /* ---- Alvos de toque e layout ---- */
+  /* ============ Layout ============ */
   --touch-min: 44px;
   --container-max: 72rem; /* 1152 */
   --container-pad: var(--space-4);
+  --header-h: 68px;
 
-  /* ---- Transições (desligadas com reduced-motion) ---- */
-  --motion-fast: 120ms ease-out;
-  --motion-base: 180ms ease-out;
+  /* ============ Movimento ============ */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-fast: 140ms var(--ease-out);
+  --motion-base: 220ms var(--ease-out);
+  --motion-slow: 420ms var(--ease-out);
 }
 
 @media (min-width: 48rem) {
   :root {
     --container-pad: var(--space-6);
+    --section-gap: var(--space-16);
   }
+}
+
+/* Tema escuro: as surfaces descem para navy (não para cinza puro), o que
+ * mantém a identidade da marca em tela escura. Os pares de texto sobre
+ * surface também foram medidos — ver docs/frontend-design-system.md. */
+[data-theme="dark"] {
+  --color-primary-900: #dcebfa;
+  --color-primary-800: #b9d6f2;
+  --color-primary-700: #7fb4e4;
+  --color-primary-600: #3d8fd1;
+  --color-primary-500: #3d8fd1;
+  --color-primary-400: #7fb4e4;
+  --color-primary-300: #b9d6f2;
+  --color-primary-200: #14304a;
+  --color-primary-100: #16324c;
+  --color-primary-50: #12293e;
+
+  --color-navy-900: #060f19;
+  --color-navy-800: #0a1a2a;
+
+  --color-accent-600: #7a4fdb;
+  --color-accent-500: #a485ea;
+  --color-accent-300: #4c2e8f;
+  --color-accent-100: #221a3a;
+
+  --color-on-primary: #081f33;
+  --color-on-accent: #ffffff;
+  --color-on-navy: #ffffff;
+
+  --color-ink-900: #eef3f8;
+  --color-ink-700: #b9c6d4;
+  --color-ink-500: #8b9cad;
+  --color-ink-400: #7b8d9f;
+  --color-line-300: #2b4358;
+  --color-line-200: #1e3346;
+  --color-line-100: #18293a;
+  --color-bg-100: #0e1e2e;
+  --color-bg-50: #0a1a2a;
+  --color-surface: #12283c;
+
+  --color-success-700: #58d3a0;
+  --color-success-600: #46c491;
+  --color-success-50: #102b23;
+  --color-success-200: #1d5340;
+
+  --color-danger-700: #ff8f8f;
+  --color-danger-600: #f47777;
+  --color-danger-50: #2e1618;
+  --color-danger-200: #5c2226;
+
+  --color-warning-700: #f0b45f;
+  --color-warning-600: #e5a247;
+  --color-warning-50: #2b2011;
+  --color-warning-200: #57411d;
+
+  --color-info-700: #7fb4e4;
+  --color-info-50: #12293e;
+  --color-info-200: #14304a;
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px rgb(0 0 0 / 0.22);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 20px rgb(0 0 0 / 0.32);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.3), 0 18px 40px rgb(0 0 0 / 0.42);
+  --shadow-brand: 0 8px 24px rgb(0 0 0 / 0.45);
+
+  --focus-ring: 0 0 0 3px rgb(125 180 228 / 0.4);
+  --focus-ring-accent: 0 0 0 3px rgb(164 133 234 / 0.4);
 }

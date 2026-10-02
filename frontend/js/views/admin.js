@@ -32,6 +32,7 @@ const metricsTables = document.getElementById("admin-metrics-tables");
 const incBox = document.getElementById("admin-inconsistencies");
 const filtersForm = document.getElementById("admin-filters");
 const validationSelect = document.getElementById("f-validation");
+const classificationSelect = document.getElementById("f-classification");
 const clearBtn = document.getElementById("btn-clear");
 const queueCount = document.getElementById("admin-queue-count");
 const queueBox = document.getElementById("admin-queue");
@@ -45,7 +46,14 @@ const VALIDATION_OPTIONS = ["PENDING", "REVIEWED", "APPROVED", "REJECTED"];
 const PUBLICATION_OPTIONS = ["PENDENTE_REVISAO", "SOMENTE_REFERENCIA", "PUBLICAVEL", "NAO_PUBLICAVEL"];
 const CLASSIFICATION_OPTIONS = ["REVIEWED", "APPROVED", "REJECTED"];
 
-let queueState = { validationStatus: "PENDING", page: 0, size: PAGE_SIZE, totalPages: 0, totalElements: 0 };
+let queueState = {
+  validationStatus: "PENDING",
+  classificationStatus: "",
+  page: 0,
+  size: PAGE_SIZE,
+  totalPages: 0,
+  totalElements: 0,
+};
 
 wireLogoutButtons();
 
@@ -161,7 +169,12 @@ async function loadAll() {
   const [metrics, inconsistencies, queue] = await Promise.allSettled([
     fetchAdminMetrics(),
     fetchInconsistencies(),
-    fetchReviewQueue({ validationStatus: queueState.validationStatus, page: 0, size: queueState.size }),
+    fetchReviewQueue({
+      validationStatus: queueState.validationStatus,
+      classificationStatus: queueState.classificationStatus,
+      page: 0,
+      size: queueState.size,
+    }),
   ]);
 
   const unauthorized = [metrics, inconsistencies, queue].some(
@@ -219,6 +232,7 @@ async function reloadQueue() {
   try {
     const page = await fetchReviewQueue({
       validationStatus: queueState.validationStatus,
+      classificationStatus: queueState.classificationStatus,
       page: queueState.page,
       size: queueState.size,
     });
@@ -293,7 +307,7 @@ function renderMetrics(metrics, loadError) {
     statCard({ label: "com figura", value: String(metrics.questionsWithFigure ?? "—"), hint: "Figura no PDF-fonte; texto extraído pode estar ilegível." }),
   );
   metricsBox.appendChild(
-    statCard({ label: "classificações", value: String(metrics.classificationsTotal ?? "—"), hint: "1 ativa por questão (v1.1); 0 APPROVED sem revisão humana." }),
+    statCard({ label: "classificações", value: String(metrics.classificationsTotal ?? "—"), hint: "1 ativa por questão (v1.1); APPROVED de pré-curadoria ainda exige referendo humano." }),
   );
 
   const groups = [
@@ -414,14 +428,20 @@ function renderQueue(page, loadError) {
   const items = page?.content || [];
   queueState.totalPages = page?.totalPages ?? 0;
   queueState.totalElements = page?.totalElements ?? 0;
+  const filtro = [
+    `validação ${queueState.validationStatus}`,
+    queueState.classificationStatus ? `classificação ${queueState.classificationStatus}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   queueCount.textContent =
     queueState.totalElements === 0
-      ? `Nenhuma questão com status ${queueState.validationStatus}.`
-      : `${queueState.totalElements} questão(ões) com status ${queueState.validationStatus} — página ${queueState.page + 1} de ${Math.max(queueState.totalPages, 1)}.`;
+      ? `Nenhuma questão com ${filtro}.`
+      : `${queueState.totalElements} questão(ões) com ${filtro} — página ${queueState.page + 1} de ${Math.max(queueState.totalPages, 1)}.`;
   if (!items.length) {
     renderEmpty(queueBox, {
       title: "Fila vazia",
-      description: `Nenhuma questão com status ${queueState.validationStatus}. Troque o filtro para continuar a curadoria.`,
+      description: `Nenhuma questão com ${filtro}. Troque os filtros para continuar a curadoria.`,
     });
     syncPagination();
     return;
@@ -466,6 +486,17 @@ function queueItem(item) {
   ].join(" · ");
   li.appendChild(meta);
 
+  if (item.classificationObservation) {
+    const obs = el("p", { className: "queue-list__meta" });
+    obs.textContent = `Observação IA: ${item.classificationObservation}`;
+    li.appendChild(obs);
+  }
+  if (item.classificationEvidence) {
+    const ev = el("p", { className: "queue-list__meta" });
+    ev.textContent = `Evidência: ${String(item.classificationEvidence).slice(0, 180)}${item.classificationEvidence.length > 180 ? "…" : ""}`;
+    li.appendChild(ev);
+  }
+
   const actions = el("div", { className: "btn-group" });
   actions.appendChild(
     el("a", {
@@ -487,10 +518,22 @@ function selectField({ id, label, options, current }) {
   const wrap = el("div", { className: "field", attrs: { style: "margin-bottom:0" } });
   wrap.appendChild(el("label", { className: "field__label", text: label, attrs: { for: id } }));
   const select = el("select", { className: "select", attrs: { id } });
+  let matched = false;
   for (const opt of options) {
     const o = el("option", { text: opt, attrs: { value: opt } });
-    if (opt === current) o.selected = true;
+    if (opt === current) {
+      o.selected = true;
+      matched = true;
+    }
     select.appendChild(o);
+  }
+  // Estado vigente fora da lista de transições (ex.: classificação já
+  // APPROVED): mostra o estado real e o bloqueia — nunca Select vazio.
+  if (current && !matched) {
+    const o = el("option", { text: `${current} (vigente)`, attrs: { value: current } });
+    o.selected = true;
+    o.disabled = true;
+    select.insertBefore(o, select.firstChild);
   }
   wrap.appendChild(select);
   return { wrap, select };
@@ -590,13 +633,16 @@ function classificationForm(item) {
 filtersForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   queueState.validationStatus = validationSelect.value;
+  queueState.classificationStatus = classificationSelect.value;
   queueState.page = 0;
   await reloadQueue();
 });
 
 clearBtn?.addEventListener("click", async () => {
   validationSelect.value = "PENDING";
+  classificationSelect.value = "";
   queueState.validationStatus = "PENDING";
+  queueState.classificationStatus = "";
   queueState.page = 0;
   await reloadQueue();
 });

@@ -3,16 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Dashboard do VouPassar — desempenho, progresso, assuntos prioritários, próximo estudo, últimos simulados e evolução." />
+
+  <script>
+    // Aplica o tema antes da primeira pintura: sem isso a página carrega
+    // clara e "pula" para a escura quando o main.js roda. Os tokens do
+    // tema escuro estão em css/tokens.css ([data-theme="dark"]).
+    try {
+      var t = localStorage.getItem("theme");
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <meta name="description" content="Seu painel no VouPassar: o que estudar agora, seu aproveitamento por disciplina, os assuntos que mais caem e como você está evoluindo." />
   <meta name="voupassar-api" content="http://localhost:8080" />
-  <meta name="theme-color" content="#0f2e47" />
+  <meta name="theme-color" content="#0d2b45" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/components.css" />
   <link rel="stylesheet" href="./css/utilities.css" />
   <link rel="stylesheet" href="./css/dashboard.css" />
-  <title>Dashboard — VouPassar</title>
+  <title>Meu painel — VouPassar</title>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -20,15 +34,15 @@
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
       </a>
       <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
       <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
         <div class="site-nav__links" id="nav-links">
           <a href="./index.html">Início</a>
-          <a href="./dashboard.html" aria-current="page">Dashboard</a>
-          <a href="./estudos.html">Estudos</a>
+          <a href="./dashboard.html" aria-current="page">Meu painel</a>
+          <a href="./estudos.html">Estudar</a>
           <a href="./simulado.html">Simulado</a>
           <a href="./perfil.html">Perfil</a>
           <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
@@ -40,9 +54,8 @@
   <main id="conteudo">
     <div class="container section">
       <div class="dash-head">
-        <p><span class="badge badge--primary">Área do estudante</span></p>
-        <h1 id="dash-title">Dashboard</h1>
-        <p class="lead" id="dash-subtitle">Onde você está, o que precisa estudar, como está evoluindo e o que fazer agora.</p>
+        <h1 id="dash-title" class="display">Seu painel</h1>
+        <p class="lead" id="dash-subtitle">Carregando seu progresso…</p>
       </div>
 
       <div id="dash-guard" hidden></div>
@@ -54,74 +67,94 @@
       </div>
 
       <div id="dash-content" hidden>
-        <!-- 1. RESUMO: desempenho + progresso -->
-        <section aria-labelledby="sec-resumo-t">
-          <h2 id="sec-resumo-t">Onde estou?</h2>
-          <p class="muted"><small>Retrato do fato <span class="code-inline">question_attempts</span> (imutável). Anuladas contam como conteúdo e ficam fora do aproveitamento — regra de pontuação desconhecida.</small></p>
-          <div class="dash-stats mt-4" id="dash-stats" role="list" aria-label="Resumo de desempenho"></div>
+        <!-- 1. O PASSO AGORA: o bloco mais importante da tela fica no topo,
+             com tamanho e cor de destaque. É a resposta a "o que eu faço?" -->
+        <section aria-labelledby="sec-next-t">
+          <h2 id="sec-next-t" class="visually-hidden">O que estudar agora</h2>
+          <div id="dash-next"></div>
         </section>
 
-        <!-- 2. DESEMPENHO POR DISCIPLINA -->
-        <section class="mt-8" aria-labelledby="sec-disc-t">
-          <h2 id="sec-disc-t">Desempenho por disciplina</h2>
-          <div id="dash-disciplines" class="mt-4"></div>
+        <!-- 2. RESUMO -->
+        <section aria-labelledby="sec-resumo-t" class="mt-10">
+          <div class="section-head">
+            <div>
+              <h2 id="sec-resumo-t">Seu progresso</h2>
+              <p>Só entram aqui as questões que valem nota. Questão anulada pelo IFRN aparece, mas não conta no cálculo.</p>
+            </div>
+          </div>
+          <div class="dash-stats" id="dash-stats" role="list" aria-label="Resumo de desempenho"></div>
         </section>
 
-        <div class="dash-grid dash-grid--2 mt-8">
-          <!-- 3. ASSUNTOS PRIORITÁRIOS -->
-          <section aria-labelledby="sec-prio-t">
-            <h2 id="sec-prio-t">Assuntos prioritários</h2>
-            <p class="muted"><small>Fila do diagnóstico: só assuntos não dominados, em ordem determinística e com motivo auditável.</small></p>
-            <div id="dash-priorities" class="mt-4"></div>
+        <!-- 3. DESEMPENHO POR DISCIPLINA + 4. ASSUNTOS PARA TREINAR -->
+        <div class="dash-grid dash-grid--2 mt-10">
+          <section aria-labelledby="sec-disc-t">
+            <div class="section-head">
+              <div>
+                <h2 id="sec-disc-t">Como você vai</h2>
+                <p>Seu aproveitamento em cada disciplina.</p>
+              </div>
+            </div>
+            <div id="dash-disciplines"></div>
           </section>
 
-          <!-- 4. PRÓXIMO ESTUDO -->
-          <section aria-labelledby="sec-next-t">
-            <h2 id="sec-next-t">O que fazer agora?</h2>
-            <p class="muted"><small>Próximo item do roteiro vigente (<span class="code-inline">v1-deterministico</span>). Cada recomendação se explica — nunca é verdade absoluta.</small></p>
-            <div id="dash-next" class="mt-4"></div>
+          <section aria-labelledby="sec-prio-t">
+            <div class="section-head">
+              <div>
+                <h2 id="sec-prio-t">O que treinar</h2>
+                <p>Os assuntos com mais peso na prova e onde você ainda erra.</p>
+              </div>
+            </div>
+            <div id="dash-priorities"></div>
           </section>
         </div>
 
-        <!-- 4b. ROTEIRO COMPLETO -->
-        <section class="mt-8" aria-labelledby="sec-plan-t">
-          <h2 id="sec-plan-t">Roteiro de estudos</h2>
-          <div class="btn-group mt-4" role="group" aria-label="Ações do roteiro">
-            <button type="button" class="btn btn--primary btn--sm" id="plan-generate">Gerar roteiro</button>
-            <button type="button" class="btn btn--secondary btn--sm" id="plan-regenerate" hidden>Gerar novamente</button>
-          </div>
-          <div id="dash-plan" class="mt-4"></div>
-        </section>
-
-        <!-- 5. EVOLUÇÃO -->
-        <section class="mt-8" aria-labelledby="sec-evo-t">
-          <h2 id="sec-evo-t">Como estou evoluindo?</h2>
-          <p class="muted"><small>Série temporal em calendário UTC, sem interpolar lacunas (só períodos com tentativas). O dia local pode divergir em horas.</small></p>
-          <div class="evo-controls mt-4">
-            <div class="field" style="margin-bottom:0">
-              <label class="field__label" for="evo-granularity">Agrupar por</label>
-              <select class="select" id="evo-granularity">
-                <option value="DAY">Dia</option>
-                <option value="WEEK" selected>Semana (segunda-feira)</option>
-                <option value="MONTH">Mês (dia 1º)</option>
-              </select>
+        <!-- 5. ROTEIRO -->
+        <section aria-labelledby="sec-plan-t" class="mt-10">
+          <div class="section-head">
+            <div>
+              <h2 id="sec-plan-t">Seu roteiro de estudos</h2>
+              <p>A ordem dos assuntos foi montada a partir do seu desempenho e de quanto cada tema pesa na prova.</p>
+            </div>
+            <div class="btn-group" role="group" aria-label="Ações do roteiro">
+              <button type="button" class="btn btn--secondary btn--sm" id="plan-generate">Montar meu roteiro</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="plan-regenerate" hidden>Atualizar roteiro</button>
             </div>
           </div>
-          <div id="dash-evolution" class="mt-4"></div>
+          <div id="dash-plan"></div>
         </section>
 
-        <!-- 6. ÚLTIMOS SIMULADOS -->
-        <section class="mt-8" aria-labelledby="sec-sim-t">
-          <h2 id="sec-sim-t">Últimos simulados</h2>
-          <p class="muted"><small>Execuções mais recentes (<a href="./simulado.html">fazer simulado</a> ou praticar na <a href="./estudos.html">área de estudos</a>).</small></p>
-          <div id="dash-simulations" class="mt-4"></div>
-        </section>
+        <!-- 6. EVOLUÇÃO + 7. SIMULADOS -->
+        <div class="dash-grid dash-grid--2 mt-10">
+          <section aria-labelledby="sec-evo-t">
+            <div class="section-head">
+              <div>
+                <h2 id="sec-evo-t">Sua evolução</h2>
+                <p>Seu aproveitamento ao longo do tempo.</p>
+              </div>
+            </div>
+            <div class="evo-controls">
+              <div class="field" style="margin-bottom:0">
+                <label class="field__label" for="evo-granularity">Ver por</label>
+                <select class="select" id="evo-granularity">
+                  <option value="DAY">Dia</option>
+                  <option value="WEEK" selected>Semana</option>
+                  <option value="MONTH">Mês</option>
+                </select>
+              </div>
+            </div>
+            <div id="dash-evolution"></div>
+          </section>
 
-        <!-- NOTAS DE EVIDÊNCIA -->
-        <section class="mt-8" aria-labelledby="sec-notes-t">
-          <h2 id="sec-notes-t">Leitura honesta dos números</h2>
-          <div id="dash-notes" class="dash-notes mt-4"></div>
-        </section>
+          <section aria-labelledby="sec-sim-t">
+            <div class="section-head">
+              <div>
+                <h2 id="sec-sim-t">Seus simulados</h2>
+                <p>Treinos com a cara da prova de verdade.</p>
+              </div>
+            </div>
+            <div id="dash-simulations"></div>
+          </section>
+        </div>
       </div>
 
       <noscript>
@@ -129,7 +162,7 @@
         <div class="alert alert--warning mt-4" role="note">
           <div>
             <strong>JavaScript desligado</strong>
-            <p>O dashboard precisa de JavaScript para buscar seu desempenho na API. Ative para continuar.</p>
+            <p>Este painel precisa de JavaScript para buscar seu progresso. Ative para continuar.</p>
           </div>
         </div>
       </noscript>
@@ -138,9 +171,9 @@
 
   <footer class="site-footer">
     <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-      <p class="muted"><small>VouPassar - Preparação inteligente para o IFRN - 2026</small></p>
-      <p class="muted"><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
-      <p class="muted"><small><a href="./index.html">Início</a></small></p>
+      <p><small>VouPassar - Preparação inteligente para o IFRN - <span data-current-year>2026</span></small></p>
+      <p><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
+      <p><small><a href="./index.html">Início</a></small></p>
     </div>
   </footer>
 

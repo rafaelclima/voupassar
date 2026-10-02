@@ -54,7 +54,6 @@ const historyBox = document.getElementById("perfil-history");
 const historyCount = document.getElementById("perfil-history-count");
 const moreBtn = document.getElementById("perfil-more");
 const achievementsBox = document.getElementById("perfil-achievements");
-const notesBox = document.getElementById("perfil-notes");
 
 let overviewCache = null;
 let diagnosisCache = null;
@@ -276,7 +275,6 @@ async function loadAll() {
     { reset: true },
   );
   renderAchievements();
-  renderNotes(statsCache, overviewCache, diagnosisCache);
 
   loadingBox.hidden = true;
   content.hidden = false;
@@ -452,14 +450,14 @@ function renderStats(stats, overview, diagnosis) {
   const scored = stats?.scoredAttempts ?? overview?.scoredAttempts ?? diagnosis?.scoredAttempts ?? 0;
   const correct = stats?.correct ?? overview?.correct ?? diagnosis?.correct ?? 0;
   const acc = stats?.accuracy ?? overview?.accuracy ?? diagnosis?.accuracy ?? null;
-  const level = diagnosis?.overallLevel || "DESCONHECIDO";
+  const level = diagnosis?.overallLevel || "Ainda não informado";
   const last = stats?.lastAttemptAt || overview?.lastAttemptAt || diagnosis?.lastAttemptAt || null;
 
   statsBox.appendChild(
     statCard({
       label: "aproveitamento geral (pontuáveis)",
       value: formatPercent(acc),
-      hint: acc === null ? "Sem tentativas pontuáveis — DESCONHECIDO, nunca zero inventado." : `${correct} corretas em ${scored} pontuáveis.`,
+      hint: acc === null ? "Responda questões para calcular." : `${correct} acertos em ${scored} ${scored === 1 ? "questão" : "questões"}.`,
     }),
   );
   statsBox.appendChild(
@@ -548,7 +546,7 @@ function renderModes(stats) {
 function renderDisciplines(stats, overview) {
   const rows = stats?.byDiscipline ?? overview?.byDiscipline ?? null;
   statsTable(discBox, {
-    caption: "Aproveitamento por disciplina (factual, via discipline_id da questão)",
+    caption: "Seu aproveitamento em cada disciplina",
     columns: [["Disciplina", false], ["Respondidas", true], ["Pontuáveis", true], ["Corretas", true], ["Aproveitamento", true]],
     rows: rows
       ? rows.map((d) => [
@@ -592,7 +590,7 @@ function renderMetas(profile, plan, planError) {
   const note = el("p", { className: "muted" });
   note.appendChild(
     el("small", {
-      text: "Metas quantitativas (pontos, sequência de estudos) chegam na Fase 7 (TASKs 7.1–7.3) — PENDENTE, sem número inventado.",
+      text: "Metas com número (sequência de estudos, pontuação) ainda não estão disponíveis.",
     }),
   );
   body.appendChild(note);
@@ -877,7 +875,7 @@ function renderAchievements() {
   box.appendChild(el("h3", { text: "Conquistas em construção" }));
   box.appendChild(
     el("p", {
-      text: "Pontuação, conquistas e sequência de estudos chegam na Fase 7 (TASKs 7.1–7.3) — PENDENTE. Nenhum ponto ou selo é exibido antes de existir regra transparente no backend.",
+      text: "Pontuação, conquistas e sequência de estudos ainda não estão disponíveis. Nada é exibido como selo ou ponto antes de existir uma regra clara por trás.",
     }),
   );
   box.appendChild(
@@ -892,27 +890,3 @@ function renderAchievements() {
 
 /* ---------- notas ---------- */
 
-function renderNotes(stats, overview, diagnosis) {
-  notesBox.textContent = "";
-  const notes = [
-    ...(stats?.notes || []),
-    ...(overview?.notes || []),
-    ...(diagnosis?.notes || []),
-  ];
-  const fixed = [
-    "Classificações de assunto são derivadas e aguardam curadoria humana (revisão PENDENTE) — nunca são verdade oficial do IFRN.",
-    "A edição de 2021 não existe no acervo e jamais é preenchida com dados inventados.",
-    "Questões anuladas contam como conteúdo respondido e ficam fora do aproveitamento (regra de pontuação DESCONHECIDA).",
-    "Conquistas, pontuação e sequência de estudos (Fase 7) ainda não têm regra no backend — nada é exibido como selo ou ponto.",
-  ];
-  const seen = new Set();
-  for (const n of [...notes, ...fixed]) {
-    if (!n || seen.has(n)) continue;
-    seen.add(n);
-    const alert = el("div", { className: "alert alert--info", attrs: { role: "note" } });
-    const inner = el("div");
-    inner.appendChild(el("p", { text: n }));
-    alert.appendChild(inner);
-    notesBox.appendChild(alert);
-  }
-}

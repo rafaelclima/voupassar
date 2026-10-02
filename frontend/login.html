@@ -3,9 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script>
+    // Aplica o tema antes da primeira pintura: sem isso a página carrega
+    // clara e "pula" para a escura quando o main.js roda. Os tokens do
+    // tema escuro estão em css/tokens.css ([data-theme="dark"]).
+    try {
+      var t = localStorage.getItem("theme");
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
   <meta name="description" content="Entrar no VouPassar — acesse sua conta de estudos para o IFRN com e-mail e senha." />
   <meta name="voupassar-api" content="http://localhost:8080" />
-  <meta name="theme-color" content="#0f2e47" />
+  <meta name="theme-color" content="#0d2b45" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -20,7 +34,7 @@
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
       </a>
       <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
@@ -46,7 +60,7 @@
           <div id="auth-feedback"></div>
           <div id="auth-already" hidden></div>
           <form id="login-form" novalidate aria-describedby="login-hint">
-            <p class="muted" id="login-hint"><small>A falha de login é sempre genérica (“e-mail ou senha inválidos”) para não revelar quais contas existem.</small></p>
+            <p class="muted" id="login-hint"><small>Se o e-mail ou a senha estiver errado, aparece a mesma mensagem nos dois casos.</small></p>
             <div class="field mt-4">
               <label class="field__label" for="login-email">E-mail <span class="required" aria-hidden="true">*</span></label>
               <input class="input" id="login-email" name="email" type="email" autocomplete="email" spellcheck="false" required maxlength="254" placeholder="voce@exemplo.com" />
@@ -59,7 +73,7 @@
               </div>
             </div>
             <label class="check-row"><input type="checkbox" name="remember" value="1" /> Manter conectado neste dispositivo</label>
-            <p class="auth-meta">Sem “manter conectado”, a sessão dura apenas nesta aba (sessionStorage). Com a opção, o refresh fica em localStorage até você sair.</p>
+            <p class="auth-meta">Marque “manter conectado” para não precisar entrar de novo neste computador.</p>
             <div class="btn-group mt-4">
               <button type="submit" class="btn btn--primary btn--block" id="login-submit">Entrar</button>
             </div>

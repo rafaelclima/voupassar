@@ -3,9 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script>
+    // Aplica o tema antes da primeira pintura: sem isso a página carrega
+    // clara e "pula" para a escura quando o main.js roda. Os tokens do
+    // tema escuro estão em css/tokens.css ([data-theme="dark"]).
+    try {
+      var t = localStorage.getItem("theme");
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
   <meta name="description" content="Design system do VouPassar: tokens, tipografia, cores e componentes reutilizáveis (TASK 6.1)." />
   <meta name="voupassar-api" content="http://localhost:8080" />
-  <meta name="theme-color" content="#0f2e47" />
+  <meta name="theme-color" content="#0d2b45" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
@@ -19,7 +33,7 @@
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
       </a>
       <nav class="site-nav" aria-label="Navegação principal">
@@ -35,9 +49,10 @@
         <p><span class="badge badge--primary">TASK 6.1 · Fundação</span></p>
         <h1>Design system</h1>
         <p class="lead">
-          Base visual sóbria e acessível: uma paleta, uma pilha de fontes do
-          sistema, espaçamento consistente e componentes reutilizáveis.
-          Sem frameworks, sem gradientes, sem animação desnecessária.
+          Base visual séria e acessível: paleta derivada da marca, uma
+          grotesca geométrica variável servida do próprio repositório,
+          espaçamento consistente e componentes reutilizáveis. Sem
+          frameworks, sem animação decorativa, sem gamificação visual.
         </p>
         <p class="muted"><small>Use esta página como referência de implementação. Regras completas em <span class="code-inline">docs/frontend-design-system.md</span>.</small></p>
       </div>
@@ -107,7 +122,7 @@
               <h3>Título H3 — 20px</h3>
               <p>Parágrafo: a leitura confortável vem de medida máxima (<span class="code-inline">--measure: 68ch</span>), altura de linha 1.5 e hierarquia clara — sem excesso de cores ou efeitos.</p>
               <p class="muted"><small>Texto auxiliar / caption — 14px em cinza médio, só para informação secundária.</small></p>
-              <p><code class="code-inline">System font stack — zero webfonts</code> para performance em redes móveis.</p>
+              <p><code class="code-inline">Plus Jakarta Sans variável (400–800)</code>, servida de <code class="code-inline">assets/fonts/</code> em woff2 com subconjunto latino: 27 KB, sem requisição a terceiro e sem bloquear a renderização.</p>
             </div>
           </section>
 
