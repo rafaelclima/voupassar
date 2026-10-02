@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Área administrativa do VouPassar — fila de revisão, inconsistências, métricas e curadoria do banco de questões (acesso restrito a CURATOR/ADMIN)." />
+  <meta name="voupassar-api" content="http://localhost:8080" />
+  <meta name="theme-color" content="#0f2e47" />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/utilities.css" />
+  <link rel="stylesheet" href="./css/admin.css" />
+  <title>Administração — VouPassar</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="./index.html" aria-label="VouPassar — início">
+        <img src="./assets/favicon.svg" alt="" width="28" height="28" />
+        <span>VouPassar</span>
+      </a>
+      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
+      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
+        <div class="site-nav__links" id="nav-links">
+          <a href="./index.html">Início</a>
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./estudos.html">Estudos</a>
+          <a href="./simulado.html">Simulado</a>
+          <a href="./perfil.html">Perfil</a>
+          <a href="./admin.html" aria-current="page">Admin</a>
+          <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <div class="container section">
+      <div class="admin-head">
+        <p><span class="badge badge--primary">Área restrita — CURATOR / ADMIN</span></p>
+        <h1 id="admin-title">Administração</h1>
+        <p class="lead" id="admin-subtitle">Fila de revisão, inconsistências, métricas e curadoria do banco de questões. Curadoria revisa — nunca inventa conteúdo.</p>
+      </div>
+
+      <div id="admin-guard" hidden></div>
+      <div id="admin-forbidden" hidden></div>
+      <div id="admin-error" class="mb-4"></div>
+
+      <div id="admin-loading" class="loading-block" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Carregando dados administrativos…</span>
+      </div>
+
+      <div id="admin-content" hidden>
+        <!-- 1. MÉTRICAS -->
+        <section aria-labelledby="sec-metrics-t">
+          <h2 id="sec-metrics-t">Métricas do banco</h2>
+          <p class="muted"><small>Fotografia do banco de questões (<span class="code-inline">GET /admin/metrics</span>). Sem PII, sem conteúdo integral.</small></p>
+          <div class="admin-stats mt-4" id="admin-metrics" role="list" aria-label="Métricas do banco de questões"></div>
+          <div id="admin-metrics-tables" class="mt-4"></div>
+        </section>
+
+        <!-- 2. INCONSISTÊNCIAS -->
+        <section class="mt-8" aria-labelledby="sec-inc-t">
+          <h2 id="sec-inc-t">Inconsistências</h2>
+          <p class="muted"><small>Checagens vivas da auditoria 11.1 (<span class="code-inline">GET /admin/inconsistencies</span>). Contagem zero = saudável. Qualquer positivo é fila de curadoria — nunca deleção automática.</small></p>
+          <div id="admin-inconsistencies" class="mt-4"></div>
+        </section>
+
+        <!-- 3. FILA DE REVISÃO -->
+        <section class="mt-8" aria-labelledby="sec-queue-t">
+          <h2 id="sec-queue-t">Fila de revisão</h2>
+          <p class="muted"><small>Questões por status de validação (<span class="code-inline">GET /admin/review-queue</span>). O conteúdo integral sai no detalhe da questão — aqui vai o necessário para priorizar.</small></p>
+          <form id="admin-filters" class="admin-filters mt-4" aria-label="Filtrar fila de revisão">
+            <div class="field" style="margin-bottom:0">
+              <label class="field__label" for="f-validation">Status de validação</label>
+              <select class="select" id="f-validation">
+                <option value="PENDING" selected>Pendentes (PENDING)</option>
+                <option value="REVIEWED">Em revisão (REVIEWED)</option>
+                <option value="APPROVED">Aprovadas (APPROVED)</option>
+                <option value="REJECTED">Rejeitadas (REJECTED)</option>
+              </select>
+            </div>
+            <div class="btn-group">
+              <button type="submit" class="btn btn--primary btn--sm" id="btn-filter">Filtrar</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="btn-clear">Limpar</button>
+            </div>
+          </form>
+          <p class="muted mt-2"><small id="admin-queue-count" role="status">Nenhuma consulta ainda.</small></p>
+          <div id="admin-queue" class="mt-4"></div>
+          <div class="admin-pagination mt-4">
+            <button type="button" class="btn btn--secondary btn--sm" id="admin-prev">Anterior</button>
+            <p class="muted" style="margin:0"><small id="admin-page-info" role="status">Página 1</small></p>
+            <button type="button" class="btn btn--secondary btn--sm" id="admin-next">Próxima</button>
+          </div>
+        </section>
+
+        <!-- NOTAS DE EVIDÊNCIA -->
+        <section class="mt-8" aria-labelledby="sec-notes-t">
+          <h2 id="sec-notes-t">Leitura honesta da curadoria</h2>
+          <div id="admin-notes" class="admin-notes mt-4"></div>
+        </section>
+      </div>
+
+      <noscript>
+        <style>.site-nav__links{display:flex !important}.site-nav__toggle{display:none !important}</style>
+        <div class="alert alert--warning mt-4" role="note">
+          <div>
+            <strong>JavaScript desligado</strong>
+            <p>A área administrativa precisa de JavaScript para buscar fila, métricas e inconsistências na API. Ative para continuar.</p>
+          </div>
+        </div>
+      </noscript>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+      <p class="muted"><small>VouPassar - Preparação inteligente para o IFRN - 2026</small></p>
+      <p class="muted"><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
+      <p class="muted"><small><a href="./dashboard.html">Dashboard</a> · <a href="./index.html">Início</a></small></p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/views/admin.js"></script>
+</body>
+</html>

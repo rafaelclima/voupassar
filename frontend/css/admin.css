@@ -1,0 +1,145 @@
+/* VouPassar — administração (TASK 12.1)
+ * Só layout da página admin.html. Tokens, cards, tabelas, badges,
+ * alerts, loading e botões vêm do design system (base/components/utilities).
+ * Mobile-first: 1 coluna; 2 colunas a partir de 48rem; stats em 4 colunas
+ * a partir de 64rem. Fila de revisão vira tabela rolável no desktop e
+ * cards empilhados no mobile (via lista — sem duplicar marcação).
+ */
+
+.admin-head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.admin-head p {
+  max-width: var(--measure);
+}
+
+.admin-stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.admin-stats .stat-value--empty {
+  color: var(--color-ink-500);
+}
+
+@media (min-width: 48rem) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .admin-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Filtros da fila */
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+/* Itens da fila de revisão */
+.queue-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.queue-list__item {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.queue-list__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.queue-list__title {
+  font-weight: 600;
+}
+
+.queue-list__meta {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+.queue-list__curadoria {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--color-line-200);
+  padding-top: var(--space-3);
+}
+
+@media (min-width: 48rem) {
+  .queue-list__curadoria {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.curadoria-form {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+
+.curadoria-form__hint {
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+}
+
+/* Paginação */
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Inconsistências */
+.inc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.inc-list__item {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.inc-list__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.admin-notes {
+  display: grid;
+  gap: var(--space-3);
+}

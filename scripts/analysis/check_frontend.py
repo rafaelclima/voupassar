@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão) + 6.7 (simulado) + 6.8 (perfil).
+"""Validador do frontend — TASKs 6.1 (design system) + 6.2 (landing) + 6.3 (auth) + 6.4 (dashboard) + 6.5 (estudos) + 6.6 (questão) + 6.7 (simulado) + 6.8 (perfil) + 12.1 (admin).
 
 Verifica `frontend/` sem rodar navegador:
   - arquivos obrigatórios existem;
@@ -41,6 +41,7 @@ REQUIRED_FILES = [
     "questao.html",
     "simulado.html",
     "perfil.html",
+    "admin.html",
     "css/tokens.css",
     "css/base.css",
     "css/components.css",
@@ -52,9 +53,11 @@ REQUIRED_FILES = [
     "css/questao.css",
     "css/simulado.css",
     "css/perfil.css",
+    "css/admin.css",
     "js/config.js",
     "js/api/client.js",
     "js/api/auth.js",
+    "js/api/admin.js",
     "js/api/dashboard.js",
     "js/api/estudos.js",
     "js/api/questao.js",
@@ -75,6 +78,7 @@ REQUIRED_FILES = [
     "js/views/questao.js",
     "js/views/simulado.js",
     "js/views/perfil.js",
+    "js/views/admin.js",
     "assets/favicon.svg",
 ]
 
@@ -152,7 +156,7 @@ def main() -> int:
     if ":focus-visible" not in base:
         fail("base.css sem :focus-visible")
 
-    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", "simulado.html", "perfil.html", *REQUIRED_AUTH_FORMS]:
+    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", "simulado.html", "perfil.html", "admin.html", *REQUIRED_AUTH_FORMS]:
         p = FRONT / page
         if not p.is_file():
             continue
@@ -370,6 +374,37 @@ def main() -> int:
             if nav and "perfil.html" not in nav:
                 fail(f"{page} sem link para perfil.html (TASK 6.8)")
 
+    # TASK 12.1 — admin: métricas + inconsistências + fila + curadoria (CURATOR/ADMIN)
+    admin = (FRONT / "admin.html").read_text(encoding="utf-8") if (FRONT / "admin.html").exists() else ""
+    if admin:
+        for sid in ["admin-guard", "admin-forbidden", "admin-error", "admin-loading", "admin-content",
+                    "admin-metrics", "admin-metrics-tables", "admin-inconsistencies",
+                    "admin-filters", "f-validation", "btn-filter", "btn-clear",
+                    "admin-queue-count", "admin-queue", "admin-prev", "admin-next",
+                    "admin-page-info", "admin-notes"]:
+            if f'id="{sid}"' not in admin:
+                fail(f"admin.html sem bloco #{sid} (TASK 12.1)")
+        if "css/admin.css" not in admin:
+            fail("admin.html sem css/admin.css")
+        if "js/views/admin.js" not in admin:
+            fail("admin.html sem js/views/admin.js")
+        if "voupassar-api" not in admin:
+            fail("admin.html sem meta voupassar-api (config.js)")
+        if "CURATOR" not in admin:
+            fail("admin.html sem menção a CURATOR/ADMIN (guarda de papel, TASK 12.1)")
+        admin_js = (FRONT / "js" / "views" / "admin.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "admin.js").exists() else ""
+        for token in ["fetchReviewQueue", "fetchInconsistencies", "fetchAdminMetrics",
+                      "updateQuestionStatus", "reviewClassification", "next=admin.html",
+                      "CURATOR", "ADMIN", "questao.html?id="]:
+            if token not in admin_js:
+                fail(f"js/views/admin.js sem {token!r} (TASK 12.1)")
+        admin_api = (FRONT / "js" / "api" / "admin.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "admin.js").exists() else ""
+        for token in ["/api/v1/admin/review-queue", "/api/v1/admin/inconsistencies",
+                      "/api/v1/admin/metrics", "/api/v1/admin/questions",
+                      "/api/v1/admin/classifications"]:
+            if token not in admin_api:
+                fail(f"js/api/admin.js sem endpoint {token!r} (TASK 12.1)")
+
     # JS: sem innerHTML; URL de API só em config.js/meta
     for js in (FRONT / "js").rglob("*.js"):
         src = js.read_text(encoding="utf-8")
@@ -387,7 +422,7 @@ def main() -> int:
     for html_file in [FRONT / "index.html", FRONT / "design-system.html",
                       FRONT / "dashboard.html", FRONT / "estudos.html",
                       FRONT / "questao.html", FRONT / "simulado.html",
-                      FRONT / "perfil.html",
+                      FRONT / "perfil.html", FRONT / "admin.html",
                       *(FRONT / p for p in REQUIRED_AUTH_FORMS)]:
         if not html_file.is_file():
             continue
