@@ -274,7 +274,8 @@ public class QuestionService {
         r.topic(), r.subtopic(),
         r.classificationConfidence(), r.taxonomyVersion(), r.classificationStatus(),
         r.validationStatus(), r.publicationStatus(),
-        List.copyOf(notes));
+        List.copyOf(notes),
+        r.figures() != null ? r.figures() : java.util.List.of());
   }
 
   private String requireDisciplineFilter(String code) {
