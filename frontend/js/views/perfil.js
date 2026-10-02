@@ -28,6 +28,11 @@ import {
   setFieldError,
   toast,
 } from "../components/ui.js";
+import {
+  disciplineLabel,
+  topicLabel,
+  translateTopicCodes,
+} from "../vocab.js";
 
 const guard = document.getElementById("perfil-guard");
 const errorBox = document.getElementById("perfil-error");
@@ -584,7 +589,7 @@ function renderMetas(profile, plan, planError) {
   body.appendChild(meta);
   if (!profile?.studyGoal && !profile?.targetYear) {
     const hint = el("p", { className: "muted" });
-    hint.appendChild(el("small", { text: "Defina objetivo e ano-alvo no formulário de dados acima — são as suas metas declaradas no MVP." }));
+    hint.appendChild(el("small", { text: "Defina objetivo e ano-alvo no formulário de dados acima — são as suas metas declaradas nesta versão." }));
     body.appendChild(hint);
   }
   const note = el("p", { className: "muted" });
@@ -606,13 +611,21 @@ function renderMetas(profile, plan, planError) {
 /* ---------- 4. dominados + 5. atenção ---------- */
 
 function topicTitle(item) {
-  return item?.topicName || item?.topicCode || `Assunto #${item?.topicId ?? "?"}`;
+  return (
+    item?.topicName ||
+    topicLabel(item?.topicCode) ||
+    `Assunto #${item?.topicId ?? "?"}`
+  );
 }
 
 function topicMeta(item) {
   const parts = [];
-  if (item?.disciplineName || item?.disciplineCode) parts.push(item.disciplineName || item.disciplineCode);
-  if (item?.topicCode) parts.push(item.topicCode);
+  if (item?.disciplineName) parts.push(item.disciplineName);
+  else if (item?.disciplineCode && disciplineLabel(item.disciplineCode) !== "Disciplina") {
+    parts.push(disciplineLabel(item.disciplineCode));
+  }
+  const topic = topicLabel(item?.topicCode);
+  if (topic) parts.push(topic);
   return parts.join(" · ");
 }
 
@@ -636,7 +649,7 @@ function renderTopicList(container, items, { emptyTitle, emptyDescription, badge
       el("span", { className: `badge ${masteryBadge(level)}`.trim(), text: `${formatPercent(item.accuracy)} · ${item.scored ?? 0} pontuáveis · ${masteryLabel(level)}` }),
     );
     li.appendChild(top);
-    li.appendChild(el("p", { className: "mastery-list__reason", text: item.reason || "Motivo auditável no diagnóstico." }));
+    li.appendChild(el("p", { className: "mastery-list__reason", text: translateTopicCodes(item.reason) || "Motivo auditável no diagnóstico." }));
     const metaText = topicMeta(item);
     if (metaText) {
       const meta = el("p", { className: "muted" });
@@ -705,7 +718,7 @@ function renderWeaknesses(diagnosis) {
         el("span", { className: `badge ${masteryBadge(level)}`.trim(), text: `${formatPercent(p.accuracy)} · ${p.scored ?? 0} pontuáveis` }),
       );
       li.appendChild(top);
-      li.appendChild(el("p", { className: "mastery-list__reason", text: p.reason || "Motivo auditável no diagnóstico." }));
+      li.appendChild(el("p", { className: "mastery-list__reason", text: translateTopicCodes(p.reason) || "Motivo auditável no diagnóstico." }));
       list.appendChild(li);
     }
     weaknessesBox.appendChild(list);

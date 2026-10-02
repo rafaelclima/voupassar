@@ -152,6 +152,23 @@ export function topicLabel(code, fallback) {
   return TOPICS[code] || "";
 }
 
+/** Troca códigos de assunto embutidos em frases do backend
+ *  (ex.: "tema GRAMATICA_NORMA com 60 questões…") pelo nome em
+ *  português, sem exibir o código cru ao aluno. Códigos
+ *  desconhecidos passam intactos — nunca inventar tradução. */
+export function translateTopicCodes(text) {
+  if (!text) return text;
+  return String(text).replace(/\b[A-Z][A-Z_]{1,}\b/g, (word) =>
+    TOPICS[word] ? TOPICS[word] : word,
+  );
+}
+
+/** Opção marcada pelo aluno. BLANK é o código que a API espera para
+ *  "responder em branco" — o aluno lê português, nunca o enum cru. */
+export function choiceLabel(choice) {
+  return choice === "BLANK" ? "em branco" : String(choice ?? "—");
+}
+
 export function plural(n, one, many) {
   return `${n} ${n === 1 ? one : many}`;
 }

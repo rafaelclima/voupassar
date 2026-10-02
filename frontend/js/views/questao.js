@@ -23,7 +23,7 @@ import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel } from "../vocab.js";
+import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel, choiceLabel } from "../vocab.js";
 
 const SESSION_KEY = "voupassar.studySessionId";
 
@@ -420,19 +420,20 @@ function showFeedback(q, attempt, choice) {
   feedbackBox.hidden = false;
   feedbackEmpty.hidden = true;
   const correct = q.answerKey || "—";
+  const choiceLabelText = choiceLabel(choice);
 
   if (attempt?.wasAnnulled || q.annulled) {
     feedbackBox.dataset.tone = "warning";
     feedbackBox.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    feedbackBox.appendChild(el("p", { text: `Você marcou ${choice}. O gabarito oficial traz X, mas a questão está anulada e não conta para o seu aproveitamento.` }));
+    feedbackBox.appendChild(el("p", { text: `Você marcou ${choiceLabelText}. O gabarito oficial traz X, mas a questão está anulada e não conta para o seu aproveitamento.` }));
   } else if (attempt?.isCorrect === true) {
     feedbackBox.dataset.tone = "success";
     feedbackBox.appendChild(el("strong", { text: `Você acertou — alternativa ${correct}.` }));
-    feedbackBox.appendChild(el("p", { text: `Sua resposta: ${choice}.` }));
+    feedbackBox.appendChild(el("p", { text: `Sua resposta: ${choiceLabelText}.` }));
   } else {
     feedbackBox.dataset.tone = "danger";
     feedbackBox.appendChild(el("strong", { text: `Não foi dessa vez — resposta correta: ${correct}.` }));
-    feedbackBox.appendChild(el("p", { text: `Você marcou ${choice}.` }));
+    feedbackBox.appendChild(el("p", { text: `Você marcou ${choiceLabelText}.` }));
   }
 
   markOptions(q, choice, correct);

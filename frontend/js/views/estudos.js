@@ -29,7 +29,7 @@ import {
   fetchPlan,
 } from "../api/estudos.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { sourceTypeLabel, difficultyLabel, statusLabel } from "../vocab.js";
+import { sourceTypeLabel, difficultyLabel, statusLabel, choiceLabel } from "../vocab.js";
 
 const PAGE_SIZE = 10;
 const SESSION_KEY = "voupassar.studySessionId";
@@ -751,18 +751,19 @@ function showFeedback(box, question, attempt, choice) {
   box.textContent = "";
   box.hidden = false;
   const correct = question.answerKey || "—";
+  const choiceText = choiceLabel(choice);
   if (attempt?.wasAnnulled || question.annulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choice}. O gabarito oficial traz X (anulada). o IFRN não diz como pontuar questões anuladas.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceText}. O gabarito oficial traz X (anulada). o IFRN não diz como pontuar questões anuladas.` }));
   } else if (attempt?.isCorrect === true) {
     box.dataset.tone = "success";
     box.appendChild(el("strong", { text: `Você acertou — alternativa ${correct}.` }));
-    box.appendChild(el("p", { text: `Sua resposta: ${choice}.` }));
+    box.appendChild(el("p", { text: `Sua resposta: ${choiceText}.` }));
   } else {
     box.dataset.tone = "danger";
     box.appendChild(el("strong", { text: `Não foi dessa vez — resposta correta: ${correct}.` }));
-    box.appendChild(el("p", { text: `Você marcou ${choice}.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceText}.` }));
   }
   if (question.explanation) {
     box.appendChild(el("p", { text: `Explicação: ${question.explanation}` }));

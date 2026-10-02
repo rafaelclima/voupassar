@@ -34,7 +34,7 @@ import {
   submitAttempt,
 } from "../api/simulado.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { disciplineLabel, modeLabel, statusLabel, difficultyLabel } from "../vocab.js";
+import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel } from "../vocab.js";
 
 const PAGE_SIZE = 20;
 
@@ -728,10 +728,10 @@ function showHiddenFeedback(box, choice, attempt) {
   if (attempt?.wasAnnulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choice}. o IFRN não diz como pontuar questões anuladas.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceLabel(choice)}. o IFRN não diz como pontuar questões anuladas.` }));
     return;
   }
-  box.appendChild(el("p", { text: `Resposta ${choice} registrada — resultado oculto durante a prova. Conclua para ver a correção.` }));
+  box.appendChild(el("p", { text: `Resposta ${choiceLabel(choice)} registrada — resultado oculto durante a prova. Conclua para ver a correção.` }));
 }
 
 async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
@@ -742,15 +742,15 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
     if (fb.wasAnnulled) {
       box.dataset.tone = "warning";
       box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-      box.appendChild(el("p", { text: `Você marcou ${fb.selectedOption}. o IFRN não diz como pontuar questões anuladas.` }));
+      box.appendChild(el("p", { text: `Você marcou ${choiceLabel(fb.selectedOption)}. o IFRN não diz como pontuar questões anuladas.` }));
     } else if (fb.isCorrect === true) {
       box.dataset.tone = "success";
       box.appendChild(el("strong", { text: `Você acertou — alternativa ${fb.correctAnswer}.` }));
-      box.appendChild(el("p", { text: `Sua resposta: ${fb.selectedOption}.` }));
+      box.appendChild(el("p", { text: `Sua resposta: ${choiceLabel(fb.selectedOption)}.` }));
     } else {
       box.dataset.tone = "danger";
       box.appendChild(el("strong", { text: `Não foi dessa vez — resposta correta: ${fb.correctAnswer}.` }));
-      box.appendChild(el("p", { text: `Você marcou ${fb.selectedOption}.` }));
+      box.appendChild(el("p", { text: `Você marcou ${choiceLabel(fb.selectedOption)}.` }));
     }
     fieldset.querySelectorAll(".sim-option").forEach((row) => {
       const v = row.querySelector("input")?.value;
@@ -772,7 +772,7 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
     // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
   } catch (err) {
     box.dataset.tone = "muted";
-    box.appendChild(el("p", { text: `Resposta ${choice} registrada, mas o feedback falhou: ${friendlyMessage(err)}` }));
+    box.appendChild(el("p", { text: `Resposta ${choiceLabel(choice)} registrada, mas o feedback falhou: ${friendlyMessage(err)}` }));
     if (detail?.explanation) box.appendChild(el("p", { text: `Explicação: ${detail.explanation}` }));
   }
   card.dataset.answered = "1";
@@ -972,8 +972,8 @@ function renderResultItems(res) {
     let verdict;
     if (it.wasAnnulled) verdict = "Anulada — fora do aproveitamento.";
     else if (it.unanswered) verdict = "Não respondida (pendente, nunca erro inventado).";
-    else if (it.isCorrect === true) verdict = `Acertou — você marcou ${it.selectedOption}, gabarito ${it.frozenAnswerKey}.`;
-    else verdict = `Errou — você marcou ${it.selectedOption}, gabarito ${it.frozenAnswerKey}.`;
+    else if (it.isCorrect === true) verdict = `Acertou — você marcou ${choiceLabel(it.selectedOption)}, gabarito ${it.frozenAnswerKey}.`;
+    else verdict = `Errou — você marcou ${choiceLabel(it.selectedOption)}, gabarito ${it.frozenAnswerKey}.`;
     row.appendChild(el("span", { text: verdict }));
     resultBox.appendChild(row);
   }
