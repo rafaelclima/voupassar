@@ -24,15 +24,16 @@
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/components.css" />
-  <link rel="stylesheet" href="./css/utilities.css" />
-  <link rel="stylesheet" href="./css/simulado.css" />
+  <link rel="stylesheet" href="./css/utilities.css?v=6" />
+  <link rel="stylesheet" href="./css/dashboard.css?v=7" />
+  <link rel="stylesheet" href="./css/simulado.css?v=2" />
   <title>Simulado — VouPassar</title>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="site-header">
-    <div class="container site-header__inner">
+    <div class="container container--wide site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
         <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
@@ -41,8 +42,8 @@
       <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
         <div class="site-nav__links" id="nav-links">
           <a href="./index.html">Início</a>
-          <a href="./dashboard.html">Dashboard</a>
-          <a href="./estudos.html">Estudos</a>
+          <a href="./dashboard.html">Meu painel</a>
+          <a href="./estudos.html">Estudar</a>
           <a href="./simulado.html" aria-current="page">Simulado</a>
           <a href="./perfil.html">Perfil</a>
           <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
@@ -52,11 +53,17 @@
   </header>
 
   <main id="conteudo">
-    <div class="container section">
-      <div class="sim-head">
-        <p><span class="badge badge--primary">Experiência de prova</span></p>
-        <h1 id="sim-title">Simulado</h1>
-        <p class="lead" id="sim-subtitle">Monte por disciplina ou reproduza uma edição real — responda como em prova e receba a correção ao final.</p>
+    <div class="container container--wide section dash-shell sim-shell">
+      <div class="dash-head">
+        <div class="dash-head__text">
+          <p class="eyebrow dash-eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Experiência de prova</p>
+          <h1 id="sim-title" class="display">Simulado</h1>
+          <p class="lead" id="sim-subtitle">Monte por disciplina ou reproduza uma edição real — responda como em prova e receba a correção ao final.</p>
+        </div>
+        <div class="dash-head__actions">
+          <a class="btn btn--secondary btn--sm" href="./estudos.html">Estudar agora</a>
+          <a class="btn btn--primary btn--sm" href="./dashboard.html">Meu painel</a>
+        </div>
       </div>
 
       <div id="sim-guard" hidden></div>
@@ -70,24 +77,45 @@
       <div id="sim-content" hidden>
         <!-- HUB: criar + histórico (sem ?id=) -->
         <div id="sim-hub" hidden>
-          <div class="sim-grid">
-            <section class="card" aria-labelledby="sec-disc-t">
-              <div class="card__header"><h2 id="sec-disc-t" style="font-size:var(--text-md)">Por disciplina</h2></div>
-              <div class="card__body">
-                <p class="muted"><small>Sorteio sem reposição sobre questões não-anuladas da disciplina. Anuladas ficam fora da seleção.</small></p>
-                <form id="sim-create-discipline" class="sim-form mt-4" aria-label="Criar simulado por disciplina">
+          <!-- 1. HERO — convite à prova -->
+          <section aria-labelledby="sec-hero-t" class="sim-sec">
+            <h2 id="sec-hero-t" class="visually-hidden">Treine como no dia da prova</h2>
+            <div class="next-step">
+              <p class="next-step__eyebrow">Treine como no dia da prova</p>
+              <h3 class="next-step__title">Escolha o formato e comece agora</h3>
+              <p class="next-step__why">No modo Prova você responde tudo sem ver o gabarito e só recebe a correção ao final. No modo Estudo, cada questão mostra o feedback na hora.</p>
+              <div class="next-step__meta">
+                <span class="chip">Por disciplina</span>
+                <span class="chip">Edição real</span>
+                <span class="chip">Correção no servidor</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. DUO — montar por disciplina / edição real -->
+          <div class="dash-grid dash-grid--2">
+            <section aria-labelledby="sec-disc-t" class="panel">
+              <div class="panel__head">
+                <div>
+                  <h2 id="sec-disc-t">Por disciplina</h2>
+                  <p>Sorteio sem reposição sobre questões não-anuladas da disciplina. Anuladas ficam fora da seleção.</p>
+                </div>
+                <span class="panel__icon" aria-hidden="true">◈</span>
+              </div>
+              <form id="sim-create-discipline" class="sim-form" aria-label="Criar simulado por disciplina">
+                <div class="field">
+                  <label class="field__label" for="s-disc-disciplina">Disciplina</label>
+                  <select class="select" id="s-disc-disciplina" name="disciplina" required>
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <div class="sim-form__grid">
                   <div class="field">
-                    <label class="field__label" for="s-disc-disciplina">Disciplina</label>
-                    <select class="select" id="s-disc-disciplina" name="disciplina" required>
-                      <option value="">Carregando…</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label class="field__label" for="s-disc-qtd">Quantidade de questões (1–100)</label>
+                    <label class="field__label" for="s-disc-qtd">Quantidade <span class="muted">(1–100)</span></label>
                     <input class="input" id="s-disc-qtd" name="quantidade" type="number" min="1" max="100" value="10" required />
                   </div>
                   <div class="field">
-                    <label class="field__label" for="s-disc-dificuldade">Dificuldade (opcional)</label>
+                    <label class="field__label" for="s-disc-dificuldade">Dificuldade <span class="muted">(opcional)</span></label>
                     <select class="select" id="s-disc-dificuldade" name="dificuldade">
                       <option value="">Todas (sem recorte)</option>
                       <option value="FACIL">Fácil</option>
@@ -95,49 +123,58 @@
                       <option value="DIFICIL">Difícil</option>
                     </select>
                   </div>
-                  <div class="field">
-                    <label class="field__label" for="s-disc-modo">Modo</label>
-                    <select class="select" id="s-disc-modo" name="modo" required>
-                      <option value="ESTUDO">Estudo (feedback imediato por questão)</option>
-                      <option value="PROVA" selected>Prova (resultado só ao final)</option>
-                    </select>
-                  </div>
-                  <div class="btn-group">
-                    <button type="submit" class="btn btn--primary btn--sm" id="sim-disc-submit">Iniciar por disciplina</button>
-                  </div>
-                </form>
-              </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="s-disc-modo">Modo</label>
+                  <select class="select" id="s-disc-modo" name="modo" required>
+                    <option value="ESTUDO">Estudo (feedback imediato por questão)</option>
+                    <option value="PROVA" selected>Prova (resultado só ao final)</option>
+                  </select>
+                </div>
+                <div class="btn-group">
+                  <button type="submit" class="btn btn--primary btn--sm" id="sim-disc-submit">Iniciar por disciplina</button>
+                </div>
+              </form>
             </section>
 
-            <section class="card" aria-labelledby="sec-ed-t">
-              <div class="card__header"><h2 id="sec-ed-t" style="font-size:var(--text-md)">Edição real</h2></div>
-              <div class="card__body">
-                <p class="muted"><small>Caderno integral em ordem original daquela edição, incluindo anuladas nas posições originais. A edição de 2021 não existe no acervo.</small></p>
-                <form id="sim-create-edition" class="sim-form mt-4" aria-label="Criar simulado de edição real">
-                  <div class="field">
-                    <label class="field__label" for="s-ed-edicao">Edição</label>
-                    <select class="select" id="s-ed-edicao" name="edicao" required>
-                      <option value="">Carregando…</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label class="field__label" for="s-ed-modo">Modo</label>
-                    <select class="select" id="s-ed-modo" name="modo" required>
-                      <option value="ESTUDO">Estudo (feedback imediato por questão)</option>
-                      <option value="PROVA" selected>Prova (resultado só ao final)</option>
-                    </select>
-                  </div>
-                  <div class="btn-group">
-                    <button type="submit" class="btn btn--primary btn--sm" id="sim-ed-submit">Iniciar edição real</button>
-                  </div>
-                </form>
+            <section aria-labelledby="sec-ed-t" class="panel panel--insight">
+              <div class="panel__head">
+                <div>
+                  <h2 id="sec-ed-t">Edição real</h2>
+                  <p>Caderno integral em ordem original daquela edição, incluindo anuladas nas posições originais. A edição de 2021 não existe no acervo.</p>
+                </div>
+                <span class="panel__icon" aria-hidden="true">▣</span>
               </div>
+              <form id="sim-create-edition" class="sim-form" aria-label="Criar simulado de edição real">
+                <div class="field">
+                  <label class="field__label" for="s-ed-edicao">Edição</label>
+                  <select class="select" id="s-ed-edicao" name="edicao" required>
+                    <option value="">Carregando…</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="s-ed-modo">Modo</label>
+                  <select class="select" id="s-ed-modo" name="modo" required>
+                    <option value="ESTUDO">Estudo (feedback imediato por questão)</option>
+                    <option value="PROVA" selected>Prova (resultado só ao final)</option>
+                  </select>
+                </div>
+                <div class="btn-group">
+                  <button type="submit" class="btn btn--primary btn--sm" id="sim-ed-submit">Iniciar edição real</button>
+                </div>
+              </form>
             </section>
           </div>
 
-          <section class="mt-8" aria-labelledby="sec-hist-t">
-            <h2 id="sec-hist-t">Seus simulados</h2>
-            <p class="muted"><small id="sim-history-count" role="status">Execuções mais recentes primeiro.</small></p>
+          <!-- 3. HISTÓRICO -->
+          <section aria-labelledby="sec-hist-t" class="panel">
+            <div class="panel__head panel__head--split">
+              <div>
+                <h2 id="sec-hist-t">Seus simulados</h2>
+                <p><span id="sim-history-count" role="status">Execuções mais recentes primeiro.</span></p>
+              </div>
+              <span class="badge" id="sim-history-badge">Histórico</span>
+            </div>
             <div id="sim-history" class="mt-4"></div>
             <div class="btn-group mt-4">
               <button type="button" class="btn btn--secondary btn--sm" id="sim-more" hidden>Carregar mais</button>
@@ -151,41 +188,68 @@
             <a class="btn btn--ghost btn--sm" id="sim-back" href="./simulado.html">← Todos os simulados</a>
           </nav>
 
-          <p class="mt-4"><span class="badge badge--primary" id="sim-mode-badge">Simulado</span></p>
-          <h2 id="sim-exec-title" tabindex="-1">Execução</h2>
-          <p class="muted" id="sim-exec-meta"><small>Carregando caderno…</small></p>
-          <div id="sim-exec-badges" class="sim-badges mt-2" aria-label="Características da execução"></div>
-
-          <div class="card mt-4" aria-label="Progresso da execução">
-            <div class="card__body">
-              <p class="muted"><small id="sim-progress-text" role="status">0 de 0 respondidas</small></p>
-              <div class="progress mt-2" role="progressbar" aria-label="Progresso do simulado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="sim-progress-bar">
-                <div class="progress__bar" id="sim-progress-fill" style="width:0%"></div>
-              </div>
-              <p class="muted mt-2" id="sim-hidden-note"><small></small></p>
+          <!-- 1. HERO DA PROVA -->
+          <section aria-labelledby="sim-exec-title" class="sim-sec mt-4">
+            <div class="next-step next-step--exec">
+              <p class="next-step__eyebrow"><span class="badge badge--primary" id="sim-mode-badge">Simulado</span></p>
+              <h2 id="sim-exec-title" class="next-step__title" tabindex="-1">Execução</h2>
+              <p class="next-step__why" id="sim-exec-meta"><small>Carregando caderno…</small></p>
+              <div class="next-step__meta" id="sim-exec-badges" aria-label="Características da execução"></div>
             </div>
-          </div>
+          </section>
 
-          <div id="sim-questions" class="mt-4"></div>
-
-          <div class="card mt-4" aria-labelledby="sim-finish-t">
-            <div class="card__body">
-              <h2 id="sim-finish-t" style="font-size:var(--text-md)">Encerrar execução</h2>
-              <p class="muted"><small>Concluir corrige no servidor (última resposta por questão; não respondidas ficam pendentes). Abandonar registra desistência com placar parcial.</small></p>
-              <div class="btn-group mt-4">
-                <button type="button" class="btn btn--primary btn--sm" id="sim-submit">Concluir simulado</button>
-                <button type="button" class="btn btn--ghost btn--sm" id="sim-abandon">Abandonar</button>
+          <!-- 2. PROGRESSO DA EXECUÇÃO -->
+          <section aria-label="Progresso da execução" class="perf-shell sim-progress-shell">
+            <div class="perf-shell__head">
+              <div class="perf-shell__title">
+                <h2>Seu progresso</h2>
+                <p><span id="sim-progress-text" role="status">0 de 0 respondidas</span></p>
               </div>
+              <span class="health-pill" id="sim-progress-pill">
+                <strong id="sim-progress-pct">0%</strong>
+                <span class="health-pill__label">respondido</span>
+              </span>
             </div>
-          </div>
+            <div class="progress" role="progressbar" aria-label="Progresso do simulado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="sim-progress-bar">
+              <div class="progress__bar" id="sim-progress-fill" style="width:0%"></div>
+            </div>
+            <p class="muted" id="sim-hidden-note"><small></small></p>
+          </section>
 
-          <section class="mt-8" aria-labelledby="sim-result-t" id="sim-result-section" hidden>
-            <h2 id="sim-result-t" tabindex="-1">Resultado</h2>
-            <div id="sim-result" class="mt-4"></div>
+          <!-- 3. CADERNO -->
+          <section aria-label="Caderno de questões" class="sim-sec">
+            <div id="sim-questions" class="sim-caderno"></div>
+          </section>
+
+          <!-- 4. ENCERRAR -->
+          <section aria-labelledby="sim-finish-t" class="panel">
+            <div class="panel__head">
+              <div>
+                <h2 id="sim-finish-t">Encerrar execução</h2>
+                <p>Concluir corrige no servidor (última resposta por questão; não respondidas ficam pendentes). Abandonar registra desistência com placar parcial.</p>
+              </div>
+              <span class="panel__icon" aria-hidden="true">✓</span>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn--primary btn--sm" id="sim-submit">Concluir simulado</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="sim-abandon">Abandonar</button>
+            </div>
+          </section>
+
+          <!-- 5. RESULTADO -->
+          <section aria-labelledby="sim-result-t" id="sim-result-section" class="panel panel--result" hidden>
+            <div class="panel__head">
+              <div>
+                <h2 id="sim-result-t" tabindex="-1">Resultado</h2>
+                <p>Correção oficial do servidor para esta execução.</p>
+              </div>
+              <span class="panel__icon" aria-hidden="true">★</span>
+            </div>
+            <div id="sim-result"></div>
           </section>
 
           <dialog id="sim-confirm" aria-labelledby="sim-confirm-t">
-            <h2 id="sim-confirm-t" style="font-size:var(--text-md)">Confirmar encerramento</h2>
+            <h2 id="sim-confirm-t">Confirmar encerramento</h2>
             <p id="sim-confirm-text">Deseja concluir? Não será possível responder após encerrar.</p>
             <div class="btn-group mt-4">
               <button type="button" class="btn btn--primary btn--sm" id="sim-confirm-yes">Confirmar</button>
@@ -209,9 +273,9 @@
 
   <footer class="site-footer">
     <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-      <p class="muted"><small>VouPassar - Preparação inteligente para o IFRN - 2026</small></p>
-      <p class="muted"><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
-      <p class="muted"><small><a href="./dashboard.html">Dashboard</a> · <a href="./estudos.html">Estudos</a></small></p>
+      <p><small>VouPassar - Preparação inteligente para o IFRN - <span data-current-year>2026</span></small></p>
+      <p><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
+      <p><small><a href="./dashboard.html">Meu painel</a> · <a href="./index.html">Início</a></small></p>
     </div>
   </footer>
 

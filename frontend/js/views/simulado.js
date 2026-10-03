@@ -376,6 +376,20 @@ function statusBadge(s) {
   return "";
 }
 
+function initialsOf(label) {
+  const words = String(label || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "•";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function avatarColor(key) {
+  const palette = ["#0f5084", "#6d43cc", "#0b7a4b", "#b83e06", "#4c2e8f"];
+  let h = 0;
+  for (const c of String(key || "")) h = (h * 31 + c.charCodeAt(0)) % 997;
+  return palette[h % palette.length];
+}
+
 function formatDateTime(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -397,18 +411,22 @@ function renderHistory(total) {
   }
   const list = el("ol", { className: "sim-list" });
   for (const s of state.historyItems) {
+    const title = simulationTitle(s.title, `Simulado #${s.attemptId}`);
     const li = el("li", { className: "sim-list__item" });
-    const left = el("div");
-    left.appendChild(el("p", { className: "sim-list__title", text: simulationTitle(s.title, `Simulado #${s.attemptId}`) }));
-    left.appendChild(
-      el("p", {
-        className: "sim-list__meta",
-        text: `${disciplineLabel(s.disciplineCode) || "Edição real"} · ${modeLabel(s.mode) || "—"} · ${s.questionCount} questões · início ${formatDateTime(s.startedAt)}`,
-      }),
-    );
+    const avatar = el("span", { className: "sim-list__avatar", text: initialsOf(title) });
+    avatar.style.setProperty("--sa", avatarColor(s.attemptId ?? title));
+    avatar.setAttribute("aria-hidden", "true");
+    li.appendChild(avatar);
+    const left = el("div", { className: "sim-list__main" });
+    left.appendChild(el("p", { className: "sim-list__title", text: title }));
+    const kind = disciplineLabel(s.disciplineCode) || "Edição real";
+    const bits = [kind, modeLabel(s.mode) || "—", `${s.questionCount} questões`, `início ${formatDateTime(s.startedAt)}`];
+    left.appendChild(el("p", { className: "sim-list__meta", text: bits.join(" · ") }));
     li.appendChild(left);
     const right = el("div", { className: "cluster" });
-    right.appendChild(el("span", { className: `badge ${statusBadge(s.status)}`.trim(), text: statusLabel(s.status) }));
+    if (statusLabel(s.status)) {
+      right.appendChild(el("span", { className: `badge ${statusBadge(s.status)}`.trim(), text: statusLabel(s.status) }));
+    }
     const openLabel = s.status === "IN_PROGRESS" ? "Retomar" : "Ver resultado";
     right.appendChild(
       el("a", {
@@ -505,7 +523,7 @@ function renderExecHeader(a) {
   }
   updateProgress();
   bindFinishButtons();
-  const finishCard = btnSubmit.closest(".card");
+  const finishCard = btnSubmit.closest(".panel");
   if (finishCard) finishCard.hidden = !isOpen();
 }
 
@@ -525,6 +543,8 @@ function updateProgress() {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   progressFill.style.width = `${pct}%`;
   progressBar.setAttribute("aria-valuenow", String(pct));
+  const pctEl = document.getElementById("sim-progress-pct");
+  if (pctEl) pctEl.textContent = `${pct}%`;
 }
 
 async function loadCaderno(attempt) {
@@ -579,6 +599,7 @@ function renderSimCard(item, detail) {
   const open = isOpen();
   const { ref, disc } = positionTitle(item, detail);
   const card = el("article", { className: "sim-card", attrs: { "aria-labelledby": `sim-p${item.position}-t` } });
+  if (item.answered) card.dataset.answered = "1";
   const head = el("div", { className: "sim-card__head" });
   head.appendChild(el("span", { className: "sim-card__pos", text: `Posição ${item.position}`, attrs: { id: `sim-p${item.position}-t` } }));
   head.appendChild(el("span", { className: "badge", text: ref }));
@@ -699,6 +720,7 @@ function renderSimCard(item, detail) {
 }
 
 function markAnsweredCard(card, fieldset, btnAnswer, btnBlank, actions, item, onRetry) {
+  card.dataset.answered = "1";
   fieldset.querySelectorAll("input").forEach((r) => {
     r.disabled = true;
   });
@@ -972,16 +994,34 @@ function renderResultItems(res) {
   const head = el("h3", { text: "Correção por posição", attrs: { style: "font-size:var(--text-md)", class: "mt-4" } });
   resultBox.appendChild(head);
   for (const it of items) {
-    const row = el("div", { className: "sim-result-item" });
+    let tone = "sim-result-item--pending";
+    let verdict;
+    let badgeClass = "badge";
+    let badgeText = "Pendente";
+    if (it.wasAnnulled) {
+      tone = "sim-result-item--annulled";
+      verdict = "Anulada — fora do aproveitamento.";
+      badgeClass = "badge badge--warning";
+      badgeText = "Anulada";
+    } else if (it.unanswered) {
+      verdict = "Não respondida (pendente, nunca erro inventado).";
+    } else if (it.isCorrect === true) {
+      tone = "sim-result-item--hit";
+      verdict = `Acertou — você marcou ${choiceLabel(it.selectedOption)}, gabarito ${it.frozenAnswerKey}.`;
+      badgeClass = "badge badge--success";
+      badgeText = "Acertou";
+    } else {
+      tone = "sim-result-item--miss";
+      verdict = `Errou — você marcou ${choiceLabel(it.selectedOption)}, gabarito ${it.frozenAnswerKey}.`;
+      badgeClass = "badge badge--danger";
+      badgeText = "Errou";
+    }
+    const row = el("div", { className: `sim-result-item ${tone}` });
     const title = it.sourceYear && it.sourceQuestionNumber
       ? `Posição ${it.position} · ${it.sourceYear} Q${it.sourceQuestionNumber}`
       : `Posição ${it.position}`;
     row.appendChild(el("strong", { text: title }));
-    let verdict;
-    if (it.wasAnnulled) verdict = "Anulada — fora do aproveitamento.";
-    else if (it.unanswered) verdict = "Não respondida (pendente, nunca erro inventado).";
-    else if (it.isCorrect === true) verdict = `Acertou — você marcou ${choiceLabel(it.selectedOption)}, gabarito ${it.frozenAnswerKey}.`;
-    else verdict = `Errou — você marcou ${choiceLabel(it.selectedOption)}, gabarito ${it.frozenAnswerKey}.`;
+    row.appendChild(el("span", { className: badgeClass, text: badgeText }));
     row.appendChild(el("span", { text: verdict }));
     resultBox.appendChild(row);
   }
