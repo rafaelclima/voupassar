@@ -28,10 +28,11 @@ Módulos compartilhados:
   senha, `safeNextParam()` (só relativo interno, anti open-redirect),
   painel “já conectado” com Sair.
 * `css/auth.css` — layout do cartão estreito (`.auth-wrap/.auth-card`),
-  campo de senha com toggle e links, mais o split-screen exclusivo do
-  `login.html` (painel de marca navy + painel de acesso, pílulas,
+  campo de senha com toggle e links, mais o split-screen do `login.html`
+  e do `cadastro.html` (painel de marca navy + painel de acesso, pílulas,
   mobile-first empilhado → 2 colunas quase full-bleed em `48rem` → cartão
-  maior até `80rem` em `76rem`); todo o resto vem do design system.
+  maior até `80rem` em `76rem`); o cadastro soma a lista do que a conta
+  entrega (`.login-brand__list`); todo o resto vem do design system.
 
 ## 2. Validação (cliente falha rápido; servidor é fonte da verdade)
 
@@ -77,11 +78,11 @@ de `config.js`, sem segredo no frontend. `?next=` restrito a relativo.
 
 ## 6. A11y, responsivo, Pages
 
-Semântico (`header/main/nav`, `h1` único, `skip-link`), labels reais,
+Semântico (`main`, `h1` único, `skip-link`; login/cadastro sem chrome de header/footer), labels reais,
 `autocomplete` (email/current/new/one-time-code), foco visível herdado,
 contraste AA herdado, alvos ≥44px, `prefers-reduced-motion` herdado,
 teclado nativo. Mobile-first: cartão `29rem` centralizado nas páginas de
-cadastro/recuperação/redefinição; o login usa split-screen (empilhado no
+recuperação/redefinição; login e cadastro usam split-screen (empilhado no
 mobile, 2 colunas quase full-bleed no tablet, cartão ampliado no desktop).
 1 breakpoint do cartão em `48rem`. Estático puro: caminhos `./` relativos, dinâmica só via `fetch()`,
 `API_BASE_URL` via `<meta>` (build injeta em 10.1).

@@ -2,44 +2,59 @@
 
 > Página pública em `frontend/index.html` (+ `css/landing.css`).
 > Reutiliza tokens e componentes do design system (TASK 6.1) — nada foi
-> reinventado. A referência de ofício visual é
-> `docs/brand/exemplo-referencia.png`.
+> reinventado. Referências de ofício: `frontend/assets/home_example.webp`
+> (cartão navy em viewport único, headline gigante, stats) +
+> `frontend/assets/home2_example.webp` (shell claro, prévia do produto
+> com pílulas flutuantes). A paleta segue a marca navy; sem ilustração,
+> sem perfumaria.
 
-## 1. Objetivos (TASKS.md) → seções
+## 1. Objetivos (TASKS.md) → hero tela cheia (sem rolagem no desktop)
 
-| Objetivo | Seção |
+| Objetivo | Bloco do hero |
 |---|---|
-| Explicar propósito | hero (`#hero-t`) + `#proposta` |
-| Transmitir confiança | selo "Provas reais", números auditados no painel de marca, ausência de 2021, anuladas citadas |
-| Demonstrar funcionalidades | `#funcionalidades` (6 cards com selo "API pronta") |
-| Apresentar proposta de valor | `#proposta` (3 cards) + `#como-funciona` (4 passos do ciclo) |
-| Direcionar cadastro/login | CTAs do hero e do nav → `#acesso` (cards Criar conta / Entrar) |
+| Explicar propósito | `#hero-t` ("Questões, roteiro e simulados para a sua prova") + lead concreto (o que o cadastro entrega), genérico por decisão de produto |
+| Transmitir confiança | `#hero-brand`: faixa com a logo e o nome do projeto (a fileira de números 3/2/1 foi removida — confusa) |
+| Demonstrar funcionalidades | `#hero-visual`: marca em grande + mock em CSS do roteiro + pílulas "Roteiro que se explica" / "Simulado como a prova" (nenhum enunciado exibido) |
+| Apresentar proposta de valor | o próprio mock: recomendação com motivo (prioridade + desempenho) |
+| Direcionar cadastro/login | CTAs "Começar agora" → `cadastro.html`, "Entrar" → `login.html` (hero + pill + rodapé) |
 
 ## 2. Honestidade (AGENTS.md §4 — nada inventado)
 
-* Números só auditados: **240** questões (40 × 6), **6** edições,
-  **120 + 120** (LP/MAT), assuntos da `docs/content-map.md`.
-* **2021 ausente** citado nas evidências e no FAQ.
-* Anuladas listadas por edição (2020 Q7/Q26 · 2023 Q21 · 2024 Q17 ·
-  2026 Q37) + "regra de pontuação desconhecida".
-* Classificações com "revisão humana em curso"; 20+20+1 descrito como
-  configuração dos documentos do acervo, nunca regra universal.
-* FAQ da redação: proposta registrada, correção automática fora do MVP.
+* A mensagem da landing é genérica por decisão de produto (a plataforma
+  pode crescer além de um exame específico): sem "IFRN", sem contagens
+  do acervo, sem promessa de cobertura.
+* A evidência do acervo (240 questões, 6 edições, 2021 ausente, 5
+  anuladas, 20+20+1 por edição) continua verificada nas telas do app
+  (`estudos`/`simulado`), na área admin e em `docs/` — o
+  `check_frontend.py` deixou de exigi-la na landing, não no projeto.
 * Sem preço/planos ("grátis" é termo barrado no `check_frontend.py`),
   sem "garantia", sem "milhares", sem "todas as edições".
 
 ## 3. Ofício visual
 
-O redesenho adota o **nível de acabamento** da referência (ritmo de
-seções, respiro, cabeçalho de seção centralizado com eyebrow, cards com
-ícone colorido, rodapé em colunas, indicador de abertura desenhado em
-CSS no FAQ) e mantém a **paleta navy/azul da marca** e o tom sério.
-A referência é roxa e decorativa; AGENTS.md §6 manda evitar aparência
-infantil, excesso de cores e excesso de gradientes.
+O redesenho segue a referência PIXORA de perto: página inteira sobre
+o navy (sem cartão inset), header com pill de navegação branca ao
+centro e CTA à direita, headline gigante com linha de acento, CTA em
+pílula simples (a seta em círculo foi removida), stats com ícones SVG
+e arte ocupando o lado direito. A arte é a marca do header
+(`logo-mark-light.png`, 104px ≤ 107px nativos) angulada 12° sobre o
+canto superior direito do mock — combinação pedida em vez de
+ilustração genérica. Sem alternador de tema nesta tela (canvas idêntico
+nos dois temas; `.theme-toggle` com `display:none`) e rodapé sem
+Entrar/Criar conta (a página não rola, sem esforço para alcançar as
+ações). Ícones são SVG inline
+de forma reconhecível (lista, relógio, bússola, documento), nunca
+glifos soltos. AGENTS.md §6 manda evitar
+aparência infantil e excesso de cores: nada de laranja/teal da
+referência, só navy + azul-claro + branco.
 
-Recursos: hero em duas colunas (64rem), seções alternando surface e
-`--color-bg-100` para dar ritmo, painel de marca com a logo completa e
-os três números de evidência, quatro passos com conector horizontal.
+Recursos: canvas navy fixo nos dois temas (gradiente próprio),
+2 colunas a 64rem, `body` em flex com `min-height: 100dvh` (header +
+hero flexível + rodapé = zero rolagem no desktop), mock em CSS puro
+sobre surface branca, pílulas flutuantes, anéis decorativos. Botões
+sobre navy usam cor fixa `#0d2b45` (tokens primary invertem no dark e
+quebravam o contraste para ~1,5:1). A pill usa `#0d2b45` sobre branco
+(~14:1); o acento `#7fb4e4` sobre navy mede ~7:1.
 
 ### Blocos de marca nunca usam `--color-primary-9xx`
 
@@ -58,11 +73,9 @@ azul-escuro no dark, então a banda usa `--color-hero-muted`.
   qualquer ação) — um request morto na página pública. O
   `check_frontend.py` deixou de exigir o arquivo.
 * A página é 100% estática: sem `fetch`, sem estado, legível offline.
-  Os dados auditados estão no HTML.
-* O painel de marca tem superfície clara **fixa** nos dois temas
-  (`--color-brandcard-*`, declarado só em `:root`): a arte é navy e
-  ficaria invisível sobre navy. A logo ocupa um painel claro, como uma
-  peça impressa sobre a página.
+* A marca sobre navy usa sempre a versão clara (`brand__mark--inverse`
+  e `logo-full` com `brightness(0) invert(1)`): a arte é navy e ficaria
+  invisível sobre navy no tema claro.
 
 ## 5. Verificação
 
@@ -80,7 +93,7 @@ Chrome DevTools MCP, conferido neste redesenho:
 | Console (erro + warning) | limpo |
 | Marca no header a 390px | wordmark completo (bug de flex-shrink corrigido em `base.css`) |
 | Menu mobile | painel suspenso abaixo do header, largura total |
-| `check_frontend.py` | OK — 49 arquivos, 6 seções da landing |
+| `check_frontend.py` | OK — 51 arquivos, 3 blocos da landing (`hero-t`, `hero-brand`, `hero-visual`) |
 
 Correções que saíram da validação e afetam **todas** as telas, feitas
 em `base.css`:

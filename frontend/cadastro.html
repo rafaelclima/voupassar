@@ -16,7 +16,7 @@
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   </script>
-  <meta name="description" content="Criar conta no VouPassar — cadastro com e-mail e senha para estudar para o IFRN." />
+  <meta name="description" content="Criar conta no VouPassar — cadastro com e-mail e senha. Só pedimos o essencial." />
   <meta name="voupassar-api" content="http://localhost:8080" />
   <meta name="theme-color" content="#0d2b45" />
   <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
@@ -28,100 +28,98 @@
   <link rel="stylesheet" href="./css/auth.css" />
   <title>Criar conta — VouPassar</title>
 </head>
-<body>
+<body class="login-page">
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-  <header class="site-header">
-    <div class="container site-header__inner">
-      <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
-        <span>VouPassar</span>
-      </a>
-      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
-      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
-        <div class="site-nav__links" id="nav-links">
-          <a href="./index.html#como-funciona">Como funciona</a>
-          <a href="./login.html">Entrar</a>
-          <a class="btn btn--primary btn--sm" href="./cadastro.html" aria-current="page">Criar conta</a>
-        </div>
-      </nav>
-    </div>
-  </header>
+  <main id="conteudo" class="login-stage">
+    <div class="login-shell">
+      <!-- Painel de marca: logo + o que a conta entrega. -->
+      <section class="login-brand" aria-label="VouPassar">
+        <img class="login-brand__logo" src="./assets/logo-full.png" alt="VouPassar" width="360" height="360" />
+        <ul class="login-brand__list">
+          <li>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6 12l7.5-8" /></svg>
+            Questões organizadas por assunto
+          </li>
+          <li>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6 12l7.5-8" /></svg>
+            Roteiro que explica cada recomendação
+          </li>
+          <li>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6 12l7.5-8" /></svg>
+            Simulados como a prova de verdade
+          </li>
+        </ul>
+      </section>
 
-  <main id="conteudo">
-    <div class="container auth-wrap">
-      <article class="card auth-card" aria-labelledby="auth-t">
-        <div class="card__header">
-          <p><span class="badge badge--primary">Cadastro mínimo</span></p>
-          <h1 id="auth-t">Criar conta</h1>
-          <p class="muted">Só pedimos o essencial. Sua conta começa com perfil de estudante.</p>
+      <!-- Painel de acesso: mesmos hooks do cadastro.js (ids preservados). -->
+      <section class="login-panel" aria-labelledby="auth-t">
+        <div class="login-panel__top">
+          <a class="brand brand--sm" href="./index.html" aria-label="VouPassar — início">
+            <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="30" height="30" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="30" height="30" />
+            <span>VouPassar</span>
+          </a>
+          <a class="login-signup" href="./login.html">Já tenho conta</a>
         </div>
-        <div class="card__body">
-          <div id="auth-feedback"></div>
-          <div id="auth-already" hidden></div>
-          <form id="register-form" novalidate>
-            <div class="field">
-              <label class="field__label" for="reg-name">Nome de exibição <span class="required" aria-hidden="true">*</span></label>
-              <input class="input" id="reg-name" name="displayName" type="text" autocomplete="name" required minlength="2" maxlength="80" placeholder="Ex.: Maria Silva" />
-              <p class="field__hint">De 2 a 80 caracteres. Como seu nome aparece na plataforma.</p>
-            </div>
-            <div class="field">
-              <label class="field__label" for="reg-email">E-mail <span class="required" aria-hidden="true">*</span></label>
-              <input class="input" id="reg-email" name="email" type="email" autocomplete="email" spellcheck="false" required maxlength="254" placeholder="voce@exemplo.com" />
-              <p class="field__hint">Usado só para acesso e recuperação. Sem mensagens desnecessárias.</p>
-            </div>
-            <div class="field">
-              <label class="field__label" for="reg-password">Senha <span class="required" aria-hidden="true">*</span></label>
-              <div class="password-field">
-                <input class="input" id="reg-password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="Mínimo 8 caracteres" />
-                <button type="button" class="password-toggle" data-password-toggle="reg-password" aria-label="Mostrar senha">Mostrar</button>
-              </div>
-              <p class="field__hint">Use de 8 a 72 caracteres. Sua senha fica guardada de forma criptografada e nunca é compartilhada.</p>
-            </div>
-            <div class="form-inline form-inline--2">
-              <div class="field">
-                <label class="field__label" for="reg-school">Ano escolar</label>
-                <input class="input" id="reg-school" name="schoolYear" type="text" autocomplete="off" maxlength="40" placeholder="Ex.: 9º ano" />
-              </div>
-              <div class="field">
-                <label class="field__label" for="reg-target">Ano da prova</label>
-                <input class="input" id="reg-target" name="targetYear" type="number" inputmode="numeric" min="2000" max="2100" placeholder="Ex.: 2027" />
-              </div>
-            </div>
-            <div class="field">
-              <label class="field__label" for="reg-goal">Objetivo (opcional)</label>
-              <textarea class="textarea" id="reg-goal" name="studyGoal" maxlength="500" placeholder="Ex.: passar no curso técnico em Informática"></textarea>
-              <p class="field__hint">Até 500 caracteres. Ajuda a personalizar seu roteiro.</p>
-            </div>
-            <div class="btn-group mt-4">
-              <button type="submit" class="btn btn--primary btn--block" id="register-submit">Criar conta</button>
-            </div>
-          </form>
-          <div class="auth-links mt-4">
-            <a href="./login.html">Já tenho conta — entrar</a>
-            <a href="./index.html">← Voltar ao início</a>
+
+        <h1 id="auth-t" class="login-panel__title">Criar conta</h1>
+        <p class="muted login-panel__lede">Só pedimos o essencial. Sua conta começa com perfil de estudante.</p>
+
+        <div id="auth-feedback"></div>
+        <div id="auth-already" hidden></div>
+
+        <form id="register-form" novalidate>
+          <div class="field mt-4">
+            <label class="field__label" for="reg-name">Nome de exibição <span class="required" aria-hidden="true">*</span></label>
+            <input class="input input--pill" id="reg-name" name="displayName" type="text" autocomplete="name" required minlength="2" maxlength="80" placeholder="Ex.: Maria Silva" />
           </div>
-        </div>
-      </article>
+          <div class="field">
+            <label class="field__label" for="reg-email">E-mail <span class="required" aria-hidden="true">*</span></label>
+            <input class="input input--pill" id="reg-email" name="email" type="email" autocomplete="email" spellcheck="false" required maxlength="254" placeholder="voce@exemplo.com" />
+          </div>
+          <div class="field">
+            <label class="field__label" for="reg-password">Senha <span class="required" aria-hidden="true">*</span></label>
+            <div class="password-field">
+              <input class="input input--pill" id="reg-password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="Mínimo 8 caracteres" />
+              <button type="button" class="password-toggle password-toggle--pill" data-password-toggle="reg-password" aria-label="Mostrar senha">Mostrar</button>
+            </div>
+          </div>
+          <div class="form-inline form-inline--2">
+            <div class="field">
+              <label class="field__label" for="reg-school">Ano escolar</label>
+              <input class="input input--pill" id="reg-school" name="schoolYear" type="text" autocomplete="off" maxlength="40" placeholder="Ex.: 9º ano" />
+            </div>
+            <div class="field">
+              <label class="field__label" for="reg-target">Ano da prova</label>
+              <input class="input input--pill" id="reg-target" name="targetYear" type="number" inputmode="numeric" min="2000" max="2100" placeholder="Ex.: 2027" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="reg-goal">Objetivo (opcional)</label>
+            <textarea class="textarea" id="reg-goal" name="studyGoal" maxlength="500" placeholder="Ex.: passar no curso técnico em Informática"></textarea>
+          </div>
+          <div class="btn-group mt-4">
+            <button type="submit" class="btn btn--primary btn--block btn--pill" id="register-submit">
+              <svg class="btn__icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                <path d="M3 10h12M11 5.5 15.5 10 11 14.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Criar conta
+            </button>
+          </div>
+        </form>
+
+        <p class="login-back"><a href="./index.html">← Voltar ao início</a></p>
+      </section>
     </div>
-        <noscript>
-        <style>.site-nav__links{display:flex !important}.site-nav__toggle{display:none !important}</style>
-        <div class="alert alert--warning mt-4" role="note">
-          <div>
-            <strong>JavaScript desligado</strong>
-            <p>A tela de criar conta precisa de JavaScript para validar os campos e falar com a API. Ative para continuar.</p>
-          </div>
+    <noscript>
+      <div class="alert alert--warning mt-4" role="note">
+        <div>
+          <strong>JavaScript desligado</strong>
+          <p>A tela de criar conta precisa de JavaScript para validar os campos e falar com a API. Ative para continuar.</p>
         </div>
-      </noscript>
+      </div>
+    </noscript>
   </main>
-
-  <footer class="site-footer">
-    <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-      <p class="muted"><small>VouPassar - Preparação inteligente para o IFRN - 2026</small></p>
-      <p class="muted"><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
-      <p class="muted"><small><a href="./index.html">Início</a></small></p>
-    </div>
-  </footer>
 
   <script type="module" src="./js/main.js"></script>
   <script type="module" src="./js/views/cadastro.js"></script>

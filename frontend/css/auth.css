@@ -161,6 +161,39 @@
   filter: brightness(0) invert(1);
 }
 
+/* Lista do que a conta entrega (usada no cadastro): checks em SVG,
+ * texto sempre branco puro sobre o gradiente navy (o --color-hero-ink
+ * não inverte; --color-on-primary inverteria no dark). */
+.login-brand__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+  width: min(100%, 24rem);
+}
+
+.login-brand__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: #ffffff;
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: var(--radius-pill);
+  padding: 0.65rem 1.1rem;
+}
+
+.login-brand__list svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  color: #7fb4e4;
+}
+
 /* --- Painel de acesso --- */
 .login-panel {
   padding: var(--space-8) var(--space-6);

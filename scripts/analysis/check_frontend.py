@@ -9,8 +9,9 @@ Verifica `frontend/` sem rodar navegador:
   - JS sem innerHTML com dados, sem URL de API fora de config.js;
   - sem segredos no frontend;
   - design-system.html cobre todas as seções;
-  - index.html (landing 6.2) cobre propósito/confiança/funcionalidades/
-    proposta de valor/acesso, cita 2021 ausente e não inventa oferta;
+  - index.html (landing 6.2 full-screen) cobre propósito/confiança/acesso
+    em mensagem genérica, sem inventar oferta (evidência do acervo vive
+    no app/admin/docs);
   - páginas de auth 6.3 (login/cadastro/recuperação/redefinição) com
     formulários, links entre si e a partir da landing.
 
@@ -110,10 +111,11 @@ REQUIRED_SECTIONS = [
     "badges", "feedback", "modais", "vazios", "loading", "questao", "js",
 ]
 
-# TASK 6.2 — objetivos da landing em index.html
+# TASK 6.2 — landing clean (viewport único navy): só o essencial acima
+# da dobra. As 6 seções longas foram removidas por decisão de produto;
+# o validador exige o hero completo + honestidade, não rolagem.
 REQUIRED_LANDING_SECTIONS = [
-    "como-funciona", "funcionalidades", "evidencias", "faq", "acesso",
-    "proposta",
+    "hero-t", "hero-brand", "hero-visual",
 ]
 
 # TASK 6.3 — páginas de autenticação: arquivo → id do form exigido
@@ -177,22 +179,23 @@ def main() -> int:
         if f'id="{s}"' not in ds:
             fail(f"design-system.html sem seção #{s}")
 
-    # TASK 6.2 — landing: objetivos + honestidade
+    # TASK 6.2 — landing: mensagem genérica por decisão de produto (a
+    # plataforma pode crescer além de um exame específico). A honestidade
+    # do acervo (2021 ausente, 240 questões, anuladas) continua exigida
+    # nas telas do app (estudos/simulado), na área admin e em docs/.
     landing = (FRONT / "index.html").read_text(encoding="utf-8") if (FRONT / "index.html").exists() else ""
     if landing:
         for s in REQUIRED_LANDING_SECTIONS:
             if f'id="{s}"' not in landing:
-                fail(f"index.html (landing) sem seção #{s}")
-        if 'href="#acesso"' not in landing:
-            fail("index.html sem CTA para #acesso (direcionar cadastro/login)")
-        if "2021" not in landing:
-            fail("index.html omite a ausência de 2021 (AGENTS.md §3)")
+                fail(f"index.html (landing) sem bloco #{s}")
+        if 'href="./cadastro.html"' not in landing:
+            fail("index.html sem CTA para cadastro (direcionar cadastro/login)")
+        if 'href="./login.html"' not in landing:
+            fail("index.html sem CTA para login (direcionar cadastro/login)")
         lowered = landing.lower()
         for claim in FORBIDDEN_LANDING_CLAIMS:
             if claim in lowered:
                 fail(f"index.html com afirmação não comprovada: {claim!r}")
-        if "240" not in landing:
-            fail("index.html sem o número auditado de questões (240)")
 
     # TASK 6.3 — auth: forms, interligação e sem placeholder vencido
     for page, form_id in REQUIRED_AUTH_FORMS.items():
