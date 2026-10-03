@@ -907,3 +907,81 @@ fieldset > legend {
   font-size: var(--text-sm);
   color: var(--color-ink-700);
 }
+
+/* ============ Texto-base expansível (TASK 6.9 + docs/passagens-estrategia.md) ============ */
+.passage-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.passage {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.passage__toggle {
+  width: 100%;
+  justify-content: flex-start;
+  list-style-position: inside;
+}
+
+.passage__toggle::marker {
+  color: var(--color-primary-700);
+}
+
+.passage__toggle:hover {
+  border-color: var(--color-primary-600);
+}
+
+.passage__body {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-line-200);
+}
+
+.passage__label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-primary-700);
+  margin: 0;
+}
+
+.passage__title {
+  font-size: var(--text-md);
+  font-weight: 700;
+  margin: 0;
+}
+
+.passage__byline {
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+.passage__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+  margin: 0;
+}
+
+.passage__intro {
+  font-size: var(--text-sm);
+  font-style: italic;
+  margin: 0;
+}
+
+.passage__para {
+  white-space: pre-wrap;
+  max-width: var(--measure);
+  line-height: var(--leading-body);
+  font-size: var(--text-md);
+  margin: 0;
+}
+
+.passage__credit {
+  font-size: var(--text-sm);
+  margin: 0;
+  overflow-wrap: anywhere; /* URLs longas de source_note (ex. 2023 Texto 1) sem overflow em 360px */
+}

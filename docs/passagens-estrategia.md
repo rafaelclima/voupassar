@@ -111,6 +111,20 @@ a fase de figuras. Validador `extract_passages.py` estendido para as
 redações do caderno 2022 (variantes `Texto 01`/`Texto1`, trechos
 singulares/enumerados) sem alterar o comportamento para 2020.
 
+## 7.2. Situação 2023 (concluída em 2026-10-03)
+
+4 passagens, 24 vínculos, 23 questões distintas: `TEXTO-1` (artigo "Dez
+anos da Lei das Cotas", p. 2 → Q1–Q5, Q16, Q33 + Q20), `TEXTO-2`
+(charge da bola/"cota", p. 3, kind `CHARGE` com descrição curada → Q17,
+Q18, Q19, Q23, Q39 + Q20), `TRECHO-Q06-12` (quadro emoldurado p. 4),
+`TRECHO-Q13-15` (quadro emoldurado p. 6). Q20 ("Os Textos 1 e 2") com
+vínculo duplo (padrão 2020 Q20). Sem vínculo por falta de evidência
+(detalhe em `docs/blockers.md`): matemática auto-contida; Figuras 1–2 e
+Gráfico 1 → fase de figuras. Dois ajustes exigidos pela edição (ver
+`docs/blockers.md`): validador estendido para o intervalo sem "de"
+("questões 13 a 15") e `overflow-wrap: anywhere` em
+`.passage__credit` (URL longa do Texto 1 estourava o mobile).
+
 ## 8. Fase 2 — roteiro de continuação (2022–2026)
 
 Pré-requisito: nenhuma mudança de código — só curadoria + importação.

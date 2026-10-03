@@ -42,13 +42,14 @@ def trecho_questions(header: str) -> list[int]:
     """Questões cobertas pelo cabeçalho de um bloco-trecho.
 
     O caderno varia a redação: "questões de X a Y" (2020), "questões
-    04, 05 e 06" / "questões 09, 10, 11 e 12" (enumeração, 2022) ou
-    "questão 8" (singular, 2022). Intervalo "de X a Y" vira range;
+    04, 05 e 06" / "questões 09, 10, 11 e 12" (enumeração, 2022),
+    "questão 8" (singular, 2022) ou "questões 13 a 15" (intervalo sem
+    "de", 2023). Intervalo "X a Y" (com ou sem "de") vira range;
     nas demais formas valem os números explícitos no cabeçalho
     (referências a "Texto N" no próprio cabeçalho são ignoradas).
     """
     clean = re.sub(r"textos?\s*\d+", "", header, flags=re.IGNORECASE)
-    m = re.search(r"de\s+(\d+)\s+a\s+(\d+)", clean, re.IGNORECASE)
+    m = re.search(r"(?:de\s+)?(\d+)\s+a\s+(\d+)", clean, re.IGNORECASE)
     if m:
         return list(range(int(m.group(1)), int(m.group(2)) + 1))
     return [int(x) for x in re.findall(r"\d+", clean)]
