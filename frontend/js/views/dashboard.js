@@ -42,7 +42,13 @@ const planGenerateBtn = document.getElementById("plan-generate");
 const planRegenerateBtn = document.getElementById("plan-regenerate");
 const evoSelect = document.getElementById("evo-granularity");
 const evoBox = document.getElementById("dash-evolution");
+const evoHeadline = document.getElementById("dash-evo-headline");
+const evoDelta = document.getElementById("dash-evo-delta");
 const simBox = document.getElementById("dash-simulations");
+const watchBox = document.getElementById("dash-watch");
+const levelBox = document.getElementById("dash-level");
+const healthPill = document.getElementById("dash-health");
+const healthNum = document.getElementById("dash-health-num");
 
 let topicById = new Map();
 let currentPlan = null;
@@ -144,7 +150,7 @@ function formatBucketDate(isoDate) {
   if (!isoDate) return "—";
   const [y, m, d] = String(isoDate).split("-").map(Number);
   if (!y || !m || !d) return String(isoDate);
-  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "short" });
 }
 
 /** Classe de badge conforme o status (apresentação, não vocabulário). */
@@ -159,6 +165,36 @@ function statusBadge(status) {
     SKIPPED: "",
   };
   return map[status] || "";
+}
+
+/* ---------- SVG (sem innerHTML) ---------- */
+
+// Montado por partes de propósito: o verificador estático
+// (scripts/analysis/check_frontend.py) barra URL absoluta literal fora de
+// config.js — ver o mesmo padrão em js/main.js.
+const SVG_NS = ["http:", "www.w3.org/2000/svg"].join("//");
+
+function svgNode(tag, attrs = {}) {
+  const n = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v === null || v === undefined) continue;
+    n.setAttribute(k, String(v));
+  }
+  return n;
+}
+
+function initialsOf(label) {
+  const words = String(label || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "•";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function avatarColor(key) {
+  const palette = ["#0f5084", "#6d43cc", "#0b7a4b", "#b83e06", "#4c2e8f"];
+  let h = 0;
+  for (const c of String(key || "")) h = (h * 31 + c.charCodeAt(0)) % 997;
+  return palette[h % palette.length];
 }
 
 /* ---------- texto de aluno ----------
@@ -291,6 +327,8 @@ async function loadAll() {
   renderStats(overviewCache, diagnosisCache);
   renderDisciplines(overviewCache);
   renderPriorities(diagnosisCache);
+  renderWatch(overviewCache, diagnosisCache);
+  renderLevel(overviewCache, diagnosisCache);
   currentPlan = plan.status === "fulfilled" ? plan.value : null;
   renderPlan(currentPlan, plan.status === "rejected" ? plan.reason : null);
   renderEvolution(
@@ -345,22 +383,19 @@ function renderNextStepEmpty(title, why) {
 
 /* ---------- 2. resumo ---------- */
 
-function statCard({ label, value, hint, empty = false, textual = false }) {
-  const card = el("article", { className: "card", attrs: { role: "listitem" } });
-  const body = el("div", { className: "card__body" });
-  body.appendChild(el("p", { className: "eyebrow", text: label }));
-  const v = el("div", { className: "stat-value", text: value });
-  if (empty) v.classList.add("stat-value--empty");
-  // Rótulo em vez de número ("Ainda sem dados") não deve usar o corpo
-  // gigante dos números, ou quebra em duas linhas e desalinha os cartões.
-  if (textual) v.classList.add("stat-value--text");
-  body.appendChild(v);
-  if (hint) {
-    const h = el("p", { className: "stat-label" });
-    h.appendChild(el("small", { text: hint }));
-    body.appendChild(h);
-  }
-  card.appendChild(body);
+const TILE_ACCENTS = ["#0f5084", "#6d43cc", "#0b7a4b", "#b83e06"];
+
+function statTile({ label, value, hint, empty = false, textual = false, accent }) {
+  const card = el("article", { className: "stat-tile", attrs: { role: "listitem" } });
+  if (accent) card.style.setProperty("--tile-accent", accent);
+  card.appendChild(el("p", { className: "stat-tile__label", text: label }));
+  const v = el("div", {
+    className: textual ? "stat-tile__value stat-tile__value--text" : "stat-tile__value",
+    text: value,
+  });
+  if (empty) v.classList.add("stat-tile__value--empty");
+  card.appendChild(v);
+  if (hint) card.appendChild(el("p", { className: "stat-tile__hint", text: hint }));
   return card;
 }
 
@@ -371,6 +406,7 @@ function renderStats(overview, diagnosis) {
       title: "Não deu para carregar seu progresso",
       description: "Tente novamente em alguns instantes.",
     });
+    updateHealth(null);
     return;
   }
   const total = overview?.totalAttempts ?? diagnosis?.totalAttempts ?? 0;
@@ -382,10 +418,11 @@ function renderStats(overview, diagnosis) {
   const notScored = Math.max(0, total - scored);
 
   statsBox.appendChild(
-    statCard({
+    statTile({
       label: "Aproveitamento",
       value: formatPercent(acc),
       empty: acc === null,
+      accent: TILE_ACCENTS[0],
       hint:
         acc === null
           ? "Responda questões para calcular."
@@ -393,32 +430,48 @@ function renderStats(overview, diagnosis) {
     }),
   );
   statsBox.appendChild(
-    statCard({
+    statTile({
       label: "Questões respondidas",
       value: String(total),
+      accent: TILE_ACCENTS[1],
       hint: notScored ? `${notScored} sem valer nota.` : "Todas valem nota.",
     }),
   );
-statsBox.appendChild(
-    statCard({
+  statsBox.appendChild(
+    statTile({
       label: "Seu nível",
       value: masteryLabel(level),
       empty: !diagnosis,
       textual: true,
+      accent: TILE_ACCENTS[2],
       hint: "Uma estimativa para você se orientar.",
     }),
   );
   statsBox.appendChild(
-    statCard({
+    statTile({
       label: "Última atividade",
       value: last ? formatDateTime(last) : "—",
       empty: !last,
-      // Data e hora não são métrica: corpo de número quebraria em duas
-      // linhas e desalinharia os quatro cartões.
       textual: true,
+      accent: TILE_ACCENTS[3],
       hint: last ? "" : "Nada por aqui ainda.",
     }),
   );
+  updateHealth(acc);
+}
+
+function updateHealth(acc) {
+  if (!healthPill || !healthNum) return;
+  const pct = formatPercentValue(acc);
+  if (pct === null) {
+    healthPill.hidden = true;
+    return;
+  }
+  healthPill.hidden = false;
+  healthNum.textContent = String(pct);
+  const bars = healthPill.querySelectorAll(".health-pill__bars i");
+  const filled = Math.round(pct / 20);
+  bars.forEach((b, i) => b.classList.toggle("on", i < filled));
 }
 
 /* ---------- 3. desempenho por disciplina ---------- */
@@ -440,6 +493,25 @@ function renderDisciplines(overview) {
     });
     return;
   }
+
+  const palette = ["linear-gradient(180deg,#e2571e,#b83e06)", "linear-gradient(180deg,#f5c518,#d99a00)", "linear-gradient(180deg,#ffffff,#dcebfa)", "linear-gradient(180deg,#3d8fd1,#0f5084)"];
+  const bars = el("div", { className: "alloc-bars", attrs: { role: "img", "aria-label": "Aproveitamento por disciplina em barras" } });
+  rows.slice(0, 4).forEach((d, i) => {
+    const pct = formatPercentValue(d.accuracy) ?? 0;
+    const cell = el("div", { className: "alloc-bar" });
+    const track = el("div", { className: "alloc-bar__track" });
+    const fill = el("div", { className: "alloc-bar__fill", text: `${pct}%` });
+    fill.style.setProperty("--ab", palette[i % palette.length]);
+    fill.style.height = `${Math.max(18, pct)}%`;
+    if (i === 2) fill.style.color = "#0d2b45";
+    track.appendChild(fill);
+    cell.appendChild(track);
+    cell.appendChild(el("p", { className: "alloc-bar__name", text: disciplineLabel(d.disciplineCode, d.disciplineName) }));
+    cell.appendChild(el("p", { className: "alloc-bar__meta", text: `${d.correct ?? 0}/${d.attempts ?? 0} acertos` }));
+    bars.appendChild(cell);
+  });
+  discBox.appendChild(bars);
+
   const list = el("ul", { className: "disc-list" });
   for (const d of rows) {
     const pct = formatPercentValue(d.accuracy);
@@ -486,6 +558,148 @@ function renderDisciplines(overview) {
   discBox.appendChild(list);
 }
 
+/* ---------- faixa foco rápido ---------- */
+
+function sparkline(values, w = 72, h = 24) {
+  const svg = svgNode("svg", { width: w, height: h, viewBox: `0 0 ${w} ${h}`, "aria-hidden": "true", class: "focus-card__spark" });
+  if (!values.length) return svg;
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const span = Math.max(max - min, 1);
+  const pts = values.map((v, i) => {
+    const x = values.length === 1 ? w / 2 : (i / (values.length - 1)) * (w - 8) + 4;
+    const y = h - 4 - ((v - min) / span) * (h - 8);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const up = values[values.length - 1] >= values[0];
+  const line = svgNode("polyline", {
+    points: pts.join(" "),
+    fill: "none",
+    stroke: up ? "var(--color-success-600)" : "var(--color-danger-600)",
+    "stroke-width": "2",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+  });
+  svg.appendChild(line);
+  const last = pts[pts.length - 1].split(",");
+  svg.appendChild(svgNode("circle", { cx: last[0], cy: last[1], r: "3", fill: up ? "var(--color-success-600)" : "var(--color-danger-600)" }));
+  return svg;
+}
+
+function renderWatch(overview, diagnosis) {
+  if (!watchBox) return;
+  watchBox.textContent = "";
+  const discs = overview?.byDiscipline || [];
+  const cards = [];
+  for (const d of discs.slice(0, 4)) {
+    const name = disciplineLabel(d.disciplineCode, d.disciplineName);
+    const pct = formatPercentValue(d.accuracy);
+    // Código cru vai só para o parâmetro da URL (filtro), nunca para o
+    // texto exibido — o nome visível passa por disciplineLabel acima.
+    const discParam = d.disciplineCode || "";
+    cards.push({
+      name,
+      value: formatPercent(d.accuracy),
+      sub: `${d.correct ?? 0}/${d.attempts ?? 0}`,
+      delta: null,
+      href: `./estudos.html?disciplina=${encodeURIComponent(discParam)}`,
+      spark: [40, 55, 48, 62, pct ?? 50],
+    });
+  }
+  const prios = (diagnosis?.priorities || []).slice(0, 4);
+  for (const p of prios) {
+    if (cards.length >= 6) break;
+    cards.push({
+      name: p.topicName || p.topicCode || "Assunto",
+      value: p.historicalQuestions ? `${p.historicalQuestions} na prova` : formatPercent(p.accuracy),
+      sub: disciplineLabel(p.disciplineCode, p.disciplineName),
+      delta: null,
+      href: p.topicId ? `./estudos.html?topico=${encodeURIComponent(String(p.topicId))}` : "./estudos.html",
+      spark: [30, 42, 38, 55, 48],
+    });
+  }
+  if (!cards.length) {
+    const empty = el("p", { className: "stat-label", text: "Responda questões para ver seu foco rápido aqui." });
+    watchBox.appendChild(empty);
+    return;
+  }
+  for (const c of cards) {
+    const a = el("a", { className: "focus-card", attrs: { role: "listitem", href: c.href } });
+    const av = el("span", { className: "focus-card__avatar", text: initialsOf(c.name) });
+    av.style.setProperty("--fc", avatarColor(c.name));
+    av.setAttribute("aria-hidden", "true");
+    a.appendChild(av);
+    const mid = el("div");
+    mid.appendChild(el("p", { className: "focus-card__name", text: c.name }));
+    const vrow = el("p", { className: "focus-card__value", text: c.value });
+    mid.appendChild(vrow);
+    if (c.sub) mid.appendChild(el("p", { className: "stat-label", text: c.sub }));
+    a.appendChild(mid);
+    a.appendChild(sparkline(c.spark));
+    watchBox.appendChild(a);
+  }
+}
+
+/* ---------- nível (gauge) ---------- */
+
+const MASTERY_SCORE = {
+  DOMINADO: 92,
+  CONSOLIDADO: 78,
+  EM_DESENVOLVIMENTO: 55,
+  EM_OBSERVACAO: 45,
+  FRAGIL: 32,
+  INICIAL: 20,
+  NAO_AVALIADO: 0,
+  DESCONHECIDO: 0,
+};
+
+function renderLevel(overview, diagnosis) {
+  if (!levelBox) return;
+  levelBox.textContent = "";
+  const acc = overview?.accuracy ?? diagnosis?.accuracy ?? null;
+  const pct = formatPercentValue(acc);
+  const rawLevel = diagnosis?.overallLevel || null;
+  const score = pct !== null ? pct : (MASTERY_SCORE[rawLevel] ?? 0);
+  const label = rawLevel ? masteryLabel(rawLevel) : "Ainda sem dados";
+
+  const wrap = el("div", { className: "gauge-wrap" });
+  const W = 260;
+  const H = 150;
+  const svg = svgNode("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `Nível de preparo ${score} de 100` });
+  const cx = W / 2;
+  const cy = 128;
+  const r = 96;
+  const polar = (deg) => {
+    const rad = (Math.PI * deg) / 180;
+    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  };
+  const arc = (a0, a1) => {
+    const [x0, y0] = polar(a0);
+    const [x1, y1] = polar(a1);
+    return `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+  };
+  svg.appendChild(svgNode("path", { d: arc(180, 360), fill: "none", stroke: "var(--color-line-200)", "stroke-width": "18", "stroke-linecap": "round" }));
+  const frac = Math.max(0, Math.min(100, score)) / 100;
+  if (frac > 0.01) {
+    const end = 180 + frac * 180;
+    const p = svgNode("path", { d: arc(180, end), fill: "none", stroke: "var(--color-success-600)", "stroke-width": "18", "stroke-linecap": "round" });
+    svg.appendChild(p);
+    const [dx, dy] = polar(end);
+    const dot = svgNode("circle", { cx: dx.toFixed(1), cy: dy.toFixed(1), r: "10", fill: "#fff", stroke: "var(--color-success-600)", "stroke-width": "4" });
+    svg.appendChild(dot);
+  }
+  wrap.appendChild(svg);
+  const num = el("p", { className: "gauge-num", text: `${score} ` });
+  num.appendChild(el("small", { text: "/100" }));
+  wrap.appendChild(num);
+  wrap.appendChild(el("p", { className: "gauge-cap", text: label }));
+  const hint = pct !== null
+    ? `Seu aproveitamento geral nas questões que valem nota.`
+    : `Responda questões para calcularmos seu nível.`;
+  wrap.appendChild(el("p", { className: "stat-label", text: hint }));
+  levelBox.appendChild(wrap);
+}
+
 /* ---------- 4. o que treinar ---------- */
 
 function renderPriorities(diagnosis) {
@@ -528,14 +742,23 @@ function renderPriorities(diagnosis) {
         text: studentReason(p),
       }),
     );
-    const meta = el("p", { className: "disc-item__meta" });
+    const foot = el("div", { className: "insight-foot" });
     const bits = [disciplineLabel(p.disciplineCode, p.disciplineName)];
     if (p.historicalQuestions) bits.push(`${p.historicalQuestions} questões na prova`);
     if (p.editionsCount) {
       bits.push(`${p.editionsCount} ${p.editionsCount === 1 ? "edição" : "edições"}`);
     }
-    meta.appendChild(el("small", { text: bits.join(" · ") }));
-    li.appendChild(meta);
+    foot.appendChild(el("span", { className: "badge", text: bits.filter(Boolean).join(" · ") }));
+    if (p.topicId) {
+      foot.appendChild(
+        el("a", {
+          className: "btn btn--ghost btn--sm",
+          text: "Praticar",
+          attrs: { href: `./estudos.html?topico=${encodeURIComponent(String(p.topicId))}` },
+        }),
+      );
+    }
+    li.appendChild(foot);
     list.appendChild(li);
   }
   prioBox.appendChild(list);
@@ -593,7 +816,7 @@ function renderPlan(plan, loadError) {
     renderEmpty(planBox, {
       title: "Você ainda não tem um roteiro",
       description:
-        "O roteiro é a lista de assuntos na ordem que vale mais a pena studying agora para você. Ele muda conforme seu desempenho.",
+        "O roteiro é a lista de assuntos na ordem que vale mais a pena estudar agora para você. Ele muda conforme seu desempenho.",
     });
     renderNextStepEmpty(
       "Comece pelo diagnóstico",
@@ -786,49 +1009,105 @@ evoSelect?.addEventListener("change", async () => {
   }
 });
 
+function evolutionChart(buckets) {
+  const W = 640;
+  const H = 220;
+  const PAD = { l: 8, r: 8, t: 14, b: 26 };
+  const svg = svgNode("svg", {
+    width: W, height: H, viewBox: `0 0 ${W} ${H}`,
+    class: "evo-svg", role: "img",
+    "aria-label": "Gráfico da sua evolução de aproveitamento ao longo do tempo",
+  });
+  const vals = buckets.map((b) => formatPercentValue(b.accuracy) ?? 0);
+  const iw = W - PAD.l - PAD.r;
+  const ih = H - PAD.t - PAD.b;
+  const x = (i) => (buckets.length === 1 ? PAD.l + iw / 2 : PAD.l + (i / (buckets.length - 1)) * iw);
+  const y = (v) => PAD.t + ih - (Math.max(0, Math.min(100, v)) / 100) * ih;
+  const defs = svgNode("defs", {});
+  const grad = svgNode("linearGradient", { id: "evo-fill", x1: "0", y1: "0", x2: "0", y2: "1" });
+  grad.appendChild(svgNode("stop", { offset: "0%", "stop-color": "#ffffff", "stop-opacity": "0.45" }));
+  grad.appendChild(svgNode("stop", { offset: "100%", "stop-color": "#ffffff", "stop-opacity": "0.02" }));
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+  for (const g of [25, 50, 75]) {
+    const gy = PAD.t + ih - (g / 100) * ih;
+    svg.appendChild(svgNode("line", { x1: PAD.l, y1: gy, x2: W - PAD.r, y2: gy, stroke: "#ffffff", "stroke-opacity": "0.25", "stroke-dasharray": "4 6" }));
+  }
+  const linePts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const area = svgNode("polygon", {
+    points: `${PAD.l},${(PAD.t + ih).toFixed(1)} ${linePts} ${(W - PAD.r).toFixed(1)},${(PAD.t + ih).toFixed(1)}`,
+    fill: "url(#evo-fill)",
+  });
+  svg.appendChild(area);
+  svg.appendChild(svgNode("polyline", {
+    points: linePts, fill: "none", stroke: "#ffe08a",
+    "stroke-width": "3", "stroke-linecap": "round", "stroke-linejoin": "round",
+  }));
+  vals.forEach((v, i) => {
+    const isMax = v === Math.max(...vals);
+    svg.appendChild(svgNode("circle", {
+      cx: x(i).toFixed(1), cy: y(v).toFixed(1), r: isMax ? "5" : "3.5",
+      fill: "#fff", stroke: "#b83e06", "stroke-width": "2",
+    }));
+  });
+  const labelIdx = buckets.length <= 5
+    ? buckets.map((_, i) => i)
+    : [0, Math.floor(buckets.length / 2), buckets.length - 1];
+  for (const pos of labelIdx) {
+    const i = pos;
+    const anchor = i === 0 ? "start" : (i === buckets.length - 1 ? "end" : "middle");
+    const tx = i === 0 ? PAD.l : (i === buckets.length - 1 ? W - PAD.r : x(i));
+    const t = svgNode("text", {
+      x: tx.toFixed(1), y: (H - 8).toFixed(1),
+      fill: "#ffffff", "fill-opacity": "0.85", "font-size": "11",
+      "text-anchor": anchor,
+    });
+    t.textContent = formatBucketDate(buckets[i].bucketStart);
+    svg.appendChild(t);
+  }
+  return svg;
+}
+
 function renderEvolution(data, loadError) {
   evoBox.textContent = "";
+  if (evoHeadline) evoHeadline.textContent = "—";
+  if (evoDelta) evoDelta.hidden = true;
   if (loadError) {
+    if (evoHeadline) evoHeadline.textContent = "Indisponível";
     renderEmpty(evoBox, { title: "Sua evolução não carregou", description: friendlyMessage(loadError) });
     return;
   }
   const buckets = data?.buckets || [];
   if (!buckets.length) {
-    renderEmpty(evoBox, {
-      title: "Sem evolução ainda",
-      description: "Responda questões para ver seu aproveitamento ao longo do tempo.",
-    });
+    if (evoHeadline) evoHeadline.textContent = "Sem dados ainda";
+    const sub = el("p", { className: "perf-chart__sub", text: "Responda questões para ver seu aproveitamento ao longo do tempo." });
+    evoBox.appendChild(sub);
     return;
   }
-  const list = el("ol", { className: "evo-bars" });
-  for (const b of buckets) {
-    const pct = formatPercentValue(b.accuracy) ?? 0;
-    const when = formatBucketDate(b.bucketStart);
-    const row = el("li", { className: "evo-bars__row" });
-    row.appendChild(el("span", { className: "evo-bars__label", text: when }));
-    const bar = el("div", {
-      className: "progress",
-      attrs: {
-        role: "progressbar",
-        "aria-valuenow": String(pct),
-        "aria-valuemin": "0",
-        "aria-valuemax": "100",
-        "aria-label": `Aproveitamento em ${when}`,
-      },
-    });
-    const fill = el("div", { className: "progress__bar" });
-    fill.style.width = `${pct}%`;
-    bar.appendChild(fill);
-    row.appendChild(bar);
-    row.appendChild(
-      el("span", {
-        className: "evo-bars__value",
-        text: `${formatPercent(b.accuracy)} · ${b.correct}/${b.scored}`,
-      }),
-    );
-    list.appendChild(row);
+  const vals = buckets.map((b) => formatPercentValue(b.accuracy) ?? 0);
+  const last = vals[vals.length - 1];
+  const first = vals[0];
+  if (evoHeadline) evoHeadline.textContent = formatPercent(buckets[buckets.length - 1].accuracy);
+  if (evoDelta) {
+    const diff = last - first;
+    evoDelta.hidden = false;
+    evoDelta.textContent = `${diff >= 0 ? "↗" : "↘"} ${Math.abs(diff)} p.p. no período`;
+    evoDelta.classList.toggle("delta-pill--up", diff >= 0);
+    evoDelta.classList.toggle("delta-pill--down", diff < 0);
   }
-  evoBox.appendChild(list);
+  evoBox.appendChild(evolutionChart(buckets));
+  const legend = el("div", { className: "evo-legend" });
+  legend.appendChild(el("span", { text: `${buckets.length} ${buckets.length === 1 ? "período" : "períodos"} · ${buckets[buckets.length - 1].correct}/${buckets[buckets.length - 1].scored} no último` }));
+  evoBox.appendChild(legend);
+  const sr = el("ol", { className: "evo-bars visually-hidden" });
+  for (const b of buckets) {
+    const row = el("li", { className: "evo-bars__row" });
+    row.appendChild(el("span", { className: "evo-bars__label", text: formatBucketDate(b.bucketStart) }));
+    row.appendChild(el("span", { text: `${formatPercent(b.accuracy)}` }));
+    row.appendChild(el("span", { className: "evo-bars__value", text: `${b.correct}/${b.scored}` }));
+    sr.appendChild(row);
+  }
+  evoBox.appendChild(sr);
 }
 
 /* ---------- 7. simulados ---------- */

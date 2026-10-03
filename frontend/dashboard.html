@@ -25,14 +25,14 @@
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/components.css" />
   <link rel="stylesheet" href="./css/utilities.css?v=6" />
-  <link rel="stylesheet" href="./css/dashboard.css?v=6" />
+  <link rel="stylesheet" href="./css/dashboard.css?v=7" />
   <title>Meu painel — VouPassar</title>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="site-header">
-    <div class="container site-header__inner">
+    <div class="container container--wide site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
         <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
@@ -52,10 +52,17 @@
   </header>
 
   <main id="conteudo">
-    <div class="container section">
+    <div class="container container--wide section dash-shell">
       <div class="dash-head">
-        <h1 id="dash-title" class="display">Seu painel</h1>
-        <p class="lead" id="dash-subtitle">Carregando seu progresso…</p>
+        <div class="dash-head__text">
+          <p class="eyebrow dash-eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Meu painel</p>
+          <h1 id="dash-title" class="display">Seu painel</h1>
+          <p class="lead" id="dash-subtitle">Carregando seu progresso…</p>
+        </div>
+        <div class="dash-head__actions">
+          <a class="btn btn--secondary btn--sm" href="./estudos.html">Estudar agora</a>
+          <a class="btn btn--primary btn--sm" href="./simulado.html">Fazer simulado</a>
+        </div>
       </div>
 
       <div id="dash-guard" hidden></div>
@@ -67,90 +74,121 @@
       </div>
 
       <div id="dash-content" hidden>
-        <!-- 1. O PASSO AGORA: o bloco mais importante da tela fica no topo,
-             com tamanho e cor de destaque. É a resposta a "o que eu faço?" -->
-        <section aria-labelledby="sec-next-t">
+        <!-- 1. ESTUDE AGORA — hero de destaque -->
+        <section aria-labelledby="sec-next-t" class="dash-sec">
           <h2 id="sec-next-t" class="visually-hidden">O que estudar agora</h2>
           <div id="dash-next"></div>
         </section>
 
-        <!-- 2. RESUMO -->
-        <section aria-labelledby="sec-resumo-t" class="mt-10">
-          <div class="section-head">
-            <div>
-              <h2 id="sec-resumo-t">Seu progresso</h2>
+        <!-- 2. DESEMPENHO GERAL — painel inspirado na referência (performance + gráfico) -->
+        <section aria-labelledby="sec-perf-t" class="dash-sec perf-shell">
+          <div class="perf-shell__head">
+            <div class="perf-shell__title">
+              <h2 id="sec-perf-t">Desempenho geral</h2>
               <p>Só entram aqui as questões que valem nota. Questão anulada pelo IFRN aparece, mas não conta no cálculo.</p>
             </div>
-          </div>
-          <div class="dash-stats" id="dash-stats" role="list" aria-label="Resumo de desempenho"></div>
-        </section>
-
-        <!-- 3. DESEMPENHO POR DISCIPLINA + 4. ASSUNTOS PARA TREINAR -->
-        <div class="dash-grid dash-grid--2 mt-10">
-          <section aria-labelledby="sec-disc-t">
-            <div class="section-head">
-              <div>
-                <h2 id="sec-disc-t">Como você vai</h2>
-                <p>Seu aproveitamento em cada disciplina.</p>
-              </div>
-            </div>
-            <div id="dash-disciplines"></div>
-          </section>
-
-          <section aria-labelledby="sec-prio-t">
-            <div class="section-head">
-              <div>
-                <h2 id="sec-prio-t">O que treinar</h2>
-                <p>Os assuntos com mais peso na prova e onde você ainda erra.</p>
-              </div>
-            </div>
-            <div id="dash-priorities"></div>
-          </section>
-        </div>
-
-        <!-- 5. ROTEIRO -->
-        <section aria-labelledby="sec-plan-t" class="mt-10">
-          <div class="section-head">
-            <div>
-              <h2 id="sec-plan-t">Seu roteiro de estudos</h2>
-              <p>A ordem dos assuntos foi montada a partir do seu desempenho e de quanto cada tema pesa na prova.</p>
-            </div>
-            <div class="btn-group" role="group" aria-label="Ações do roteiro">
-              <button type="button" class="btn btn--secondary btn--sm" id="plan-generate">Montar meu roteiro</button>
-              <button type="button" class="btn btn--ghost btn--sm" id="plan-regenerate" hidden>Atualizar roteiro</button>
-            </div>
-          </div>
-          <div id="dash-plan"></div>
-        </section>
-
-        <!-- 6. EVOLUÇÃO + 7. SIMULADOS -->
-        <div class="dash-grid dash-grid--2 mt-10">
-          <section aria-labelledby="sec-evo-t">
-            <div class="section-head">
-              <div>
-                <h2 id="sec-evo-t">Sua evolução</h2>
-                <p>Seu aproveitamento ao longo do tempo.</p>
-              </div>
-            </div>
-            <div class="evo-controls">
-              <div class="field" style="margin-bottom:0">
-                <label class="field__label" for="evo-granularity">Ver por</label>
-                <select class="select" id="evo-granularity">
+            <div class="perf-shell__tools">
+              <span class="health-pill" id="dash-health" hidden>
+                <span class="health-pill__bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                <strong id="dash-health-num">—</strong>
+                <span class="health-pill__label">preparo</span>
+              </span>
+              <div class="seg" role="group" aria-label="Período da evolução">
+                <label class="visually-hidden" for="evo-granularity">Ver por</label>
+                <select class="select seg__select" id="evo-granularity">
                   <option value="DAY">Dia</option>
                   <option value="WEEK" selected>Semana</option>
                   <option value="MONTH">Mês</option>
                 </select>
               </div>
             </div>
-            <div id="dash-evolution"></div>
+          </div>
+          <div class="perf-shell__body">
+            <div class="perf-shell__stats">
+              <div class="dash-stats" id="dash-stats" role="list" aria-label="Resumo de desempenho"></div>
+            </div>
+            <div class="perf-chart">
+              <div class="perf-chart__top">
+                <div>
+                  <p class="eyebrow perf-chart__eyebrow">Sua evolução</p>
+                  <p class="perf-chart__value" id="dash-evo-headline">—</p>
+                </div>
+                <span class="delta-pill" id="dash-evo-delta" hidden></span>
+              </div>
+              <div id="dash-evolution"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. FOCO RÁPIDO — faixa horizontal como a watchlist da referência -->
+        <section aria-labelledby="sec-focus-t" class="dash-sec">
+          <div class="section-head section-head--row">
+            <div>
+              <h2 id="sec-focus-t">Foco rápido</h2>
+              <p>Suas disciplinas e os assuntos que mais pesam — toque para praticar.</p>
+            </div>
+            <a class="btn btn--ghost btn--sm" href="./estudos.html">Abrir estudos</a>
+          </div>
+          <div class="focus-strip" id="dash-watch" role="list" aria-label="Acesso rápido por disciplina e assunto"></div>
+        </section>
+
+        <!-- 4. TRIO — distribuição, nível e o que treinar -->
+        <div class="dash-grid dash-grid--3">
+          <section aria-labelledby="sec-disc-t" class="panel">
+            <div class="panel__head">
+              <div>
+                <h2 id="sec-disc-t">Por disciplina</h2>
+                <p>Seu aproveitamento em cada frente.</p>
+              </div>
+            </div>
+            <div id="dash-disciplines"></div>
           </section>
 
-          <section aria-labelledby="sec-sim-t">
-            <div class="section-head">
+          <section aria-labelledby="sec-level-t" class="panel panel--level">
+            <div class="panel__head">
+              <div>
+                <h2 id="sec-level-t">Seu nível</h2>
+                <p>Uma estimativa para você se orientar.</p>
+              </div>
+            </div>
+            <div id="dash-level"></div>
+          </section>
+
+          <section aria-labelledby="sec-prio-t" class="panel panel--insight">
+            <div class="panel__head">
+              <div>
+                <h2 id="sec-prio-t">O que treinar</h2>
+                <p>Peso na prova + onde você ainda erra.</p>
+              </div>
+              <span class="panel__icon" aria-hidden="true">↗</span>
+            </div>
+            <div id="dash-priorities"></div>
+          </section>
+        </div>
+
+        <!-- 5. ROTEIRO + SIMULADOS -->
+        <div class="dash-grid dash-grid--2">
+          <section aria-labelledby="sec-plan-t" class="panel">
+            <div class="panel__head panel__head--split">
+              <div>
+                <h2 id="sec-plan-t">Seu roteiro de estudos</h2>
+                <p>Ordem montada a partir do seu desempenho e do peso de cada tema.</p>
+              </div>
+              <div class="btn-group" role="group" aria-label="Ações do roteiro">
+                <button type="button" class="btn btn--secondary btn--sm" id="plan-generate">Montar meu roteiro</button>
+                <button type="button" class="btn btn--ghost btn--sm" id="plan-regenerate" hidden>Atualizar roteiro</button>
+              </div>
+            </div>
+            <div id="dash-plan"></div>
+          </section>
+
+          <section aria-labelledby="sec-sim-t" class="panel">
+            <div class="panel__head panel__head--split">
               <div>
                 <h2 id="sec-sim-t">Seus simulados</h2>
                 <p>Treinos com a cara da prova de verdade.</p>
               </div>
+              <a class="btn btn--ghost btn--sm" href="./simulado.html">Abrir simulados</a>
             </div>
             <div id="dash-simulations"></div>
           </section>
