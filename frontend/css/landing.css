@@ -307,12 +307,11 @@ body.landing-page {
  *
  * Largura máxima 20rem = 320px = largura nativa do arquivo: exibir
  * maior reprovava o Lighthouse em `image-size-responsive` (upscale). */
-/* Sem alternador de tema nesta tela: o canvas navy é idêntico nos
- * dois temas, então a troca não teria efeito visual — só poluiria o
- * header. O botão continua injetado pelo main.js, mas fora de fluxo e
- * fora da árvore de acessibilidade (display:none). */
+/* O alternador de tema é visível em todas as páginas, conforme TASK 8.4.
+ * Na landing o canvas navy é idêntico nos dois temas, mas o botão
+ * permanece acessível e respeita o header. */
 .landing-page .theme-toggle {
-  display: none;
+  display: inline-flex;
 }
 
 /* Composição: mock centralizado com a marca do header angulada sobre o

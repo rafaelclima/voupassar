@@ -48,6 +48,11 @@ ausência do dataset (AGENTS.md §3). Questão inexistente →
   `IN_PROGRESS` deste aluno sai com `answerKey/explanation` nulos + nota de
   gabarito oculto (via `searchForUser`/`getByIdForUser`); após
   concluir/abandonar revela normalmente. Ver `docs/api-modo-prova.md`.
+* Textos-base (TASK 6.9): `passages[]` em lista e detalhe (leitura em lote
+  via `question_passages`, sem N+1; default `[]`). Transcrição literal do
+  caderno (`content` nulo = puramente visual, ver `visualDescription`).
+  Parte do enunciado: **visível também no Modo Prova**. Sem gate de
+  publicação (decisão em `docs/passagens-estrategia.md` §1).
 
 ## OpenAPI
 

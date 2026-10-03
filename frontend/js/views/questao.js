@@ -25,6 +25,7 @@ import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.j
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel, choiceLabel } from "../vocab.js";
 import { renderFigure, injectFigureNotice } from "../components/figure.js";
+import { renderPassages } from "../components/passage.js";
 
 const SESSION_KEY = "voupassar.studySessionId";
 
@@ -38,6 +39,7 @@ const titleEl = document.getElementById("questao-title");
 const metaEl = document.getElementById("questao-meta");
 const badgesEl = document.getElementById("questao-badges");
 const statementEl = document.getElementById("questao-statement");
+const passagesBox = document.getElementById("questao-passages");
 const figureEl = document.getElementById("questao-figure");
 const topicEl = document.getElementById("questao-topic");
 
@@ -269,6 +271,11 @@ function renderAll(q) {
   }
 
   statementEl.textContent = q.statement || "(enunciado ainda não conferido)";
+  // Textos-base (TASK 6.9): painéis expansíveis entre enunciado e figura.
+  if (passagesBox) {
+    passagesBox.textContent = "";
+    renderPassages(q, passagesBox);
+  }
   // Figura: tenta renderizar via componente; se ainda não publicado,
   // mantém aviso legível (não deixa usuário sem referência).
   if (q.hasFigure) {

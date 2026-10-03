@@ -1,0 +1,139 @@
+{
+  "curadoria": {
+    "conferencia": "Transcrições conferidas caractere a caractere contra o caderno oficial (leitura visual das páginas renderizadas a 130–220 dpi + pdftotext -layout). Caderno: data/provas/2026/Caderno_de_Provas_-Técnico_Integrado_2026.pdf. Texto 1 transcrito integralmente das páginas impressas 2–3 (título em caixa alta, lead com autor/data, intertítulo 'Mas afinal, o que é a COP?', 'Como o Brasil está se preparando...' e 'A Amazônia como sede...' em negrito/maiúsculas, blocos de parágrafo com quebras registradas em format_note). Trechos transcritos dos quadros das páginas impressas 6, 6, 7 e 8; os marcadores (1)–(5) e (1)–(7) estão em negrito; sublinhados e negritos registrados em format_note; o trecho Q23–24 é um bloco de informações extraídas do Texto 1 (p. 8) para a matemática. Texto 2 é charge em quadro único: sem texto extraível além dos balões de fala e da assinatura — descrição redigida a partir da imagem da página impressa 4 (falas transcritas literalmente via OCR e conferência visual). Nada reconstruído ou parafraseado; grafia original mantida (inclusive os hífens de fim de linha do PDF).",
+    "curador": "curadoria-manual",
+    "data_utc": "2026-10-03",
+    "regra_vinculo": "Vínculo questão↔passagem SOMENTE com evidência no enunciado (data/extracted/2026.json), validada por extract_passages.py --check: TEXTO — enunciado cita o rótulo ('Texto 1', inclusive plural 'Textos 1 e 2' nas Q19–Q20 — vínculo duplo, padrão 2020 Q20/2023 Q20/2024 Q19-20); TRECHO — questão dentro do intervalo do cabeçalho ('de 8 a 10', 'de 11 a 14', '15 a 17', '23 a 24'). Q7 (primeiro parágrafo do Texto 1) e Q17 (expressão 'CRESCIMENTO VERDE (7)' com referência ao Texto 1) vinculadas ao TEXTO-1; Q17 também está no intervalo do trecho Q15–17 (vínculo duplo — padrão 2024 Q25-27 com trecho). Q28 ('De acordo com o Texto 1') vinculada ao TEXTO-1. Q23–Q24 vinculadas ao TRECHO-Q23-24 (cabeçalho 'Utilize as informações do Texto 1'). Q36 (trecho auto-contido, sem rótulo no enunciado) sem vínculo; gráfico/figura das Q26, Q30, Q31, Q32, Q39 para fase de figuras; matemática auto-contida (Q21-22, Q25-27, Q29-40 sem citação de texto/trecho/figura) sem vínculo — ver docs/blockers.md."
+  },
+  "edition": 2026,
+  "passages": [
+    {
+      "key": "TEXTO-1",
+      "label": "Texto 1",
+      "kind": "TEXTO",
+      "title": "COP30 no Brasil: o que é, quando acontece e por que é tão importante para o futuro do clima",
+      "byline": "Por: Redação em 24/07/2025 ‖ Atualizado: 24/07/2025, às 11:02",
+      "subtitle": "A escolha de Belém como sede da COP30 transcende uma celebração simbólica dos 10 anos do Acordo de Paris, prometendo marcar um momento de ação concreta e compromissos efetivos.",
+      "intro": null,
+      "content": "A 30ª Conferência das Nações Unidas sobre Mudança do Clima (Conferência das Partes – COP30 –), que acontecerá entre os dias 10 e 21 de novembro na cidade de Belém, capital do Pará, já está movimentando o Brasil de diversas maneiras. O evento, que ocorre anualmente, reúne líderes mundiais, cientistas, organizações não governamentais e representantes da sociedade civil para discutir o futuro do planeta, por meio de ações para combater as mudanças climáticas. Na edição anterior, realizada em Baku, Azerbaijão, a conferência enfrentou críticas por não estabelecer metas suficientemente ambiciosas para mitigar os efeitos das mudanças climáticas.\n\nDurante o evento, o país terá a responsabilidade de apresentar seus esforços em áreas como energias renováveis, biocombustíveis e agricultura de baixo carbono. Para o governo brasileiro, a COP30 é uma oportunidade singular de reforçar o papel do Brasil como líder nas discussões globais sobre mudanças climáticas e sustentabilidade. Os temas centrais da COP30 abrangerão a redução de emissões de gases de efeito estufa, a adaptação às mudanças climáticas, o financiamento climático para países em desenvolvimento, tecnologias de energia renovável e soluções de baixo carbono, além da preservação de florestas e biodiversidade. A justiça climática e os impactos sociais das mudanças climáticas também fazem parte dos temas centrais do encontro.\n\nSegundo estimativas da Fundação Getúlio Vargas (FGV), espera-se que a COP30 atraia cerca de 40 mil visitantes. Dentre eles, pelo menos, 7 mil serão integrantes da ONU e de delegações de países-membros. A escolha de Belém como sede da COP30 transcende uma celebração simbólica dos 10 anos do Acordo de Paris, prometendo marcar um momento de ação concreta e compromissos efetivos. Conforme afirmou o embaixador André Corrêa do Lago, presidente da conferência, este é um momento que exige ação concreta e a implementação de compromissos já firmados. Em entrevista à Jovem Pan, Lago deixou claro que o evento será um marco de transição entre a diplomacia climática e a execução de políticas sustentáveis. Mais de 30 anos após sediar a Rio-92, evento tido como a pedra fundamental para o estabelecimento das COP, o Brasil recebe novamente uma conferência de tal magnitude.\n\nMas afinal, o que é a COP?\n\nA Conferência das Partes (COP) é o órgão decisório da Convenção-Quadro das Nações Unidas sobre Mudança do Clima (CQNUMC ou UNFCCC). Sua função é implementar os compromissos globais de combate às mudanças climáticas assumidos pelos países signatários e ratificadores da Convenção. Atualmente, 198 nações participam da UNFCCC, tornando-a um dos maiores organismos multilaterais da Organização das Nações Unidas (ONU). A COP representa a cúpula global do clima, que é realizada anualmente em um país diferente. Ela também funciona como Reunião das Partes para o Protocolo de Quioto (CMP) e o Acordo de Paris, cujo objetivo principal é mitigar o aquecimento global e manter o aumento da temperatura global abaixo de 2º C, com esforços para limitá-lo a 1,5º C.\n\nNa dinâmica da COP, que ocorre ao longo de duas semanas, a primeira semana é dedicada a discussões técnicas, enquanto a segunda é voltada para encontros políticos e assinatura dos acordos. Os resultados devem ser alcançados por consenso, garantindo que todos os países tenham direito a voto. Durante a COP, eventos ocorrem simultaneamente todos os dias. A conferência é dividida em Zona Azul e Zona Verde. A Zona Azul, que é gerenciada diretamente pela ONU, é onde acontecem as negociações políticas e os encontros diplomáticos. Já a Zona Verde sedia painéis para o público geral, apresentação de ONG e outras atividades, inclusive as culturais.\n\nComo o Brasil está se preparando para receber a COP30?\n\nBelém é a cidade escolhida para sediar o evento que acontecerá em novembro. A capital paraense tem a missão de recuperar a posição de “capital da Amazônia”. Uma força-tarefa foi montada para preparar a cidade e a região para receber a COP30. Neste sentido, a prefeitura da cidade e o governo do estado estão trabalhando junto ao governo federal e à iniciativa privada para impulsionar o desenvolvimento e deixar a cidade pronta para receber os milhares de visitantes previstos. O Além da Energia vem acompanhando os avanços nos preparativos da cidade. Estima-se que o conjunto de obras do Parque da Cidade, espaço que sediará as exposições e reuniões da COP30, receba pelo menos R$ 980 milhões em investimentos. Ao todo, são 38 obras em andamento na cidade, o que representa um investimento de R$ 7,3 bilhões, de acordo com o G1. Entre as obras, estão a modernização do Aeroporto Internacional de Belém, a revitalização de rodovias e o BRT Metropolitano, além do citado Parque da Cidade. As obras estão organizadas em quatro categorias: hospedagem, infraestrutura, mobilidade e saneamento. Na área de infraestrutura, que tem mais projetos e recursos, são 14 obras orçadas em R$ 2,7 bilhões. Hospedagem, mobilidade e saneamento recebem oito obras públicas cada uma. Apesar de impulsionar o desenvolvimento, a escolha da capital paraense como sede da COP carrega implicações ambientais e geopolíticas. No entanto, o desafio logístico é considerável. Acelerando os projetos de infraestrutura, o governo também se preocupa com a rede hoteleira: “A questão dos leitos é crítica. Os preços subiram muito e isso pode afastar não só delegações oficiais, mas também a sociedade civil, empresários e cientistas. A COP precisa ser acessível”, alertou Corrêa do Lago.\n\nA Amazônia como sede da COP no Brasil\n\nA cúpula reunirá líderes globais na Amazônia brasileira para focar na questão climática. Essa escolha é estratégica para o Brasil, pois destaca o bioma e oferece ao país uma plataforma para mostrar suas iniciativas de preservação e transição energética. O Brasil é um líder nesse setor e possui recursos que lhe permitem dar o exemplo. Entre os desafios do Brasil na COP30, está a mediação das discussões, o que pode demonstrar que o país pode assumir um papel central no combate às mudanças climáticas. A COP30 será presidida pelo embaixador André Corrêa do Lago, com Ana Toni atuando como CEO da Conferência. As ministras Marina Silva, do Meio Ambiente e Mudança do Clima, e Sonia Guajajara, dos Povos Indígenas, devem participar ativamente das discussões.\n\nUm dos pontos centrais da conferência será a tentativa de reposicionar o Brasil no cenário internacional como uma potência ambiental. Com uma das matrizes energéticas mais limpas do mundo, um histórico no uso de biocombustíveis e investimentos crescentes em tecnologias sustentáveis, o país pretende apresentar um novo modelo de crescimento verde. “Essa agenda favorece o Brasil. Podemos crescer mais, gerar empregos e atender à nova demanda global por produtos sustentáveis”, reforçou o embaixador. A Amazônia corresponde a um terço das florestas tropicais do mundo e desempenha um papel determinante na absorção global de carbono, ajudando a reduzir (naturalmente) os níveis de gases de efeito estufa na atmosfera. Segundo a CNN Brasil, o país tem chances de ser o grande protagonista da edição, mas ainda precisa mostrar ao mundo que isso não se deve apenas ao fato de abrigar parte da maior floresta do planeta, o que, por si só, já justificaria o título. A expectativa da COP30 é que o Brasil demonstre aos líderes globais como está combatendo as mudanças climáticas, uma vez que é referência mundial na utilização de energia limpa, com mais de 90% da eletricidade proveniente de fontes renováveis. Pedro Côrtes, professor do Instituto de Energia e Ambiente da Universidade de São Paulo (USP), declarou em entrevista à CNN Brasil que receber a COP pode representar uma “excelente oportunidade” para o Brasil mostrar suas iniciativas na área de geração de energia.",
+      "format_note": "No caderno, o título está em caixa alta e centralizado; a linha de autoria (Por: Redação em 24/07/2025 ‖ Atualizado: 24/07/2025, às 11:02) alinhada à direita; os intertítulos 'Mas afinal, o que é a COP?', 'Como o Brasil está se preparando para receber a COP30?' e 'A Amazônia como sede da COP no Brasil' estão em negrito e alinhados à esquerda; os parágrafos têm indentação; a citação direta do embaixador Corrêa do Lago está entre aspas; o crédito com URL está no rodapé da página 3 (não faz parte do texto-base, mas é preservado em source_note).",
+      "source_note": "Disponível em: https://www.alemdaenergia.engie.com.br/cop30-no-brasil-por-que-e-tao-importante-para-o-futuro-do-clima/. Acesso em: 05 set 2025 (texto adaptado para uso nesta avaliação).",
+      "page_start": 2,
+      "page_end": 3,
+      "questions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        17,
+        19,
+        20,
+        28
+      ],
+      "visual_description": null
+    },
+    {
+      "key": "TEXTO-2",
+      "label": "Texto 2",
+      "kind": "CHARGE",
+      "title": "Belém e os preparativos para a COP30",
+      "byline": "Charge de Dantagonico",
+      "subtitle": null,
+      "intro": null,
+      "content": null,
+      "format_note": "Charge colorida em quadro único: assinatura estilizada 'DANTAGONICO' no canto superior esquerdo; título 'Belém e os preparativos para a COP30' centralizado; a imagem mostra uma área de mata devastada com troncos cortados; no centro, uma estrada de acesso sendo aberta; à direita, um painel indicando 'AQUI VAI SER A ESTRADA DE ACESSO À CONFERÊNCIA QUE VAI DISCUTIR O FUTURO DO MEIO AMBIENTE'; no canto inferior, um balão de fala: 'POR QUE TEMOS QUE DESMATAR TODA ESSA ÁREA?'. Nenhum texto extraível além dos elementos descritos.",
+      "source_note": "Disponível em: https://www.google.com/search?client=firefox-b-d&sca_esv=60db1cbf7d4ebbd5&sxsrf=AE3TifOjsRqb2G2Uc3zX7PtuzbC8PWQ2JQ:1757. Acesso em: 05 set. 2025.",
+      "visual_description": "Charge colorida em quadro único: assinatura 'DANTAGONICO' no canto superior esquerdo; título 'Belém e os preparativos para a COP30' centralizado; ao centro, uma área de mata devastada com troncos cortados e uma estrada de acesso sendo aberta; no lado direito, um painel com a inscrição 'AQUI VAI SER A ESTRADA DE ACESSO À CONFERÊNCIA QUE VAI DISCUTIR O FUTURO DO MEIO AMBIENTE'; no canto inferior, um balão de fala com o texto 'POR QUE TEMOS QUE DESMATAR TODA ESSA ÁREA?'. A composição visual contrasta a devastação ambiental com a proposta de discussão sobre o futuro do meio ambiente na COP30. Nenhuma legenda adicional no caderno além do link de fonte e do título.",
+      "page_start": 4,
+      "page_end": 4,
+      "questions": [
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "key": "TRECHO-Q08-10",
+      "label": "Trecho — questões 8 a 10",
+      "kind": "TRECHO",
+      "title": null,
+      "byline": null,
+      "subtitle": null,
+      "intro": "O trecho a seguir deve ser utilizado para responder às questões de 8 a 10.",
+      "content": "A conferência é dividida em Zona Azul e Zona Verde. A Zona Azul, que(1) é gerenciada diretamente pela ONU, é onde(2) acontecem as negociações políticas e os encontros diplomáticos(3). Já a Zona Verde sedia painéis para o público geral, apresentação de ONG e outras atividades, inclusive as culturais.",
+      "format_note": "No caderno, o trecho aparece emoldurado com borda simples; os marcadores (1)–(3) estão em negrito; os termos 'que' (1), 'onde' (2) e 'negociações políticas e os encontros diplomáticos' (3) estão sublinhados. Corresponde ao trecho do Texto 1 sobre a divisão da conferência.",
+      "source_note": "Trecho extraído do Texto 1 (artigo COP30), caderno oficial 2026, p. 6.",
+      "visual_description": null,
+      "page_start": 6,
+      "page_end": 6,
+      "questions": [
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "key": "TRECHO-Q11-14",
+      "label": "Trecho — questões 11 a 14",
+      "kind": "TRECHO",
+      "title": null,
+      "byline": null,
+      "subtitle": null,
+      "intro": "Considere o trecho a seguir para resolver às questões de 11 a 14.",
+      "content": "Apesar de(1) impulsionar(2) o desenvolvimento, a escolha da capital paraense como sede da COP carrega implicações ambientais e geopolíticas. No entanto(3), o desafio logístico é considerável. Acelerando os projetos de infraestrutura, o governo também se preocupa com a rede hoteleira: “(4)A questão dos leitos é crítica. Os preços subiram muito e isso pode afastar não só delegações oficiais, mas também(5) a sociedade civil, empresários e cientistas. A COP precisa ser acessível”(4), alertou Corrêa do Lago.",
+      "format_note": "No caderno, o trecho aparece emoldurado; os marcadores (1)–(5) estão em negrito; os termos 'Apesar de' (1), 'impulsionar' (2), 'No entanto' (3) e 'mas também' (5) estão sublinhados; a citação direta entre aspas (4) está destacada pelo uso das aspas; o ponto final após 'acessível' está dentro das aspas e seguido de '(4)'. Corresponde ao trecho do Texto 1 sobre os desafios logísticos.",
+      "source_note": "Trecho extraído do Texto 1 (artigo COP30), caderno oficial 2026, p. 6.",
+      "visual_description": null,
+      "page_start": 6,
+      "page_end": 6,
+      "questions": [
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "key": "TRECHO-Q15-17",
+      "label": "Trecho — questões 15 a 17",
+      "kind": "TRECHO",
+      "title": null,
+      "byline": null,
+      "subtitle": null,
+      "intro": "O trecho a seguir deve ser utilizado para responder às questões 15 a 17.",
+      "content": "Com uma das matrizes energéticas(1) mais limpas do mundo,(2) um histórico(3) no uso de biocombustíveis(4) e investimentos crescentes em tecnologias sustentáveis(5), o país(6) pretende apresentar um novo modelo de crescimento verde(7).",
+      "format_note": "No caderno, o trecho aparece emoldurado; os marcadores (1)–(7) estão em negrito; os termos 'matrizes energéticas' (1), 'mundo' (2), 'histórico' (3), 'biocombustíveis' (4), 'tecnologias sustentáveis' (5), 'o país' (6) e 'crescimento verde' (7) estão sublinhados; a vírgula após 'mundo' (2) está destacada pelo marcador. Corresponde ao trecho do Texto 1 sobre a matriz energética brasileira.",
+      "source_note": "Trecho extraído do Texto 1 (artigo COP30), caderno oficial 2026, p. 7.",
+      "visual_description": null,
+      "page_start": 7,
+      "page_end": 7,
+      "questions": [
+        15,
+        16,
+        17
+      ]
+    },
+    {
+      "key": "TRECHO-Q23-24",
+      "label": "Trecho — questões 23 a 24",
+      "kind": "TRECHO",
+      "title": null,
+      "byline": null,
+      "subtitle": null,
+      "intro": "Utilize as informações do Texto 1 a seguir para responder às questões 23 e 24.",
+      "content": "O evento da COP30, em Belém, estima receber cerca de 40 mil visitantes, dos quais, pelo menos, 7 mil serão integrantes da ONU e de delegações de países-membros.",
+      "format_note": "No caderno, o bloco aparece como texto destacado entre as questões 22 e 23 (matemática); não está emoldurado como os trechos de língua portuguesa, mas é apresentado como bloco de referência para cálculo. Nenhum marcador numérico no texto; o conteúdo é uma citação direta do Texto 1 (parágrafo sobre visitantes).",
+      "source_note": "Trecho extraído do Texto 1 (artigo COP30), caderno oficial 2026, p. 8.",
+      "visual_description": null,
+      "page_start": 8,
+      "page_end": 8,
+      "questions": [
+        23,
+        24
+      ]
+    }
+  ]
+}

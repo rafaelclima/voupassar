@@ -20,6 +20,7 @@
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
 import { injectFigureNotice } from "../components/figure.js";
+import { renderPassages } from "../components/passage.js";
 import {
   fetchDisciplines,
   fetchEditions,
@@ -610,6 +611,8 @@ function renderSimCard(item, detail) {
   card.appendChild(head);
 
   card.appendChild(el("p", { className: "sim-card__statement", text: detail?.statement || "(enunciado ainda não conferido)" }));
+  // Textos-base (TASK 6.9): parte do enunciado — visíveis também no Modo Prova.
+  if (detail) renderPassages(detail, card);
   if (detail?.hasFigure) {
     const figP = el("p", { className: "sim-card__figure" });
     card.appendChild(figP);

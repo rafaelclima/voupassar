@@ -54,4 +54,6 @@ public record QuestionResponse(
     @Schema(example = "PENDENTE_REVISAO") String publicationStatus,
     @Schema(description = "Notas de evidência/auditoria desta questão.") List<String> notes,
     @Schema(description = "Figuras oficiais associadas (caminho + metadados). Vazio quando sem recorte publicado.")
-        java.util.List<FigureResponse> figures) {}
+        java.util.List<FigureResponse> figures,
+    @Schema(description = "Textos-base citados pela questão (transcrição literal). Vazio quando a questão é autocontida.")
+        java.util.List<PassageResponse> passages) {}

@@ -627,6 +627,31 @@ Mostrar:
 
 ---
 
+## TASK 6.9 — Textos-base junto das questões [DONE — piloto 2020 em 2026-10-03]
+
+Exibir o contexto compartilhado que a questão exige (Texto N, trecho,
+tabela, gráfico, imagem) em painel expansível ("Mostrar texto" /
+"Mostrar imagem"), colapsado por padrão, nas telas de questão, estudos e
+simulado (inclusive Modo Prova — é enunciado, não gabarito).
+
+Entregas:
+
+* `data/passages/<ano>.json` (transcrição literal curada, regra de
+  vínculo auditável) + `scripts/db/extract_passages.py` (`--suggest`,
+  `--check`) — ver `docs/passagens-estrategia.md`;
+* migração `V9__passages.sql` (`passages` + `question_passages`) +
+  `scripts/db/import_passages.py` (idempotente, `--check`);
+* `QuestionResponse.passages[]` (leitura em lote, sem N+1) + testes;
+* `frontend/js/components/passage.js` (`<details>` nativo, tokens do
+  design system) ligado em `questao`, `estudos` e `simulado`;
+* validadores atualizados (`check_frontend.py`).
+
+Piloto: 2020 com 4 passagens e 30 vínculos (Q11–Q15 validada fim a fim no
+navegador). Fases seguintes: demais edições (mesmo pipeline) e recortes
+de imagem (fase de figuras).
+
+---
+
 # FASE 7 — GAMIFICAÇÃO
 
 ## TASK 7.1 — Pontuação
@@ -699,7 +724,13 @@ Perguntas:
 
 # FASE 8.5 — DARK MODE
 
-## TASK 8.4 — Dark mode harmônico
+## TASK 8.4 — Dark mode harmônico [DONE — 2026-10-03]
+
+* Toggle visível no header de todas as páginas (`landing-page` corrigido).
+* `data-theme` aplicado antes da primeira pintura (script inline `<head>`).
+* `localStorage` + `prefers-color-scheme` respeitados.
+* `dark.css` carregado dinamicamente; `tokens.css` com `[data-theme="dark"]` completo.
+* Nenhum componente visual quebrado (validado estático + navegador real).
 
 Objetivo:
 

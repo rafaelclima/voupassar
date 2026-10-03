@@ -8,13 +8,16 @@ import br.com.voupassar.content.repository.SubtopicRepository;
 import br.com.voupassar.content.repository.TopicRepository;
 import br.com.voupassar.exams.entity.Discipline;
 import br.com.voupassar.exams.entity.Question;
+import br.com.voupassar.exams.entity.QuestionPassage;
 import br.com.voupassar.exams.repository.DisciplineRepository;
 import br.com.voupassar.exams.repository.ExamRepository;
+import br.com.voupassar.exams.repository.QuestionPassageRepository;
 import br.com.voupassar.exams.repository.QuestionRepository;
 import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.questions.dto.DisciplineRef;
 import br.com.voupassar.questions.dto.PageResponse;
+import br.com.voupassar.questions.dto.PassageResponse;
 import br.com.voupassar.questions.dto.QuestionOptionResponse;
 import br.com.voupassar.questions.dto.QuestionResponse;
 import br.com.voupassar.questions.dto.SubtopicRef;
@@ -77,6 +80,7 @@ public class QuestionService {
   private final SubtopicRepository subtopics;
   private final ExamRepository exams;
   private final SimulationQuestionRepository caderno;
+  private final QuestionPassageRepository passages;
 
   public QuestionService(
       QuestionRepository questions,
@@ -86,7 +90,19 @@ public class QuestionService {
       TopicRepository topics,
       SubtopicRepository subtopics,
       ExamRepository exams) {
-    this(questions, options, classifications, disciplines, topics, subtopics, exams, null);
+    this(questions, options, classifications, disciplines, topics, subtopics, exams, null, null);
+  }
+
+  public QuestionService(
+      QuestionRepository questions,
+      QuestionOptionRepository options,
+      QuestionClassificationRepository classifications,
+      DisciplineRepository disciplines,
+      TopicRepository topics,
+      SubtopicRepository subtopics,
+      ExamRepository exams,
+      SimulationQuestionRepository caderno) {
+    this(questions, options, classifications, disciplines, topics, subtopics, exams, caderno, null);
   }
 
   @Autowired
@@ -98,7 +114,8 @@ public class QuestionService {
       TopicRepository topics,
       SubtopicRepository subtopics,
       ExamRepository exams,
-      SimulationQuestionRepository caderno) {
+      SimulationQuestionRepository caderno,
+      QuestionPassageRepository passages) {
     this.questions = questions;
     this.options = options;
     this.classifications = classifications;
@@ -107,6 +124,7 @@ public class QuestionService {
     this.subtopics = subtopics;
     this.exams = exams;
     this.caderno = caderno;
+    this.passages = passages;
   }
 
   /**
@@ -150,9 +168,11 @@ public class QuestionService {
     List<Long> ids = result.stream().map(Question::getId).toList();
     Map<Long, List<QuestionOption>> optionsByQuestion = Map.of();
     Map<Long, QuestionClassification> classificationByQuestion = Map.of();
+    Map<Long, List<PassageResponse>> passagesByQuestion = Map.of();
     if (!ids.isEmpty()) {
       optionsByQuestion = groupOptions(options.findByQuestionIdsOrdered(ids));
       classificationByQuestion = latestByQuestion(classifications.findActiveByQuestionIds(ids));
+      passagesByQuestion = groupPassages(findPassages(ids));
     }
 
     List<QuestionResponse> content = new ArrayList<>(result.getNumberOfElements());
@@ -161,7 +181,8 @@ public class QuestionService {
           toResponse(
               q,
               optionsByQuestion.getOrDefault(q.getId(), List.of()),
-              classificationByQuestion.get(q.getId())));
+              classificationByQuestion.get(q.getId()),
+              passagesByQuestion.getOrDefault(q.getId(), List.of())));
     }
     return new PageResponse<>(
         List.copyOf(content),
@@ -188,7 +209,9 @@ public class QuestionService {
     List<QuestionOption> opts = options.findByQuestionIdOrdered(id);
     List<QuestionClassification> actives =
         classifications.findActiveByQuestionId(id);
-    return toResponse(q, opts, actives.isEmpty() ? null : actives.get(0));
+    return toResponse(
+        q, opts, actives.isEmpty() ? null : actives.get(0),
+        groupPassages(findPassages(List.of(id))).getOrDefault(id, List.of()));
   }
 
   /**
@@ -260,6 +283,8 @@ public class QuestionService {
    * oculta {@code answerKey} e {@code explanation} (nunca inventar gabarito).
    * {@code annulled} segue verídico (anulada não tem resposta correta a
    * vazar; além disso anuladas ficam fora da seleção da TASK 5.1).
+   * Textos-base ({@code passages}) e figuras seguem visíveis: são parte do
+   * enunciado, não do gabarito (AGENTS.md §9 + TASK 6.9).
    */
   private static QuestionResponse maskForProva(QuestionResponse r) {
     List<String> notes = new ArrayList<>(r.notes().size() + 1);
@@ -275,7 +300,8 @@ public class QuestionService {
         r.classificationConfidence(), r.taxonomyVersion(), r.classificationStatus(),
         r.validationStatus(), r.publicationStatus(),
         List.copyOf(notes),
-        r.figures() != null ? r.figures() : java.util.List.of());
+        r.figures() != null ? r.figures() : java.util.List.of(),
+        r.passages() != null ? r.passages() : java.util.List.of());
   }
 
   private String requireDisciplineFilter(String code) {
@@ -391,10 +417,49 @@ public class QuestionService {
     return out;
   }
 
+  /** Busca vínculos de texto-base sem N+1 (1 query por página/detalhe). */
+  private List<QuestionPassage> findPassages(List<Long> ids) {
+    if (passages == null || ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    try {
+      return passages.findByQuestionIdsOrdered(ids);
+    } catch (Exception e) {
+      return List.of();
+    }
+  }
+
+  private static Map<Long, List<PassageResponse>> groupPassages(List<QuestionPassage> all) {
+    // findByQuestionIdsOrdered já ordena (questão ASC, position ASC).
+    Map<Long, List<PassageResponse>> out = new LinkedHashMap<>();
+    for (QuestionPassage qp : all) {
+      out.computeIfAbsent(qp.getQuestionId(), k -> new ArrayList<>()).add(toPassage(qp));
+    }
+    return out;
+  }
+
+  private static PassageResponse toPassage(QuestionPassage qp) {
+    var p = qp.getPassage();
+    return new PassageResponse(
+        p.getLabel(),
+        p.getKind(),
+        p.getTitle(),
+        p.getByline(),
+        p.getSubtitle(),
+        p.getIntro(),
+        p.getContent(),
+        p.getVisualDescription(),
+        p.getFormatNote(),
+        p.getSourceNote(),
+        p.getPageStart() == null ? null : p.getPageStart().intValue(),
+        p.getPageEnd() == null ? null : p.getPageEnd().intValue());
+  }
+
   private static QuestionResponse toResponse(
       Question q,
       List<QuestionOption> opts,
-      QuestionClassification classification) {
+      QuestionClassification classification,
+      List<PassageResponse> questionPassages) {
     Discipline d = q.getDiscipline();
     List<QuestionOptionResponse> optionDtos = new ArrayList<>(opts.size());
     for (QuestionOption o : opts) {
@@ -470,6 +535,7 @@ public class QuestionService {
         q.getValidationStatus(),
         q.getPublicationStatus(),
         List.copyOf(notes),
-        java.util.List.of()); // figuras: vazio até sync_figures.py preencher
+        java.util.List.of(), // figuras: vazio até sync_figures.py preencher
+        List.copyOf(questionPassages == null ? List.of() : questionPassages));
   }
 }

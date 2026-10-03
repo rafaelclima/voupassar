@@ -33,7 +33,7 @@ KINDS = {"TEXTO", "TRECHO", "TABELA", "GRAFICO", "IMAGEM", "CHARGE", "TIRINHA"}
 
 HEADER_RE = re.compile(r"^(Texto\s+\d+)\s*$", re.IGNORECASE | re.MULTILINE)
 TRECHO_RE = re.compile(
-    r"^((?:Considere|Leia) o trech[oa][^\n]*?quest(?:[aã]o|[õo]es)\s+[^\n]*)",
+    r"^((?:Considere|Leia|Utilize) o trech[oa][^\n]*?quest(?:[aã]o|[õo]es)\s+[^\n]*)",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -43,16 +43,28 @@ def trecho_questions(header: str) -> list[int]:
 
     O caderno varia a redação: "questões de X a Y" (2020), "questões
     04, 05 e 06" / "questões 09, 10, 11 e 12" (enumeração, 2022),
-    "questão 8" (singular, 2022) ou "questões 13 a 15" (intervalo sem
-    "de", 2023). Intervalo "X a Y" (com ou sem "de") vira range;
-    nas demais formas valem os números explícitos no cabeçalho
-    (referências a "Texto N" no próprio cabeçalho são ignoradas).
+    "questão 8" (singular, 2022), "questões 13 a 15" (intervalo sem
+    "de", 2023) ou "questões de 06 e 09" (par de extremos com "e",
+    2024: as Q07–Q08 estão fisicamente sob o mesmo cabeçalho e usam
+    os mesmos marcadores (1)/(2) do quadro). Intervalo "X a Y" (com
+    ou sem "de") vira range; par "X e Y" sem vírgula (só 2 números)
+    também vira range X..Y; nas demais formas valem os números
+    explícitos no cabeçalho (referências a "Texto N" no próprio
+    cabeçalho são ignoradas).
     """
     clean = re.sub(r"textos?\s*\d+", "", header, flags=re.IGNORECASE)
     m = re.search(r"(?:de\s+)?(\d+)\s+a\s+(\d+)", clean, re.IGNORECASE)
     if m:
         return list(range(int(m.group(1)), int(m.group(2)) + 1))
-    return [int(x) for x in re.findall(r"\d+", clean)]
+    nums = [int(x) for x in re.findall(r"\d+", clean)]
+    if (
+        len(nums) == 2
+        and "," not in clean
+        and nums[1] >= nums[0]
+        and re.search(r"\d+\s+e\s+\d+", clean, re.IGNORECASE)
+    ):
+        return list(range(nums[0], nums[1] + 1))
+    return nums
 
 
 def cited_text_numbers(statement: str) -> set[int]:
@@ -61,13 +73,15 @@ def cited_text_numbers(statement: str) -> set[int]:
     Aceita as variantes impressas no caderno: "Texto 1", "texto 1",
     "Texto 01" (zero à esquerda, 2022 Q22) e "Texto1" (sem espaço,
     2022 Q38); comparação por inteiro. O plural explícito
-    "Textos 1 e 2" (2020 Q20) vincula ambos.
+    "Textos 1 e 2" (2020 Q20) vincula ambos; a enumeração plural
+    "textos 1, 2 e 3" (2024 Q19–Q20) vincula os três (todos os
+    inteiros na sequência após "textos"). Citação genérica sem
+    número ("três textos", 2022 Q20) continua sem vínculo.
     """
     stl = statement.lower()
     nums = {int(x) for x in re.findall(r"textos?\s*0*(\d+)", stl)}
-    m = re.search(r"textos\s+0*(\d+)\s+e\s+0*(\d+)", stl)
-    if m:
-        nums.update((int(m.group(1)), int(m.group(2))))
+    for m in re.finditer(r"textos\s+((?:0*\d+\s*(?:[,e]\s*)?)+)", stl):
+        nums.update(int(x) for x in re.findall(r"\d+", m.group(1)))
     return nums
 
 

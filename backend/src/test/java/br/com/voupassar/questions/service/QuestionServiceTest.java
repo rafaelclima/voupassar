@@ -21,9 +21,12 @@ import br.com.voupassar.content.repository.SubtopicRepository;
 import br.com.voupassar.content.repository.TopicRepository;
 import br.com.voupassar.exams.entity.Discipline;
 import br.com.voupassar.exams.entity.Exam;
+import br.com.voupassar.exams.entity.Passage;
 import br.com.voupassar.exams.entity.Question;
+import br.com.voupassar.exams.entity.QuestionPassage;
 import br.com.voupassar.exams.repository.DisciplineRepository;
 import br.com.voupassar.exams.repository.ExamRepository;
+import br.com.voupassar.exams.repository.QuestionPassageRepository;
 import br.com.voupassar.exams.repository.QuestionRepository;
 import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ResourceNotFoundException;
@@ -61,6 +64,7 @@ class QuestionServiceTest {
   @Mock SubtopicRepository subtopics;
   @Mock ExamRepository exams;
   @Mock br.com.voupassar.simulations.repository.SimulationQuestionRepository caderno;
+  @Mock QuestionPassageRepository questionPassages;
 
   QuestionService service;
 
@@ -421,5 +425,82 @@ class QuestionServiceTest {
     assertEquals("A", out.content().get(0).answerKey());
     assertNull(out.content().get(1).answerKey());
     assertTrue(out.content().get(1).notes().stream().anyMatch(n -> n.contains("Gabarito oculto")));
+  }
+
+  // ---- Textos-base (TASK 6.9) ----
+
+  private QuestionService serviceWithPassages() {
+    return new QuestionService(
+        questions, options, classifications, disciplines, topics, subtopics, exams,
+        caderno, questionPassages);
+  }
+
+  private QuestionPassage passageLink(long questionId, String label, String kind, String content) {
+    Passage p = new Passage();
+    ReflectionTestUtils.setField(p, "id", 10L);
+    ReflectionTestUtils.setField(p, "label", label);
+    ReflectionTestUtils.setField(p, "kind", kind);
+    ReflectionTestUtils.setField(p, "content", content);
+    ReflectionTestUtils.setField(p, "pageStart", (short) 5);
+    ReflectionTestUtils.setField(p, "pageEnd", (short) 5);
+    QuestionPassage qp = new QuestionPassage();
+    ReflectionTestUtils.setField(qp, "id", 20L);
+    ReflectionTestUtils.setField(qp, "questionId", questionId);
+    ReflectionTestUtils.setField(qp, "passage", p);
+    ReflectionTestUtils.setField(qp, "position", (short) 1);
+    return qp;
+  }
+
+  @Test
+  void getByIdIncludesPassages() {
+    Question q = question(1L, 11, "A", false);
+    when(questions.findById(1L)).thenReturn(Optional.of(q));
+    when(options.findByQuestionIdOrdered(1L)).thenReturn(List.of(option(q, "A", "4")));
+    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(q)));
+    when(questionPassages.findByQuestionIdsOrdered(List.of(1L)))
+        .thenReturn(List.of(passageLink(1L, "Trecho — questões 11 a 15", "TRECHO", "Segundo [1] especialistas...")));
+
+    QuestionResponse out = serviceWithPassages().getById(1L);
+
+    assertEquals(1, out.passages().size());
+    assertEquals("Trecho — questões 11 a 15", out.passages().get(0).label());
+    assertEquals("TRECHO", out.passages().get(0).kind());
+    assertEquals("Segundo [1] especialistas...", out.passages().get(0).content());
+  }
+
+  @Test
+  void maskForProvaKeepsPassagesVisible() {
+    Question q = question(1L, 11, "A", false);
+    ReflectionTestUtils.setField(q, "explanation", "Porque...");
+    when(questions.findById(1L)).thenReturn(Optional.of(q));
+    when(options.findByQuestionIdOrdered(1L)).thenReturn(List.of(option(q, "A", "4")));
+    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(q)));
+    when(questionPassages.findByQuestionIdsOrdered(List.of(1L)))
+        .thenReturn(List.of(passageLink(1L, "Trecho — questões 11 a 15", "TRECHO", "Segundo [1] especialistas...")));
+    when(caderno.existsInProvaInProgress(1L, 1L)).thenReturn(true);
+
+    QuestionResponse out = serviceWithPassages().getByIdForUser(1L, 1L);
+
+    assertNull(out.answerKey());
+    assertNull(out.explanation());
+    assertEquals(1, out.passages().size());
+    assertEquals("Segundo [1] especialistas...", out.passages().get(0).content());
+  }
+
+  @Test
+  void searchWithoutPassageRepoReturnsEmpty() {
+    // Construtor sem repositório (compat): nunca falha, só lista vazia.
+    Question q = question(1L, 21, "A", false);
+    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
+        .thenReturn(new PageImpl<>(List.of(q), PageRequest.of(0, 20), 1));
+    when(options.findByQuestionIdsOrdered(List.of(1L))).thenReturn(List.of(option(q, "A", "4")));
+    when(classifications.findActiveByQuestionIds(List.of(1L)))
+        .thenReturn(List.of(classification(q)));
+
+    PageResponse<QuestionResponse> out =
+        service.search(null, null, null, null, null, null, 0, 20);
+
+    assertNotNull(out.content().get(0).passages());
+    assertTrue(out.content().get(0).passages().isEmpty());
   }
 }

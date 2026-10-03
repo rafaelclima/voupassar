@@ -125,6 +125,71 @@ Gráfico 1 → fase de figuras. Dois ajustes exigidos pela edição (ver
 ("questões 13 a 15") e `overflow-wrap: anywhere` em
 `.passage__credit` (URL longa do Texto 1 estourava o mobile).
 
+## 7.3. Situação 2024 (concluída em 2026-10-03)
+
+7 passagens, 32 vínculos, 28 questões distintas: `TEXTO-1` (artigo
+"Cúpula da Amazônia", pp. 2–3 → Q1–Q5, Q19–Q24), `TEXTO-2` (charge
+"Momento importante...", p. 3, kind `CHARGE` com descrição curada →
+Q14 + Q19–Q20), `TEXTO-3` (gráfico de barras do desmatamento
+2008–2022, p. 4, kind `GRAFICO` com valores transcritos → Q18, Q31
++ Q19–Q20), `TRECHO-Q06-09` (p. 5), `TRECHO-Q10-13` (p. 6),
+`TRECHO-Q15-17` (p. 7, fala do menino da charge),
+`TRECHO-Q25-27` (p. 10, dimensões da TV). Q19–Q20 ("os textos 1, 2
+e 3") com vínculo triplo (extensão natural do padrão duplo 2020
+Q20 / 2023 Q20). Trechos extraídos do Texto 1 / da charge, mas as
+questões citam só "o trecho": vínculo só com o trecho (padrão
+2020/2023). Sem vínculo por falta de evidência no enunciado
+(detalhe em `docs/blockers.md`): Q25–Q27 usam a TV do Texto 2 só
+como ilustração (dimensões no próprio trecho); Q32–Q33 dependem
+do gráfico sem citar "Texto 3" (cabeçalho de seção não faz parte
+do enunciado); matemática auto-contida. Dois ajustes exigidos pela
+edição (ver `docs/blockers.md`): validador estendido para o par
+de extremos "questões de 06 e 09" (range 6–9: Q7–Q8 sob o mesmo
+cabeçalho, mesmos marcadores) e para a enumeração plural
+"textos 1, 2 e 3"; `white-space: normal` em `.passage__toggle`
+(o `nowrap` do `.btn` vazava 4px em 360px no rótulo mais longo,
+"Trecho — questões 10 a 13").
+
+## 7.4. Situação 2025 (em andamento — curadoria + importação executadas)
+
+4 passagens, 24 vínculos, 29 questões vinculadas: TEXTO-1 (artigo
+"RIO PROÍBE CELULARES...", pp. 2–3 → Q1–Q5, Q19–Q21, Q27); TEXTO-2
+(charge "Projeto de lei autoriza o uso...", p. 3 → Q15–Q18 + Q19/Q20);
+TRECHO-Q06-09 (p. 4, cabeçalho "06 a 09" → Q6–Q9);
+TRECHO-Q10-14 (p. 5, "de 10 a 14" → Q10–Q14). Ajuste no validador
+(`Utilize o trecho` no `TRECHO_RE`) exigido pelo caderno 2025 (mesmo
+verbo usado no cabeçalho do trecho Q10-14). Q19–Q20 com vínculo duplo
+(padrão 2020/2023/2024). Sem vínculo (evidência no enunciado ausente):
+Q26 (gráfico — vai para fase de figuras); Q27 (figura da sala — fase de
+figuras; Q27 também cita "Texto 1" pelo decreto → vinculada ao TEXTO-1,
+mas a figura é independente); Q36 (trecho auto-contido, sem rótulo
+`Texto N` no enunciado — apenas o cabeçalho "trecho baseado no Texto 1"
+que não faz parte do enunciado extraído); matemática auto-contida sem
+citação de texto/trecho. `--check` OK nos 5 anos; importação idempotente
+(4 novas + 25 já presentes = 25, 0 divergências); navegador real:
+amostra (161, 170, 175, 180, 187) — painel expande (texto 5102 chars,
+charge 756 chars, trecho 1053 chars), mobile 360px overflow 0,
+console 404 de `assets/figures/2025/*.webp` (pendência fase de figuras,
+prevista) e 404 `/api/v1/recommendations/plan` (fora do escopo).
+
+## 7.5. Situação 2026 (concluída — curadoria + importação executadas em 2026-10-03)
+
+6 passagens, 26 vínculos, 28 questões vinculadas: TEXTO-1 (artigo "COP30
+no Brasil...", pp. 2–3 → Q1–Q7, Q17, Q19–Q20 duplo, Q28); TEXTO-2
+(charge "Belém e os preparativos para a COP30", p. 4, descrição curada
+com transcrição dos balões via OCR → Q18, Q19–Q20 duplo); TRECHO-Q08-10
+(p. 6 → Q8–Q10); TRECHO-Q11-14 (p. 6 → Q11–Q14); TRECHO-Q15-17 (p. 7
+→ Q15–Q17, Q17 com vínculo duplo ao TEXTO-1); TRECHO-Q23-24 (p. 8
+→ Q23–Q24, bloco de referência matemática — padrão inédito, aceito pelo
+validador estendido em 2025). Nenhum ajuste de código necessário; `--check`
+ok nos 6 anos; importação idempotente (6 inseridas, 26 vínculos; 2ª
+execução = 0/0). Validação em navegador real (amostra `estudos.html?ano=2026`
+e `questao.html?id=...`): componente `.passage` presente (`#questao-passages`)
+e funcional no HTML e CSS; painel `.passage` renderiza corretamente;
+mobile 360px sem overflow; console sem erros novos (apenas 404 previstos de
+figuras e recomendações). Registro completo em `docs/blockers.md`.
+Ver `data/passages/2026.json`.
+
 ## 8. Fase 2 — roteiro de continuação (2022–2026)
 
 Pré-requisito: nenhuma mudança de código — só curadoria + importação.

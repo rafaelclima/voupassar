@@ -925,6 +925,8 @@ fieldset > legend {
   width: 100%;
   justify-content: flex-start;
   list-style-position: inside;
+  white-space: normal; /* rótulos longos (ex. "Trecho — questões 10 a 13" em 2024) quebram em 360px em vez de vazar do viewport */
+  text-align: left;
 }
 
 .passage__toggle::marker {

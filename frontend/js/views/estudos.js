@@ -18,6 +18,7 @@
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
 import { injectFigureNotice } from "../components/figure.js";
+import { renderPassages } from "../components/passage.js";
 import {
   fetchDisciplines,
   fetchTopics,
@@ -812,6 +813,8 @@ function renderQuestionCard(q) {
   card.appendChild(head);
 
   card.appendChild(el("p", { className: "question-card__statement", text: q.statement || "(enunciado ainda não conferido)" }));
+  // Textos-base (TASK 6.9): expansíveis logo após o enunciado, em todos os modos.
+  renderPassages(q, card);
   if (q.hasFigure) {
     // Usa componente para aviso com referência de curadoria + página
     const noticeP = el("p", { className: "question-card__figure" });

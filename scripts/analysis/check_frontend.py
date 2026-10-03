@@ -68,6 +68,7 @@ REQUIRED_FILES = [
     "js/state/session.js",
     "js/components/ui.js",
     "js/components/figure.js",
+    "js/components/passage.js",
     "js/main.js",
     "js/views/auth-shared.js",
     "js/views/login.js",
@@ -103,6 +104,7 @@ REQUIRED_COMPONENTS = [
     ".alert", ".alert--success", ".alert--danger",
     ".modal",     ".empty", ".spinner", ".skeleton", ".progress",
     ".qfigure", ".qfigure__img", ".qfigure__caption",
+    ".passage", ".passage__body", ".passage__para",
     ".error-summary",
 ]
 
@@ -277,7 +279,7 @@ def main() -> int:
     if questao:
         for sid in ["questao-guard", "questao-error", "questao-loading", "questao-content",
                     "questao-back", "questao-title", "questao-meta", "questao-badges",
-                    "questao-statement", "questao-figure", "questao-topic",
+                    "questao-statement", "questao-passages", "questao-figure", "questao-topic",
                     "questao-form", "questao-options", "questao-hint",
                     "questao-submit", "questao-blank", "questao-reset",
                     "questao-feedback", "questao-feedback-empty",
@@ -291,7 +293,7 @@ def main() -> int:
         if "voupassar-api" not in questao:
             fail("questao.html sem meta voupassar-api (config.js)")
         questao_js = (FRONT / "js" / "views" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "questao.js").exists() else ""
-        for token in ["fetchQuestion", "submitAttempt", "openStudySession", "BLANK", "NECESSITA REVISÃO", "voltar"]:
+        for token in ["fetchQuestion", "submitAttempt", "openStudySession", "BLANK", "NECESSITA REVISÃO", "voltar", "renderPassages"]:
             if token not in questao_js:
                 fail(f"js/views/questao.js sem {token!r} (TASK 6.6)")
         questao_api = (FRONT / "js" / "api" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "questao.js").exists() else ""

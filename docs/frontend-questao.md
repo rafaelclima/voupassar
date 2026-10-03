@@ -11,7 +11,7 @@
 
 | Exigido na TASK 6.6 | Seção | Fonte (backend pronto e testado) |
 |---|---|---|
-| Leitura | `article[aria-labelledby=questao-title]` → `#questao-title` + `#questao-meta` + `#questao-badges` + `#questao-statement` (+ `#questao-figure`, `#questao-topic`) | `GET /questions/{id}` (TASK 3.4): enunciado + alternativas + `answerKey` + proveniência + assunto vigente |
+| Leitura | `article[aria-labelledby=questao-title]` → `#questao-title` + `#questao-meta` + `#questao-badges` + `#questao-statement` (+ `#questao-passages`, `#questao-figure`, `#questao-topic`) | `GET /questions/{id}` (TASK 3.4): enunciado + alternativas + `answerKey` + proveniência + assunto vigente + `passages[]` (TASK 6.9) |
 | Seleção | `#questao-form > #questao-options` (`fieldset/legend` + radios `questao-option`, alvo ≥44px) + `#questao-hint` | Estado local; nada é enviado antes da confirmação |
 | Confirmação | `#questao-submit` (Responder) + `#questao-blank` (em branco → `BLANK`) + `#questao-reset` (Responder novamente) | `POST /study-sessions {mode: ESTUDO}` (lazy, id em memória + `sessionStorage`) + `POST /attempts {questionId, selectedOption, mode: ESTUDO, timeSpentSeconds, studySessionId}` (TASK 3.7) |
 | Feedback | `#questao-feedback` (`role=status`, `data-tone`) + marcação das alternativas (`--correct/--wrong`) | Correção do servidor (última tentativa vinculada); `409 SESSION_CLOSED` reabre a sessão e repete uma vez |
@@ -45,6 +45,13 @@ classificação, taxonomia e `publicationStatus`. Notas de evidência
   `--correct/--wrong`. `Responder novamente` reabilita, limpa o feedback e
   devolve o foco às opções (nova tentativa = fato novo, trigger de
   imutabilidade respeitado).
+* **Textos-base (TASK 6.9):** `q.passages[]` vira painéis `<details
+  class="passage">` (`js/components/passage.js`, só tokens do DS) entre o
+  enunciado e a figura, via `#questao-passages`. Botão *"Mostrar
+  texto/imagem: <rótulo>"*, colapsado por padrão; corpo com título, byline,
+  parágrafos, nota de formato e crédito com página. Mesmo componente nos
+  cards de `estudos` e `simulado` (inclusive Modo Prova). Sem vínculo: nada
+  renderizado.
 * **Erros:** `QUESTION_NOT_FOUND` (404) e demais falhas viram
   `renderErrorSummary` com `traceId` + botões de saída — nunca página vazia
   silenciosa. Origem válida sem alternativas = nota `NECESSITA REVISÃO`.

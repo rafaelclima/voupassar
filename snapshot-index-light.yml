@@ -1,0 +1,65 @@
+- generic [active] [ref=e1] [box=0,0,1280,879]:
+  - link "Pular para o conteúdo" [ref=e2] [cursor=pointer] [box=16,-100,201,50]:
+    - /url: "#conteudo"
+  - banner [ref=e3] [box=0,0,1280,69]:
+    - generic [ref=e4] [box=64,0,1152,68]:
+      - link "VouPassar — início" [ref=e5] [cursor=pointer] [box=88,17,133,34]:
+        - /url: ./index.html
+        - generic [ref=e6] [box=134,20,87,29]: VouPassar
+      - navigation "Navegação principal" [ref=e7] [box=237,9,801,50]:
+        - generic [ref=e8] [box=445,9,386,50]:
+          - link "Estudar" [ref=e9] [cursor=pointer] [box=449,14,87,40]:
+            - /url: ./estudos.html
+          - link "Simulados" [ref=e10] [cursor=pointer] [box=537,14,106,40]:
+            - /url: ./simulado.html
+          - link "Meu painel" [ref=e11] [cursor=pointer] [box=643,14,108,40]:
+            - /url: ./dashboard.html
+          - link "Entrar" [ref=e12] [cursor=pointer] [box=750,14,76,40]:
+            - /url: ./login.html
+      - link "Começar agora" [ref=e13] [cursor=pointer] [box=1054,14,138,40]:
+        - /url: ./cadastro.html
+  - main [ref=e14] [box=0,69,1280,752]:
+    - region [ref=e15] [box=0,69,1280,752]:
+      - generic [ref=e16] [box=64,117,1152,656]:
+        - generic [ref=e17] [box=88,117,559,656]:
+          - paragraph [ref=e18] [box=88,117,295,36]: Direto ao ponto, sem enrolação
+          - heading [level=1] [ref=e20] [box=88,173,559,294]:
+            - text: Questões, roteiro e simulados
+            - emphasis [ref=e21] [box=88,310,502,164]: para a sua prova
+          - paragraph [ref=e22] [box=88,486,559,84]: Cadastre-se e receba um roteiro que explica o motivo de cada recomendação, pratique por assunto e faça simulados como a prova de verdade.
+          - generic [ref=e23] [box=88,598,559,56]:
+            - link "Começar agora" [ref=e24] [cursor=pointer] [box=88,598,195,56]:
+              - /url: ./cadastro.html
+            - link "Entrar" [ref=e25] [cursor=pointer] [box=295,598,114,56]:
+              - /url: ./login.html
+          - paragraph [ref=e26] [box=88,690,559,83]:
+            - strong [ref=e27] [box=316,715,174,58]: VouPassar
+        - generic "Prévia da plataforma" [ref=e28] [box=687,242,505,406]:
+          - generic [ref=e29] [box=747,282,384,326]:
+            - paragraph [ref=e30] [box=767,302,344,19]: Seu roteiro
+            - paragraph [ref=e31] [box=767,333,344,32]: O que estudar agora
+            - list [ref=e32] [box=767,381,344,154]:
+              - listitem [ref=e33] [box=767,381,344,71]:
+                - generic [aria-hidden] [ref=e34] [box=784,402,28,28]: "1"
+                - generic [ref=e35] [box=824,394,182,45]:
+                  - strong [ref=e36] [box=824,394,182,26]: Porcentagem
+                  - generic [ref=e37] [box=824,420,182,19]: "Prioridade alta · seu acerto: 42%"
+                - generic [aria-hidden] [ref=e38] [box=1078,404,16,26]: →
+              - listitem [ref=e39] [box=767,464,344,71]:
+                - generic [aria-hidden] [ref=e40] [box=784,485,28,28]: "2"
+                - generic [ref=e41] [box=824,477,160,45]:
+                  - strong [ref=e42] [box=824,477,160,26]: Interpretação textual
+                  - generic [ref=e43] [box=824,502,160,19]: Peso alto · 3 erros recentes
+                - generic [aria-hidden] [ref=e44] [box=1078,486,16,26]: →
+            - generic [ref=e45] [box=767,551,344,37]: Estudo · Prova · Revisão · Simulado como a prova
+          - paragraph [ref=e49] [box=695,246,207,42]: Roteiro que se explica
+          - paragraph [ref=e53] [box=967,602,217,42]: Simulado como a prova
+  - contentinfo [ref=e57] [box=0,821,1280,59]:
+    - generic [ref=e58] [box=64,838,1152,26]:
+      - paragraph [ref=e59] [box=88,838,441,26]:
+        - generic [ref=e60] [box=88,842,441,18]: VouPassar · 2026 · Estudo orientado por evidências, sem enrolação
+      - paragraph [ref=e61] [box=997,838,195,26]:
+        - generic [ref=e62] [box=997,842,195,18]:
+          - text: Desenvolvido por
+          - link "Rafael Lima" [ref=e63] [cursor=pointer] [box=1116,842,76,18]:
+            - /url: https://github.com/rafaelclima
