@@ -28,82 +28,71 @@
   <link rel="stylesheet" href="./css/auth.css" />
   <title>Entrar — VouPassar</title>
 </head>
-<body>
+<body class="login-page">
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-  <header class="site-header">
-    <div class="container site-header__inner">
-      <a class="brand" href="./index.html" aria-label="VouPassar — início">
-        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
-        <span>VouPassar</span>
-      </a>
-      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
-      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
-        <div class="site-nav__links" id="nav-links">
-          <a href="./index.html#como-funciona">Como funciona</a>
-          <a href="./cadastro.html">Criar conta</a>
-          <a class="btn btn--primary btn--sm" href="./login.html" aria-current="page">Entrar</a>
-        </div>
-      </nav>
-    </div>
-  </header>
+  <main id="conteudo" class="login-stage">
+    <div class="login-shell">
+      <!-- Painel de marca: só a logo. -->
+      <section class="login-brand" aria-label="VouPassar">
+        <img class="login-brand__logo" src="./assets/logo-full.png" alt="VouPassar" width="360" height="360" />
+      </section>
 
-  <main id="conteudo">
-    <div class="container auth-wrap">
-      <article class="card auth-card" aria-labelledby="auth-t">
-        <div class="card__header">
-          <p><span class="badge badge--primary">Acesso à plataforma</span></p>
-          <h1 id="auth-t">Entrar</h1>
-          <p class="muted">Acesse com o e-mail e a senha do seu cadastro.</p>
+      <!-- Painel de acesso: mesmos hooks do login.js (ids preservados). -->
+      <section class="login-panel" aria-labelledby="auth-t">
+        <div class="login-panel__top">
+          <a class="brand brand--sm" href="./index.html" aria-label="VouPassar — início">
+            <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="30" height="30" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="30" height="30" />
+            <span>VouPassar</span>
+          </a>
+          <a class="login-signup" href="./cadastro.html">Criar conta</a>
         </div>
-        <div class="card__body">
-          <div id="auth-feedback"></div>
-          <div id="auth-already" hidden></div>
-          <form id="login-form" novalidate aria-describedby="login-hint">
-            <p class="muted" id="login-hint"><small>Se o e-mail ou a senha estiver errado, aparece a mesma mensagem nos dois casos.</small></p>
-            <div class="field mt-4">
-              <label class="field__label" for="login-email">E-mail <span class="required" aria-hidden="true">*</span></label>
-              <input class="input" id="login-email" name="email" type="email" autocomplete="email" spellcheck="false" required maxlength="254" placeholder="voce@exemplo.com" />
-            </div>
-            <div class="field">
-              <label class="field__label" for="login-password">Senha <span class="required" aria-hidden="true">*</span></label>
-              <div class="password-field">
-                <input class="input" id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha" />
-                <button type="button" class="password-toggle" data-password-toggle="login-password" aria-label="Mostrar senha">Mostrar</button>
-              </div>
-            </div>
-            <label class="check-row"><input type="checkbox" name="remember" value="1" /> Manter conectado neste dispositivo</label>
-            <p class="auth-meta">Marque “manter conectado” para não precisar entrar de novo neste computador.</p>
-            <div class="btn-group mt-4">
-              <button type="submit" class="btn btn--primary btn--block" id="login-submit">Entrar</button>
-            </div>
-          </form>
-          <div class="auth-links mt-4">
-            <a href="./cadastro.html">Ainda não tenho conta — criar conta</a>
-            <a href="./recuperar-senha.html">Esqueci minha senha</a>
-            <a href="./index.html">← Voltar ao início</a>
+
+        <h1 id="auth-t" class="login-panel__title">Entrar</h1>
+        <p class="muted login-panel__lede">Acesse com o e-mail e a senha do seu cadastro.</p>
+
+        <div id="auth-feedback"></div>
+        <div id="auth-already" hidden></div>
+
+        <form id="login-form" novalidate aria-describedby="login-hint">
+          <p class="muted login-hint" id="login-hint"><small>Se o e-mail ou a senha estiver errado, aparece a mesma mensagem nos dois casos.</small></p>
+          <div class="field mt-4">
+            <label class="field__label" for="login-email">E-mail <span class="required" aria-hidden="true">*</span></label>
+            <input class="input input--pill" id="login-email" name="email" type="email" autocomplete="email" spellcheck="false" required maxlength="254" placeholder="voce@exemplo.com" />
           </div>
-        </div>
-      </article>
+          <div class="field">
+            <label class="field__label" for="login-password">Senha <span class="required" aria-hidden="true">*</span></label>
+            <div class="password-field">
+              <input class="input input--pill" id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Sua senha" />
+              <button type="button" class="password-toggle password-toggle--pill" data-password-toggle="login-password" aria-label="Mostrar senha">Mostrar</button>
+            </div>
+          </div>
+          <div class="login-options">
+            <label class="check-row"><input type="checkbox" name="remember" value="1" /> Manter conectado</label>
+            <a class="login-forgot" href="./recuperar-senha.html">Esqueci minha senha</a>
+          </div>
+          <div class="btn-group mt-4">
+            <button type="submit" class="btn btn--primary btn--block btn--pill" id="login-submit">
+              <svg class="btn__icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                <path d="M3 10h12M11 5.5 15.5 10 11 14.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Entrar
+            </button>
+          </div>
+        </form>
+
+        <p class="login-back"><a href="./index.html">← Voltar ao início</a></p>
+      </section>
     </div>
-        <noscript>
-        <style>.site-nav__links{display:flex !important}.site-nav__toggle{display:none !important}</style>
-        <div class="alert alert--warning mt-4" role="note">
-          <div>
-            <strong>JavaScript desligado</strong>
-            <p>A tela de entrar precisa de JavaScript para validar os campos e falar com a API. Ative para continuar.</p>
-          </div>
+    <noscript>
+      <div class="alert alert--warning mt-4" role="note">
+        <div>
+          <strong>JavaScript desligado</strong>
+          <p>A tela de entrar precisa de JavaScript para validar os campos e falar com a API. Ative para continuar.</p>
         </div>
-      </noscript>
+      </div>
+    </noscript>
   </main>
-
-  <footer class="site-footer">
-    <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-      <p class="muted"><small>VouPassar - Preparação inteligente para o IFRN - 2026</small></p>
-      <p class="muted"><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
-      <p class="muted"><small><a href="./index.html">Início</a></small></p>
-    </div>
-  </footer>
 
   <script type="module" src="./js/main.js"></script>
   <script type="module" src="./js/views/login.js"></script>

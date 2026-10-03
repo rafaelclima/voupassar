@@ -5,7 +5,7 @@
 
 import { ApiError } from "../api/client.js";
 import { login } from "../api/auth.js";
-import { el, setButtonLoading, setFieldError, renderErrorSummary } from "../components/ui.js";
+import { setButtonLoading, setFieldError, renderErrorSummary } from "../components/ui.js";
 import {
   validateEmail,
   wirePasswordToggles,
@@ -15,7 +15,6 @@ import {
   safeNextParam,
   restoreIfLoggedIn,
 } from "./auth-shared.js";
-import { getState } from "../state/store.js";
 
 const form = document.getElementById("login-form");
 const feedback = document.getElementById("auth-feedback");
@@ -28,38 +27,10 @@ wirePasswordToggles(document);
 restoreIfLoggedIn({ alreadyBox: already, form, feedbackBox: feedback });
 
 function showLoggedSuccess() {
-  const user = getState().user;
-  form.hidden = true;
-  feedback.textContent = "";
+  // Login verificado segue direto para o dashboard (ou ?next= seguro).
+  // Só erro aparece nesta tela.
   const next = safeNextParam();
-  if (next) {
-    window.location.href = next;
-    return;
-  }
-  const wrap = el("div", { className: "auth-success" });
-  const alert = el("div", { className: "alert alert--success", attrs: { role: "status" } });
-  const inner = el("div");
-  inner.appendChild(el("strong", { text: "Entrada feita com sucesso." }));
-  inner.appendChild(
-    el("p", { text: `Bem-vindo de volta, ${user?.displayName || "estudante"}.` })
-  );
-  alert.appendChild(inner);
-  wrap.appendChild(alert);
-  const note = el("p", { className: "auth-meta" });
-  note.textContent = "Continue para o dashboard com desempenho, prioridades e roteiro.";
-  wrap.appendChild(note);
-  const actions = el("div", { className: "btn-group" });
-  const dash = el("a", {
-    className: "btn btn--primary",
-    text: "Ir para o dashboard",
-    attrs: { href: "./dashboard.html" },
-  });
-  actions.appendChild(dash);
-  wrap.appendChild(actions);
-  feedback.appendChild(wrap);
-  const h = feedback.querySelector("strong");
-  h?.setAttribute("tabindex", "-1");
-  h?.focus?.();
+  window.location.href = next || "./dashboard.html";
 }
 
 form?.addEventListener("submit", async (e) => {

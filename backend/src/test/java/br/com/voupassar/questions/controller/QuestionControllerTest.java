@@ -91,7 +91,8 @@ class QuestionControllerTest {
         null,
         "PENDING",
         "PENDENTE_REVISAO",
-        List.of("Sem explicação redigida (NECESSITA REVISÃO)."));
+        List.of("Sem explicação redigida (NECESSITA REVISÃO)."),
+        List.of());
   }
 
   @Test
@@ -191,7 +192,8 @@ class QuestionControllerTest {
             new QuestionOptionResponse("D", "7")),
         null, false, "FACIL", null, 10, 10, false,
         null, null, null, null, null, "PENDING", "PENDENTE_REVISAO",
-        List.of("Gabarito oculto durante a execução no Modo Prova (questão em simulado PROVA em andamento): conclua ou abandone para ver a correção."));
+        List.of("Gabarito oculto durante a execução no Modo Prova (questão em simulado PROVA em andamento): conclua ou abandone para ver a correção."),
+        List.of());
     when(service.getByIdForUser(1L, 1L)).thenReturn(hidden);
 
     mvc().perform(get("/api/v1/questions/1"))

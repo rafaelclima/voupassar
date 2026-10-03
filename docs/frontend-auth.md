@@ -27,8 +27,11 @@ Módulos compartilhados:
   `traceId` + distribui `campo: msg` nos inputs), toggle Mostrar/Ocultar
   senha, `safeNextParam()` (só relativo interno, anti open-redirect),
   painel “já conectado” com Sair.
-* `css/auth.css` — só layout do cartão estreito (`.auth-wrap/.auth-card`),
-  campo de senha com toggle e links; todo o resto vem do design system.
+* `css/auth.css` — layout do cartão estreito (`.auth-wrap/.auth-card`),
+  campo de senha com toggle e links, mais o split-screen exclusivo do
+  `login.html` (painel de marca navy + painel de acesso, pílulas,
+  mobile-first empilhado → 2 colunas quase full-bleed em `48rem` → cartão
+  maior até `80rem` em `76rem`); todo o resto vem do design system.
 
 ## 2. Validação (cliente falha rápido; servidor é fonte da verdade)
 
@@ -77,8 +80,10 @@ de `config.js`, sem segredo no frontend. `?next=` restrito a relativo.
 Semântico (`header/main/nav`, `h1` único, `skip-link`), labels reais,
 `autocomplete` (email/current/new/one-time-code), foco visível herdado,
 contraste AA herdado, alvos ≥44px, `prefers-reduced-motion` herdado,
-teclado nativo. Mobile-first: cartão `29rem` centralizado, 1 breakpoint em
-`48rem`. Estático puro: caminhos `./` relativos, dinâmica só via `fetch()`,
+teclado nativo. Mobile-first: cartão `29rem` centralizado nas páginas de
+cadastro/recuperação/redefinição; o login usa split-screen (empilhado no
+mobile, 2 colunas quase full-bleed no tablet, cartão ampliado no desktop).
+1 breakpoint do cartão em `48rem`. Estático puro: caminhos `./` relativos, dinâmica só via `fetch()`,
 `API_BASE_URL` via `<meta>` (build injeta em 10.1).
 
 ## 7. Verificação

@@ -82,3 +82,268 @@
     padding-block: var(--space-12);
   }
 }
+
+/* ============ Login em tela dividida (inspiração: referência Payoneer)
+ * Painel de marca (navy fixo da marca) + painel de acesso claro.
+ * Mobile-first: empilhado; a partir de 56rem vira duas colunas.
+ * Só o login.html usa estas classes — cadastro/recuperação/redefinição
+ * mantêm o cartão estreito (.auth-card) acima.
+ * ============ */
+
+.login-page {
+  background: var(--color-bg-100);
+}
+
+.login-stage {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.login-shell {
+  width: 100%;
+  max-width: 62rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* --- Painel de marca: gradiente navy fixo, igual nos dois temas --- */
+.login-brand {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--color-hero-from), var(--color-hero-via) 55%, var(--color-hero-to));
+  color: var(--color-hero-ink);
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  text-align: center;
+}
+
+/* Anéis decorativos sutis, como na referência (só forma, sem imagem). */
+.login-brand::before,
+.login-brand::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-brand::before {
+  width: 26rem;
+  height: 26rem;
+  right: -10rem;
+  top: -8rem;
+}
+
+.login-brand::after {
+  width: 18rem;
+  height: 18rem;
+  right: -6rem;
+  top: -4rem;
+}
+
+.login-brand__logo {
+  width: clamp(14rem, 72%, 24rem);
+  height: auto;
+  /* A logo-full é navy sobre transparente: inverte para branco no painel. */
+  filter: brightness(0) invert(1);
+}
+
+/* --- Painel de acesso --- */
+.login-panel {
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+}
+
+.login-panel__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.brand--sm {
+  font-size: var(--text-md);
+}
+
+.login-signup {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-primary-700);
+  border: 1px solid var(--color-line-300);
+  border-radius: var(--radius-pill);
+  padding: 0.5rem 1rem;
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.login-signup:hover {
+  background: var(--color-primary-50);
+  text-decoration: none;
+}
+
+.login-panel__title {
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+.login-panel__lede {
+  margin: var(--space-2) 0 0;
+}
+
+.login-hint {
+  margin-bottom: 0;
+}
+
+/* Inputs e botão em pílula, como na referência. */
+.input--pill {
+  border-radius: var(--radius-pill);
+  padding-left: var(--space-5);
+}
+
+.password-toggle--pill {
+  right: 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+
+.login-options .check-row {
+  margin: 0;
+}
+
+.login-forgot {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary-700);
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn--pill {
+  border-radius: var(--radius-pill);
+  min-height: 3.25rem;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: var(--tracking-tight);
+  /* Gradiente fixo escuro nos dois temas: texto sempre branco puro
+   * (o --color-on-primary inverte no dark e some no botão). */
+  color: #ffffff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--color-hero-from), var(--color-hero-to));
+  box-shadow: var(--shadow-brand);
+}
+
+.btn--pill:hover {
+  filter: brightness(1.12);
+}
+
+.btn--pill .btn__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+.login-back {
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-sm);
+}
+
+.login-back a {
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (min-width: 48rem) {
+  /* Tablet e acima: duas colunas ocupando quase toda a tela — só um
+   * respiro leve nas bordas. */
+  .login-stage {
+    padding: var(--space-3);
+  }
+
+  .login-shell {
+    grid-template-columns: 1.08fr 0.92fr;
+    max-width: none;
+    min-height: calc(100dvh - var(--space-6));
+  }
+
+  .login-brand {
+    padding: var(--space-10) var(--space-8);
+    border-radius: 0;
+  }
+
+  .login-panel {
+    padding: var(--space-10) var(--space-8);
+    justify-content: center;
+  }
+
+  /* Coluna de acesso mais estreita: conteúdo contido e centralizado. */
+  .login-panel > * {
+    width: 100%;
+    max-width: 27rem;
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 76rem) {
+  /* Telas grandes: cartão maior, com presença — cresce junto com a tela. */
+  .login-stage {
+    padding: var(--space-6);
+  }
+
+  .login-shell {
+    max-width: 80rem;
+    min-height: min(46rem, calc(100dvh - var(--space-12)));
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+
+  .login-brand {
+    padding: var(--space-16) var(--space-12);
+    gap: var(--space-5);
+  }
+
+  .login-brand__logo {
+    width: clamp(16rem, 78%, 26rem);
+  }
+
+  .login-panel {
+    padding: var(--space-12) var(--space-10);
+  }
+
+  .login-panel__title {
+    font-size: var(--text-4xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn--pill:hover {
+    filter: none;
+  }
+}
