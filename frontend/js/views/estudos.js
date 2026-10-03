@@ -218,7 +218,14 @@ async function loadAll() {
     renderBrowser();
     renderProgress();
     renderPlan();
-    await loadQuestions();
+    // Sem conteúdo escolhido (nem na URL) não há caderno: a lista mostra
+    // um estado-guia pedindo a escolha do conteúdo. O caderno só abre
+    // depois que o aluno filtra ou toca em "Estudar" — ver hasRecorte().
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
     renderHero();
 
     loadingBox.hidden = true;
@@ -297,7 +304,11 @@ function bindFilterEvents() {
     syncUrl();
     setButtonLoading(btnFilter, true, "Filtrando…");
     try {
-      await loadQuestions();
+      if (hasRecorte()) {
+        await loadQuestions();
+      } else {
+        renderQuestionsIdle();
+      }
       renderProgress();
       renderPlan();
       renderHero();
@@ -315,7 +326,7 @@ function bindFilterEvents() {
     syncUrl();
     await refreshDependentSelects();
     renderBrowser();
-    await loadQuestions();
+    renderQuestionsIdle();
     renderProgress();
     renderPlan();
     renderHero();
@@ -479,6 +490,9 @@ function renderHero() {
   const discName = currentDisciplineName();
   const doing = planDoingItem();
   const acc = state.overview?.accuracy ?? null;
+  // Sem recorte não há caderno aberto: o hero convida a escolher o
+  // conteúdo (a lista abaixo mostra o estado-guia, não questões).
+  const idle = !hasRecorte();
 
   let title = "Pratique no seu ritmo";
   let why = "Escolha uma disciplina e um assunto para ver as questões oficiais daquele recorte, com correção na hora.";
@@ -497,9 +511,13 @@ function renderHero() {
   } else if (doing) {
     const name = planTopicName(doing.topicId);
     title = name;
-    why = acc !== null && acc !== undefined
-      ? `Este é o próximo item do seu roteiro e seu aproveitamento geral é ${formatPercent(acc)}. Pratique as questões deste assunto abaixo.`
-      : "Este é o próximo item do seu roteiro. Pratique as questões deste assunto abaixo.";
+    if (idle) {
+      why = "Este é o próximo item do seu roteiro. Toque em “Abrir assunto do roteiro” para ver as questões dele.";
+    } else if (acc !== null && acc !== undefined) {
+      why = `Este é o próximo item do seu roteiro e seu aproveitamento geral é ${formatPercent(acc)}. Pratique as questões deste assunto abaixo.`;
+    } else {
+      why = "Este é o próximo item do seu roteiro. Pratique as questões deste assunto abaixo.";
+    }
   } else if (state.planMissing || !state.plan) {
     title = "Monte seu roteiro para estudar com ordem";
     why = "O roteiro coloca os assuntos na ordem que vale mais a pena para você. Gere no painel e volte aqui para praticar.";
@@ -518,11 +536,17 @@ function renderHero() {
   if (chips.childNodes.length > 0) card.appendChild(chips);
 
   const actions = el("div", { className: "next-step__actions" });
-  const practice = el("a", {
-    className: "btn btn--primary",
-    text: "Praticar questões abaixo",
-    attrs: { href: "#sec-questoes-t" },
-  });
+  const practice = idle
+    ? el("a", {
+      className: "btn btn--primary",
+      text: "Escolher conteúdo",
+      attrs: { href: "#sec-conteudo-t" },
+    })
+    : el("a", {
+      className: "btn btn--primary",
+      text: "Praticar questões abaixo",
+      attrs: { href: "#sec-questoes-t" },
+    });
   actions.appendChild(practice);
   if (!topicName && doing?.topicId) {
     const open = el("a", {
@@ -663,6 +687,26 @@ function renderBrowser() {
 }
 
 /* ---------- questões + paginação ---------- */
+
+// Há recorte quando o aluno escolheu algum conteúdo (disciplina, assunto,
+// subassunto, edição ou dificuldade). Sem recorte não abrimos caderno: a
+// página é "estudar por conteúdo" e despejar todas as questões de cara
+// confunde. Nesse caso a lista mostra um estado-guia.
+function hasRecorte() {
+  const f = state.filters;
+  return Boolean(f.disciplineCode || f.topicId || f.subtopicId || f.year || f.difficulty);
+}
+
+function renderQuestionsIdle() {
+  state.pageData = null;
+  listBox.textContent = "";
+  pagerBox.textContent = "";
+  renderEmpty(listBox, {
+    title: "Escolha um conteúdo para começar",
+    description: "Toque em “Estudar” num assunto acima ou use os filtros para escolher disciplina e assunto. As questões daquele conteúdo aparecem aqui.",
+  });
+  countNote.textContent = "Nenhum conteúdo selecionado — escolha acima para ver as questões.";
+}
 
 function questionQuery() {
   const f = state.filters;
