@@ -51,6 +51,10 @@ const btnClear = document.getElementById("btn-clear");
 const btnFilter = document.getElementById("btn-filter");
 
 const browserBox = document.getElementById("study-browser");
+const browserCount = document.getElementById("study-browser-count");
+const heroBox = document.getElementById("study-hero");
+const recortePill = document.getElementById("study-recorte");
+const recorteNum = document.getElementById("study-recorte-num");
 const listBox = document.getElementById("study-list");
 const countNote = document.getElementById("study-count");
 const pagerBox = document.getElementById("study-pagination");
@@ -215,6 +219,7 @@ async function loadAll() {
     renderProgress();
     renderPlan();
     await loadQuestions();
+    renderHero();
 
     loadingBox.hidden = true;
     content.hidden = false;
@@ -274,6 +279,7 @@ function bindFilterEvents() {
     state.filters.page = 0;
     await refreshDependentSelects();
     renderBrowser();
+    renderHero();
   });
   selTopic.addEventListener("change", async () => {
     state.filters.subtopicId = "";
@@ -294,6 +300,7 @@ function bindFilterEvents() {
       await loadQuestions();
       renderProgress();
       renderPlan();
+      renderHero();
     } finally {
       setButtonLoading(btnFilter, false);
     }
@@ -311,6 +318,7 @@ function bindFilterEvents() {
     await loadQuestions();
     renderProgress();
     renderPlan();
+    renderHero();
   });
 }
 
@@ -407,8 +415,137 @@ function formatPercent(acc) {
   return `${(n * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
 }
 
+function initialsOf(label) {
+  const words = String(label || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "•";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function avatarColor(key) {
+  const palette = ["#0f5084", "#6d43cc", "#0b7a4b", "#b83e06", "#4c2e8f"];
+  let h = 0;
+  for (const c of String(key || "")) h = (h * 31 + c.charCodeAt(0)) % 997;
+  return palette[h % palette.length];
+}
+
+function formatPercentValue(acc) {
+  if (acc === null || acc === undefined) return null;
+  const n = Number(acc);
+  if (!Number.isFinite(n)) return null;
+  return Math.round(n * 100);
+}
+
+function currentTopicName() {
+  const id = state.filters.topicId;
+  if (!id) return null;
+  return state.allTopics.find((t) => String(t.id) === String(id))?.name
+    || state.topicsOfDisc.find((t) => String(t.id) === String(id))?.name
+    || null;
+}
+
+function currentDisciplineName() {
+  const code = state.filters.disciplineCode;
+  if (!code) return null;
+  return state.disciplines.find((d) => d.code === code)?.name || null;
+}
+
+function planDoingItem() {
+  const items = state.plan?.items ?? state.plan?.planItems ?? state.plan?.recommendations ?? [];
+  if (!Array.isArray(items) || items.length === 0) return null;
+  return items.find((it) => it.status === "DOING") || items.find((it) => it.status === "TODO") || items[0] || null;
+}
+
+function planTopicName(topicId) {
+  return state.allTopics.find((t) => String(t.id) === String(topicId))?.name
+    || state.topicsOfDisc.find((t) => String(t.id) === String(topicId))?.name
+    || "Assunto do seu roteiro";
+}
+
+function renderHero() {
+  if (!heroBox) return;
+  heroBox.textContent = "";
+  const total = state.pageData?.totalElements ?? null;
+  if (recortePill && recorteNum) {
+    if (total === null) {
+      recortePill.hidden = true;
+    } else {
+      recortePill.hidden = false;
+      recorteNum.textContent = String(total);
+    }
+  }
+  const card = el("div", { className: "next-step" });
+  const topicName = currentTopicName();
+  const discName = currentDisciplineName();
+  const doing = planDoingItem();
+  const acc = state.overview?.accuracy ?? null;
+
+  let title = "Pratique no seu ritmo";
+  let why = "Escolha uma disciplina e um assunto para ver as questões oficiais daquele recorte, com correção na hora.";
+  if (topicName && discName) {
+    title = topicName;
+    const ta = topicAccuracy(state.filters.topicId);
+    why = ta && ta.scored > 0
+      ? `Você acertou ${ta.correct} de ${ta.scored} neste assunto (${formatPercent(ta.accuracy)}). Continue praticando as questões abaixo.`
+      : `Você ainda não respondeu nada deste assunto. As questões abaixo são o melhor ponto de partida.`;
+  } else if (discName) {
+    title = discName;
+    const da = disciplineAccuracy(state.filters.disciplineCode);
+    why = da && da.scored > 0
+      ? `Seu aproveitamento aqui é ${formatPercent(da.accuracy)} (${da.correct} acertos em ${da.scored}). Escolha um assunto para refinar.`
+      : "Escolha um assunto desta disciplina para começar a praticar com correção imediata.";
+  } else if (doing) {
+    const name = planTopicName(doing.topicId);
+    title = name;
+    why = acc !== null && acc !== undefined
+      ? `Este é o próximo item do seu roteiro e seu aproveitamento geral é ${formatPercent(acc)}. Pratique as questões deste assunto abaixo.`
+      : "Este é o próximo item do seu roteiro. Pratique as questões deste assunto abaixo.";
+  } else if (state.planMissing || !state.plan) {
+    title = "Monte seu roteiro para estudar com ordem";
+    why = "O roteiro coloca os assuntos na ordem que vale mais a pena para você. Gere no painel e volte aqui para praticar.";
+  }
+  card.appendChild(el("p", { className: "next-step__eyebrow", text: "Continue de onde parou" }));
+  card.appendChild(el("h3", { className: "next-step__title", text: title }));
+  card.appendChild(el("p", { className: "next-step__why", text: why }));
+
+  const chips = el("div", { className: "next-step__meta" });
+  if (discName) chips.appendChild(el("span", { className: "chip", text: discName }));
+  if (topicName) chips.appendChild(el("span", { className: "chip", text: topicName }));
+  if (total !== null) chips.appendChild(el("span", { className: "chip", text: total === 1 ? "1 questão no recorte" : `${total} questões no recorte` }));
+  if (!discName && doing?.priority !== undefined && doing?.priority !== null) {
+    chips.appendChild(el("span", { className: "chip", text: `${doing.priority}º no roteiro` }));
+  }
+  if (chips.childNodes.length > 0) card.appendChild(chips);
+
+  const actions = el("div", { className: "next-step__actions" });
+  const practice = el("a", {
+    className: "btn btn--primary",
+    text: "Praticar questões abaixo",
+    attrs: { href: "#sec-questoes-t" },
+  });
+  actions.appendChild(practice);
+  if (!topicName && doing?.topicId) {
+    const open = el("a", {
+      className: "btn btn--secondary",
+      text: "Abrir assunto do roteiro",
+      attrs: { href: `./estudos.html?topico=${encodeURIComponent(String(doing.topicId))}` },
+    });
+    actions.appendChild(open);
+  } else {
+    const dash = el("a", {
+      className: "btn btn--secondary",
+      text: "Ver meu painel",
+      attrs: { href: "./dashboard.html" },
+    });
+    actions.appendChild(dash);
+  }
+  card.appendChild(actions);
+  heroBox.appendChild(card);
+}
+
 function renderBrowser() {
   browserBox.textContent = "";
+  if (browserCount) browserCount.textContent = "";
   if (state.disciplines.length === 0) {
     browserBox.appendChild(el("p", { className: "muted", text: "Nenhuma disciplina no catálogo." }));
     return;
@@ -416,37 +553,75 @@ function renderBrowser() {
   const visible = state.filters.disciplineCode
     ? state.disciplines.filter((d) => d.code === state.filters.disciplineCode)
     : state.disciplines;
+  let topicTotal = 0;
   for (const d of visible) {
     const card = el("div", { className: "browser-disc" });
     const head = el("div", { className: "browser-disc__head" });
-    head.appendChild(el("span", { className: "browser-disc__name", text: d.name }));
+    const avatar = el("span", { className: "browser-disc__avatar", text: initialsOf(d.name) });
+    avatar.style.setProperty("--bd", avatarColor(d.code || d.name));
+    avatar.setAttribute("aria-hidden", "true");
+    head.appendChild(avatar);
+    const titleWrap = el("div", { className: "browser-disc__title" });
+    titleWrap.appendChild(el("span", { className: "browser-disc__name", text: d.name }));
     const acc = disciplineAccuracy(d.code);
-    const meta = acc && acc.scored > 0
-      ? `${d.questionCount} questões · seu aproveitamento ${formatPercent(acc.accuracy)} (${acc.correct}/${acc.scored})`
+    const hasScore = acc && acc.scored > 0;
+    const meta = hasScore
+      ? `${d.questionCount} questões · ${acc.correct} acertos em ${acc.scored}`
       : `${d.questionCount} questões · sem tentativas pontuáveis`;
-    head.appendChild(el("span", { className: "browser-disc__meta", text: meta }));
+    titleWrap.appendChild(el("span", { className: "browser-disc__meta", text: meta }));
+    head.appendChild(titleWrap);
+    const accBadge = el("span", {
+      className: hasScore ? "browser-disc__acc" : "browser-disc__acc browser-disc__acc--empty",
+      text: hasScore ? formatPercent(acc.accuracy) : "—",
+    });
+    head.appendChild(accBadge);
     card.appendChild(head);
+
+    const pct = hasScore ? (formatPercentValue(acc.accuracy) ?? 0) : 0;
+    const track = el("div", {
+      className: "browser-disc__track",
+      attrs: {
+        role: "progressbar",
+        "aria-valuemin": "0",
+        "aria-valuemax": "100",
+        "aria-valuenow": String(pct),
+        "aria-label": `Seu aproveitamento em ${d.name}`,
+      },
+    });
+    const fill = el("div", { className: "browser-disc__fill" });
+    fill.style.width = `${pct}%`;
+    track.appendChild(fill);
+    card.appendChild(track);
 
     const topics = (state.filters.disciplineCode ? state.topicsOfDisc : state.allTopics)
       .filter((t) => t.disciplineCode === d.code);
+    topicTotal += topics.length;
     if (topics.length === 0) {
       card.appendChild(el("p", { className: "muted", text: "Sem assuntos neste recorte." }));
     } else {
       const ul = el("ul", { className: "browser-topics" });
       for (const t of topics.slice(0, 12)) {
         const li = el("li", { className: "browser-topics__row" });
-        const left = el("div");
+        const left = el("div", { className: "browser-topics__main" });
         left.appendChild(el("div", { className: "browser-topics__name", text: t.name }));
         const ta = topicAccuracy(t.id);
-        const tmeta = ta && ta.scored > 0
+        const tHas = ta && ta.scored > 0;
+        const tmeta = tHas
           ? `${t.questionCount} questões · você ${formatPercent(ta.accuracy)} (${ta.correct}/${ta.scored})`
           : `${t.questionCount} questões no acervo`;
         left.appendChild(el("div", { className: "browser-topics__meta", text: tmeta }));
+        if (tHas) {
+          const meter = el("div", { className: "browser-topics__meter" });
+          const mite = el("i");
+          mite.style.width = `${formatPercentValue(ta.accuracy) ?? 0}%`;
+          meter.appendChild(mite);
+          left.appendChild(meter);
+        }
         li.appendChild(left);
         const btn = el("button", {
           className: "btn btn--secondary btn--sm",
           text: "Estudar",
-          attrs: { type: "button" },
+          attrs: { type: "button", "aria-label": `Estudar ${t.name}` },
         });
         btn.addEventListener("click", async () => {
           selDisc.value = d.code;
@@ -462,6 +637,7 @@ function renderBrowser() {
           await loadQuestions();
           renderProgress();
           renderPlan();
+          renderHero();
           document.getElementById("sec-questoes-t").scrollIntoView({ block: "start" });
         });
         li.appendChild(btn);
@@ -478,6 +654,11 @@ function renderBrowser() {
       }
     }
     browserBox.appendChild(card);
+  }
+  if (browserCount) {
+    const dLabel = visible.length === 1 ? "1 disciplina" : `${visible.length} disciplinas`;
+    const tLabel = topicTotal === 1 ? "1 assunto" : `${topicTotal} assuntos`;
+    browserCount.textContent = `${dLabel} · ${tLabel}`;
   }
 }
 
@@ -508,6 +689,7 @@ async function loadQuestions() {
     const data = await fetchQuestions(questionQuery());
     state.pageData = data;
     renderQuestions(data);
+    renderHero();
   } catch (err) {
     listBox.textContent = "";
     if (err instanceof ApiError && err.status === 401) {
@@ -864,10 +1046,24 @@ function refreshProgressSoon() {
       state.overview = await fetchOverview();
       renderProgress();
       renderBrowser();
+      renderHero();
     } catch {
       // Mantém o retrato anterior; a próxima resposta tenta de novo.
     }
   }, 400);
+}
+
+function statTile({ label, value, hint, empty = false, textual = false }) {
+  const card = el("article", { className: "stat-tile", attrs: { role: "listitem" } });
+  card.appendChild(el("p", { className: "stat-tile__label", text: label }));
+  const v = el("div", {
+    className: textual ? "stat-tile__value stat-tile__value--text" : "stat-tile__value",
+    text: value,
+  });
+  if (empty) v.classList.add("stat-tile__value--empty");
+  card.appendChild(v);
+  if (hint) card.appendChild(el("p", { className: "stat-tile__hint", text: hint }));
+  return card;
 }
 
 function renderProgress() {
@@ -877,26 +1073,51 @@ function renderProgress() {
     progressBox.appendChild(el("p", { className: "muted", text: "Desempenho indisponível no momento." }));
     return;
   }
-  const stats = el("div", { className: "progress-stats" });
   // O overview devolve scoredAttempts (não scored); usar o campo errado
   // imprimia "99/undefined" para o aluno.
-  stats.appendChild(
-    statRow("Acertos em questões que valem nota", `${over.correct ?? 0}/${over.scoredAttempts ?? 0}`),
-  );
-  stats.appendChild(statRow("Aproveitamento geral", formatPercent(over.accuracy)));
-  stats.appendChild(statRow("Anuladas (fora do cálculo)", String(over.annulled ?? 0)));
+  const scored = over.scoredAttempts ?? 0;
+  const correct = over.correct ?? 0;
+  const tiles = el("div", { className: "study-tiles", attrs: { role: "list", "aria-label": "Resumo de desempenho" } });
+  tiles.appendChild(statTile({
+    label: "Aproveitamento",
+    value: formatPercent(over.accuracy),
+    empty: over.accuracy === null || over.accuracy === undefined,
+    hint: `${correct} acertos em ${scored} que valem nota.`,
+  }));
+  tiles.appendChild(statTile({
+    label: "Anuladas",
+    value: String(over.annulled ?? 0),
+    hint: "Aparecem, mas ficam fora do cálculo.",
+  }));
+  progressBox.appendChild(tiles);
+
+  const pct = formatPercentValue(over.accuracy) ?? 0;
+  const meter = el("div", {
+    className: "study-meter",
+    attrs: {
+      role: "progressbar",
+      "aria-valuemin": "0",
+      "aria-valuemax": "100",
+      "aria-valuenow": String(pct),
+      "aria-label": "Aproveitamento geral",
+    },
+  });
+  const mfill = el("div", { className: "study-meter__fill" });
+  mfill.style.width = `${pct}%`;
+  meter.appendChild(mfill);
+  progressBox.appendChild(meter);
+
+  const stats = el("div", { className: "progress-stats mt-4" });
   const f = state.filters;
   if (f.disciplineCode) {
     const row = disciplineAccuracy(f.disciplineCode);
-    const name = state.disciplines.find((d) => d.code === f.disciplineCode)?.name || f.disciplineCode;
-    stats.appendChild(statRow(`Recorte: ${name}`, row && row.scored > 0 ? `${formatPercent(row.accuracy)} (${row.correct}/${row.scored})` : "sem tentativas"));
+    const name = state.disciplines.find((d) => d.code === f.disciplineCode)?.name || "Disciplina";
+    stats.appendChild(statRow(`${name}`, row && row.scored > 0 ? `${formatPercent(row.accuracy)} (${row.correct}/${row.scored})` : "sem tentativas neste filtro"));
   }
   if (f.topicId) {
     const row = topicAccuracy(f.topicId);
-    const name = state.allTopics.find((t) => String(t.id) === String(f.topicId))?.name
-      || state.topicsOfDisc.find((t) => String(t.id) === String(f.topicId))?.name
-      || `Assunto #${f.topicId}`;
-    stats.appendChild(statRow(`Assunto: ${name}`, row && row.scored > 0 ? `${formatPercent(row.accuracy)} (${row.correct}/${row.scored})` : "sem tentativas"));
+    const name = currentTopicName() || "Assunto atual";
+    stats.appendChild(statRow(`${name}`, row && row.scored > 0 ? `${formatPercent(row.accuracy)} (${row.correct}/${row.scored})` : "sem tentativas neste filtro"));
   }
   if (!f.disciplineCode && !f.topicId) {
     stats.appendChild(statRow("Recorte atual", "geral (sem filtro)"));
@@ -904,7 +1125,7 @@ function renderProgress() {
   progressBox.appendChild(stats);
   const link = el("a", {
     className: "btn btn--ghost btn--sm mt-4",
-    text: "Ver dashboard completo",
+    text: "Ver painel completo",
     attrs: { href: "./dashboard.html" },
   });
   progressBox.appendChild(link);
@@ -922,32 +1143,64 @@ function renderPlan() {
   if (state.planMissing || !state.plan) {
     planBox.appendChild(el("p", {
       className: "muted",
-      text: "Sem roteiro vigente. Gere seu roteiro no dashboard para ver aqui o item do assunto atual.",
+      text: "Sem roteiro vigente. Gere seu roteiro no painel para ver aqui o item do assunto atual.",
     }));
     planBox.appendChild(el("a", {
-      className: "btn btn--secondary btn--sm mt-2",
-      text: "Abrir dashboard",
+      className: "btn btn--secondary btn--sm mt-4",
+      text: "Abrir meu painel",
       attrs: { href: "./dashboard.html" },
     }));
     return;
   }
-  const items = state.plan.items ?? state.plan.planItems ?? [];
+  const items = [...(state.plan.items ?? state.plan.planItems ?? state.plan.recommendations ?? [])]
+    .sort((a, b) => (a.priority - b.priority) || ((a.id ?? 0) - (b.id ?? 0)));
   const f = state.filters;
   const match = f.topicId
     ? items.find((it) => String(it.topicId) === String(f.topicId))
     : (items.find((it) => it.status === "DOING") || items[0]);
   if (!match) {
     planBox.appendChild(el("p", { className: "muted", text: "Este recorte não está no roteiro vigente." }));
+    planBox.appendChild(el("a", {
+      className: "btn btn--ghost btn--sm mt-2",
+      text: "Ver roteiro completo",
+      attrs: { href: "./dashboard.html" },
+    }));
     return;
   }
-  const name = state.allTopics.find((t) => String(t.id) === String(match.topicId))?.name
-    || `Assunto #${match.topicId}`;
-  planBox.appendChild(el("p", { text: `${match.priority}. ${name}` }));
+  const done = items.filter((i) => i.status === "DONE").length;
+  const bar = el("div", {
+    className: "progress",
+    attrs: {
+      role: "progressbar",
+      "aria-valuemin": "0",
+      "aria-valuemax": String(items.length),
+      "aria-valuenow": String(done),
+      "aria-label": "Progresso do roteiro",
+    },
+  });
+  const fill = el("div", { className: "progress__bar" });
+  fill.style.width = `${items.length ? Math.round((done / items.length) * 100) : 0}%`;
+  bar.appendChild(fill);
+  planBox.appendChild(bar);
+  planBox.appendChild(el("p", {
+    className: "stat-label",
+    text: `${done} de ${items.length} concluídos no roteiro`,
+  }));
+
+  const list = el("ol", { className: "plan-items mt-4" });
+  const row = el("li", {
+    className: match.status === "DONE" ? "plan-items__row plan-items__row--done" : "plan-items__row",
+  });
+  const left = el("div");
+  left.appendChild(el("span", { className: "study-plan-name", text: `${match.priority}º · ${planTopicName(match.topicId)}` }));
   if (statusLabel(match.status)) {
-    planBox.appendChild(el("p", { className: "muted", text: statusLabel(match.status) }));
+    left.appendChild(el("p", { className: "plan-items__meta", text: statusLabel(match.status) }));
   }
+  row.appendChild(left);
+  list.appendChild(row);
+  planBox.appendChild(list);
   planBox.appendChild(el("a", {
-    className: "btn btn--ghost btn--sm mt-2",
+    className: "btn btn--ghost btn--sm mt-4",
     text: "Ver roteiro completo",
     attrs: { href: "./dashboard.html" },
   }));

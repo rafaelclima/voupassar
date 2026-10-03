@@ -24,15 +24,16 @@
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/base.css" />
   <link rel="stylesheet" href="./css/components.css" />
-  <link rel="stylesheet" href="./css/utilities.css" />
-  <link rel="stylesheet" href="./css/estudos.css" />
-  <title>Estudos — VouPassar</title>
+  <link rel="stylesheet" href="./css/utilities.css?v=6" />
+  <link rel="stylesheet" href="./css/dashboard.css?v=7" />
+  <link rel="stylesheet" href="./css/estudos.css?v=2" />
+  <title>Estudar — VouPassar</title>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="site-header">
-    <div class="container site-header__inner">
+    <div class="container container--wide site-header__inner">
       <a class="brand" href="./index.html" aria-label="VouPassar — início">
         <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
         <span>VouPassar</span>
@@ -41,8 +42,8 @@
       <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
         <div class="site-nav__links" id="nav-links">
           <a href="./index.html">Início</a>
-          <a href="./dashboard.html">Dashboard</a>
-          <a href="./estudos.html" aria-current="page">Estudos</a>
+          <a href="./dashboard.html">Meu painel</a>
+          <a href="./estudos.html" aria-current="page">Estudar</a>
           <a href="./simulado.html">Simulado</a>
           <a href="./perfil.html">Perfil</a>
           <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
@@ -52,11 +53,17 @@
   </header>
 
   <main id="conteudo">
-    <div class="container section">
-      <div class="study-head">
-        <p><span class="badge badge--primary">Área de estudos</span></p>
-        <h1 id="study-title">Estudar por conteúdo</h1>
-        <p class="lead" id="study-subtitle">Escolha disciplina e assunto, pratique questões oficiais com correção imediata e veja seu progresso no recorte.</p>
+    <div class="container container--wide section dash-shell study-shell">
+      <div class="dash-head">
+        <div class="dash-head__text">
+          <p class="eyebrow dash-eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Área de estudos</p>
+          <h1 id="study-title" class="display">Estudar por conteúdo</h1>
+          <p class="lead" id="study-subtitle">Escolha disciplina e assunto, pratique questões oficiais com correção imediata e veja seu progresso no recorte.</p>
+        </div>
+        <div class="dash-head__actions">
+          <a class="btn btn--secondary btn--sm" href="./dashboard.html">Meu painel</a>
+          <a class="btn btn--primary btn--sm" href="./simulado.html">Fazer simulado</a>
+        </div>
       </div>
 
       <div id="study-guard" hidden></div>
@@ -68,11 +75,27 @@
       </div>
 
       <div id="study-content" hidden>
-        <!-- FILTROS -->
-        <section aria-labelledby="sec-filtros-t">
-          <h2 id="sec-filtros-t">Filtros</h2>
-          <p class="muted"><small>Ordem fixa das questões (ano-fonte, número). A edição de 2021 não existe no acervo e não aparece como opção.</small></p>
-          <form id="study-filters" class="study-filters mt-4" aria-label="Filtrar questões por conteúdo">
+        <!-- 1. CONTINUE DE ONDE PAROU — hero de destaque -->
+        <section aria-labelledby="sec-agora-t" class="study-sec">
+          <h2 id="sec-agora-t" class="visually-hidden">O que estudar agora</h2>
+          <div id="study-hero"></div>
+        </section>
+
+        <!-- 2. FILTROS — painel de recorte -->
+        <section aria-labelledby="sec-filtros-t" class="perf-shell study-filters-shell">
+          <div class="perf-shell__head">
+            <div class="perf-shell__title">
+              <h2 id="sec-filtros-t">Filtrar questões</h2>
+              <p>Ordem fixa das questões (ano-fonte, número). A edição de 2021 não existe no acervo e não aparece como opção.</p>
+            </div>
+            <div class="perf-shell__tools">
+              <span class="health-pill" id="study-recorte" hidden>
+                <strong id="study-recorte-num">—</strong>
+                <span class="health-pill__label" id="study-recorte-label">no recorte</span>
+              </span>
+            </div>
+          </div>
+          <form id="study-filters" class="study-filters" aria-label="Filtrar questões por conteúdo">
             <div class="field">
               <label class="field__label" for="f-disciplina">Disciplina</label>
               <select class="select" id="f-disciplina" name="disciplina">
@@ -119,36 +142,55 @@
           </form>
         </section>
 
-        <div class="study-grid mt-8">
-          <div class="study-main">
-            <!-- CONTEÚDO -->
-            <section aria-labelledby="sec-conteudo-t">
+        <!-- 3. CONTEÚDO — faixa de disciplinas e assuntos -->
+        <section aria-labelledby="sec-conteudo-t" class="study-sec">
+          <div class="section-head section-head--row">
+            <div>
               <h2 id="sec-conteudo-t">Conteúdo</h2>
-              <p class="muted"><small>Assuntos que aparecem nas provas do IFRN. A classificação de cada questão ainda passa por revisão humana.</small></p>
-              <div id="study-browser" class="mt-4"></div>
-            </section>
-
-            <!-- QUESTÕES -->
-            <section class="mt-8" aria-labelledby="sec-questoes-t">
-              <h2 id="sec-questoes-t">Questões</h2>
-              <p class="muted"><small id="study-count" role="status">Nenhum filtro aplicado ainda.</small></p>
-              <div id="study-list" class="mt-4"></div>
-              <nav id="study-pagination" class="study-pagination mt-4" aria-label="Paginação das questões"></nav>
-            </section>
+              <p>Assuntos que aparecem nas provas do IFRN. A classificação de cada questão ainda passa por revisão humana.</p>
+            </div>
+            <span class="stat-label" id="study-browser-count" role="status"></span>
           </div>
+          <div id="study-browser" class="study-browser"></div>
+        </section>
 
-          <aside class="study-side" aria-label="Progresso no recorte">
-            <!-- PROGRESSO -->
-            <section aria-labelledby="sec-progresso-t" class="card">
-              <div class="card__header"><h2 id="sec-progresso-t" style="font-size:var(--text-md)">Progresso</h2></div>
-              <div class="card__body"><div id="study-progress"></div></div>
-            </section>
-            <section aria-labelledby="sec-roteiro-t" class="card mt-4">
-              <div class="card__header"><h2 id="sec-roteiro-t" style="font-size:var(--text-md)">No seu roteiro</h2></div>
-              <div class="card__body"><div id="study-plan"></div></div>
-            </section>
-          </aside>
+        <!-- 4. DUO — progresso no recorte + item do roteiro -->
+        <div class="dash-grid dash-grid--2">
+          <section aria-labelledby="sec-progresso-t" class="panel">
+            <div class="panel__head">
+              <div>
+                <h2 id="sec-progresso-t">Progresso no recorte</h2>
+                <p>Seu aproveitamento geral e no filtro atual.</p>
+              </div>
+              <span class="panel__icon" aria-hidden="true">◐</span>
+            </div>
+            <div id="study-progress"></div>
+          </section>
+
+          <section aria-labelledby="sec-roteiro-t" class="panel panel--insight">
+            <div class="panel__head">
+              <div>
+                <h2 id="sec-roteiro-t">No seu roteiro</h2>
+                <p>O item do roteiro para este assunto.</p>
+              </div>
+              <span class="panel__icon" aria-hidden="true">↗</span>
+            </div>
+            <div id="study-plan"></div>
+          </section>
         </div>
+
+        <!-- 5. QUESTÕES — caderno de prática -->
+        <section aria-labelledby="sec-questoes-t" class="panel panel--questions">
+          <div class="panel__head panel__head--split">
+            <div>
+              <h2 id="sec-questoes-t" tabindex="-1">Questões</h2>
+              <p><span id="study-count" role="status">Nenhum filtro aplicado ainda.</span></p>
+            </div>
+            <span class="badge" id="study-mode-badge">Correção imediata</span>
+          </div>
+          <div id="study-list" class="study-list"></div>
+          <nav id="study-pagination" class="study-pagination" aria-label="Paginação das questões"></nav>
+        </section>
       </div>
 
       <noscript>
@@ -165,9 +207,9 @@
 
   <footer class="site-footer">
     <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-      <p class="muted"><small>VouPassar - Preparação inteligente para o IFRN - 2026</small></p>
-      <p class="muted"><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
-      <p class="muted"><small><a href="./dashboard.html">Dashboard</a> · <a href="./index.html">Início</a></small></p>
+      <p><small>VouPassar - Preparação inteligente para o IFRN - <span data-current-year>2026</span></small></p>
+      <p><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
+      <p><small><a href="./dashboard.html">Meu painel</a> · <a href="./index.html">Início</a></small></p>
     </div>
   </footer>
 
