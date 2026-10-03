@@ -1,201 +1,161 @@
-/* VouPassar — perfil (TASK 6.8)
- * Só layout da página perfil.html. Tokens, cards, tabelas, badges,
- * alerts, loading e botões vêm do design system (base/components/utilities).
- * Mobile-first: 1 coluna; 2 colunas a partir de 48rem; stats em 4 colunas
- * a partir de 64rem.
+/* VouPassar — perfil premium
+ * Fala a mesma língua do dashboard (dashboard.css é carregado junto e
+ * fornece .perf-shell, .perf-chart, .stat-tile, .focus-strip, .focus-card,
+ * .panel, .alloc-bars, .gauge-*, .evo-svg, .seg): aqui fica só o que é
+ * exclusivo do perfil — hero de identidade, nível, listas de domínio,
+ * histórico, formulário e conquistas.
+ * Mobile-first; mesmos breakpoints do dashboard (48rem / 64rem).
  */
 
-.perfil-head {
+.perfil-shell { --dash-gap: var(--space-6); }
+
+#perfil-content {
   display: grid;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  gap: var(--dash-gap);
+  margin-top: var(--space-2);
+  align-content: start;
 }
 
-.perfil-head p {
-  max-width: var(--measure);
-}
-
-.perfil-grid {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: 1fr;
-}
-
-.perfil-stats {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: 1fr;
-}
-
-.perfil-stats .stat-value--empty {
-  color: var(--color-ink-500);
+/* Contenção de grade: igual ao dashboard — faixas com scroll horizontal e
+ * SVG nunca alargam a trilha em telas estreitas. */
+#perfil-content > *,
+.perfil-sec,
+.panel__head > div {
+  min-width: 0;
 }
 
 @media (min-width: 48rem) {
-  .perfil-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .perfil-grid--2 {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .perfil-form__grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-  }
+  .perfil-shell { --dash-gap: var(--space-8); }
 }
 
-@media (min-width: 64rem) {
-  .perfil-stats {
-    grid-template-columns: repeat(4, 1fr);
-  }
+/* ---------- 1. hero de identidade (sobre .next-step do dashboard) ---------- */
+.id-hero__row {
+  position: relative; z-index: 1;
+  display: flex; gap: var(--space-5); align-items: center; flex-wrap: wrap;
+  margin-bottom: var(--space-5);
 }
-
-/* Formulário de dados: empilhado no mobile, sem CSS fora do DS */
-.perfil-form {
-  display: grid;
-  gap: var(--space-3);
-  max-width: var(--measure);
+.id-avatar {
+  width: 4.25rem; height: 4.25rem; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: var(--text-xl); font-weight: 800; letter-spacing: var(--tracking-tight);
+  color: #fff; background: linear-gradient(135deg, #3d8fd1, #6d43cc);
+  border: 2px solid rgb(255 255 255 / 0.5);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.3);
 }
-
-.perfil-form__grid {
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: 1fr;
-}
-
-.perfil-dados__list {
-  display: grid;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.perfil-dados__row {
-  display: grid;
-  gap: var(--space-1);
-  border-top: 1px solid var(--color-line-200);
-  padding-top: var(--space-2);
-}
-
-.perfil-dados__row:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.perfil-dados__label {
-  font-size: var(--text-sm);
-  color: var(--color-ink-500);
-}
-
-.perfil-dados__value {
-  font-weight: 600;
+.id-hero__name {
+  font-size: clamp(1.6rem, 1.25rem + 2vw, 2.5rem);
+  line-height: 1.05; letter-spacing: var(--tracking-tighter);
+  font-weight: 800; color: #fff;
   overflow-wrap: anywhere;
 }
+.id-hero__mail { color: #bcd7ef; font-size: var(--text-sm); }
 
-/* Listas de diagnóstico (dominados / atenção) */
-.mastery-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: var(--space-3);
+/* ---------- 2. nível ao lado das stats ---------- */
+.perf-level {
+  background: var(--color-bg-100);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: grid; gap: var(--space-2); justify-items: center; text-align: center;
+  align-content: start;
+  min-width: 0;
 }
+.perf-level .eyebrow { color: var(--color-ink-500); }
+.perfil-stats { display: grid; gap: var(--space-4); grid-template-columns: 1fr 1fr; }
 
+/* ---------- 3. modos (reusa .focus-card; só o medidor é novo) ---------- */
+.mode-meter {
+  height: 6px; border-radius: var(--radius-pill);
+  background: var(--color-line-200); overflow: hidden; margin-top: var(--space-2);
+}
+.mode-meter__fill {
+  height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-primary-600), var(--color-accent-500));
+}
+.focus-card__body { min-width: 0; }
+
+/* ---------- 4. listas de domínio (dominados / atenção) ---------- */
+.mastery-list {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: var(--space-3);
+}
 .mastery-list__item {
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
-  background: var(--color-surface);
-  display: grid;
-  gap: var(--space-2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-50);
+  display: grid; gap: var(--space-2);
+  box-shadow: var(--shadow-xs);
 }
-
 .mastery-list__top {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: center;
+  display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center;
+}
+.mastery-list__reason { font-size: var(--text-sm); color: var(--color-ink-700); }
+.mastery-list__item .badge { white-space: normal; text-align: left; }
+
+/* ---------- 5. metas ---------- */
+.meta-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.meta-goal {
+  font-size: var(--text-lg); font-weight: 700; letter-spacing: var(--tracking-tight);
+  color: var(--color-ink-900); overflow-wrap: anywhere;
 }
 
-.mastery-list__reason {
-  font-size: var(--text-sm);
-  color: var(--color-ink-700);
-}
-
-/* Evolução: barras CSS puras (sem lib, sem canvas) */
-.evo-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: end;
-  margin-bottom: var(--space-3);
-}
-
-.evo-bars {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: var(--space-2);
-}
-
-.evo-bars__row {
-  display: grid;
-  grid-template-columns: 7rem 1fr 4.5rem;
-  gap: var(--space-2);
-  align-items: center;
-  font-size: var(--text-sm);
-}
-
-.evo-bars__label {
-  color: var(--color-ink-700);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.evo-bars__value {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-ink-900);
-}
-
-/* Histórico de tentativas */
+/* ---------- 6. histórico ---------- */
 .history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: var(--space-2);
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: var(--space-3);
 }
-
 .history-list__item {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: center;
-  justify-content: space-between;
+  display: flex; flex-wrap: wrap; gap: var(--space-3);
+  align-items: center; justify-content: space-between;
   border: 1px solid var(--color-line-200);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
-  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-50);
+}
+.history-list__item:hover { border-color: var(--color-primary-200); }
+.history-list__title { font-weight: 700; letter-spacing: var(--tracking-tight); }
+.history-list__meta { font-size: var(--text-sm); color: var(--color-ink-500); }
+
+/* ---------- 7. dados + formulário ---------- */
+.perfil-dados__list {
+  display: grid; gap: 0; margin: 0; padding: 0; list-style: none;
+  border: 1px solid var(--color-line-200); border-radius: var(--radius-lg);
+  background: var(--color-bg-50); overflow: hidden;
+}
+.perfil-dados__row {
+  display: grid; gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-line-100);
+}
+.perfil-dados__row:last-child { border-bottom: none; }
+.perfil-dados__label { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-ink-500); }
+.perfil-dados__value { font-weight: 600; overflow-wrap: anywhere; }
+.perfil-form { display: grid; gap: var(--space-4); }
+.perfil-form__grid { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+@media (min-width: 48rem) {
+  .perfil-form__grid { grid-template-columns: 1fr 1fr; }
 }
 
-.history-list__title {
-  font-weight: 600;
+/* ---------- 8. conquistas (vazio honesto) ---------- */
+.achv-locked {
+  border: 1.5px dashed var(--color-line-300);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-50);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  display: grid; gap: var(--space-3); justify-items: center;
 }
-
-.history-list__meta {
-  font-size: var(--text-sm);
-  color: var(--color-ink-500);
+.achv-locked__icon {
+  width: 3.25rem; height: 3.25rem; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: var(--text-xl);
+  background: var(--color-bg-100); border: 1px solid var(--color-line-200);
+  color: var(--color-ink-400);
 }
+.achv-locked h3 { font-size: var(--text-lg); }
+.achv-locked p { font-size: var(--text-sm); color: var(--color-ink-500); max-width: 46ch; }
 
-.perfil-notes {
-  display: grid;
-  gap: var(--space-3);
+@media (prefers-reduced-motion: reduce) {
+  .history-list__item { transition: none; }
 }
