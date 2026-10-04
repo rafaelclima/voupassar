@@ -601,10 +601,10 @@
       "page_end": 11,
       "statement": "Uma escola decidiu proibir o porte de celulares durante as aulas. Em uma inspeção, verificou-se que, em uma turma com 28 alunos, 13 deles trouxeram seus celulares para a sala de aula. Ao escolher aleatoriamente um aluno dessa turma, a probabilidade de que ele tenha trazido seu celular é de 15",
       "options": {
-        "A": "28/13",
-        "B": "56/13",
-        "C": "14/13",
-        "D": ". 28"
+        "A": "15/28",
+        "B": "13/56",
+        "C": "13/14",
+        "D": "13/28"
       },
       "raw_block": "33. Uma escola decidiu proibir o porte de celulares durante as aulas. Em uma inspeção, verificou-se que, em\n    uma turma com 28 alunos, 13 deles trouxeram seus celulares para a sala de aula. Ao escolher\n    aleatoriamente um aluno dessa turma, a probabilidade de que ele tenha trazido seu celular é de\n\n          15\n    A)      .\n          28\n          13\n    B)      .\n          56\n          13\n    C)      .\n          14\n          13\n    D)      .\n          28\n\n\n"
     },
@@ -655,10 +655,10 @@
       "page_end": 12,
       "statement": "A fração que mais se aproxima desse percentual é 25",
       "options": {
-        "A": "30/732",
-        "B": "900/741",
-        "C": "900/24",
-        "D": "."
+        "A": "25/30",
+        "B": "732/900",
+        "C": "741/900",
+        "D": "24/30"
       },
       "raw_block": "36. A fração que mais se aproxima desse percentual é\n\n          25\n    A)      .\n          30\n          732\n    B)          .\n          900\n          741\n    C)          .\n          900\n          24\n    D)      .\n          30\n\n\n\nIFRN – Exame de Seleção – 2025                                                                            11\n\n       IFRN – PROCESSO SELETIVO PARA OS CURSOS TÉCNICOS DE NÍVEL MÉDIO NA FORMA INTEGRADA\n                                   EDITAL Nº 23/2024 – PROEN/IFRN\n"
     },

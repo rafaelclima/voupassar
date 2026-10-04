@@ -475,10 +475,10 @@
       "page_end": 9,
       "statement": "De acordo com o Texto 1, apenas 23% das crianças e adolescentes relataram à pesquisa que foram vítimas de ofensas na Internet. Suponha que só 11% dos pais desse grupo disseram ter conhecimento que os filhos passaram por incômodos. Nessas condições, a razão entre o percentual de pais que desconhecem que seus filhos sofreram ofensas e a quantidade de crianças que relataram ofensas é de 23",
       "options": {
-        "A": "11/23",
-        "B": "12/11",
-        "C": "23/12",
-        "D": ". 23"
+        "A": "23/11",
+        "B": "23/12",
+        "C": "11/23",
+        "D": "12/23"
       },
       "raw_block": "26. De acordo com o Texto 1, apenas 23% das crianças e adolescentes relataram à pesquisa que foram\n    vítimas de ofensas na Internet. Suponha que só 11% dos pais desse grupo disseram ter conhecimento\n    que os filhos passaram por incômodos. Nessas condições, a razão entre o percentual de pais que\n    desconhecem que seus filhos sofreram ofensas e a quantidade de crianças que relataram ofensas é de\n\n         23\n    A)     .\n         11\n\n\n         23\n    B)        .\n         12\n\n\n\n         11\n    C)        .\n         23\n\n\n\n         12\n    D)        .\n         23\n\n\n"
     },
