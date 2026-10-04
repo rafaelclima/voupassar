@@ -58,10 +58,14 @@
   </header>
 
   <main id="conteudo" class="landing-main">
-    <!-- HERO tela cheia: propósito, 2 ações e prévia em CSS puro
-         (mock + marca). Mantido intacto — as seções abaixo explicam
-         o projeto com imagens geradas e texto honesto. -->
+    <!-- HERO: propósito, 2 ações e a arte gerada em destaque com as
+         pílulas do produto. As seções abaixo explicam o projeto com
+         imagens geradas e texto honesto. -->
     <section class="landing-hero" aria-labelledby="hero-t">
+      <!-- Arte em full-bleed da hero inteira (espelhada no CSS para o
+           estudante olhar em direção ao texto). Alt vazio: decorativa,
+           a mensagem está no H1 + CTAs. -->
+      <img class="hero-art" src="./assets/landing/hero.webp" alt="" width="900" height="900" fetchpriority="high" />
       <div class="container landing-hero__grid">
         <div class="landing-hero__copy">
           <p class="landing-kicker"><span class="landing-kicker__dot" aria-hidden="true"></span>Direto ao ponto, sem enrolação</p>
@@ -81,45 +85,10 @@
           </p>
         </div>
 
-        <!-- Visual: arte gerada (estudante diante da jornada em degraus)
-             como fundo do painel, com o mock do roteiro e as pílulas por
-             cima — produto real + ilustração que explica. Nenhum
-             enunciado real é exibido aqui. -->
-        <div class="landing-visual" id="hero-visual" aria-label="Prévia da plataforma">
-          <img class="hero-art" src="./assets/landing/hero.webp" alt="" width="900" height="900" fetchpriority="high" />
-          <div class="mock">
-            <p class="mock__eyebrow">Seu roteiro</p>
-            <p class="mock__title">O que estudar agora</p>
-            <ul class="mock__list">
-              <li>
-                <span class="mock__rank" aria-hidden="true">1</span>
-                <span>
-                  <strong>Porcentagem</strong>
-                  <small>Prioridade alta · seu acerto: 42%</small>
-                </span>
-                <span class="mock__cta" aria-hidden="true">→</span>
-              </li>
-              <li>
-                <span class="mock__rank" aria-hidden="true">2</span>
-                <span>
-                  <strong>Interpretação textual</strong>
-                  <small>Peso alto · 3 erros recentes</small>
-                </span>
-                <span class="mock__cta" aria-hidden="true">→</span>
-              </li>
-            </ul>
-            <div class="mock__foot">
-              <div class="progress" aria-hidden="true"><div class="progress__bar" style="width: 38%"></div></div>
-              <small>Estudo · Prova · Revisão · Simulado como a prova</small>
-            </div>
-          </div>
-          <p class="float-pill float-pill--top">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M10.8 5.2 8.8 8.8l-3.6 2 2-3.6z" /></svg> Roteiro que se explica
-          </p>
-          <p class="float-pill float-pill--bottom">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 1.8h5.2L12 4.6V14H4z" /><path d="M9.2 1.8v2.8H12" /></svg> Simulado como a prova
-          </p>
-        </div>
+        <!-- Coluna direita vazia: reserva o espaço do grid para o texto
+             ficar à esquerda e a arte respirar à direita. O id é exigido
+             pelo check_frontend.py (bloco hero-visual). -->
+        <div class="landing-visual" id="hero-visual" aria-hidden="true"></div>
       </div>
     </section>
 

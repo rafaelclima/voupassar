@@ -18,9 +18,7 @@ body.landing-page {
 }
 
 /* Sem regra global de `p` aqui: cada parágrafo sobre navy já tem cor
- * própria (.landing-kicker, .landing-lead, .landing-foot, .mock__*).
- * Uma regra `body.landing-page p` (0,1,1) venceria `.float-pill`
- * (0,1,0) e apagava o texto das pílulas no tema escuro. */
+ * própria (.landing-kicker, .landing-lead, .landing-foot). */
 
 /* ============ Header sobre o navy ============
  * base.css dá ao .site-header fundo surface + sticky: aqui ele é
@@ -141,6 +139,18 @@ body.landing-page {
   border-radius: 50%;
   border: 1px solid rgb(255 255 255 / 0.12);
   background: radial-gradient(circle, rgb(255 255 255 / 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Véu sobre a arte para o texto da esquerda continuar legível: navy
+ * quase sólido à esquerda, sumindo à direita. Acima da arte (z 0),
+ * abaixo do conteúdo (z 1). */
+.landing-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(90deg, rgb(10 33 56 / 0.94) 0%, rgb(10 33 56 / 0.72) 38%, rgb(10 33 56 / 0.25) 62%, transparent 82%);
   pointer-events: none;
 }
 
@@ -273,23 +283,12 @@ body.landing-page {
   color: #fff;
 }
 
-.float-pill svg {
-  width: 1rem;
-  height: 1rem;
-  display: block;
-  flex-shrink: 0;
-}
-
-/* ============ Visual: arte + mock compacto + pílulas ============ */
+/* ============ Visual: coluna vazia (arte é full-bleed da hero) ============ */
 .landing-visual {
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-width: 0;
   min-height: 22rem;
-  padding: var(--space-8) var(--space-2);
 }
 
 /* O alternador de tema é visível em todas as páginas, conforme TASK 8.4.
@@ -299,15 +298,13 @@ body.landing-page {
   display: inline-flex;
 }
 
-/* Composição: arte gerada (estudante diante da jornada em degraus)
- * como fundo do painel, com o mock e as pílulas por cima — produto
- * real + ilustração que explica. O desvanecimento das bordas no canvas
- * está embutido no próprio webp (canal alfa); a máscara CSS abaixo é
- * só refinamento progressivo, sem ela a arte continua sem moldura.
+/* Arte em full-bleed da hero inteira, atrás do véu (::after) e do
+ * conteúdo. Espelhada no eixo X para o estudante ficar à direita
+ * olhando em direção ao texto. O desvanecimento das bordas está
+ * embutido no próprio webp (canal alfa); a máscara CSS é só
+ * refinamento progressivo.
  *
- * Arquivo 900px para ~500px exibidos: sem upscale (Lighthouse
- * `image-size-responsive` OK). `alt` vazio de propósito: a região já
- * tem `aria-label` e a mensagem está no mock + pílulas. */
+ * `alt` vazio de propósito: decorativa, a mensagem está no H1 + CTAs. */
 .hero-art {
   position: absolute;
   inset: 0;
@@ -315,162 +312,12 @@ body.landing-page {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* A arte é a protagonista: enquadramento quase central para exibir
-   * estudante + degraus + cronômetro; só o canto inferior direito fica
-   * reservado ao mock compacto. */
-  object-position: 42% 38%;
-  -webkit-mask-image: radial-gradient(115% 115% at 50% 45%, #000 55%, transparent 98%);
-  mask-image: radial-gradient(115% 115% at 50% 45%, #000 55%, transparent 98%);
+  object-position: 62% 42%;
+  transform: scaleX(-1);
+  -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%);
   pointer-events: none;
   user-select: none;
-}
-
-.mock {
-  z-index: 1;
-}
-
-.mock {
-  position: relative;
-  /* Mock bem pequeno no canto inferior direito: a arte é a protagonista,
-   * o cartão é só um selo da prévia do produto. */
-  width: min(100%, 12rem);
-  margin-top: auto;
-  margin-left: auto;
-  background: #fff;
-  color: #0e1720;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 24px 60px -16px rgb(0 0 0 / 0.5);
-  padding: var(--space-3);
-  display: grid;
-  gap: var(--space-2);
-  font-size: 0.8em;
-}
-
-.mock p {
-  color: inherit;
-}
-
-.mock__eyebrow {
-  font-size: var(--text-xs);
-  font-weight: 800;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: #0f5084;
-}
-
-.mock__title {
-  font-size: var(--text-md);
-  font-weight: 800;
-  letter-spacing: var(--tracking-tight);
-  color: #0e1720;
-  margin-top: calc(var(--space-1) * -1);
-}
-
-.mock__list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: var(--space-3);
-}
-
-.mock__list li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  border: 1px solid #e3eaf1;
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  background: #f4f7fa;
-}
-
-.mock__rank {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  flex-shrink: 0;
-  border-radius: var(--radius-pill);
-  background: #dcebfa;
-  color: #0d2b45;
-  font-size: var(--text-xs);
-  font-weight: 800;
-}
-
-.mock__list strong {
-  display: block;
-  font-size: var(--text-md);
-  letter-spacing: var(--tracking-tight);
-  color: #0e1720;
-}
-
-.mock__list small {
-  display: block;
-  font-size: var(--text-xs);
-  color: #556a80;
-}
-
-.mock__cta {
-  margin-left: auto;
-  font-weight: 800;
-  color: #0f5084;
-}
-
-.mock__foot {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.mock__foot small {
-  font-size: var(--text-xs);
-  color: #556a80;
-}
-
-/* Pílulas flutuantes: o diferencial sem parágrafo. */
-.float-pill {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  background: rgb(255 255 255 / 0.94);
-  border: 1px solid rgb(255 255 255 / 0.6);
-  color: #0d2b45;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  border-radius: var(--radius-pill);
-  padding: 0.55rem 1rem;
-  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.5);
-  white-space: nowrap;
-  max-width: calc(100% - var(--space-4));
-}
-
-.float-pill--top {
-  top: var(--space-2);
-  left: 0;
-}
-
-.float-pill--bottom {
-  bottom: var(--space-2);
-  left: 0;
-}
-
-/* Pílulas flutuando PARA FORA do cartão (nunca sobre o texto dele):
- * o visual reserva respiro acima e abaixo no desktop. */
-@media (min-width: 64rem) {
-  .landing-visual {
-    padding-block: var(--space-10);
-  }
-
-  .float-pill--top {
-    top: var(--space-1);
-    left: var(--space-2);
-  }
-
-  .float-pill--bottom {
-    bottom: var(--space-1);
-    left: var(--space-2);
-  }
 }
 
 /* ============ Rodapé mínimo sobre o navy ============ */
@@ -504,6 +351,14 @@ body.landing-page {
 }
 
 /* ============ Breakpoints ============ */
+@media (max-width: 64rem) {
+  /* Coluna única: o texto desce sobre a arte — véu vertical mais
+   * fechado para manter a leitura sobre os brilhos. */
+  .landing-hero::after {
+    background: linear-gradient(180deg, rgb(10 33 56 / 0.9) 0%, rgb(10 33 56 / 0.62) 45%, rgb(10 33 56 / 0.78) 100%);
+  }
+}
+
 @media (min-width: 48rem) {
   .landing-actions .btn {
     flex: 0 1 auto;
@@ -526,27 +381,9 @@ body.landing-page {
     flex: 1 1 100%;
   }
 
-  .float-pill {
-    position: static;
-  }
-
   .landing-visual {
-    flex-direction: column;
-    gap: var(--space-3);
-    min-height: 0;
-  }
-
-  .mock {
-    margin: 0 auto;
-    width: min(100%, 16rem);
-    font-size: 0.875em;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mock,
-  .float-pill {
-    box-shadow: none;
+    /* Coluna vazia vira faixa da arte no mobile. */
+    min-height: 24rem;
   }
 }
 

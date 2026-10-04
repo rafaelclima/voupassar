@@ -13,7 +13,7 @@
 |---|---|
 | Explicar propósito | `#hero-t` + lead ("com base em provas reais organizadas por assunto"), genérico por decisão de produto + `#o-que-e` (3 pilares com imagem) |
 | Transmitir confiança | `#hero-brand` (faixa com logo) + `#de-onde-vem` (foto de estudantes + texto honesto origem/visão) |
-| Demonstrar funcionalidades | `#hero-visual` (mock em CSS, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
+| Demonstrar funcionalidades | `#hero-visual` (arte gerada em destaque + pílulas do produto, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
 | Apresentar proposta de valor | `#como-funciona` (cadeia prova real → organização → roteiro → evolução, AGENTS.md §32) |
 | Direcionar cadastro/login | CTAs "Começar agora" → `cadastro.html`, "Entrar" → `login.html` (hero + `#cta-final` + `#de-onde-vem`) |
 
@@ -36,11 +36,13 @@
 
 O hero segue a referência PIXORA: canvas navy de borda a borda, header
 com pill de navegação branca ao centro e CTA à direita, headline
-gigante com linha de acento, mock em CSS puro com pílulas flutuantes.
-O visual da direita usa a arte gerada (`hero.webp`, 900px, estudante
-diante da jornada em degraus) como fundo do painel com bordas
-dissolvidas no canvas via máscara radial — mock e pílulas preservados
-por cima, `alt` vazio (região com `aria-label`, mensagem no mock).
+gigante com linha de acento. O visual é só a arte gerada (`hero.webp`,
+900px, estudante diante da jornada em degraus) em full-bleed da hero
+inteira, espelhada no CSS para o estudante ficar à direita olhando para
+o texto, com véu navy à esquerda (vertical e mais fechado no mobile)
+para manter a leitura — `alt` vazio (decorativa, mensagem no H1 + CTAs).
+As pílulas flutuantes e o mock em CSS foram removidos (a arte é a
+protagonista); o CSS morto correspondente saiu junto.
 As seções abaixo são claras (tokens `surface`/`bg-100`, que adaptam ao
 dark) com grid de 3 cards (`desk`/`numbers`/`simulation`), passos
 numerados via CSS counter, modos de estudo, feature 2 colunas
@@ -53,8 +55,7 @@ AGENTS.md §6: só navy + azul-claro + branco, sem infantil.
 
 Recursos: canvas navy fixo nos dois temas (gradiente próprio),
 2 colunas a 64rem, `body` em flex com `min-height: 100dvh` (header +
-hero flexível + rodapé = zero rolagem no desktop), mock em CSS puro
-sobre surface branca, pílulas flutuantes, anéis decorativos. Botões
+hero flexível + rodapé), anéis decorativos. Botões
 sobre navy usam cor fixa `#0d2b45` (tokens primary invertem no dark e
 quebravam o contraste para ~1,5:1). A pill usa `#0d2b45` sobre branco
 (~14:1); o acento `#7fb4e4` sobre navy mede ~7:1.
