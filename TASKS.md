@@ -729,6 +729,9 @@ Perguntas:
 * Toggle visível no header de todas as páginas (`landing-page` corrigido).
 * `data-theme` aplicado antes da primeira pintura (script inline `<head>`).
 * `localStorage` + `prefers-color-scheme` respeitados.
+* [2026-10-04] Decisão de produto: padrão alterado para `light`
+  (sem seguir `prefers-color-scheme`); escuro só com escolha manual.
+  Ver `docs/fracoes-correcao.md` §4.
 * `dark.css` carregado dinamicamente; `tokens.css` com `[data-theme="dark"]` completo.
 * Nenhum componente visual quebrado (validado estático + navegador real).
 

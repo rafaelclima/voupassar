@@ -72,3 +72,24 @@ docker service update --image voupassar-backend:<TAG> voupassar-api
 2. Opcional: cadastrar Database/Application no painel Dokploy para gestão visual
    (hoje são swarm services manuais no mesmo padrão dos demais).
 3. Rotina de backup diário (cron) + retenção — ver TASK 13.2.
+
+## 6. CI/CD do backend (decisão 2026-10-04)
+
+* Push/PR roda só `validate-and-test` (build Maven + testes). Sem SSH,
+  sem restart na VPS.
+* `build-image` + `deploy` rodam **só via `workflow_dispatch`** (botão
+  "Run workflow" no Actions, branch `main`). Motivo: cada push na main
+  — docs, JSON de questões, frontend — rebuilding a imagem e reiniciando
+  a API em produção sem necessidade.
+* O build usa `push: false` + `load: true` e a imagem viaja por artifact
+  (`docker save`/`load`); **não há login em registry** (removido após
+  falhar por `DOCKER_USERNAME` ausente — o login era desnecessário).
+* O job `deploy` confere `VPS_HOST`/`VPS_USER`/`VPS_SSH_KEY` no início e
+  falha com mensagem clara quando ausentes.
+* Secrets (Settings → Secrets and variables → Actions):
+  `VPS_HOST` + `VPS_USER` (variables), `VPS_SSH_KEY` (secret, chave
+  privada). Chave dedicada `github-actions-voupassar` (ed25519, sem
+  passphrase), com a pública em `~/.ssh/authorized_keys` da VPS.
+  Revogação: remover a linha dela do `authorized_keys`.
+* Flyway aplica as migrations no start do backend — o deploy manual é o
+  momento em que correções de dados (ex.: V10, frações) chegam à API.
