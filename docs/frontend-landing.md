@@ -13,7 +13,7 @@
 |---|---|
 | Explicar propósito | `#hero-t` + lead ("com base em provas reais organizadas por assunto"), genérico por decisão de produto + `#o-que-e` (3 pilares com imagem) |
 | Transmitir confiança | `#hero-brand` (faixa com logo) + `#de-onde-vem` (foto de estudantes + texto honesto origem/visão) |
-| Demonstrar funcionalidades | `#hero-visual` (arte gerada em destaque + pílulas do produto, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
+| Demonstrar funcionalidades | `#hero-visual` (arte gerada em full-bleed, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
 | Apresentar proposta de valor | `#como-funciona` (cadeia prova real → organização → roteiro → evolução, AGENTS.md §32) |
 | Direcionar cadastro/login | CTAs "Começar agora" → `cadastro.html`, "Entrar" → `login.html` (hero + `#cta-final` + `#de-onde-vem`) |
 
@@ -36,14 +36,29 @@
 
 O hero segue a referência PIXORA: canvas navy de borda a borda, header
 com pill de navegação branca ao centro e CTA à direita, headline
-gigante com linha de acento. O visual é só a arte gerada (`hero.webp`,
-900px, estudante diante da jornada em degraus) em full-bleed da hero
-inteira, espelhada no CSS para o estudante ficar à direita olhando para
-o texto, com véu navy à esquerda (vertical e mais fechado no mobile)
-para manter a leitura — `alt` vazio (decorativa, mensagem no H1 + CTAs).
-As pílulas flutuantes e o mock em CSS foram removidos (a arte é a
-protagonista); o CSS morto correspondente saiu junto.
-As seções abaixo são claras (tokens `surface`/`bg-100`, que adaptam ao
+gigante com linha de acento. O visual é a arte gerada (`hero.webp`,
+1200×675, 16:9) em **full-bleed da hero inteira**: `position: absolute;
+inset: 0`, `width`/`height` 100% e `object-fit: cover`, na **orientação
+original** (sem espelho em CSS). O `object-position` deslocado para a
+direita (`75% 50%`) define qual parte da arte sobrevive ao corte do
+`cover`: o `object-fit: cover` nunca é usado para esconder o estudante, e sim
+para escolher o recorte que deixa a região da arte sob o texto
+desocupada. `alt` vazio (decorativa — a mensagem está no H1 + CTAs).
+
+Não há véu/scrim sobre a arte: a legibilidade do texto vem de **sombra
+de texto** no H1 e no lead (`0 2px 24px rgb(6 20 36 / 0.9)`), e não de
+uma camada que apagaria a arte. O texto atual (kicker, H1, lead, CTAs e
+a faixa `#hero-brand`) fica intacto à esquerda, por cima da arte, com
+`z-index` maior que o da imagem.
+
+A arte (`hero.webp`, regenerada via prompt em
+`docs/hero-art-prompt.md`) já nasce com os dois estudantes — menino e
+menina, ambos com mochila — no terço direito, degraus ao centro e
+cronômetro no alto à direita; a metade esquerda é só fundo navy, a área
+do texto. Por isso nenhum espelho em CSS é necessário: a orientação
+original já coloca cada elemento no seu lugar.
+As seções abaixo são
+claras (tokens `surface`/`bg-100`, que adaptam ao
 dark) com grid de 3 cards (`desk`/`numbers`/`simulation`), passos
 numerados via CSS counter, modos de estudo, feature 2 colunas
 (`students.webp` 1200px) e banda CTA navy com `vector.webp` ao fundo

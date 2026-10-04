@@ -142,17 +142,8 @@ body.landing-page {
   pointer-events: none;
 }
 
-/* Véu sobre a arte para o texto da esquerda continuar legível: navy
- * quase sólido à esquerda, sumindo à direita. Acima da arte (z 0),
- * abaixo do conteúdo (z 1). */
-.landing-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(90deg, rgb(10 33 56 / 0.94) 0%, rgb(10 33 56 / 0.72) 38%, rgb(10 33 56 / 0.25) 62%, transparent 82%);
-  pointer-events: none;
-}
+/* Sem véu/scrim sobre a arte: a legibilidade do texto vem de sombra
+ * de texto no H1/lead. Sem espelho (orientação original preservada). */
 
 .landing-hero__grid {
   display: grid;
@@ -206,6 +197,7 @@ body.landing-page {
   font-weight: 800;
   text-wrap: balance;
   max-width: 16ch;
+  text-shadow: 0 2px 24px rgb(6 20 36 / 0.9);
 }
 
 /* Linha de acento, como o "BOLD IDEAS" em teal da referência — aqui
@@ -220,6 +212,7 @@ body.landing-page {
   line-height: 1.55;
   color: #d7e7f6;
   max-width: 44ch;
+  text-shadow: 0 2px 24px rgb(6 20 36 / 0.9);
 }
 
 .landing-actions {
@@ -298,11 +291,14 @@ body.landing-page {
   display: inline-flex;
 }
 
-/* Arte em full-bleed da hero inteira, atrás do véu (::after) e do
- * conteúdo. Espelhada no eixo X para o estudante ficar à direita
- * olhando em direção ao texto. O desvanecimento das bordas está
- * embutido no próprio webp (canal alfa); a máscara CSS é só
- * refinamento progressivo.
+/* Arte em full-bleed da hero inteira, atrás do conteúdo (grid z 1).
+ * Ocupa toda a hero (absolute inset 0 + cover), sem espelho — na
+ * orientação original (menino e menina com mochila à direita, degraus
+ * ao centro, cronômetro no alto). O object-position deslocado para a
+ * direita (75% 50%) escolhe o recorte do cover mantendo mochilas,
+ * degraus e cronômetro no quadro, com o navy vazio da própria arte sob
+ * o texto à esquerda. Sem véu/scrim: a leitura vem da sombra de texto
+ * no H1/lead.
  *
  * `alt` vazio de propósito: decorativa, a mensagem está no H1 + CTAs. */
 .hero-art {
@@ -312,10 +308,7 @@ body.landing-page {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 62% 42%;
-  transform: scaleX(-1);
-  -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%);
-  mask-image: radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%);
+  object-position: 75% 50%;
   pointer-events: none;
   user-select: none;
 }
@@ -351,14 +344,6 @@ body.landing-page {
 }
 
 /* ============ Breakpoints ============ */
-@media (max-width: 64rem) {
-  /* Coluna única: o texto desce sobre a arte — véu vertical mais
-   * fechado para manter a leitura sobre os brilhos. */
-  .landing-hero::after {
-    background: linear-gradient(180deg, rgb(10 33 56 / 0.9) 0%, rgb(10 33 56 / 0.62) 45%, rgb(10 33 56 / 0.78) 100%);
-  }
-}
-
 @media (min-width: 48rem) {
   .landing-actions .btn {
     flex: 0 1 auto;
