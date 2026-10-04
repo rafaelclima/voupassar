@@ -1,69 +1,49 @@
-/**
- * VouPassar — formatação básica de expressões matemáticas para questões oficiais.
- * Não inventa conteúdo: só converte texto simples (ex.: "121𝑥/50") para HTML básico
- * que o aluno consiga ler claramente. Se a expressão não seguir o padrão, retorna
- * o texto original sem alteração.
+/* VouPassar — expressões matemáticas simples (frações) nas alternativas.
+ * Não inventa conteúdo: só apresenta o texto "numerador/denominador" como
+ * fração empilhada (classes .fraction em components.css). Sem usar HTML
+ * com dados em lugar nenhum: tudo via createElement + textContent
+ * (AGENTS.md §15/XSS). Se não houver "/" com os dois lados preenchidos,
+ * devolve o texto original como texto puro.
  */
 
-/** Sanitiza uma string para permitir apenas tags matemáticas seguras. */
-function sanitizeMathHtml(html) {
-  const allowedTags = ["span", "sub", "sup", "br"];
-  const temp = document.createElement("template");
-  temp.innerHTML = html;
-  const clean = (node) => {
-    if (node.nodeType === Node.TEXT_NODE) return node.cloneNode();
-    if (node.nodeType !== Node.ELEMENT_NODE) return null;
-    if (!allowedTags.includes(node.tagName.toLowerCase())) {
-      // Se não é uma tag permitida, retorna o texto dos filhos (sem a tag)
-      const text = Array.from(node.childNodes)
-        .map(clean)
-        .filter(Boolean)
-        .map((n) => (n.nodeType === Node.TEXT_NODE ? n.textContent : ""))
-        .join("");
-      return document.createTextNode(text);
-    }
-    const clone = node.cloneNode(false);
-    node.childNodes.forEach((child) => {
-      const c = clean(child);
-      if (c) clone.appendChild(c);
-    });
-    return clone;
-  };
-  const wrapper = document.createElement("span");
-  Array.from(temp.content.childNodes).forEach((n) => {
-    const c = clean(n);
-    if (c) wrapper.appendChild(c);
-  });
-  return wrapper.innerHTML;
+/** Separa "numerador/denominador" (primeira barra) ou retorna null. */
+function splitFraction(text) {
+  const trimmed = String(text ?? "").trim();
+  if (!trimmed.includes("/")) return null;
+  const cut = trimmed.indexOf("/");
+  const num = trimmed.slice(0, cut).trim();
+  const den = trimmed.slice(cut + 1).trim();
+  if (!num || !den) return null;
+  return { num, den };
 }
 
-/**
- * Interpreta uma expressão matemática simples (texto) e retorna HTML básico.
- * Padrões suportados (sem inventar):
- * - Fração simples: "numerador/denominador" -> <span class="fraction">...
- * - Variável com índice: "𝑥", "𝑦" preservadas como texto.
- * - Se não reconhecer o padrão, retorna o texto original.
- */
-export function formatExpression(text) {
-  if (typeof text !== "string") return String(text || "");
-  const trimmed = text.trim();
-  if (!trimmed.includes("/")) return trimmed;
+/** Monta <span class="fraction"> via DOM seguro (sem HTML com dados). */
+function fractionNode(num, den) {
+  const box = document.createElement("span");
+  box.className = "fraction";
+  const numEl = document.createElement("span");
+  numEl.className = "fraction__num";
+  numEl.textContent = num;
+  const line = document.createElement("span");
+  line.className = "fraction__line";
+  line.setAttribute("aria-hidden", "true");
+  const denEl = document.createElement("span");
+  denEl.className = "fraction__den";
+  denEl.textContent = den;
+  box.appendChild(numEl);
+  box.appendChild(line);
+  box.appendChild(denEl);
+  return box;
+}
 
-  // Divide apenas no primeiro "/" que separa numerador e denominador.
-  const [numPart, ...denParts] = trimmed.split("/");
-  const denPart = denParts.join("/").trim();
-  const numClean = numPart.trim();
-
-  // Se não parece uma fração matemática legível, retorna original.
-  if (!numClean || !denPart || numClean.length === 0 || denPart.length === 0) {
-    return trimmed;
+/** Retorna um <span> com a alternativa: fração montada ou texto puro. */
+export function expressionNode(text) {
+  const wrap = document.createElement("span");
+  const frac = splitFraction(text);
+  if (!frac) {
+    wrap.textContent = String(text ?? "");
+    return wrap;
   }
-
-  // Monta HTML simples: numerador sobre denominador com uma linha horizontal.
-  return `<span class="fraction"><span class="fraction__num">${numClean}</span><span class="fraction__line"></span><span class="fraction__den">${denPart}</span></span>`;
-}
-
-/** Versão que retorna texto simples (sem HTML) se não reconhecer padrão. */
-export function safeTextExpression(text) {
-  return formatExpression(text);
+  wrap.appendChild(fractionNode(frac.num, frac.den));
+  return wrap;
 }

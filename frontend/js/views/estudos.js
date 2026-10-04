@@ -19,6 +19,7 @@ import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
 import { injectFigureNotice } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
+import { expressionNode } from "../components/math.js";
 import {
   fetchDisciplines,
   fetchTopics,
@@ -838,7 +839,7 @@ function renderQuestionCard(q) {
     input.disabled = q.annulled;
     label.appendChild(input);
     label.appendChild(el("span", { className: "option-row__letter", text: `${opt.label})` }));
-    label.appendChild(el("span", { text: opt.text || "" }));
+    label.appendChild(expressionNode(opt.text || ""));
     fieldset.appendChild(label);
     radios.push(input);
   }
