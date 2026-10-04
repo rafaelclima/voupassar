@@ -421,9 +421,9 @@
       "page_end": 8,
       "statement": "O texto 1 comenta que, de acordo com o Conselho Indigenista Missionário (Cimi), somente na terra indígena (TI) de Munduruku existem mais de 500 garimpos ilegais. Sabendo que a TI de Munduruku tem, aproximadamente, 2.400.000 hectares, se considerarmos o número exato de 500 garimpos ilegais, com 100 garimpeiros em cada garimpo, a densidade demográfica, em habitantes por hectare, dos garimpeiros na terra indígena de Muduruku é de 5",
       "options": {
-        "A": ". 24 5",
-        "B": ". 2400 5",
-        "C": ". 24000 5",
+        "A": "24/5",
+        "B": "2400/5",
+        "C": "24000/5",
         "D": ". 240"
       },
       "raw_block": "23. O texto 1 comenta que, de acordo com o Conselho Indigenista Missionário (Cimi), somente na terra\n    indígena (TI) de Munduruku existem mais de 500 garimpos ilegais. Sabendo que a TI de Munduruku tem,\n    aproximadamente, 2.400.000 hectares, se considerarmos o número exato de 500 garimpos ilegais, com\n    100 garimpeiros em cada garimpo, a densidade demográfica, em habitantes por hectare, dos garimpeiros\n    na terra indígena de Muduruku é de\n\n         5\n    A)       .\n         24\n          5\n    B)           .\n         2400\n             5\n    C)               .\n         24000\n         5\n    D)           .\n         240\n\n"
