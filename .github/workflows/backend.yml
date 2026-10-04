@@ -55,7 +55,10 @@ jobs:
           echo "Artefato JAR gerado com sucesso"
 
   build-image:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    # Só manual (workflow_dispatch): cada push na main já valida build+testes;
+    # gerar imagem e encostar na VPS a cada commit (docs, JSON, frontend)
+    # reiniciaria a API em produção sem necessidade.
+    if: github.event_name == 'workflow_dispatch'
     needs: validate-and-test
     runs-on: ubuntu-latest
     steps:
@@ -94,7 +97,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     needs: [validate-and-test, build-image]
     runs-on: ubuntu-latest
     environment:
@@ -103,6 +106,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # Falha cedo com mensagem clara quando os secrets não estão
+      # cadastrados (sem isso o ssh recebe destino vazio e devolve
+      # apenas "usage: ssh ...", sem dizer o que faltou).
+      - name: Checar secrets da VPS
+        env:
+          VPS_HOST: ${{ vars.VPS_HOST || secrets.VPS_HOST }}
+          VPS_USER: ${{ vars.VPS_USER || secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY || vars.VPS_SSH_KEY }}
+        run: |
+          [ -n "$VPS_HOST" ] || { echo "Faltando VPS_HOST (vars ou secrets do repo)"; exit 1; }
+          [ -n "$VPS_USER" ] || { echo "Faltando VPS_USER (vars ou secrets do repo)"; exit 1; }
+          [ -n "$VPS_SSH_KEY" ] || { echo "Faltando VPS_SSH_KEY (secrets do repo)"; exit 1; }
+          echo "Secrets da VPS presentes"
 
       - name: Configurar SSH para deploy
         env:
