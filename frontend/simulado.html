@@ -8,10 +8,11 @@
     // Aplica o tema antes da primeira pintura: sem isso a página carrega
     // clara e "pula" para a escura quando o main.js roda. Os tokens do
     // tema escuro estão em css/tokens.css ([data-theme="dark"]).
+    // Padrão do produto: tema claro. O escuro só entra com escolha manual.
     try {
       var t = localStorage.getItem("theme");
       if (t !== "dark" && t !== "light") {
-        t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        t = "light";
       }
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}

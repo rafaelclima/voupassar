@@ -114,10 +114,12 @@ function wireTheme() {
     }
   }
 
+  // Padrão do produto: tema claro. O escuro só entra com escolha manual
+  // (sem seguir prefers-color-scheme automaticamente).
   const getPref = () => {
     const stored = localStorage.getItem("theme");
     if (stored === "dark" || stored === "light") return stored;
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return "light";
   };
 
   const apply = (theme) => {
