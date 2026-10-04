@@ -1,8 +1,7 @@
 -- V10__fix_fraction_options.sql — frações conferidas no PDF oficial.
 -- Corrige alternativas extraídas com numerador/denominador invertidos
 -- (commits 3f6703f/c29c814) pelos valores lidos no caderno: 2020 Q26,
--- 2022 Q23, 2024 Q21/Q24, 2025 Q33/Q36 e 2020 Q37 (raw limpo no PDF,
--- conta fecha em 121x/50).
+-- 2022 Q23, 2024 Q21/Q24, 2025 Q33/Q36. 2020 Q37 mantida (idêntica).
 -- Atualiza question_options + checksum (mesma regra do importador:
 -- SHA-256 de statement + A-D normalizados NFC/whitespace), para o
 -- importador continuar idempotente após a migração.
@@ -22,12 +21,33 @@ UPDATE question_options SET option_text = '117𝑥/10', updated_at = now() WHERE
 UPDATE question_options SET option_text = '157𝑥/50', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37);
 UPDATE questions SET checksum = '979c44220077e63b66646c641869cf50de937b458358da5cd7ea71986c64b02d', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37 AND checksum <> '979c44220077e63b66646c641869cf50de937b458358da5cd7ea71986c64b02d';
 
+-- 2020 Q38
+UPDATE question_options SET option_text = '7/12', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 38);
+UPDATE question_options SET option_text = '5/12', updated_at = now() WHERE label = 'B' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 38);
+UPDATE question_options SET option_text = '2/3', updated_at = now() WHERE label = 'C' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 38);
+UPDATE question_options SET option_text = '1/3', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 38);
+UPDATE questions SET checksum = '14c894034e0dbcb7781ab7b1482dccd30182381c15d22f5aa83fc9c3fe583e54', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 38 AND checksum <> '14c894034e0dbcb7781ab7b1482dccd30182381c15d22f5aa83fc9c3fe583e54';
+
 -- 2022 Q23
 UPDATE question_options SET option_text = '5/24', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 23);
 UPDATE question_options SET option_text = '5/2400', updated_at = now() WHERE label = 'B' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 23);
 UPDATE question_options SET option_text = '5/24000', updated_at = now() WHERE label = 'C' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 23);
 UPDATE question_options SET option_text = '5/240', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 23);
 UPDATE questions SET checksum = 'd538111529c359479fb7805529e918a51d31b00855108df66b100db39ee0b4fa', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 23 AND checksum <> 'd538111529c359479fb7805529e918a51d31b00855108df66b100db39ee0b4fa';
+
+-- 2022 Q34
+UPDATE question_options SET option_text = '11/35', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 34);
+UPDATE question_options SET option_text = '3/35', updated_at = now() WHERE label = 'B' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 34);
+UPDATE question_options SET option_text = '1/35', updated_at = now() WHERE label = 'C' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 34);
+UPDATE question_options SET option_text = '20/35', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 34);
+UPDATE questions SET checksum = 'bda64a5b144f8277146ebcdd8bc39773ce0c68b8b9274e6f2c5633d3cbb0a87e', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 34 AND checksum <> 'bda64a5b144f8277146ebcdd8bc39773ce0c68b8b9274e6f2c5633d3cbb0a87e';
+
+-- 2022 Q39
+UPDATE question_options SET option_text = '̅̅̅̅𝐴𝐶.̅̅̅̅𝐸𝐶/̅̅̅̅𝐴𝐵', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 39);
+UPDATE question_options SET option_text = '̅̅̅̅𝐴𝐵.̅̅̅̅𝐴𝐶/̅̅̅̅𝐶𝐸', updated_at = now() WHERE label = 'B' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 39);
+UPDATE question_options SET option_text = '̅̅̅̅𝐴𝐵.̅̅̅̅𝐶𝐷/̅̅̅̅𝐵𝐶', updated_at = now() WHERE label = 'C' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 39);
+UPDATE question_options SET option_text = '̅̅̅̅𝐵𝐶.̅̅̅̅𝐶𝐸/̅̅̅̅𝐴𝐶', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 39);
+UPDATE questions SET checksum = '704a777622166719c158ef56beb45ed06579faf4cd5d18b41be50f74ab6ec23f', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 39 AND checksum <> '704a777622166719c158ef56beb45ed06579faf4cd5d18b41be50f74ab6ec23f';
 
 -- 2024 Q21
 UPDATE question_options SET option_text = '1/4', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2024 AND source_question_number = 21);

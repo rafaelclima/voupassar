@@ -691,10 +691,10 @@
       "page_end": 13,
       "statement": "A equipe pedagógica de uma escola estadual sorteou o tema da palestra de abertura do ano letivo, utilizando o lançamento aleatório de um dado honesto, com 12 faces, numeradas de 1 até 12. Para isso, estabeleceram-se as seguintes condições: se após o lançamento do dado a face virada para cima for um número maior que 5, o tema versará sobre “Bullying na Internet” e, se a face voltada para cima for um número menor ou igual a 5, o tema versará sobre “Meio Ambiente”. Após o lançamento do dado, a probabilidade do tema sorteado ser sobre “Bullying na Internet” é de 7",
       "options": {
-        "A": "12 5",
-        "B": "12 2",
-        "C": "3 1",
-        "D": "3"
+        "A": "7/12",
+        "B": "5/12",
+        "C": "2/3",
+        "D": "1/3"
       },
       "raw_block": "38. A equipe pedagógica de uma escola estadual sorteou o tema da palestra de abertura do ano letivo,\n    utilizando o lançamento aleatório de um dado honesto, com 12 faces, numeradas de 1 até 12. Para isso,\n    estabeleceram-se as seguintes condições: se após o lançamento do dado a face virada para cima for um\n    número maior que 5, o tema versará sobre “Bullying na Internet” e, se a face voltada para cima for um\n    número menor ou igual a 5, o tema versará sobre “Meio Ambiente”. Após o lançamento do dado, a\n    probabilidade do tema sorteado ser sobre “Bullying na Internet” é de\n\n         7\n    A)\n         12\n\n\n\n         5\n    B)\n         12\n\n\n\n         2\n    C)\n         3\n\n\n\n         1\n    D)\n         3\n\n\n"
     },
