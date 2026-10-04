@@ -82,7 +82,20 @@
           <div id="study-hero"></div>
         </section>
 
-        <!-- 2. FILTROS — painel de recorte -->
+        <!-- 2. QUESTÕES — caderno de prática (logo no topo: visível sem rolar) -->
+        <section aria-labelledby="sec-questoes-t" class="panel panel--questions">
+          <div class="panel__head panel__head--split">
+            <div>
+              <h2 id="sec-questoes-t" tabindex="-1">Questões</h2>
+              <p><span id="study-count" role="status">Escolha um conteúdo abaixo para ver as questões.</span></p>
+            </div>
+            <span class="badge" id="study-mode-badge">Correção imediata</span>
+          </div>
+          <div id="study-list" class="study-list"></div>
+          <nav id="study-pagination" class="study-pagination" aria-label="Paginação das questões"></nav>
+        </section>
+
+        <!-- 3. FILTROS — painel de recorte -->
         <section aria-labelledby="sec-filtros-t" class="perf-shell study-filters-shell">
           <div class="perf-shell__head">
             <div class="perf-shell__title">
@@ -143,7 +156,7 @@
           </form>
         </section>
 
-        <!-- 3. CONTEÚDO — faixa de disciplinas e assuntos -->
+        <!-- 4. CONTEÚDO — faixa de disciplinas e assuntos -->
         <section aria-labelledby="sec-conteudo-t" class="study-sec">
           <div class="section-head section-head--row">
             <div>
@@ -155,7 +168,7 @@
           <div id="study-browser" class="study-browser"></div>
         </section>
 
-        <!-- 4. DUO — progresso no recorte + item do roteiro -->
+        <!-- 5. DUO — progresso no recorte + item do roteiro -->
         <div class="dash-grid dash-grid--2">
           <section aria-labelledby="sec-progresso-t" class="panel">
             <div class="panel__head">
@@ -179,19 +192,6 @@
             <div id="study-plan"></div>
           </section>
         </div>
-
-        <!-- 5. QUESTÕES — caderno de prática -->
-        <section aria-labelledby="sec-questoes-t" class="panel panel--questions">
-          <div class="panel__head panel__head--split">
-            <div>
-              <h2 id="sec-questoes-t" tabindex="-1">Questões</h2>
-              <p><span id="study-count" role="status">Escolha um conteúdo acima para ver as questões.</span></p>
-            </div>
-            <span class="badge" id="study-mode-badge">Correção imediata</span>
-          </div>
-          <div id="study-list" class="study-list"></div>
-          <nav id="study-pagination" class="study-pagination" aria-label="Paginação das questões"></nav>
-        </section>
       </div>
 
       <noscript>

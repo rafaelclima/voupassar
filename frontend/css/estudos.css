@@ -38,7 +38,7 @@
   margin-bottom: var(--space-6);
 }
 
-/* ---------- 2. filtros (grade dentro do .perf-shell) ---------- */
+/* ---------- 3. filtros (grade dentro do .perf-shell) ---------- */
 .study-filters-shell { gap: var(--space-5); }
 
 .study-filters {
@@ -63,7 +63,7 @@
   .study-filters__actions { grid-column: auto; justify-content: flex-end; }
 }
 
-/* ---------- 3. navegador de conteúdo ---------- */
+/* ---------- 4. navegador de conteúdo ---------- */
 .study-browser {
   display: grid;
   gap: var(--space-4);
@@ -154,7 +154,7 @@
   background: linear-gradient(90deg, var(--color-primary-600), var(--color-accent-500));
 }
 
-/* ---------- 4. progresso + roteiro (reusa .stat-tile / .plan-items) ---------- */
+/* ---------- 5. progresso + roteiro (reusa .stat-tile / .plan-items) ---------- */
 .study-tiles { display: grid; gap: var(--space-4); grid-template-columns: 1fr 1fr; }
 @media (max-width: 30rem) {
   .study-tiles { grid-template-columns: 1fr; }
@@ -179,8 +179,13 @@
 }
 .study-plan-name { font-weight: 800; letter-spacing: var(--tracking-tight); overflow-wrap: anywhere; }
 
-/* ---------- 5. caderno de questões ---------- */
-.panel--questions { gap: var(--space-6); }
+/* ---------- 2. caderno de questões (topo, antes dos filtros) ---------- */
+.panel--questions {
+  gap: var(--space-6);
+  /* Âncora do topo: o cabeçalho é sticky, então a rolagem até "Questões"
+   * (após filtrar/paginar) precisa descontar a altura dele. */
+  scroll-margin-top: calc(var(--header-h, 68px) + var(--space-4));
+}
 .study-list { display: grid; gap: var(--space-5); align-content: start; }
 
 .question-card {

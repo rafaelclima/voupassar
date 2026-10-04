@@ -314,6 +314,9 @@ function bindFilterEvents() {
       renderProgress();
       renderPlan();
       renderHero();
+      // O caderno fica no topo (antes dos filtros): após filtrar, sobe a
+      // tela até as questões para o aluno vê-las sem precisar rolar.
+      document.getElementById("sec-questoes-t").scrollIntoView({ block: "start" });
     } finally {
       setButtonLoading(btnFilter, false);
     }
@@ -332,6 +335,7 @@ function bindFilterEvents() {
     renderProgress();
     renderPlan();
     renderHero();
+    document.getElementById("sec-questoes-t").scrollIntoView({ block: "start" });
   });
 }
 
@@ -705,9 +709,9 @@ function renderQuestionsIdle() {
   pagerBox.textContent = "";
   renderEmpty(listBox, {
     title: "Escolha um conteúdo para começar",
-    description: "Toque em “Estudar” num assunto acima ou use os filtros para escolher disciplina e assunto. As questões daquele conteúdo aparecem aqui.",
+    description: "Toque em “Estudar” num assunto abaixo ou use os filtros para escolher disciplina e assunto. As questões daquele conteúdo aparecem aqui no topo.",
   });
-  countNote.textContent = "Nenhum conteúdo selecionado — escolha acima para ver as questões.";
+  countNote.textContent = "Nenhum conteúdo selecionado — escolha abaixo para ver as questões.";
 }
 
 function questionQuery() {

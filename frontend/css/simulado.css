@@ -97,7 +97,14 @@
 .sim-progress-shell .muted { max-width: var(--measure); }
 
 /* ---------- caderno: experiência de prova ---------- */
-.sim-caderno { display: grid; gap: var(--space-5); align-content: start; }
+.sim-caderno {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  /* O caderno agora abre logo após o hero: a âncora desconta o cabeçalho
+   * sticky para a primeira questão nunca ficar escondida embaixo dele. */
+  scroll-margin-top: calc(var(--header-h, 68px) + var(--space-4));
+}
 
 .sim-card {
   border: 1px solid var(--color-line-200);
