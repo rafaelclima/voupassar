@@ -74,6 +74,9 @@ jobs:
           context: .
           file: backend/Dockerfile
           push: false
+          # Sem load:true a imagem fica só no cache do Buildx e o
+          # `docker save` do passo seguinte não a encontra.
+          load: true
           tags: voupassar-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
