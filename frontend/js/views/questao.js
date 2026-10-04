@@ -26,6 +26,7 @@ import { el, renderErrorSummary, setButtonLoading, toast } from "../components/u
 import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel, choiceLabel } from "../vocab.js";
 import { renderFigure, injectFigureNotice } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
+import { formatExpression } from "../components/math.js";
 
 const SESSION_KEY = "voupassar.studySessionId";
 
@@ -320,7 +321,9 @@ function renderOptions(q) {
     input.disabled = Boolean(q.annulled);
     label.appendChild(input);
     label.appendChild(el("span", { className: "questao-option__letter", text: `${opt.label})` }));
-    label.appendChild(el("span", { text: opt.text || "" }));
+    const exprSpan = document.createElement("span");
+    exprSpan.innerHTML = formatExpression(opt.text || "");
+    label.appendChild(exprSpan);
     fieldset.appendChild(label);
   }
   if (q.annulled) {
