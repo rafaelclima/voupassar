@@ -1,7 +1,8 @@
 -- V10__fix_fraction_options.sql — frações conferidas no PDF oficial.
 -- Corrige alternativas extraídas com numerador/denominador invertidos
 -- (commits 3f6703f/c29c814) pelos valores lidos no caderno: 2020 Q26,
--- 2022 Q23, 2024 Q21/Q24, 2025 Q33/Q36. 2020 Q37 mantida (idêntica).
+-- 2022 Q23, 2024 Q21/Q24, 2025 Q33/Q36 e 2020 Q37 (raw limpo no PDF,
+-- conta fecha em 121x/50).
 -- Atualiza question_options + checksum (mesma regra do importador:
 -- SHA-256 de statement + A-D normalizados NFC/whitespace), para o
 -- importador continuar idempotente após a migração.
@@ -13,6 +14,13 @@ UPDATE question_options SET option_text = '23/12', updated_at = now() WHERE labe
 UPDATE question_options SET option_text = '11/23', updated_at = now() WHERE label = 'C' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 26);
 UPDATE question_options SET option_text = '12/23', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 26);
 UPDATE questions SET checksum = '95b3f5d3339538e17db6874f0ef602590da96f13583a12215c507557c878d450', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 26 AND checksum <> '95b3f5d3339538e17db6874f0ef602590da96f13583a12215c507557c878d450';
+
+-- 2020 Q37
+UPDATE question_options SET option_text = '121𝑥/50', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37);
+UPDATE question_options SET option_text = '127𝑥/20', updated_at = now() WHERE label = 'B' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37);
+UPDATE question_options SET option_text = '117𝑥/10', updated_at = now() WHERE label = 'C' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37);
+UPDATE question_options SET option_text = '157𝑥/50', updated_at = now() WHERE label = 'D' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37);
+UPDATE questions SET checksum = '979c44220077e63b66646c641869cf50de937b458358da5cd7ea71986c64b02d', updated_at = now() WHERE source_type = 'OFFICIAL' AND source_year = 2020 AND source_question_number = 37 AND checksum <> '979c44220077e63b66646c641869cf50de937b458358da5cd7ea71986c64b02d';
 
 -- 2022 Q23
 UPDATE question_options SET option_text = '5/24', updated_at = now() WHERE label = 'A' AND question_id IN (SELECT id FROM questions WHERE source_type = 'OFFICIAL' AND source_year = 2022 AND source_question_number = 23);
