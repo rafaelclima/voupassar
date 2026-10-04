@@ -741,6 +741,10 @@ function renderDisciplines(stats, overview) {
     const fill = el("div", { className: "alloc-bar__fill", text: `${pct}%` });
     fill.style.setProperty("--ab", palette[i % palette.length]);
     fill.style.height = `${Math.max(18, pct)}%`;
+    /* Mesmo ajuste do dashboard: amarelo (índice 1) e azul-claro
+     * (índice 2) com texto navy; só o laranja mantém o branco. */
+    if (i === 1) fill.style.color = "#0d2b45";
+    else if (i === 2) fill.style.color = "#081f33";
     track.appendChild(fill);
     cell.appendChild(track);
     cell.appendChild(el("p", { className: "alloc-bar__name", text: d.disciplineName || disciplineLabel(d.disciplineCode) }));

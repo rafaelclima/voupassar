@@ -214,6 +214,10 @@
   --color-navy-800: #0a1a2a;
 
   --color-accent-600: #7a4fdb;
+  /* Texto sobre accent-100 no escuro: o --color-accent-700 do claro
+   * (#4c2e8f) sobre #221a3a media 1,64:1. #b69bf0 (o accent-300 do
+   * claro) mede 7,0:1 sobre o mesmo fundo. */
+  --color-accent-700: #b69bf0;
   --color-accent-500: #a485ea;
   --color-accent-300: #4c2e8f;
   --color-accent-100: #221a3a;

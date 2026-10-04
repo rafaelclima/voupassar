@@ -206,6 +206,12 @@
   border-color: var(--color-success-700);
   color: #fff;
 }
+
+/* Letras sobre success/danger claros no dark: branco fixo ficava
+ * ~2,2:1; os inks escuros devolvem o contraste (ver components.css). */
+[data-theme="dark"] .sim-option--correct .sim-option__letter {
+  color: #102b23;
+}
 .sim-option--wrong {
   border-color: var(--color-danger-700);
   background: var(--color-danger-50);
@@ -214,6 +220,10 @@
   background: var(--color-danger-700);
   border-color: var(--color-danger-700);
   color: #fff;
+}
+
+[data-theme="dark"] .sim-option--wrong .sim-option__letter {
+  color: #2e1618;
 }
 
 .sim-feedback {

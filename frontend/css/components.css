@@ -1010,3 +1010,31 @@ fieldset > legend {
   background: currentColor;
   margin: 0.1em 0;
 }
+
+/* ============ Contraste no tema escuro ============
+ * Estes overrides ficam aqui (e não em dark.css) de propósito:
+ * dark.css é injetado via main.js, então sem JS estes pares
+ * texto/fundo voltariam a falhar. Medições nos comentários. */
+
+/* Botão de perigo: fundo vira rosa-claro no dark (#ff8f8f/#f47777),
+ * então o branco fixo (~2,2:1) dá lugar ao ink escuro do danger. */
+[data-theme="dark"] .btn--danger,
+[data-theme="dark"] .btn--danger:hover {
+  color: #2e1618; /* 7,7:1 sobre #ff8f8f; 6,2:1 sobre #f47777 */
+}
+
+/* Letras de alternativa corrigida: mesmo motivo — success/danger
+ * claros no dark com texto branco ficavam ~2,2:1. */
+[data-theme="dark"] .question__option--correct .question__key {
+  color: #102b23; /* 6,9:1 sobre #46c491 */
+}
+
+[data-theme="dark"] .question__option--wrong .question__key {
+  color: #2e1618; /* 7,7:1 sobre #ff8f8f */
+}
+
+/* Hover de linha de tabela: primary-50 (#12293e) é indistinguível
+ * de surface (#12283c) no dark; primary-100 dá o destaque de volta. */
+[data-theme="dark"] .table tbody tr:hover {
+  background: var(--color-primary-100);
+}

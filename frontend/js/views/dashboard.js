@@ -503,7 +503,13 @@ function renderDisciplines(overview) {
     const fill = el("div", { className: "alloc-bar__fill", text: `${pct}%` });
     fill.style.setProperty("--ab", palette[i % palette.length]);
     fill.style.height = `${Math.max(18, pct)}%`;
-    if (i === 2) fill.style.color = "#0d2b45";
+    /* Texto do percentual sobre gradientes claros: branco sobre amarelo
+     * (#f5c518) media 1,6:1 e sobre azul-claro (#3d8fd1) 3,5:1. Índices
+     * 1 e 2 usam navy (#0d2b45: 8,9:1 e 12:1); o azul-médio precisa do
+     * navy mais escuro (#081f33: 4,8:1). Só o laranja (índice 0) mantém
+     * o branco. Vale nos dois temas, pois a paleta é fixa. */
+    if (i === 1 || i === 2) fill.style.color = "#0d2b45";
+    else if (i === 3) fill.style.color = "#081f33";
     track.appendChild(fill);
     cell.appendChild(track);
     cell.appendChild(el("p", { className: "alloc-bar__name", text: disciplineLabel(d.disciplineCode, d.disciplineName) }));

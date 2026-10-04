@@ -109,6 +109,13 @@
 .next-step:not(.next-step--empty) .btn--primary:hover {
   background: var(--color-primary-100); border-color: var(--color-primary-100);
 }
+
+/* No dark, primary-100 é navy (#16324c) e o texto herdado é #0d2b45:
+ * 1,1:1. O botão vive sobre o hero navy fixo, então o hover usa as
+ * cores claras fixas (texto navy sobre azul-bebê = 12:1). */
+[data-theme="dark"] .next-step:not(.next-step--empty) .btn--primary:hover {
+  background: #dcebfa; border-color: #dcebfa; color: #0d2b45;
+}
 .next-step:not(.next-step--empty) .btn--secondary {
   background: rgb(255 255 255 / 0.1); border-color: rgb(255 255 255 / 0.3);
   color: #fff; box-shadow: none;
@@ -371,6 +378,9 @@
 .plan-items__row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--color-line-100); }
 .plan-items__row:last-child { border-bottom: none; }
 .plan-items__row:hover { background: var(--color-primary-50); }
+
+/* primary-50 (#12293e) é indistinguível de surface (#12283c) no dark. */
+[data-theme="dark"] .plan-items__row:hover { background: var(--color-primary-100); }
 .plan-items__name { font-weight: 700; letter-spacing: var(--tracking-tight); color: var(--color-ink-900); }
 .plan-items__meta { font-size: var(--text-sm); color: var(--color-ink-500); }
 .plan-items__row--done .plan-items__name { color: var(--color-ink-500); text-decoration: line-through; text-decoration-thickness: 1px; }
