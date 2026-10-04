@@ -299,8 +299,9 @@ body.landing-page {
 
 /* Composição: arte gerada (estudante diante da jornada em degraus)
  * como fundo do painel, com o mock e as pílulas por cima — produto
- * real + ilustração que explica. A arte tem fundo navy próprio e as
- * bordas são dissolvidas no canvas via máscara radial, sem moldura.
+ * real + ilustração que explica. O desvanecimento das bordas no canvas
+ * está embutido no próprio webp (canal alfa); a máscara CSS abaixo é
+ * só refinamento progressivo, sem ela a arte continua sem moldura.
  *
  * Arquivo 900px para ~500px exibidos: sem upscale (Lighthouse
  * `image-size-responsive` OK). `alt` vazio de propósito: a região já
