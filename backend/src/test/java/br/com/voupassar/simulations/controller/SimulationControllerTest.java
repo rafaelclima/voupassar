@@ -195,7 +195,7 @@ class SimulationControllerTest {
     authenticate();
     when(service.getStudyFeedback(1L, 55L, 1)).thenReturn(new StudyFeedbackResponse(
         55L, 1, 21L, "MATEMATICA", "Matemática", 2026, 17,
-        "C", true, false, "C", "Porque 40% de 250 é 100.",
+        "C", true, false, "C",
         3L, "PORCENTAGEM", "Porcentagem", 11L, "CALCULO_PERCENTUAL", "Cálculo percentual",
         "PENDING", "ALTA", "v1.1", List.of("nota")));
 

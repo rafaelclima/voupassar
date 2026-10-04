@@ -293,12 +293,11 @@ A plataforma deverá suportar três experiências principais.
 
 ## Modo Estudo
 
-Após cada resposta:
+Após cada resposta (decisão de produto 2026-10-04: a plataforma testa
+conhecimento, não ensina passo a passo — sem explicação textual por questão):
 
 * informar imediatamente se acertou;
 * informar a alternativa correta;
-* apresentar explicação;
-* explicar o raciocínio;
 * apresentar assunto;
 * permitir avançar.
 

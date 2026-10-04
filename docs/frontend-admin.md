@@ -62,8 +62,8 @@ gabarito, assunto vigente, confiança, os dois status).
 
 ## 3. Honestidade (§4 — nada inventado)
 
-* Curadoria revisa, nunca inventa: nenhum enunciado, gabarito, assunto ou
-  explicação é criado aqui — só status e revisão com observação.
+* Curadoria revisa, nunca inventa: nenhum enunciado, gabarito ou assunto
+  é criado aqui — só status e revisão com observação.
 * Nada publicado sem revisão: `PUBLICAVEL` exige `APPROVED` (servidor
   responde `400` caso contrário); 240 questões seguem `PENDENTE_REVISAO`
   até curadoria (TASK 12.2).

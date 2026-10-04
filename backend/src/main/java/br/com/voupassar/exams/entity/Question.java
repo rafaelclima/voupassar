@@ -24,7 +24,6 @@ import org.hibernate.type.SqlTypes;
  *
  * <p>Regras de evidência: {@code answerKey = "X"} ⟺ anulada (conta como
  * conteúdo, nunca pontua — regra de pontuação DESCONHECIDA, TASK 1.3 §4);
- * {@code explanation} NULL = ainda não redigida (nunca inventar correção);
  * {@code difficultyEstimate} é palpite com confiança BAIXA global.
  */
 @Entity
@@ -80,9 +79,6 @@ public class Question {
 
   @Column(name = "difficulty_estimate")
   private String difficultyEstimate;
-
-  @Column(name = "explanation")
-  private String explanation;
 
   @Column(name = "validation_status", nullable = false)
   private String validationStatus;
@@ -150,10 +146,6 @@ public class Question {
 
   public String getDifficultyEstimate() {
     return difficultyEstimate;
-  }
-
-  public String getExplanation() {
-    return explanation;
   }
 
   public String getValidationStatus() {

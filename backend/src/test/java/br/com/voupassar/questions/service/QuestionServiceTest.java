@@ -50,7 +50,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * <p>Valida regras de evidência: filtros para referências inexistentes → 404
  * com código explícito (nunca vazio silencioso); 2021 registra ausência do
- * dataset; anuladas saem com nota (sem pontuar); dificuldade/explicação/
+ * dataset; anuladas saem com nota (sem pontuar); dificuldade/
  * revisão pendente são sinalizadas em {@code notes}.
  */
 @ExtendWith(MockitoExtension.class)
@@ -108,7 +108,6 @@ class QuestionServiceTest {
     ReflectionTestUtils.setField(q, "answerKey", answerKey);
     ReflectionTestUtils.setField(q, "hasFigure", false);
     ReflectionTestUtils.setField(q, "difficultyEstimate", "FACIL");
-    ReflectionTestUtils.setField(q, "explanation", null);
     ReflectionTestUtils.setField(q, "validationStatus", "PENDING");
     ReflectionTestUtils.setField(q, "publicationStatus", "PENDENTE_REVISAO");
     return q;
@@ -170,7 +169,6 @@ class QuestionServiceTest {
     assertEquals("EQUACOES", item.subtopic().code());
     assertEquals("ALTA", item.classificationConfidence());
     assertTrue(item.notes().stream().anyMatch(n -> n.contains("PENDENTE")));
-    assertTrue(item.notes().stream().anyMatch(n -> n.contains("Sem explicação")));
   }
 
   @Test
@@ -364,7 +362,6 @@ class QuestionServiceTest {
   @Test
   void getByIdForUserHidesKeyWhenInProvaInProgress() {
     Question q = question(1L, 21, "A", false);
-    ReflectionTestUtils.setField(q, "explanation", "Porque 2+2=4.");
     when(questions.findById(1L)).thenReturn(Optional.of(q));
     when(options.findByQuestionIdOrdered(1L))
         .thenReturn(
@@ -379,7 +376,6 @@ class QuestionServiceTest {
     QuestionResponse out = serviceWithCaderno().getByIdForUser(1L, 1L);
 
     assertNull(out.answerKey());
-    assertNull(out.explanation());
     assertEquals("Quanto é 2 + 2?", out.statement());
     assertEquals(4, out.options().size());
     assertTrue(out.notes().stream().anyMatch(n -> n.contains("Gabarito oculto")));
@@ -471,7 +467,6 @@ class QuestionServiceTest {
   @Test
   void maskForProvaKeepsPassagesVisible() {
     Question q = question(1L, 11, "A", false);
-    ReflectionTestUtils.setField(q, "explanation", "Porque...");
     when(questions.findById(1L)).thenReturn(Optional.of(q));
     when(options.findByQuestionIdOrdered(1L)).thenReturn(List.of(option(q, "A", "4")));
     when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(q)));
@@ -482,7 +477,6 @@ class QuestionServiceTest {
     QuestionResponse out = serviceWithPassages().getByIdForUser(1L, 1L);
 
     assertNull(out.answerKey());
-    assertNull(out.explanation());
     assertEquals(1, out.passages().size());
     assertEquals("Segundo [1] especialistas...", out.passages().get(0).content());
   }

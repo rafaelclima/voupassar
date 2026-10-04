@@ -17,7 +17,7 @@
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   </script>
-  <meta name="description" content="Tela de questão do VouPassar — leia com calma, selecione a alternativa, confirme e receba correção imediata com explicação e assunto." />
+  <meta name="description" content="Tela de questão do VouPassar — leia com calma, selecione a alternativa, confirme e receba correção imediata com resposta correta e assunto." />
   <meta name="voupassar-api" content="http://localhost:8080" />
   <meta name="theme-color" content="#0d2b45" />
   <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
@@ -111,14 +111,6 @@
             <h2 id="questao-feedback-t" class="questao-h2">Feedback</h2>
             <div id="questao-feedback" class="questao-feedback" role="status" aria-live="polite" tabindex="-1" hidden></div>
             <p class="muted mt-2" id="questao-feedback-empty"><small>O feedback aparece aqui após a confirmação — acerto ou erro, resposta correta e assunto.</small></p>
-          </section>
-
-          <!-- EXPLICAÇÃO -->
-          <section class="card mt-4" aria-labelledby="questao-explicacao-t">
-            <div class="card__body">
-              <h2 id="questao-explicacao-t" class="questao-h2">Explicação</h2>
-              <div id="questao-explanation"><p class="muted"><small>A explicação é revelada junto com o feedback.</small></p></div>
-            </div>
           </section>
 
           <!-- PROVENIÊNCIA -->

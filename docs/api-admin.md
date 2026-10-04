@@ -80,7 +80,7 @@ Estado esperado hoje (TASK 11.1): tudo zero. Checagem de fontes
   foi executada em 2026-10-02 (200 `APPROVED` com referendo humano pendente,
   39 `REVIEWED`, 1 `REJECTED`); ver `docs/curadoria.md`. As 240 questões
   seguem `PENDING`/`PENDENTE_REVISAO`: publicar exige conferência visual das
-  figuras e explicação redigida.
+  figuras.
 * Entidade JPA de `question_sources` para trazer a checagem de fontes à API.
 * `question_classifications.observation` passou a ser gravada pelo importador
   (TASK 12.2); banco existente reconciliado por

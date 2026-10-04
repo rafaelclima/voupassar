@@ -21,7 +21,7 @@ alternativas + `Responder` / `Responder em branco`. A resposta abre (lazy)
 `sessionStorage`) e registra `POST /attempts {questionId, selectedOption,
 mode: ESTUDO, timeSpentSeconds, studySessionId}` (TASK 3.7). O servidor
 corrige; o feedback mostra acerto/erro, resposta correta (`answerKey` da
-questão carregada), explicação (ou `NECESSITA REVISÃO`) e assunto — e
+questão carregada) e assunto — e
 permite `Tentar novamente` (nova tentativa, fato imutável). `409
 SESSION_CLOSED` reabre a sessão e repete uma vez.
 
@@ -53,8 +53,7 @@ SESSION_CLOSED` reabre a sessão e repete uma vez.
   aproveitamento, com nota explícita (regra de pontuação DESCONHECIDA,
   TASK 1.3 §4).
 * Assuntos: classificação derivada, revisão humana PENDENTE (TASK 12.2) —
-  linha `NÃO CONFIRMADO` quando sem vigente; notas da questão (máx. 4) +
-  nota de explicação ausente (`NECESSITA REVISÃO`, nunca texto gerado).
+  linha `NÃO CONFIRMADO` quando sem vigente; notas da questão (máx. 4).
 * `accuracy` NULL → `—` (nunca zero). Origem válida sem linhas = vazio
   legítimo com texto explicativo.
 * `2021 ausente` citado nos filtros e nas notas. Sem preço/garantia/milhares

@@ -82,7 +82,7 @@ assunto, subassunto, edição, dificuldade e origem + paginação.
 
 Filtros para refs inexistentes → `404` (`2021` com motivo explícito);
 `size` em `[1, 100]`; `X` = anulada (conta como conteúdo, sem pontuar);
-dificuldade estimada (confiança BAIXA), explicação NULL = não redigida,
+dificuldade estimada (confiança BAIXA),
 revisão PENDENTE — tudo em `notes`. Detalhes em `docs/api-questoes.md`.
 
 Toda resposta de erro usa o envelope `{code, message, details, traceId, timestamp, path}`

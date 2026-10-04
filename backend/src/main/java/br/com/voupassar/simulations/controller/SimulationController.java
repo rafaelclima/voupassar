@@ -189,7 +189,7 @@ public class SimulationController {
   }
 
   @Operation(summary = "Feedback imediato de uma posição (Modo Estudo).",
-      description = "Acerto/erro, resposta correta (gabarito congelado), explicação e "
+      description = "Acerto/erro, resposta correta (gabarito congelado) e "
           + "assunto da última tentativa vinculada a esta execução. No Modo ESTUDO em "
           + "qualquer status; no Modo PROVA só após encerrar (durante a prova retorna "
           + "409 STUDY_FEEDBACK_UNAVAILABLE). Sem resposta na posição retorna 409 "

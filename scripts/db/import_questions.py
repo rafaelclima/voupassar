@@ -28,7 +28,6 @@ Checksum: SHA-256 hex de enunciado + alternativas A-D normalizados
 (NFC Unicode + colapso de whitespace). Definicao unica deste script.
 
 Regras de honestidade (AGENTS.md §4):
-  - explanation sempre NULL (nunca inventar correcao);
   - difficulty_estimate vem da classificacao (palpite, confianca BAIXA);
   - validation_status=PENDING, publication_status=PENDENTE_REVISAO em tudo;
   - classificacao DB status=PENDING em tudo (revisao humana PENDENTE);
@@ -331,14 +330,14 @@ def sql_insert_questions(new: list[dict], refs: dict) -> str:
             "INSERT INTO questions (source_type, exam_id, exam_document_id, "
             "source_year, source_question_number, statement, kind, "
             "discipline_id, page_start, page_end, answer_key, annulled, "
-            "checksum, has_figure, difficulty_estimate, explanation, "
+            "checksum, has_figure, difficulty_estimate, "
             "validation_status, publication_status) VALUES "
             f"('OFFICIAL', {exam_id}, {doc_id}, {it['edition']}, "
             f"{it['number']}, {esc(it['statement'])}, 'OBJECTIVE', "
             f"{disc_id}, {it['page_start']}, {it['page_end']}, "
             f"{esc(it['answer_key'])}, {'TRUE' if it['annulled'] else 'FALSE'}, "
             f"{esc(it['checksum'])}, {'TRUE' if has_fig else 'FALSE'}, "
-            f"{esc(it['difficulty'])}, NULL, 'PENDING', 'PENDENTE_REVISAO') "
+            f"{esc(it['difficulty'])}, 'PENDING', 'PENDENTE_REVISAO') "
             "ON CONFLICT DO NOTHING;")
     return "\n".join(stmts)
 

@@ -2,7 +2,7 @@
  * Página protegida: exige sessão (restoreSession). Sem sessão → painel de
  * acesso com link seguro para login (?next=questao.html?id=...).
  *
- * Cobre TASKS.md 6.6 (leitura, seleção, confirmação, feedback, explicação):
+ * Cobre TASKS.md 6.6 (leitura, seleção, confirmação, feedback):
  * - Leitura: detalhe integral via GET /questions/{id} (3.4) — enunciado,
  *   alternativas, proveniência e assunto vigente (taxonomia v1.1).
  * - Seleção: radios nativos em fieldset/legend, alvos ≥44px.
@@ -10,8 +10,7 @@
  *   validação de seleção vazia (foco + toast, nunca envio silencioso).
  * - Feedback: correção IMEDIATA do servidor via POST /attempts (3.7,
  *   modo ESTUDO, AGENTS.md §9) — acerto/erro, resposta correta, assunto.
- * - Explicação: seção dedicada com o texto redigido ou NECESSITA REVISÃO
- *   (nunca texto inventado).
+ *   A plataforma testa conhecimento, não ensina passo a passo.
  *
  * URL: ?id=<long> obrigatório; ?voltar= aceita só caminho relativo ./…
  * (whitelist anti-open-redirect; default ./estudos.html).
@@ -53,7 +52,6 @@ const btnReset = document.getElementById("questao-reset");
 
 const feedbackBox = document.getElementById("questao-feedback");
 const feedbackEmpty = document.getElementById("questao-feedback-empty");
-const explanationBox = document.getElementById("questao-explanation");
 const sourceBox = document.getElementById("questao-source");
 
 const state = {
@@ -299,7 +297,6 @@ function renderAll(q) {
   );
 
   renderOptions(q);
-  renderExplanationPending(q);
   renderSource(q);
 }
 
@@ -374,7 +371,6 @@ btnReset.addEventListener("click", () => {
   btnReset.hidden = true;
   state.answered = false;
   state.startedAt = Date.now();
-  renderExplanationPending(state.question);
   fieldset.querySelector("input")?.focus();
 });
 
@@ -432,7 +428,7 @@ async function answer(selected) {
   }
 }
 
-/* ---------- feedback + explicação ---------- */
+/* ---------- feedback + marcação ---------- */
 
 function showFeedback(q, attempt, choice) {
   feedbackBox.textContent = "";
@@ -465,9 +461,9 @@ function showFeedback(q, attempt, choice) {
   // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
   // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
   feedbackBox.focus?.();
-
-  renderExplanationDone(q);
 }
+
+/* ---------- feedback + marcação ---------- */
 
 function markOptions(q, choice, correct) {
   fieldset.querySelectorAll(".questao-option").forEach((row) => {
@@ -477,26 +473,6 @@ function markOptions(q, choice, correct) {
     if (v === correct && !q.annulled) row.classList.add("questao-option--correct");
     if (v === choice && choice !== correct) row.classList.add("questao-option--wrong");
   });
-}
-
-function renderExplanationPending(q) {
-  explanationBox.textContent = "";
-  explanationBox.appendChild(el("p", { className: "muted", text: "A explicação é revelada junto com o feedback." }));
-  if (q && !q.explanation) {
-    explanationBox.appendChild(el("p", { className: "muted", text: "A explicação desta questão ainda não foi escrita. Ela nunca é inventada: só aparece quando estiver conferida." }));
-  }
-}
-
-function renderExplanationDone(q) {
-  explanationBox.textContent = "";
-  if (q.explanation) {
-    explanationBox.appendChild(el("p", { text: q.explanation }));
-  } else {
-    explanationBox.appendChild(el("p", { text: "A explicação desta questão ainda não foi escrita." }));
-    explanationBox.appendChild(
-      el("p", { className: "muted", text: "O acerto/erro acima vem do gabarito oficial; o passo a passo textual aguarda curadoria e não foi inventado." }),
-    );
-  }
 }
 
 /* ---------- proveniência + notas ---------- */

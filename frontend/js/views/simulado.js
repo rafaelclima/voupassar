@@ -520,7 +520,7 @@ function renderExecHeader(a) {
     );
   } else if (isOpen()) {
     hiddenNote.appendChild(
-      el("small", { text: "Modo Estudo: cada resposta mostra o feedback imediato (acerto/erro, resposta correta, explicação e assunto)." }),
+      el("small", { text: "Modo Estudo: cada resposta mostra o feedback imediato (acerto/erro, resposta correta e assunto)." }),
     );
   }
   updateProgress();
@@ -792,11 +792,6 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
       if (v === fb.correctAnswer && !fb.wasAnnulled) row.classList.add("sim-option--correct");
       if (v === fb.selectedOption && fb.selectedOption !== fb.correctAnswer) row.classList.add("sim-option--wrong");
     });
-    if (fb.explanation) {
-      box.appendChild(el("p", { text: `Explicação: ${fb.explanation}` }));
-    } else {
-      box.appendChild(el("p", { text: "A explicação desta questão ainda não foi escrita." }));
-    }
     const topicLine = fb.topicName
       ? `Conteúdo: ${fb.topicName}${fb.subtopicName ? ` · ${fb.subtopicName}` : ""}. Passa por revisão antes de virar oficial.`
       : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
@@ -807,7 +802,6 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
   } catch (err) {
     box.dataset.tone = "muted";
     box.appendChild(el("p", { text: `Resposta ${choiceLabel(choice)} registrada, mas o feedback falhou: ${friendlyMessage(err)}` }));
-    if (detail?.explanation) box.appendChild(el("p", { text: `Explicação: ${detail.explanation}` }));
   }
   card.dataset.answered = "1";
 }

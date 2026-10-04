@@ -13,7 +13,7 @@
 | Escolher e iniciar | `#sim-hub` → `#sim-create-discipline` (disciplina + qtd 1–100 + dificuldade opcional + modo) e `#sim-create-edition` (edição + modo) | `POST /simulations/by-discipline` (TASK 5.1, sorteio sem reposição, `INSUFFICIENT_QUESTIONS` explícito) e `POST /simulations/by-edition` (TASK 5.5, caderno integral em ordem original, `INCOMPLETE_EDITION` explícito) |
 | Experiência de prova | `#sim-exec` (`?id=<attemptId>`) → `#sim-exec-title/meta/badges`, `#sim-progress-*`, `#sim-questions` (caderno posição a posição), `#sim-submit/#sim-abandon` + `#sim-confirm` | `GET /simulations/attempts/{id}` (gabarito oculto em `IN_PROGRESS`); respostas via `POST /attempts {simulationAttemptId}` (TASK 3.7); enunciados via `GET /questions/{id}` (TASK 3.4, mascarados em PROVA — TASK 5.3) |
 | Correção ao final | `#sim-result-section → #sim-result` (placar + correção por posição) | `POST …/submit` / `POST …/abandon` + `GET …/result` (placar do servidor: última por questão, pendentes, anuladas fora — TASK 5.1) |
-| Feedback imediato (Estudo) | `sim-feedback` por cartão no Modo ESTUDO | `GET …/feedback/{position}` (TASK 5.2: acerto/erro, congelado, explicação, assunto) |
+| Feedback imediato (Estudo) | `sim-feedback` por cartão no Modo ESTUDO | `GET …/feedback/{position}` (TASK 5.2: acerto/erro, congelado, assunto) |
 | Histórico | `#sec-hist-t → #sim-history` (+ `#sim-more`, paginado 20) | `GET /simulations/attempts?page=&size=` (mais recentes primeiro) |
 
 ## 2. Comportamentos
@@ -28,7 +28,7 @@
   ou `Ver resultado` (encerradas).
 * **Execução ESTUDO:** cada `Responder`/`Em branco` registra via
   `POST /attempts` e busca `GET /feedback/{position}` — acerto/erro,
-  resposta correta (congelada), explicação e assunto, com marcação das
+  resposta correta (congelada) e assunto, com marcação das
   alternativas. Vale a última resposta (`Alterar resposta` reabilita).
 * **Execução PROVA:** a resposta registra (`isCorrect: null` do servidor) e
   mostra só `Resposta registrada — resultado oculto até concluir` (nunca
@@ -58,7 +58,7 @@
   TASK 5.1). Edição real: anuladas participam nas posições originais, fora
   do aproveitamento (regra DESCONHECIDA, TASK 1.3 §4).
 * `accuracy` NULL → `—` (nunca zero). Não respondidas = pendentes (nunca
-  erro). Explicação NULL = `NECESSITA REVISÃO`, nunca texto gerado.
+  erro).
 * `hasFigure` vira aviso de figura no PDF-fonte (PDFs não redistribuídos,
   §12). Discursiva sai só como `+ texto` no rótulo da edição (correção
   automática DESCONHECIDA / fora do MVP, TASK 5.5).

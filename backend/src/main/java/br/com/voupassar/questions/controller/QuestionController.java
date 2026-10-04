@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>Rotas autenticadas (secure-by-default). Expõe enunciado, alternativas e
  * gabarito com proveniência completa; questão em simulado {@code PROVA} ainda
- * {@code IN_PROGRESS} deste aluno sai com gabarito/explicação ocultos
+ * {@code IN_PROGRESS} deste aluno sai com gabarito oculto
  * (preserva a sensação de prova — AGENTS.md §9).
  */
 @RestController
@@ -47,7 +47,7 @@ public class QuestionController {
           "Filtros opcionais por disciplina, assunto, subassunto, edição, dificuldade e origem. "
               + "Ordem fixa (ano-fonte, número, id). Cada item traz notas de evidência "
               + "(anulada, dificuldade estimada, revisão pendente). Questão em simulado "
-              + "PROVA em andamento sai com gabarito/explicação ocultos (TASK 5.3).")
+              + "PROVA em andamento sai com gabarito oculto (TASK 5.3).")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Página de questões."),
     @ApiResponse(
@@ -90,7 +90,7 @@ public class QuestionController {
       description =
           "Inclui classificação vigente e notas de evidência. Resposta X = anulada "
               + "(contou como conteúdo, sem pontuar). Em simulado PROVA em andamento "
-              + "o gabarito/explicação saem ocultos (TASK 5.3).")
+              + "o gabarito sai oculto (TASK 5.3).")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Detalhe da questão."),
     @ApiResponse(

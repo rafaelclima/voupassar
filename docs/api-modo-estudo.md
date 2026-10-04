@@ -1,14 +1,14 @@
 # API do Modo Estudo — TASK 5.2 (feedback imediato)
 
-> Feedback imediato por posição do caderno: acerto/erro, resposta correta,
-> explicação e conteúdo relacionado — sobre `simulation_questions` (caderno
+> Feedback imediato por posição do caderno: acerto/erro, resposta correta
+> e conteúdo relacionado — sobre `simulation_questions` (caderno
 > congelado, TASK 5.1) + última tentativa vinculada em `question_attempts`
 > (fato imutável, TASK 3.7) + classificação vigente em
 > `question_classifications` (TASK 3.3).
 >
 > Responde via `GET /api/v1/simulations/attempts/{id}/feedback/{position}`.
 > O `POST /attempts` (TASK 3.7) continua existindo e inalterado: ele registra
-> a resposta; este endpoint revela o porquê (correção + explicação + assunto).
+> a resposta; este endpoint revela o resultado (correção + assunto).
 
 ## Endpoint (autenticado)
 
@@ -44,8 +44,6 @@ timestamp, path}`, sem stack trace; `traceId` também no header `X-Trace-Id`.
 - `isCorrect` — contra o gabarito **congelado** (NULL quando anulada);
 - `wasAnnulled` — anulada no congelado, no gabarito atual ou na tentativa;
 - `correctAnswer` — resposta correta (`frozen_answer_key`);
-- `explanation` — explicação redigida (NULL = `NECESSITA REVISÃO`, nunca texto
-  gerado automaticamente);
 - `topicId/Code/Name`, `subtopicId/Code/Name` (NULL quando sem classificação
   vigente — assunto `NÃO CONFIRMADO`, nunca omitido);
 - `classificationStatus/Confidence/TaxonomyVersion` (NULL quando sem
@@ -64,8 +62,6 @@ timestamp, path}`, sem stack trace; `traceId` também no header `X-Trace-Id`.
   TASK 3.7, aqui inalterada).
 * **Anuladas:** `isCorrect` NULL, fora do aproveitamento (pontuação
   DESCONHECIDA, TASK 1.3 §4); contam como conteúdo respondido.
-* **Explicação:** vem de `questions.explanation` (NULL na maioria do banco —
-  sinalizado em `notes`, nunca inventada).
 * **Conteúdo relacionado:** classificação vigente (`status <> 'REJECTED'`,
   mais recente por questão) — revisão humana PENDENTE (TASK 12.2), nunca
   verdade oficial do IFRN.
@@ -86,14 +82,15 @@ documentação públicas — só schemas, sem PII). Tag `Simulados`; escopo
 
 * `mvn -f backend/pom.xml test` → **180/180** (169 anteriores + 11 novos:
   `SimulationServiceTest` 10, `SimulationControllerTest` 1).
-* Casos cobertos: feedback ESTUDO com gabarito/explicação/assunto; uso do
+* Casos cobertos: feedback ESTUDO com gabarito/assunto; uso do
   congelado após mudança do gabarito atual; última tentativa por questão;
   PROVA em andamento `409 STUDY_FEEDBACK_UNAVAILABLE`; PROVA encerrada `200`;
   posição sem resposta `409 FEEDBACK_NOT_AVAILABLE`; posição inexistente
   `404`; posição `< 1` `400`; execução de outro aluno `404`; anulada com
-  `isCorrect` NULL; sem classificação/explicação com notas `NÃO
-  CONFIRMADO`/`NECESSITA REVISÃO`; controller `401` sem token e `200` com a
-  forma do contrato.
+  `isCorrect` NULL; sem classificação com nota `NÃO
+  CONFIRMADO`; controller `401` sem token e `200` com a
+  forma do contrato. (Contrato atualizado em 2026-10-04: sem `explanation` —
+  decisão de produto: plataforma testa, não ensina passo a passo.)
 * `docker compose up -d --build app` → `healthy` (sem migração nova: só
   leitura sobre `simulation_questions` + `question_attempts` +
   `question_classifications`; valida o mapeamento JPA contra o schema real via
@@ -103,8 +100,7 @@ documentação públicas — só schemas, sem PII). Tag `Simulados`; escopo
   `201` → simulado `MATEMATICA × 2 ESTUDO` `201 IN_PROGRESS` → `GET
   /feedback/1` `409 FEEDBACK_NOT_AVAILABLE` → resposta `A` via `POST
   /attempts` (`simulationAttemptId`) `201 isCorrect true` → `GET /feedback/1`
-  `200` (selected `A`, correct `A`, assunto real `ESTATISTICA_DADOS`,
-  explicação ausente sinalizada `NECESSITA REVISÃO`) → simulado `PROVA` +
+  `200` (selected `A`, correct `A`, assunto real `ESTATISTICA_DADOS`) → simulado `PROVA` +
   `GET /feedback/1` `409 STUDY_FEEDBACK_UNAVAILABLE`. Scratch removido após
   (trigger de imutabilidade desligado só para o `DELETE` de limpeza e religado
   em seguida — tentativas 0, usuários 0, 240 questões preservadas; CI usa

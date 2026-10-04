@@ -33,8 +33,7 @@ ausência do dataset (AGENTS.md §3). Questão inexistente →
   conteúdo que apareceu na prova, nunca pontua aqui; cada item anulado traz
   a nota explícita (regra de pontuação DESCONHECIDA, TASK 1.3 §4).
 * `difficultyEstimate` é palpite com confiança BAIXA global (sem calibração
-  — Fase 4); `explanation` NULL = correção ainda não redigida (nunca
-  inventada); classificação com revisão humana PENDENTE (TASK 12.2) — tudo
+  — Fase 4); classificação com revisão humana PENDENTE (TASK 12.2) — tudo
   sinalizado no array `notes` de cada questão, nunca omitido.
 * Questão sem classificação vigente sai com `topic/subtopic` nulos +
   nota de assunto NÃO CONFIRMADO (nunca com assunto inventado).
@@ -45,7 +44,7 @@ ausência do dataset (AGENTS.md §3). Questão inexistente →
 * Origem válida sem linhas (ex. `sourceType=AUTHORAL` hoje) = página vazia
   legítima (`totalElements: 0`), não erro.
 * Modo Prova (TASK 5.3, AGENTS.md §9): questão em simulado `PROVA` ainda
-  `IN_PROGRESS` deste aluno sai com `answerKey/explanation` nulos + nota de
+  `IN_PROGRESS` deste aluno sai com `answerKey` nulo + nota de
   gabarito oculto (via `searchForUser`/`getByIdForUser`); após
   concluir/abandonar revela normalmente. Ver `docs/api-modo-prova.md`.
 * Textos-base (TASK 6.9): `passages[]` em lista e detalhe (leitura em lote

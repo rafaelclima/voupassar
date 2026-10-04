@@ -49,14 +49,13 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li>2021 → 404 com motivo explícito (ausente do dataset, AGENTS.md §3).</li>
  *   <li>Anuladas ({@code X}) saem normalmente: contam como conteúdo que
  *       apareceu na prova; regra de pontuação DESCONHECIDA.</li>
- *   <li>Dificuldade é estimativa (confiança BAIXA); explicação NULL = ainda
- *       não redigida; classificação com revisão PENDENTE — tudo sinalizado em
- *       {@code notes}, nunca omitido.</li>
+ *   <li>Dificuldade é estimativa (confiança BAIXA); classificação com revisão
+ *       PENDENTE — sinalizada em {@code notes}, nunca omitida.</li>
  *   <li>Ordem fixa (ano-fonte, número, id): sem ordenação por relevância sem
  *       algoritmo auditável (Fase 4).</li>
  *   <li>Modo Prova (TASK 5.3, AGENTS.md §9): questão presente em simulado
  *       {@code PROVA} ainda {@code IN_PROGRESS} deste aluno sai com
- *       {@code answerKey=NULL} e {@code explanation=NULL} + nota de gabarito
+ *       {@code answerKey=NULL} + nota de gabarito
  *       oculto (via {@code searchForUser}/{@code getByIdForUser}); após
  *       concluir/abandonar revela normalmente.</li>
  * </ul>
@@ -219,7 +218,7 @@ public class QuestionService {
    *
    * <p>Mesmos filtros/paginação de {@link #search}, mas com {@code userId} do
    * dono do token: questões em simulado {@code PROVA} ainda {@code
-   * IN_PROGRESS} deste aluno saem com gabarito/explicação ocultos (1 query
+   * IN_PROGRESS} deste aluno saem com gabarito oculto (1 query
    * extra, sem N+1). {@code userId} nulo ou repositório ausente = sem
    * ocultação (nunca inventar prova em andamento sem evidência).
    */
@@ -262,7 +261,7 @@ public class QuestionService {
   /**
    * Detalhe com ocultação do Modo Prova (TASK 5.3): se a questão está em
    * simulado {@code PROVA} ainda {@code IN_PROGRESS} deste aluno, o gabarito
-   * ({@code answerKey}) e a explicação saem NULL com nota explícita.
+   * ({@code answerKey}) sai NULL com nota explícita.
    */
   public QuestionResponse getByIdForUser(Long userId, long id) {
     QuestionResponse full = getById(id);
@@ -280,7 +279,7 @@ public class QuestionService {
 
   /**
    * Máscara do Modo Prova: preserva enunciado/alternativas/proveniência, mas
-   * oculta {@code answerKey} e {@code explanation} (nunca inventar gabarito).
+   * oculta {@code answerKey} (nunca inventar gabarito).
    * {@code annulled} segue verídico (anulada não tem resposta correta a
    * vazar; além disso anuladas ficam fora da seleção da TASK 5.1).
    * Textos-base ({@code passages}) e figuras seguem visíveis: são parte do
@@ -294,7 +293,7 @@ public class QuestionService {
     return new QuestionResponse(
         r.id(), r.sourceType(), r.examYear(), r.questionNumber(),
         r.discipline(), r.statement(), r.options(),
-        null, r.annulled(), r.difficultyEstimate(), null,
+        null, r.annulled(), r.difficultyEstimate(),
         r.pageStart(), r.pageEnd(), r.hasFigure(),
         r.topic(), r.subtopic(),
         r.classificationConfidence(), r.taxonomyVersion(), r.classificationStatus(),
@@ -488,9 +487,6 @@ public class QuestionService {
     } else {
       notes.add("Dificuldade NÃO CONFIRMADA.");
     }
-    if (q.getExplanation() == null) {
-      notes.add("Sem explicação redigida (NECESSITA REVISÃO).");
-    }
     if (classification == null) {
       notes.add("Sem classificação pedagógica: assunto NÃO CONFIRMADO.");
     } else if ("PENDING".equals(classification.getStatus())) {
@@ -523,7 +519,6 @@ public class QuestionService {
         q.getAnswerKey(),
         q.isAnnulled(),
         q.getDifficultyEstimate(),
-        q.getExplanation(),
         q.getPageStart() == null ? null : q.getPageStart().intValue(),
         q.getPageEnd() == null ? null : q.getPageEnd().intValue(),
         q.isHasFigure(),

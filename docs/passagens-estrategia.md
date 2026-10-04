@@ -59,7 +59,7 @@ data/passages/<ano>.json   # transcrições conferidas contra o caderno
   intro, content, visualDescription, formatNote, sourceNote, pageStart,
   pageEnd}` (default `[]`, sem quebrar clientes).
 * **Modo Prova:** passagens seguem visíveis — são parte do enunciado, não
-  do gabarito (só `answerKey`/`explanation` são ocultos, AGENTS.md §9).
+  do gabarito (só `answerKey` é oculto, AGENTS.md §9).
 
 ## 5. Frontend (padrão visual do redesign)
 

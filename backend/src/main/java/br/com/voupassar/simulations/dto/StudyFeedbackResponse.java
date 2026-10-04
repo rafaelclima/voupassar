@@ -16,8 +16,7 @@ import java.util.List;
  *       o placar da TASK 5.1 mesmo após reclassificação posterior.</li>
  *   <li>Anuladas saem com {@code isCorrect} NULL (pontuação DESCONHECIDA, TASK
  *       1.3 §4): contam como conteúdo respondido, nunca como acerto nem erro.</li>
- *   <li>{@code explanation} NULL = ainda não redigida (NECESSITA REVISÃO, nunca
- *       texto inventado); assunto/subassunto vêm da classificação vigente
+ *   <li>Assunto/subassunto vêm da classificação vigente
  *       (revisão humana PENDENTE, TASK 12.2).</li>
  *   <li>Enunciado e alternativas NÃO são duplicados aqui: resolve-se via
  *       {@code GET /api/v1/questions/{id}} (TASK 3.4).</li>
@@ -40,8 +39,6 @@ public record StudyFeedbackResponse(
     boolean wasAnnulled,
     @Schema(example = "C", description = "Resposta correta (gabarito congelado na criação).")
     String correctAnswer,
-    @Schema(nullable = true, description = "Explicação redigida (NULL = NECESSITA REVISÃO).")
-    String explanation,
     @Schema(example = "3", nullable = true) Long topicId,
     @Schema(example = "PORCENTAGEM", nullable = true) String topicCode,
     @Schema(example = "Porcentagem", nullable = true) String topicName,

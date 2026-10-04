@@ -44,7 +44,6 @@ ou falha de validação; `1` = contagens finais fora do esperado; `0` = OK.
 | `source_type / kind` | `OFFICIAL` / `OBJECTIVE` em tudo (240; fonte só tem objetivas) |
 | `answer_key / annulled` | transcrição literal do gabarito (`X` ⟺ anulada; 5 anuladas) |
 | `validation_status / publication_status` | `PENDING` / `PENDENTE_REVISAO` em tudo (curadoria: TASK 12.2) |
-| `explanation` | `NULL` em tudo (nunca inventar correção) |
 | `difficulty_estimate` | palpite da classificação (confiança BAIXA global, sem dados) |
 | `question_classifications` | `taxonomy_version='v1.1'`, `status='PENDING'`, `confidence` = `assunto_confianca`, `observation` = motivo original (NULL se vazio) |
 | normalização v1.1 | mesma `V11_OVERRIDES` de `build_content_map.py` (2022 Q12, 2023 Q12, 2024 Q17 → `ACENTUACAO_GRAFICA`; 2026 Q21 → `ARITMETICA/SISTEMAS_NUMERACAO`) |
@@ -76,5 +75,6 @@ os PDFs + JSONs da Fase 1).
 
 * 38 classificações aguardam revisão humana (`NECESSITA_REVISAO` na origem;
   fila detalhada em `docs/content-analysis/summary.md §3`).
-* Explicações de correção ainda não redigidas (`explanation IS NULL` em 240).
 * Regra de pontuação de anuladas segue DESCONHECIDA (TASK 1.3 §4).
+* Nota 2026-10-04: coluna `questions.explanation` removida (V11) por decisão
+  de produto — a plataforma testa conhecimento, não ensina passo a passo.

@@ -109,7 +109,7 @@ Módulo único `frontend/js/components/figure.js`:
   respeitado — sem zoom animado).
 * Telas cobertas: `questao.html` (leitura), `estudos.html` (cards),
   `simulado.html` (modo Estudo/Prova/Revisão — a figura **aparece** nos três;
-  só gabarito/explicação são ocultos no Modo Prova, AGENTS.md §9).
+  só o gabarito é oculto no Modo Prova, AGENTS.md §9).
 
 ## 6. Backend (contrato, sem redistribuir binário)
 

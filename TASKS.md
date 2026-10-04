@@ -482,8 +482,11 @@ Mostrar:
 
 * acerto/erro;
 * resposta correta;
-* explicação;
 * conteúdo relacionado.
+
+Nota 2026-10-04: passo a passo textual removido do escopo por decisão de
+produto (plataforma testa conhecimento, não ensina); feedback = gabarito
+oficial + assunto.
 
 ---
 
@@ -599,8 +602,8 @@ Criar experiência de alta qualidade para:
 * leitura;
 * seleção;
 * confirmação;
-* feedback;
-* explicação.
+* feedback (acerto/erro + resposta correta + assunto, sem passo a passo —
+  decisão de produto 2026-10-04).
 
 ---
 

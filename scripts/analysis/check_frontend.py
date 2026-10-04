@@ -274,7 +274,7 @@ def main() -> int:
         if "estudos.html" not in dash:
             fail("dashboard.html sem link para estudos.html (TASK 6.5)")
 
-    # TASK 6.6 — questão dedicada: leitura + seleção + confirmação + feedback + explicação
+    # TASK 6.6 — questão dedicada: leitura + seleção + confirmação + feedback (acerto/erro + gabarito + assunto; sem passo a passo)
     questao = (FRONT / "questao.html").read_text(encoding="utf-8") if (FRONT / "questao.html").exists() else ""
     if questao:
         for sid in ["questao-guard", "questao-error", "questao-loading", "questao-content",
@@ -283,7 +283,7 @@ def main() -> int:
                     "questao-form", "questao-options", "questao-hint",
                     "questao-submit", "questao-blank", "questao-reset",
                     "questao-feedback", "questao-feedback-empty",
-                    "questao-explanation", "questao-source"]:
+                    "questao-source"]:
             if f'id="{sid}"' not in questao:
                 fail(f"questao.html sem bloco #{sid} (TASK 6.6)")
         if "css/questao.css" not in questao:

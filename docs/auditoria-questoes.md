@@ -102,8 +102,10 @@ suspeita, nunca apaga conteúdo (AGENTS.md §23) — nenhum DELETE foi executado
 * `has_figure=TRUE` em 36 questões; tag `FIGURA` em 36 (`question_tag_map`).
   Divergência aparente 36 vs 38: 2 itens da fila são conceituais sem figura
   ((2023,Q40) e (2024,Q17)) — coerente com o importador (TASK 2.3 §2).
-* `explanation`: **NULL em 240/240** — nenhuma explicação inventada (correto; redação
-  de correções é trabalho futuro de curadoria, não desta task).
+* `explanation` (2026-10-02): **NULL em 240/240** — nenhuma explicação
+  inventada (correto à época). Nota 2026-10-04: coluna removida (V11) por
+  decisão de produto — a plataforma testa conhecimento, não ensina passo
+  a passo.
 
 ## 6. Questões anuladas
 
@@ -127,7 +129,8 @@ tratados pelo schema (tentativas em anuladas: `is_correct IS NULL`).
    (ex. 2020 Q38 — frações achatadas pelo `pdftotext`, resposta A vinculada mas conteúdo
    `NECESSITA REVISÃO`), charges e gráficos ilegíveis no texto extraído. Nenhum item
    publicado como `PUBLICAVEL`.
-2. **Explicações ausentes (240/240 NULL)** — esperado; redigir com fonte, sem inventar.
+2. **Passo a passo textual removido do produto em 2026-10-04** (coluna
+   `explanation` dropada na V11; em 2026-10-02 estava 240/240 NULL).
 3. **Regra de pontuação de anuladas DESCONHECIDA** — definir na Fase 4/5 com fonte explícita.
 4. **Gabarito 2025 com nome de arquivo `…2024…` mas conteúdo `…2025`** — vinculação usa o
    conteúdo; decisão de renomear é de curadoria (TASK 1.3 §2.4 item 1).
@@ -154,7 +157,8 @@ tratados pelo schema (tentativas em anuladas: `is_correct IS NULL`).
 * **Classificações:** 240/240 presentes (v1.1/PENDING), 38 `NECESSITA_REVISAO` mapeados,
   0 `APPROVED` sem revisão humana — estado honesto.
 * **Anuladas:** 5 corretamente marcadas, por edição, sem generalização.
-* **Incompletos:** nenhum silenciado — 240 `PENDENTE_REVISAO`, 240 explicações NULL,
+* **Incompletos:** nenhum silenciado — 240 `PENDENTE_REVISAO`
+  (nota 2026-10-04: coluna `explanation` removida na V11),
   38 fila de revisão, pendências listadas no §7.
 
 **Conclusão:** o banco de questões está íntegro para os critérios da TASK 11.1.

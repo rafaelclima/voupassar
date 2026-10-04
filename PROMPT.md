@@ -265,11 +265,11 @@ Implementar três modos:
 
 Feedback imediato.
 
-Após responder:
+Após responder (decisão de produto 2026-10-04: sem passo a passo textual —
+a plataforma testa conhecimento, não ensina):
 
 * correto/incorreto;
 * alternativa correta;
-* explicação;
 * assunto;
 * próxima questão.
 

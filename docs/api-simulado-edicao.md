@@ -54,8 +54,7 @@ traceId, timestamp, path}`, sem stack trace; `traceId` também no header
   servidor), `GET /result` e `GET /feedback/{position}` (TASK 5.2; em PROVA
   só após encerrar) funcionam sem mudança.
 * **Curadoria:** questões `PENDING/PENDENTE_REVISAO` participam com nota de
-  revisão pendente (TASK 12.2) — nunca verdade oficial do IFRN; explicação
-  NULL = `NECESSITA REVISÃO`, nunca texto gerado.
+  revisão pendente (TASK 12.2) — nunca verdade oficial do IFRN.
 * **Fora de escopo (não inventados):** correção da discursiva, tempo limite
   por simulado (coluna inexistente no DDL), embaralhamento de alternativas,
   múltiplos cadernos por edição (ofertas 2023 NÃO CONFIRMADAS — se

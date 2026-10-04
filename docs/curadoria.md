@@ -5,7 +5,9 @@
 > Decisões gravadas via `PATCH /api/v1/admin/classifications/{id}` — nunca
 > direto no banco para carimbar `reviewed_by/at` corretamente.
 > Nenhuma questão foi marcada `PUBLICAVEL`: publicação depende de revisão
-> visual de figuras + explicação redigida (ambos pendentes).
+> visual de figuras (pendente). Nota 2026-10-04: passo a passo textual
+> (`questions.explanation`) foi removido do produto por decisão de produto
+> (plataforma testa conhecimento, não ensina) — ver migração V11.
 
 ## 1. O que foi feito
 
@@ -33,7 +35,7 @@
 `classificationsByStatus`: APPROVED 200 · REVIEWED 39 · REJECTED 1 ·
 PENDING 0. `questionsByValidation` permanece 240 PENDING /
 `questionsByPublication` 240 PENDENTE_REVISAO — aprovação de questão só após
-conferência de figura e explicação redigida. `question_attempts` e roteiro
+conferência de figura. `question_attempts` e roteiro
 continuam alimentados pelo estado honesto da classificação.
 
 Por edição (40 itens cada):
@@ -81,7 +83,7 @@ e anuladas já ficam fora do sorteio de simulado por regra do repositório.
 4. Via UI: alterar status da questão, classificação e publicação; ou via API:
    `PATCH /api/v1/admin/questions/{id}/status` e
    `PATCH /admin/classifications/{id}`.
-5. Só após revisão visual + explicação redigida usar
+5. Só após revisão visual usar
    `validationStatus=APPROVED` e `publicationStatus=PUBLICAVEL`.
 
 ## 5. Reprodução

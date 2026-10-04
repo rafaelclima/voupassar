@@ -236,7 +236,6 @@ Questões autorais/adaptadas reusam a mesma tabela com `source_type` distinto
 | checksum | CHAR(64) NOT NULL | SHA-256 normalizado do enunciado+alternativas (base da idempotência) |
 | has_figure | BOOLEAN NOT NULL DEFAULT FALSE | TRUE nos 38 itens `NECESSITA_REVISAO` de `summary.md §3` |
 | difficulty_estimate | TEXT NULL | `FACIL/MEDIA/DIFICIL` — sempre palpite (`ESTIMATIVA_ESPECIALISTA_SEM_DADOS`, conf. BAIXA) até a Fase 4 calibrar |
-| explanation | TEXT NULL | raciocínio de correção; NULL = ainda não redigida (nunca inventar) |
 | validation_status | TEXT NOT NULL DEFAULT 'PENDING' | `PENDING/REVIEWED/APPROVED/REJECTED` (ciclo da TASK 12.2) |
 | publication_status | TEXT NOT NULL DEFAULT 'PENDENTE_REVISAO' | `PUBLICAVEL/NAO_PUBLICAVEL/PENDENTE_REVISAO/SOMENTE_REFERENCIA` (§12); conteúdo `SOMENTE_REFERENCIA` nunca sai no GET público |
 | `UNIQUE (source_type, source_year, source_question_number, exam_document_id)` | — | chave de idempotência da TASK 2.3 (oficiais); parciais NULLs permitem múltiplas autorais |

@@ -139,7 +139,7 @@ conteúdo de matemática financeira observado. Séries por edição em `content-
 | `NECESSITA_REVISAO` na origem | 38/240 (15,8%) | 35 figuras/gráficos/charges + 3 conceituais (`summary.md §3`) |
 | Confiança ALTA do assunto | 170/240 (70,8%) | usável com filtro; não é aprovação |
 | Dificuldade estimada | FACIL 108 · MEDIA 121 · DIFICIL 11, **todas confiança BAIXA** | palpite sem dados de desempenho; fora do mapa |
-| Explicações redigidas | 0/240 | `explanation IS NULL` em tudo — nada inventado |
+| Explicações redigidas | 0/240 em 2026-10-02; coluna removida em 2026-10-04 (V11, decisão de produto) | `explanation` existia e estava NULL em tudo — nada inventado |
 | Questões `PUBLICAVEL` | 0/240 | 240 `PENDENTE_REVISAO` — publicação bloqueada até curadoria |
 
 ## 6. Pendências (herdadas, não bloqueiam a 11.2)
@@ -156,8 +156,8 @@ conteúdo de matemática financeira observado. Séries por edição em `content-
 4. Decisão de curadoria: nome do gabarito 2025 (`…2024…` no nome, conteúdo 2025).
 5. Cobertura fina: `MATEMATICA_FINANCEIRA` (5, ausente 2020) e `GRANDEZAS_MEDIDAS`
    (3, só 2023/2024/2026) são esparsos — fato do dataset, não falha de importação.
-6. Explicações ainda 0/240 redigidas — publicação `PUBLICAVEL` depende
-   delas, não só do status de curadoria.
+6. Passo a passo textual fora do produto desde 2026-10-04 (coluna removida
+   na V11) — publicação `PUBLICAVEL` depende só do status de curadoria.
 
 ## 7. Veredito
 
@@ -169,4 +169,5 @@ referendo, 39 `REVIEWED`, 1 `REJECTED`, 15,8% `NECESSITA_REVISAO` na origem,
 ausências (2021, MAT_FIN 2020, GR_MED em 3 edições) são características do
 dataset, não perda de dados. A TASK 12.2 entregou a curadoria assistida com
 decisão item a item auditável (`docs/curadoria.md`); falta o referendo humano
-com o PDF e a redação das correções.
+com o PDF. (Nota 2026-10-04: redação de passo a passo removida do escopo —
+V11.)

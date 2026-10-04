@@ -423,10 +423,8 @@ class SimulationServiceTest {
   // ---- feedback imediato (TASK 5.2) ----
 
   private static Question explainedQuestion(
-      long id, Discipline d, String answerKey, boolean annulled, String explanation) {
-    Question q = question(id, d, answerKey, annulled);
-    ReflectionTestUtils.setField(q, "explanation", explanation);
-    return q;
+      long id, Discipline d, String answerKey, boolean annulled) {
+    return question(id, d, answerKey, annulled);
   }
 
   private static QuestionClassification classification(
@@ -468,13 +466,13 @@ class SimulationServiceTest {
   }
 
   @Test
-  void estudoFeedbackRevealsFrozenKeyExplanationAndTopic() {
+  void estudoFeedbackRevealsFrozenKeyAndTopic() {
     activeUser();
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 2 questões [ESTUDO]");
-    Question q1 = explainedQuestion(21L, d, "C", false, "Porque 40% de 250 é 100.");
-    Question q2 = explainedQuestion(22L, d, "B", false, null);
+    Question q1 = explainedQuestion(21L, d, "C", false);
+    Question q2 = explainedQuestion(22L, d, "B", false);
     Topic t = topic(3L, "PORCENTAGEM", "Porcentagem");
     Subtopic st = subtopic(11L, t, "CALCULO_PERCENTUAL", "Cálculo percentual");
     when(attempts.findByIdAndUserId(55L, 1L))
@@ -495,7 +493,6 @@ class SimulationServiceTest {
     assertEquals("C", out.selectedOption());
     assertEquals(Boolean.TRUE, out.isCorrect());
     assertEquals("C", out.correctAnswer());
-    assertEquals("Porque 40% de 250 é 100.", out.explanation());
     assertEquals("PORCENTAGEM", out.topicCode());
     assertEquals("Porcentagem", out.topicName());
     assertEquals("CALCULO_PERCENTUAL", out.subtopicCode());
@@ -510,7 +507,7 @@ class SimulationServiceTest {
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
     // Gabarito "atual" mudou para D após a criação; o caderno congelou B.
-    Question q1 = explainedQuestion(21L, d, "D", false, null);
+    Question q1 = explainedQuestion(21L, d, "D", false);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -533,7 +530,7 @@ class SimulationServiceTest {
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
-    Question q1 = explainedQuestion(21L, d, "C", false, null);
+    Question q1 = explainedQuestion(21L, d, "C", false);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -570,7 +567,7 @@ class SimulationServiceTest {
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 1 questão [PROVA]");
-    Question q1 = explainedQuestion(21L, d, "B", false, null);
+    Question q1 = explainedQuestion(21L, d, "B", false);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "PROVA", "SUBMITTED")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -593,8 +590,8 @@ class SimulationServiceTest {
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 2 questões [ESTUDO]");
-    Question q1 = explainedQuestion(21L, d, "A", false, null);
-    Question q2 = explainedQuestion(22L, d, "B", false, null);
+    Question q1 = explainedQuestion(21L, d, "A", false);
+    Question q2 = explainedQuestion(22L, d, "B", false);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -613,7 +610,7 @@ class SimulationServiceTest {
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
-    Question q1 = explainedQuestion(21L, d, "A", false, null);
+    Question q1 = explainedQuestion(21L, d, "A", false);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -637,7 +634,7 @@ class SimulationServiceTest {
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
-    Question q1 = explainedQuestion(21L, d, "X", true, null);
+    Question q1 = explainedQuestion(21L, d, "X", true);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -907,7 +904,7 @@ class SimulationServiceTest {
     Discipline d = mat();
     User u = user(1L, true);
     Simulation s = simulation(7L, "Simulado Matemática — 1 questão [ESTUDO]");
-    Question q1 = explainedQuestion(21L, d, "A", false, null);
+    Question q1 = explainedQuestion(21L, d, "A", false);
     when(attempts.findByIdAndUserId(55L, 1L))
         .thenReturn(Optional.of(attempt(55L, s, u, "ESTUDO", "IN_PROGRESS")));
     when(caderno.findBySimulationAttemptIdOrderByPositionAsc(55L))
@@ -922,6 +919,5 @@ class SimulationServiceTest {
     assertNull(out.topicCode());
     assertNull(out.classificationStatus());
     assertTrue(out.notes().stream().anyMatch(n -> n.contains("NÃO CONFIRMADO")));
-    assertTrue(out.notes().stream().anyMatch(n -> n.contains("NECESSITA REVISÃO")));
   }
 }

@@ -664,11 +664,11 @@ nextBtn?.addEventListener("click", async () => {
 function renderNotes() {
   notesBox.textContent = "";
   const notes = [
-    "Curadoria revisa, nunca inventa: sem enunciado, gabarito, assunto ou explicação criados aqui — só status e revisão com evidência no caderno.",
+    "Curadoria revisa, nunca inventa: sem enunciado, gabarito ou assunto criados aqui — só status e revisão com evidência no caderno.",
     "Nada é publicado sem revisão: PUBLICAVEL exige questão APPROVED; nenhuma questão sai como PUBLICAVEL silenciosamente.",
     "Positivo nas inconsistências é fila de trabalho, nunca deleção automática.",
     "A edição de 2021 não existe no acervo e jamais é preenchida com dados inventados.",
-    "Dificuldade estimada é palpite (confiança BAIXA global); explicações NULL significam correção ainda não redigida — nunca texto inventado.",
+    "Dificuldade estimada é palpite (confiança BAIXA global).",
   ];
   for (const n of notes) {
     const alert = el("div", { className: "alert alert--info", attrs: { role: "note" } });

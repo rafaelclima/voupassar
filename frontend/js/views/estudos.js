@@ -896,17 +896,6 @@ function renderQuestionCard(q) {
   const feedback = el("div", { className: "question-feedback", attrs: { role: "status", hidden: "" } });
   card.appendChild(feedback);
 
-  // q.notes traz a trilha de auditoria do backend ("curadoria TASK 12.2",
-  // "NECESSITA REVISÃO"): é documentação interna, não conteúdo de estudo,
-  // então não é exibida. O que importa para o aluno é a explicação.
-  if (!q.explanation) {
-    const notes = el("ul", { className: "question-notes" });
-    notes.appendChild(
-      el("li", { text: "A explicação desta questão ainda não foi escrita." }),
-    );
-    card.appendChild(notes);
-  }
-
   async function answer(selected) {
     const choice = selected === "BLANK" ? "BLANK" : selected;
     if (!choice) {
@@ -1003,11 +992,6 @@ function showFeedback(box, question, attempt, choice) {
     box.dataset.tone = "danger";
     box.appendChild(el("strong", { text: `Não foi dessa vez — resposta correta: ${correct}.` }));
     box.appendChild(el("p", { text: `Você marcou ${choiceText}.` }));
-  }
-  if (question.explanation) {
-    box.appendChild(el("p", { text: `Explicação: ${question.explanation}` }));
-  } else {
-    box.appendChild(el("p", { text: "A explicação desta questão ainda não foi escrita." }));
   }
   const topicLine = question.topic?.name
     ? `Conteúdo: ${question.topic.name}${question.subtopic?.name ? ` · ${question.subtopic.name}` : ""}.`

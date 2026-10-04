@@ -1,11 +1,13 @@
 # Tela de questão dedicada — VouPassar (TASK 6.6)
 
-> Experiência dedicada de leitura, seleção, confirmação, feedback e
-> explicação em `frontend/questao.html` (+ `css/questao.css` +
+> Experiência dedicada de leitura, seleção, confirmação e feedback em
+> `frontend/questao.html` (+ `css/questao.css` +
 > `js/api/questao.js` + `js/views/questao.js`). Cobre TASKS.md 6.6 sobre a
 > base da 6.5 (prática livre em modo ESTUDO com correção imediata do
 > servidor, AGENTS.md §9). Reutiliza todos os tokens/componentes da
-> TASK 6.1 — nada reinventado.
+> TASK 6.1 — nada reinventado. Decisão de produto 2026-10-04: sem passo a
+> passo textual (plataforma testa conhecimento, não ensina); feedback =
+> acerto/erro + resposta correta + assunto.
 
 ## 1. Cobertura (TASKS.md) → seções e fontes
 
@@ -15,7 +17,6 @@
 | Seleção | `#questao-form > #questao-options` (`fieldset/legend` + radios `questao-option`, alvo ≥44px) + `#questao-hint` | Estado local; nada é enviado antes da confirmação |
 | Confirmação | `#questao-submit` (Responder) + `#questao-blank` (em branco → `BLANK`) + `#questao-reset` (Responder novamente) | `POST /study-sessions {mode: ESTUDO}` (lazy, id em memória + `sessionStorage`) + `POST /attempts {questionId, selectedOption, mode: ESTUDO, timeSpentSeconds, studySessionId}` (TASK 3.7) |
 | Feedback | `#questao-feedback` (`role=status`, `data-tone`) + marcação das alternativas (`--correct/--wrong`) | Correção do servidor (última tentativa vinculada); `409 SESSION_CLOSED` reabre a sessão e repete uma vez |
-| Explicação | `#questao-explicacao-t` → `#questao-explanation` (seção dedicada, revelada com o feedback) | `questions.explanation` (NULL na maioria do banco → `NECESSITA REVISÃO`, nunca texto gerado) |
 
 Proveniência e classificação (`#questao-source`): `sourceType`, edição/número,
 disciplina, páginas do PDF-fonte, figura, assunto, status/confiança da
@@ -88,11 +89,11 @@ python3 scripts/analysis/check_frontend.py
 timeout 20 python3 -m http.server 8899 --directory frontend
 # Fluxo ao vivo (backend local): sem sessão → painel de acesso com ?next=;
 # login → questao.html?id=1 (2020 Q1, correção imediata A/BLANK, marcação
-# correct/wrong, explicação NECESSITA REVISÃO); ?id=999999 → 404 com saídas;
+# correct/wrong, acerto/erro + resposta correta + assunto); ?id=999999 → 404 com saídas;
 # sem ?id= → erro de uso; voltar preserva o filtro dos estudos.
 ```
 
-Critérios 6.6: 5 blocos presentes e alimentados pela API real; guarda de
+Critérios 6.6: 4 blocos (leitura, seleção, confirmação, feedback) presentes e alimentados pela API real; guarda de
 auth com `?next=` seguro; correção do servidor com `Tentar/Responder
 novamente`; `?id=` + `?voltar=` whitelisted; link estudos → dedicada;
 `node --check` OK; 200 no serve; `check_frontend.py` OK estendido com

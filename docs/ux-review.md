@@ -1,5 +1,9 @@
 # UX Review — TASK 8.3
 
+> Nota 2026-10-04: passo a passo textual de questão removido do produto
+> (V11, decisão de produto: plataforma testa conhecimento, não ensina).
+> Referências a "explicação" abaixo descrevem o estado anterior à remoção.
+
 > Revisão realizada como estudante, com base no código existente (`frontend/`), no comportamento observado no navegador real (`chrome-devtools` via página 8, `localhost:8888`) e na documentação das tasks anteriores (`8.1` acessibilidade, `8.2` responsividade). Nenhuma informação inventada; o que não pôde ser observado diretamente está marcado como `NÃO VERIFICADO`.
 
 ## 1. Método

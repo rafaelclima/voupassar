@@ -81,7 +81,7 @@
   background: var(--color-danger-50, #fdf0f0);
 }
 
-/* Feedback + explicação */
+/* Feedback */
 .questao-feedback {
   border-radius: var(--radius-md);
   padding: var(--space-4);

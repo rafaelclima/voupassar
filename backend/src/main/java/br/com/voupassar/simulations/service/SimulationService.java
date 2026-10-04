@@ -405,7 +405,7 @@ public class SimulationService {
   /**
    * Feedback imediato de uma posição do caderno (TASK 5.2 — Modo Estudo).
    *
-   * <p>Mostra acerto/erro, resposta correta (gabarito congelado), explicação e
+   * <p>Mostra acerto/erro, resposta correta (gabarito congelado) e
    * conteúdo relacionado (assunto/subassunto vigentes) a partir da
    * <b>última</b> tentativa vinculada a esta execução. Sem resposta, não há
    * feedback (nunca inventado).
@@ -480,7 +480,7 @@ public class SimulationService {
         question.getSourceYear() == null ? null : question.getSourceYear().intValue(),
         question.getSourceQuestionNumber() == null ? null : question.getSourceQuestionNumber().intValue(),
         last.getSelectedOption(), isCorrect, wasAnnulled,
-        row.getFrozenAnswerKey(), question.getExplanation(),
+        row.getFrozenAnswerKey(),
         topic == null ? null : topic.getId(),
         topic == null ? null : topic.getCode(),
         topic == null ? null : topic.getName(),
@@ -953,9 +953,6 @@ public class SimulationService {
     if (wasAnnulled) {
       notes.add("Questão anulada: conta como conteúdo respondido e fica fora do "
           + "aproveitamento; regra de pontuação DESCONHECIDA (TASK 1.3 §4).");
-    }
-    if (question.getExplanation() == null) {
-      notes.add("Sem explicação redigida (NECESSITA REVISÃO) — nenhum texto gerado automaticamente.");
     }
     if (classification == null) {
       notes.add("Sem classificação pedagógica vigente: assunto NÃO CONFIRMADO.");
