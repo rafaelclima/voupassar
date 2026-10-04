@@ -83,6 +83,12 @@ REQUIRED_FILES = [
     "js/views/admin.js",
     "assets/favicon.svg",
     "assets/figures/manifest.json",
+    "assets/landing/desk.webp",
+    "assets/landing/hero.webp",
+    "assets/landing/numbers.webp",
+    "assets/landing/simulation.webp",
+    "assets/landing/students.webp",
+    "assets/landing/vector.webp",
 ]
 
 REQUIRED_TOKENS = [
@@ -113,11 +119,14 @@ REQUIRED_SECTIONS = [
     "badges", "feedback", "modais", "vazios", "loading", "questao", "js",
 ]
 
-# TASK 6.2 — landing clean (viewport único navy): só o essencial acima
-# da dobra. As 6 seções longas foram removidas por decisão de produto;
-# o validador exige o hero completo + honestidade, não rolagem.
+# TASK 6.2 — landing: hero navy preservado + seções claras abaixo que
+# explicam o produto (o-que-e / como-funciona / como-praticar /
+# de-onde-vem / cta-final). Mensagem genérica por decisão de produto;
+# o validador exige o hero completo + as seções + honestidade.
 REQUIRED_LANDING_SECTIONS = [
     "hero-t", "hero-brand", "hero-visual",
+    "o-que-e", "como-funciona", "como-praticar",
+    "de-onde-vem", "cta-final",
 ]
 
 # TASK 6.3 — páginas de autenticação: arquivo → id do form exigido

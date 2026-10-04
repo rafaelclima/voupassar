@@ -58,18 +58,18 @@
   </header>
 
   <main id="conteudo" class="landing-main">
-    <!-- HERO tela cheia: propósito em 2 linhas, 2 ações, 3 fatos do
-         produto e prévia em CSS puro (mock + marca). Sem rolagem no
-         desktop, sem referência a um exame específico. -->
+    <!-- HERO tela cheia: propósito, 2 ações e prévia em CSS puro
+         (mock + marca). Mantido intacto — as seções abaixo explicam
+         o projeto com imagens geradas e texto honesto. -->
     <section class="landing-hero" aria-labelledby="hero-t">
       <div class="container landing-hero__grid">
         <div class="landing-hero__copy">
           <p class="landing-kicker"><span class="landing-kicker__dot" aria-hidden="true"></span>Direto ao ponto, sem enrolação</p>
           <h1 id="hero-t">Questões, roteiro e simulados <em>para a sua prova</em></h1>
           <p class="landing-lead">
-            Cadastre-se e receba um roteiro que explica o motivo de cada
-            recomendação, pratique por assunto e faça simulados como
-            a prova de verdade.
+            Com base em provas reais organizadas por assunto, receba um
+            roteiro que explica o motivo de cada recomendação e faça
+            simulados como a prova de verdade.
           </p>
           <div class="landing-actions">
             <a class="btn btn--on-navy btn--lg" href="./cadastro.html">Começar agora</a>
@@ -81,11 +81,12 @@
           </p>
         </div>
 
-        <!-- Visual: o mock do roteiro com a marca do header angulada
-             sobre o canto superior direito — produto + marca, sem
-             ilustração genérica. Nenhum enunciado real é exibido aqui. -->
+        <!-- Visual: arte gerada (estudante diante da jornada em degraus)
+             como fundo do painel, com o mock do roteiro e as pílulas por
+             cima — produto real + ilustração que explica. Nenhum
+             enunciado real é exibido aqui. -->
         <div class="landing-visual" id="hero-visual" aria-label="Prévia da plataforma">
-          <img class="brand-art" src="./assets/logo-mark-light.png" alt="" width="107" height="96" fetchpriority="high" />
+          <img class="hero-art" src="./assets/landing/hero.webp" alt="" width="900" height="900" fetchpriority="high" />
           <div class="mock">
             <p class="mock__eyebrow">Seu roteiro</p>
             <p class="mock__title">O que estudar agora</p>
@@ -118,6 +119,129 @@
           <p class="float-pill float-pill--bottom">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 1.8h5.2L12 4.6V14H4z" /><path d="M9.2 1.8v2.8H12" /></svg> Simulado como a prova
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DO QUE SE TRATA: 3 pilares do produto com as imagens geradas.
+         Texto genérico por decisão de produto (sem prender a um exame),
+         sem contagens de acervo e sem promessa de cobertura. -->
+    <section class="landing-section" id="o-que-e" aria-labelledby="o-que-e-t">
+      <div class="container">
+        <p class="section-eyebrow">Do que se trata</p>
+        <h2 id="o-que-e-t">Estude com base em provas reais, não no achismo</h2>
+        <p class="section-lead">
+          O VouPassar organiza questões de provas reais por assunto,
+          mostra por que cada tema importa para você e treina no formato
+          da prova — do primeiro diagnóstico à revisão final.
+        </p>
+        <div class="landing-cards">
+          <article class="landing-card">
+            <img src="./assets/landing/desk.webp" alt="Ilustração de cartões de questão organizados por assunto sobre uma mesa" width="800" height="597" loading="lazy" />
+            <h3>Questões organizadas por assunto</h3>
+            <p>O acervo nasce de provas reais, classificadas por disciplina, assunto e subassunto. Você pratica o que a prova realmente cobra.</p>
+          </article>
+          <article class="landing-card">
+            <img src="./assets/landing/numbers.webp" alt="Ilustração de um roteiro em etapas com bússola no topo" width="800" height="597" loading="lazy" />
+            <h3>Roteiro que se explica</h3>
+            <p>Cada recomendação mostra o motivo: seu acerto, erros recentes e peso do assunto. Sem caixa-preta, sem verdade absoluta.</p>
+          </article>
+          <article class="landing-card">
+            <img src="./assets/landing/simulation.webp" alt="Ilustração de um simulado com cronômetro na tela do computador" width="800" height="447" loading="lazy" />
+            <h3>Simulado como a prova</h3>
+            <p>Treine por disciplina ou encare uma edição real completa, com correção e análise por assunto ao final.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA: cadeia de evidência (AGENTS.md §32), sem números. -->
+    <section class="landing-section landing-section--alt" id="como-funciona" aria-labelledby="como-funciona-t">
+      <div class="container">
+        <p class="section-eyebrow">Como funciona</p>
+        <h2 id="como-funciona-t">Da prova real ao seu próximo estudo</h2>
+        <ol class="landing-steps">
+          <li>
+            <div class="landing-steps__body">
+              <strong>Provas reais como ponto de partida</strong>
+              <span>Questões e gabaritos oficiais viram a base de tudo — nada de conteúdo inventado.</span>
+            </div>
+          </li>
+          <li>
+            <div class="landing-steps__body">
+              <strong>Organização por assunto</strong>
+              <span>Cada questão é classificada por disciplina, assunto e habilidade, com confiança registrada.</span>
+            </div>
+          </li>
+          <li>
+            <div class="landing-steps__body">
+              <strong>Roteiro e diagnóstico</strong>
+              <span>Seu desempenho cruza com o peso histórico dos assuntos e gera prioridades explicadas.</span>
+            </div>
+          </li>
+          <li>
+            <div class="landing-steps__body">
+              <strong>Prática, revisão e evolução</strong>
+              <span>Você estuda, faz simulados, revisa erros e o roteiro se adapta ao seu progresso.</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- COMO VOCÊ PRATICA: 3 modos + 2 simulados, sem imagem nova. -->
+    <section class="landing-section" id="como-praticar" aria-labelledby="como-praticar-t">
+      <div class="container">
+        <p class="section-eyebrow">Como você pratica</p>
+        <h2 id="como-praticar-t">Três modos de estudo, dois tipos de simulado</h2>
+        <div class="landing-modes">
+          <article class="landing-mode">
+            <h3>Estudo</h3>
+            <p>Feedback imediato a cada resposta, com explicação e assunto relacionado.</p>
+          </article>
+          <article class="landing-mode">
+            <h3>Prova</h3>
+            <p>Clima de prova de verdade: sem resultado parcial, correção só ao final.</p>
+          </article>
+          <article class="landing-mode">
+            <h3>Revisão</h3>
+            <p>Foco nos seus erros, assuntos fracos e questões ainda não dominadas.</p>
+          </article>
+        </div>
+        <p class="landing-note">Simulados por <a href="./simulado.html">disciplina</a> ou por <a href="./simulado.html">edição real</a> — cada edição segue a estrutura da própria prova, nunca um modelo único.</p>
+        <div class="landing-actions landing-actions--section">
+          <a class="btn btn--primary" href="./estudos.html">Ver como é estudar</a>
+          <a class="btn btn--secondary" href="./simulado.html">Ver simulados</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- DE ONDE VEM / PARA ONDE VAI: honestidade + foto humana. -->
+    <section class="landing-section landing-section--alt" id="de-onde-vem" aria-labelledby="de-onde-vem-t">
+      <div class="container landing-feature">
+        <img class="landing-feature__img" src="./assets/landing/students.webp" alt="Estudantes do ensino fundamental estudando juntos em sala de aula com cadernos e computador" width="1200" height="670" loading="lazy" />
+        <div>
+          <p class="section-eyebrow">Para quem é</p>
+          <h2 id="de-onde-vem-t">Feita para quem está no fundamental e mira o próximo passo</h2>
+          <p>Começamos com provas reais de processos seletivos, organizadas assunto a assunto. A plataforma foi desenhada para crescer como centro de estudos — <strong>IFs, ENEM e concursos</strong> são a visão de futuro.</p>
+          <p class="landing-note"><span class="badge badge--info">EM EXPANSÃO</span> Novas trilhas entram somente com acervo real classificado — nunca como cobertura pronta.</p>
+          <div class="landing-actions landing-actions--section">
+            <a class="btn btn--primary" href="./cadastro.html">Criar conta</a>
+            <a class="btn btn--secondary" href="./dashboard.html">Ver meu painel</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL: banda navy com a arte de evolução ao fundo. -->
+    <section class="landing-cta-band" id="cta-final" aria-labelledby="cta-final-t">
+      <img class="landing-cta-band__bg" src="./assets/landing/vector.webp" alt="" width="1600" height="679" loading="lazy" />
+      <div class="container landing-cta-band__inner">
+        <h2 id="cta-final-t">Pronto para estudar o que importa?</h2>
+        <p>Crie sua conta, faça o diagnóstico e receba seu primeiro roteiro explicado.</p>
+        <div class="landing-actions">
+          <a class="btn btn--on-navy btn--lg" href="./cadastro.html">Começar agora</a>
+          <a class="btn btn--hero-ghost btn--lg" href="./login.html">Entrar</a>
         </div>
       </div>
     </section>

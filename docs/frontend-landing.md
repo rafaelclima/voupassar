@@ -2,51 +2,54 @@
 
 > Página pública em `frontend/index.html` (+ `css/landing.css`).
 > Reutiliza tokens e componentes do design system (TASK 6.1) — nada foi
-> reinventado. Referências de ofício: `frontend/assets/home_example.webp`
-> (cartão navy em viewport único, headline gigante, stats) +
-> `frontend/assets/home2_example.webp` (shell claro, prévia do produto
-> com pílulas flutuantes). A paleta segue a marca navy; sem ilustração,
-> sem perfumaria.
+> reinventado. Hero navy preservado + 5 seções claras abaixo com as
+> imagens geradas em `frontend/assets/landing/` (desk, hero, numbers,
+> simulation, students, vector — ~190 KB no total, otimizadas via ffmpeg
+> para webp real). A paleta segue a marca navy; sem aparência infantil.
 
-## 1. Objetivos (TASKS.md) → hero tela cheia (sem rolagem no desktop)
+## 1. Objetivos (TASKS.md) → hero preservado + seções que explicam
 
-| Objetivo | Bloco do hero |
+| Objetivo | Bloco |
 |---|---|
-| Explicar propósito | `#hero-t` ("Questões, roteiro e simulados para a sua prova") + lead concreto (o que o cadastro entrega), genérico por decisão de produto |
-| Transmitir confiança | `#hero-brand`: faixa com a logo e o nome do projeto (a fileira de números 3/2/1 foi removida — confusa) |
-| Demonstrar funcionalidades | `#hero-visual`: marca em grande + mock em CSS do roteiro + pílulas "Roteiro que se explica" / "Simulado como a prova" (nenhum enunciado exibido) |
-| Apresentar proposta de valor | o próprio mock: recomendação com motivo (prioridade + desempenho) |
-| Direcionar cadastro/login | CTAs "Começar agora" → `cadastro.html`, "Entrar" → `login.html` (hero + pill + rodapé) |
+| Explicar propósito | `#hero-t` + lead ("com base em provas reais organizadas por assunto"), genérico por decisão de produto + `#o-que-e` (3 pilares com imagem) |
+| Transmitir confiança | `#hero-brand` (faixa com logo) + `#de-onde-vem` (foto de estudantes + texto honesto origem/visão) |
+| Demonstrar funcionalidades | `#hero-visual` (mock em CSS, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
+| Apresentar proposta de valor | `#como-funciona` (cadeia prova real → organização → roteiro → evolução, AGENTS.md §32) |
+| Direcionar cadastro/login | CTAs "Começar agora" → `cadastro.html`, "Entrar" → `login.html` (hero + `#cta-final` + `#de-onde-vem`) |
 
 ## 2. Honestidade (AGENTS.md §4 — nada inventado)
 
 * A mensagem da landing é genérica por decisão de produto (a plataforma
-  pode crescer além de um exame específico): sem "IFRN", sem contagens
-  do acervo, sem promessa de cobertura.
+  mira IFs, ENEM e concursos): sem prender a um exame, sem contagens
+  do acervo, sem promessa de cobertura. A seção `#de-onde-vem` declara
+  a visão multi-exame com badge `EM EXPANSÃO` — novas trilhas só com
+  acervo real classificado.
 * A evidência do acervo (240 questões, 6 edições, 2021 ausente, 5
   anuladas, 20+20+1 por edição) continua verificada nas telas do app
-  (`estudos`/`simulado`), na área admin e em `docs/` — o
-  `check_frontend.py` deixou de exigi-la na landing, não no projeto.
+  (`estudos`/`simulado`), na área admin e em `docs/` — não na landing.
 * Sem preço/planos ("grátis" é termo barrado no `check_frontend.py`),
   sem "garantia", sem "milhares", sem "todas as edições".
+* Imagens geradas por IA são ilustrativas (sem texto legível, sem
+  enunciado real) e têm `alt` honesto.
 
 ## 3. Ofício visual
 
-O redesenho segue a referência PIXORA de perto: página inteira sobre
-o navy (sem cartão inset), header com pill de navegação branca ao
-centro e CTA à direita, headline gigante com linha de acento, CTA em
-pílula simples (a seta em círculo foi removida), stats com ícones SVG
-e arte ocupando o lado direito. A arte é a marca do header
-(`logo-mark-light.png`, 104px ≤ 107px nativos) angulada 12° sobre o
-canto superior direito do mock — combinação pedida em vez de
-ilustração genérica. Sem alternador de tema nesta tela (canvas idêntico
-nos dois temas; `.theme-toggle` com `display:none`) e rodapé sem
-Entrar/Criar conta (a página não rola, sem esforço para alcançar as
-ações). Ícones são SVG inline
-de forma reconhecível (lista, relógio, bússola, documento), nunca
-glifos soltos. AGENTS.md §6 manda evitar
-aparência infantil e excesso de cores: nada de laranja/teal da
-referência, só navy + azul-claro + branco.
+O hero segue a referência PIXORA: canvas navy de borda a borda, header
+com pill de navegação branca ao centro e CTA à direita, headline
+gigante com linha de acento, mock em CSS puro com pílulas flutuantes.
+O visual da direita usa a arte gerada (`hero.webp`, 900px, estudante
+diante da jornada em degraus) como fundo do painel com bordas
+dissolvidas no canvas via máscara radial — mock e pílulas preservados
+por cima, `alt` vazio (região com `aria-label`, mensagem no mock).
+As seções abaixo são claras (tokens `surface`/`bg-100`, que adaptam ao
+dark) com grid de 3 cards (`desk`/`numbers`/`simulation`), passos
+numerados via CSS counter, modos de estudo, feature 2 colunas
+(`students.webp` 1200px) e banda CTA navy com `vector.webp` ao fundo
+(1600px, `opacity: 0.55` + texto com `z-index`).
+
+Imagens: `width`/`height` declarados (sem CLS), `loading="lazy"`,
+`aspect-ratio` + `object-fit: cover` para cartões uniformes.
+AGENTS.md §6: só navy + azul-claro + branco, sem infantil.
 
 Recursos: canvas navy fixo nos dois temas (gradiente próprio),
 2 colunas a 64rem, `body` em flex com `min-height: 100dvh` (header +
@@ -93,7 +96,7 @@ Chrome DevTools MCP, conferido neste redesenho:
 | Console (erro + warning) | limpo |
 | Marca no header a 390px | wordmark completo (bug de flex-shrink corrigido em `base.css`) |
 | Menu mobile | painel suspenso abaixo do header, largura total |
-| `check_frontend.py` | OK — 51 arquivos, 3 blocos da landing (`hero-t`, `hero-brand`, `hero-visual`) |
+| `check_frontend.py` | OK — 58 arquivos, 8 blocos da landing (`hero-t`, `hero-brand`, `hero-visual`, `o-que-e`, `como-funciona`, `como-praticar`, `de-onde-vem`, `cta-final`) |
 
 Correções que saíram da validação e afetam **todas** as telas, feitas
 em `base.css`:

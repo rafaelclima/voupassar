@@ -1,14 +1,8 @@
-/* VouPassar — landing full-screen (referência PIXORA)
+/* VouPassar — landing (hero navy + seções claras)
  *
- * A página INTEIRA é o hero: canvas navy de borda a borda, sem cartão
- * inset e sem rolagem no desktop. Header sobre o navy (marca à
- * esquerda, pill de navegação ao centro, ação à direita), mensagem à
- * esquerda e a marca em grande com o mock do roteiro à direita.
- *
- * O navy é FIXO nos dois temas (gradiente próprio, nunca tokens
- * primary — a escala primary inverte no dark e quebraria o contraste).
- * Contrastes medidos: branco sobre o gradiente 8,4–14,5:1; #dbe9f7
- * 6,8–11,7:1; acento #7fb4e4 ~7:1 sobre o navy mais escuro.
+ * O HERO segue navy de borda a borda (canvas fixo nos dois temas).
+ * As seções abaixo usam surfaces do design system e acompanham o
+ * tema claro/escuro via tokens — nunca branco fixo em texto.
  */
 
 body.landing-page {
@@ -296,17 +290,6 @@ body.landing-page {
   padding: var(--space-8) var(--space-2);
 }
 
-/* A logo-full é navy sobre transparente: invertida vira arte branca
- * sobre o canvas, como o panda da referência ocupa o lado direito.
- * Ancorada no topo e estourando à direita: só um indício passa atrás
- * do mock, sem cruzar o texto do cartão. */
-/* A marca em grande e legível: logo-full invertida para branco em
- * opacidade total, com sombra para destacar do canvas e brilho azul
- * atrás (::before). O mock sobrepõe a base — composição produto +
- * marca, não marca apagada.
- *
- * Largura máxima 20rem = 320px = largura nativa do arquivo: exibir
- * maior reprovava o Lighthouse em `image-size-responsive` (upscale). */
 /* O alternador de tema é visível em todas as páginas, conforme TASK 8.4.
  * Na landing o canvas navy é idêntico nos dois temas, mas o botão
  * permanece acessível e respeita o header. */
@@ -314,34 +297,23 @@ body.landing-page {
   display: inline-flex;
 }
 
-/* Composição: mock centralizado com a marca do header angulada sobre o
- * canto superior direito — produto + marca, sem ilustração genérica.
- * A marca clara (logo-mark-light) é a legível sobre navy.
+/* Composição: arte gerada (estudante diante da jornada em degraus)
+ * como fundo do painel, com o mock e as pílulas por cima — produto
+ * real + ilustração que explica. A arte tem fundo navy próprio e as
+ * bordas são dissolvidas no canvas via máscara radial, sem moldura.
  *
- * Largura 6.5rem = 104px ≤ 107px nativos: exibir maior reprovava o
- * Lighthouse em `image-size-responsive` (upscale). */
-.landing-visual::before {
-  content: "";
+ * Arquivo 900px para ~500px exibidos: sem upscale (Lighthouse
+ * `image-size-responsive` OK). `alt` vazio de propósito: a região já
+ * tem `aria-label` e a mensagem está no mock + pílulas. */
+.hero-art {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 26rem;
-  height: 26rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(61 143 209 / 0.35) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.brand-art {
-  position: absolute;
-  z-index: 2;
-  top: calc(var(--space-3) - 20px);
-  right: calc(var(--space-1) - 10px);
-  width: 6.5rem;
-  height: auto;
-  transform: rotate(8deg);
-  filter: drop-shadow(0 16px 32px rgb(0 0 0 / 0.5));
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(115% 115% at 50% 45%, #000 55%, transparent 98%);
+  mask-image: radial-gradient(115% 115% at 50% 45%, #000 55%, transparent 98%);
   pointer-events: none;
   user-select: none;
 }
@@ -551,17 +523,285 @@ body.landing-page {
     gap: var(--space-3);
     min-height: 0;
   }
-
-  .brand-art {
-    width: 5rem;
-    top: var(--space-1);
-    right: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mock,
   .float-pill {
     box-shadow: none;
+  }
+}
+
+/* ============ Seções claras abaixo do hero ============
+ * Hero navy (acima) é fixo nos dois temas; daqui para baixo tudo usa
+ * tokens de surface/ink, que já adaptam ao dark. Imagens geradas têm
+ * fundo claro próprio e funcionam como peça impressa nos dois temas.
+ */
+.landing-section {
+  background: var(--color-surface);
+  color: var(--color-ink-900);
+  padding-block: var(--space-16);
+}
+
+.landing-section--alt {
+  background: var(--color-bg-100);
+  border-block: 1px solid var(--color-line-100);
+}
+
+.section-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-primary-600);
+  margin: 0 0 var(--space-3);
+}
+
+.landing-section h2 {
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tighter);
+  line-height: var(--leading-heading);
+  text-wrap: balance;
+  max-width: 28ch;
+  margin: 0 0 var(--space-4);
+}
+
+.section-lead {
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: var(--color-ink-700);
+  max-width: 62ch;
+  margin: 0 0 var(--space-8);
+}
+
+/* Cards "Do que se trata" */
+.landing-cards {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+.landing-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  align-content: start;
+}
+
+.landing-section--alt .landing-card {
+  background: var(--color-surface);
+}
+
+.landing-card img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  background: var(--color-bg-100);
+  border-bottom: 1px solid var(--color-line-200);
+}
+
+.landing-card h3 {
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  margin: var(--space-5) var(--space-5) var(--space-2);
+}
+
+.landing-card p {
+  color: var(--color-ink-700);
+  margin: 0 var(--space-5) var(--space-6);
+  line-height: var(--leading-body);
+}
+
+/* Passos "Como funciona" */
+.landing-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.landing-steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.landing-steps li::before {
+  content: counter(step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+/* Bloco de texto ocupa a 2ª coluna inteira: título em cima,
+ * descrição embaixo — nunca ao lado um do outro. */
+.landing-steps__body {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+}
+
+.landing-steps strong {
+  display: block;
+  font-size: var(--text-md);
+}
+
+.landing-steps span {
+  display: block;
+  color: var(--color-ink-700);
+  line-height: var(--leading-body);
+}
+
+/* Modos "Como você pratica" */
+.landing-modes {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+  margin-bottom: var(--space-6);
+}
+
+.landing-mode {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  background: var(--color-bg-100);
+}
+
+.landing-mode h3 {
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-2);
+}
+
+.landing-mode p {
+  color: var(--color-ink-700);
+  margin: 0;
+  line-height: var(--leading-body);
+}
+
+.landing-note {
+  color: var(--color-ink-700);
+  max-width: 68ch;
+  line-height: var(--leading-body);
+}
+
+.landing-note a {
+  color: var(--color-primary-600);
+  font-weight: 700;
+}
+
+.landing-actions--section {
+  margin-top: var(--space-6);
+}
+
+/* Feature "Para quem é" */
+.landing-feature {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+.landing-feature__img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-line-200);
+  box-shadow: var(--shadow-md);
+}
+
+.landing-feature .badge {
+  margin-right: var(--space-2);
+}
+
+/* Banda CTA final sobre navy com a arte de evolução */
+.landing-cta-band {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a2138 0%, #0d2b45 45%, #10395e 100%);
+  background-color: #0a2138;
+  color: #fff;
+  padding-block: var(--space-16);
+}
+
+.landing-cta-band__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+}
+
+.landing-cta-band__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-4);
+  max-width: 36rem;
+}
+
+.landing-cta-band h2 {
+  color: #fff;
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tighter);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.landing-cta-band p {
+  color: #d7e7f6;
+  font-size: var(--text-lg);
+  margin: 0;
+}
+
+@media (min-width: 48rem) {
+  .landing-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .landing-modes {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .landing-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .landing-feature {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+
+  .landing-cta-band__inner {
+    max-width: 40rem;
   }
 }
