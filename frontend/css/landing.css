@@ -504,6 +504,99 @@ body.landing-page {
   }
 }
 
+/* ============ Mobile (<64rem, sem foto): hero redesenhada para celular ============
+ * Escopo max-width de propósito: o desktop (>=64rem, com a arte em tela
+ * cheia) segue intacto. No celular a hero era só o gradiente com o H1 em
+ * --text-display (~43px a 390px), stats em flex-wrap (2+1 desalinhado) e
+ * anéis decorativos cruzando o texto. Aqui: tipo contido, stats em 3
+ * colunas iguais, marca compacta e anéis empurrados para fora do texto. */
+@media (max-width: 63.9375rem) {
+  .hero-card {
+    align-content: start;
+  }
+
+  .hero-card__copy {
+    gap: var(--space-4);
+    padding-top: calc(var(--header-h) + var(--space-5));
+  }
+
+  .landing-hero h1 {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+    line-height: 1.08;
+    max-width: 16ch;
+  }
+
+  .landing-lead {
+    font-size: var(--text-md);
+    line-height: 1.6;
+  }
+
+  .landing-kicker {
+    font-size: 0.7rem;
+    line-height: 1.4;
+    padding: 0.4rem 0.8rem;
+    max-width: 100%;
+  }
+
+  .landing-actions {
+    width: 100%;
+  }
+
+  .landing-hero .btn--lg {
+    min-height: 52px;
+    padding: 0.875rem 1.25rem;
+    font-size: var(--text-md);
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    width: 100%;
+  }
+
+  .hero-stats li + li {
+    padding-left: var(--space-3);
+  }
+
+  .hero-stats strong {
+    font-size: 1.375rem;
+  }
+
+  .hero-stats span {
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .hero-brand {
+    padding-top: var(--space-4);
+    gap: var(--space-3);
+    width: 100%;
+  }
+
+  .hero-brand img {
+    width: 2rem;
+  }
+
+  .hero-brand strong {
+    font-size: var(--text-2xl);
+  }
+
+  /* Anéis para fora do texto: antes cruzavam o H1 e os stats. */
+  .landing-hero::before {
+    width: 18rem;
+    height: 18rem;
+    inset: auto -10rem -12rem auto;
+  }
+
+  .landing-hero::after {
+    width: 16rem;
+    height: 16rem;
+    inset: -12rem auto auto -12rem;
+  }
+}
+
 @media (max-width: 26rem) {
   .landing-actions .btn {
     flex: 1 1 100%;
