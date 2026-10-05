@@ -1,8 +1,30 @@
-# Arte da hero (`assets/landing/hero.webp`)
+# Arte da hero (`assets/landing/hero*.webp`)
 
-## Variante atual: retrato para o cartão (EM USO)
+## Derivados responsivos (EM USO)
 
-A hero é um **cartão arredondado** (referência `assets/home_example.webp`):
+A mestre é `assets/landing/hero_portrait_45.jpg` (1856×2304). Dela saem 4
+derivados via ffmpeg (nunca `scale` com distorção: só scale proporcional),
+qualidade 80–82 para não perder os brilhos:
+
+```bash
+ffmpeg -y -i hero_portrait_45.jpg -vf "scale=768:-2"  -c:v libwebp -quality 80 frontend/assets/landing/hero-768.webp   # ~17 KB
+ffmpeg -y -i hero_portrait_45.jpg -vf "scale=1100:-2" -c:v libwebp -quality 80 frontend/assets/landing/hero-1100.webp  # ~27 KB
+ffmpeg -y -i hero_portrait_45.jpg -vf "scale=1600:-2" -c:v libwebp -quality 82 frontend/assets/landing/hero-1600.webp  # ~46 KB
+ffmpeg -y -i hero_portrait_45.jpg -vf "scale=1856:-2" -c:v libwebp -quality 82 frontend/assets/landing/hero-1856.webp  # ~56 KB
+cp frontend/assets/landing/hero-1100.webp frontend/assets/landing/hero.webp  # fallback / compat
+```
+
+O HTML usa `<picture>` com `media="(min-width: 64rem)"` + `srcset`/`sizes`
+(`(min-width: 120rem) 60rem, 48vw`): o mobile nem baixa os arquivos
+grandes e cada viewport recebe resolução próxima da sua densidade — sem
+upscale (`clientWidth / naturalWidth ≤ 1`) e sem perda de qualidade. No
+mobile a arte some (`display:none`) e a hero vira gradiente navy com as
+cores do projeto. `check_frontend.py` exige os 5 arquivos (`hero.webp` +
+4 derivados).
+
+## Variante atual: retrato full-bleed (EM USO)
+
+A hero é um **cartão arredondado** (referência `assets/home_hero_example.png`):
 copy à esquerda, arte sangrando até as bordas direita/topo/fundo. No
 mobile a mesma arte aparece **inteira** abaixo da copy; no desktop ela
 preenche a metade direita via `cover` (caixa ~0.85). Por isso a arte

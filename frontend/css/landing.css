@@ -119,7 +119,29 @@ body.landing-page {
   }
 }
 
-/* ============ Hero tela cheia ============ */
+/* Header alinhado à hero full-bleed: mesma respiração lateral da copy,
+ * então marca e H1 nascem na mesma linha vertical (como na referência). */
+@media (min-width: 64rem) {
+  .landing-header > .container {
+    max-width: none;
+    padding-inline: max(var(--space-10), 6vw);
+  }
+}
+
+/* ============ Hero full-bleed (referência home_hero_example.png) ============
+ * Canvas navy de borda a borda até 1920px: header + copy + arte são uma
+ * coisa só e ocupam o primeiro viewport (100svh). Copy à esquerda, arte
+ * à direita como fundo de tudo (coluna direita com cover). Sem overlay
+ * sobre o texto, sem espelho, sem véu: a arte nasce com a borda esquerda
+ * em navy puro e encontra a copy sem emenda.
+ *
+ * Mobile (<64rem): SEM imagem — .landing-visual em display:none e o
+ * <source> com media impede o download dos arquivos grandes. O fundo vira
+ * um desenho em gradiente com as cores do projeto (navy + azul + um toque
+ * de violeta contido, como no body).
+ *
+ * >1920px (120rem): laterais em navy sólido harmonizado; .hero-card e o
+ * header travam em 120rem centralizados — o conteúdo nunca vaza. */
 .landing-main {
   flex: 1;
   display: flex;
@@ -138,33 +160,20 @@ body.landing-page {
   padding-block: 0;
   position: relative;
   overflow: clip;
-}
-
-/* ============ Hero em cartão (referência home_example.webp) ============
- * Cartão arredondado contendo a hero: copy à esquerda, arte sangrando
- * até as bordas direita/topo/fundo do cartão. Coluna única no mobile
- * (copy + arte abaixo, inteira); 2 colunas no desktop. Sem overlay
- * (texto nunca cobre a arte), sem espelho, sem véu. */
-
-.landing-hero__grid,
-.landing-hero__copy {
-  display: contents;
+  background:
+    radial-gradient(110% 60% at 100% 0%, rgb(61 143 209 / 0.35) 0%, transparent 55%),
+    radial-gradient(80% 50% at 90% 100%, rgb(109 67 204 / 0.28) 0%, transparent 60%),
+    linear-gradient(160deg, #0a2138 0%, #0d2b45 55%, #10395e 100%);
+  background-color: #0a2138;
 }
 
 .hero-card {
   position: relative;
-  overflow: hidden;
+  width: 100%;
+  min-height: inherit;
   display: grid;
   grid-template-columns: 1fr;
   align-content: center;
-  border-bottom: 1px solid rgb(255 255 255 / 0.12);
-  background:
-    radial-gradient(120% 140% at 85% -10%, rgb(61 143 209 / 0.35) 0%, transparent 55%),
-    linear-gradient(135deg, #0a2138 0%, #0d2b45 55%, #123a5e 100%);
-  background-color: #0a2138;
-  box-shadow: 0 32px 80px -24px rgb(0 0 0 / 0.55);
-  width: 100%;
-  min-height: inherit;
 }
 
 .hero-card__copy {
@@ -178,25 +187,13 @@ body.landing-page {
   z-index: 1;
 }
 
-/* Sangria: a arte encosta nas bordas do cartão. No mobile ela aparece
- * inteira abaixo da copy (img estática, proporção natural do arquivo —
- * zero corte); no desktop preenche a metade direita via cover (crop
- * mínimo, só do navy vazio — ver o prompt da variante retrato em
- * docs/hero-art-prompt.md). */
+/* Mobile: arte desligada — o desenho em gradiente acima é a hero. */
 .landing-visual {
-  min-width: 0;
-  position: relative;
+  display: none;
 }
 
-.hero-art {
-  display: block;
-  width: 100%;
-  height: auto;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Anéis decorativos: só forma, sem imagem. */
+/* Anéis decorativos: só forma, sem imagem. No mobile são o charme da
+ * hero; no desktop viram profundidade atrás da arte. */
 .landing-hero::before {
   content: "";
   position: absolute;
@@ -206,6 +203,18 @@ body.landing-page {
   border-radius: 50%;
   border: 1px solid rgb(255 255 255 / 0.12);
   background: radial-gradient(circle, rgb(255 255 255 / 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.landing-hero::after {
+  content: "";
+  position: absolute;
+  inset: -10rem auto auto -10rem;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  border: 1px solid rgb(127 180 228 / 0.14);
+  background: radial-gradient(circle, rgb(61 143 209 / 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -295,14 +304,55 @@ body.landing-page {
   color: #fff;
 }
 
+/* ============ Stats da hero (faixa estilo PIXORA, números honestos) ============
+ * Só formato verificável no frontend (2 disciplinas, 3 modos, 2 simulados).
+ * Sem contagens de acervo: curadoria pendente, 0 PUBLICÁVEL (AGENTS.md §4).
+ * Número em branco tabular, rótulo em azul-claro (~7:1 sobre navy). */
+.hero-stats {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-2) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+}
+
+.hero-stats li {
+  display: grid;
+  gap: 0.15rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.hero-stats li + li {
+  border-left: 1px solid rgb(255 255 255 / 0.16);
+  padding-left: var(--space-6);
+}
+
+.hero-stats strong {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-tighter);
+  line-height: 1.1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-stats span {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #bcd7ef;
+  line-height: 1.4;
+}
+
 /* ============ Faixa de marca (logo + nome, sem números) ============ */
 .hero-brand {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: var(--space-4);
-  margin: var(--space-4) 0 0;
-  padding: var(--space-6) 0 0;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-5) 0 0;
   border-top: 1px solid rgb(255 255 255 / 0.16);
 }
 
@@ -366,15 +416,10 @@ body.landing-page {
 }
 
 @media (min-width: 64rem) {
-  /* 2 colunas: copy com respiro, arte sangrando na metade direita. */
-/* Hero full-width: o cartão encosta nas bordas da viewport (sem
- * gutters), com a copy respirando via padding interno. */
-.landing-hero > .container {
-  max-width: none;
-  padding-inline: 0;
-}
-
-.hero-card {
+  /* 2 colunas: copy com respiro à esquerda, arte ao fundo da metade
+   * direita (cover com crop só do navy vazio — a mestre retrato tem
+   * proporção ~0,8, quase a da coluna em 1080p, então o corte é mínimo). */
+  .hero-card {
     grid-template-columns: 1.05fr 0.95fr;
     align-items: stretch;
   }
@@ -385,15 +430,53 @@ body.landing-page {
   }
 
   .landing-visual {
+    display: block;
+    min-width: 0;
     min-height: 0;
+    position: relative;
+  }
+
+  /* O <picture> preenche a coluna; o <img> faz o cover. Sem véu sobre a
+   * arte: a borda esquerda do arquivo já desce em navy puro. */
+  .landing-visual picture {
+    position: absolute;
+    inset: 0;
+    display: block;
   }
 
   .hero-art {
-    position: absolute;
-    inset: 0;
+    display: block;
+    width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 35%;
+    object-position: 50% 30%;
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+/* Telas maiores que 1080p (largura > 1920px): laterais em navy sólido
+ * harmonizado; conteúdo travado em 120rem — nada vaza para as bordas. */
+@media (min-width: 120rem) {
+  .landing-hero {
+    background: var(--color-navy-900);
+    background-image: none;
+  }
+
+  .hero-card {
+    max-width: 120rem;
+    margin-inline: auto;
+    border-inline: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .hero-card__copy {
+    padding-left: var(--space-10);
+  }
+
+  .landing-header > .container {
+    max-width: 120rem;
+    margin-inline: auto;
+    padding-inline: var(--space-10);
   }
 }
 
@@ -445,7 +528,10 @@ body.landing-page {
   margin: 0 0 var(--space-8);
 }
 
-/* Cards "Do que se trata" */
+/* Cards "Do que se trata": peça com faixa superior em gradiente da marca,
+ * zoom suave na imagem e elevação no hover — vida nos dois temas sem sair
+ * dos tokens. O dark ganha borda mais marcada (line-300) porque surface
+ * sobre surface só se separa pela borda. */
 .landing-cards {
   display: grid;
   gap: var(--space-6);
@@ -453,6 +539,7 @@ body.landing-page {
 }
 
 .landing-card {
+  position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-xl);
@@ -460,6 +547,25 @@ body.landing-page {
   box-shadow: var(--shadow-sm);
   display: grid;
   align-content: start;
+  transition: box-shadow var(--motion-base), border-color var(--motion-base),
+    transform var(--motion-base);
+}
+
+.landing-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary-600), var(--color-accent-500));
+  z-index: 1;
+}
+
+.landing-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-200);
+  transform: translateY(-4px);
 }
 
 .landing-section--alt .landing-card {
@@ -474,6 +580,11 @@ body.landing-page {
   display: block;
   background: var(--color-bg-100);
   border-bottom: 1px solid var(--color-line-200);
+  transition: transform var(--motion-slow);
+}
+
+.landing-card:hover img {
+  transform: scale(1.03);
 }
 
 .landing-card h3 {
@@ -486,6 +597,16 @@ body.landing-page {
   color: var(--color-ink-700);
   margin: 0 var(--space-5) var(--space-6);
   line-height: var(--leading-body);
+}
+
+[data-theme="dark"] .landing-card {
+  border-color: var(--color-line-300);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.35);
+}
+
+[data-theme="dark"] .landing-card:hover {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.5);
 }
 
 /* Passos "Como funciona" */
@@ -501,6 +622,8 @@ body.landing-page {
 
 .landing-steps li {
   counter-increment: step;
+  position: relative;
+  overflow: hidden;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: var(--space-4);
@@ -509,6 +632,25 @@ body.landing-page {
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
+  padding-top: calc(var(--space-5) + 4px);
+  transition: box-shadow var(--motion-base), border-color var(--motion-base),
+    transform var(--motion-base);
+}
+
+.landing-steps li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary-600), var(--color-accent-500));
+}
+
+.landing-steps li:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-200);
+  transform: translateY(-2px);
 }
 
 .landing-steps li::before {
@@ -516,14 +658,27 @@ body.landing-page {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: var(--radius-pill);
-  background: var(--color-primary-100);
-  color: var(--color-primary-700);
+  /* Número em gradiente fixo da marca (não inverte no dark): branco sobre
+   * #0f5084→#6d43cc mede ~6:1, legível nos dois temas. */
+  background: linear-gradient(135deg, #0f5084 0%, #6d43cc 100%);
+  color: #fff;
   font-weight: 800;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+  box-shadow: var(--shadow-brand);
+}
+
+[data-theme="dark"] .landing-steps li {
+  border-color: var(--color-line-300);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.35);
+}
+
+[data-theme="dark"] .landing-steps li:hover {
+  border-color: var(--color-primary-400);
 }
 
 /* Bloco de texto ocupa a 2ª coluna inteira: título em cima,
@@ -555,10 +710,41 @@ body.landing-page {
 }
 
 .landing-mode {
+  position: relative;
+  overflow: hidden;
   border: 1px solid var(--color-line-200);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
-  background: var(--color-bg-100);
+  padding-top: calc(var(--space-5) + 3px);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--motion-base), border-color var(--motion-base),
+    transform var(--motion-base);
+}
+
+.landing-mode::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent-500), var(--color-primary-400));
+}
+
+.landing-mode:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-200);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .landing-mode {
+  border-color: var(--color-line-300);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.35);
+}
+
+[data-theme="dark"] .landing-mode:hover {
+  border-color: var(--color-primary-400);
 }
 
 .landing-mode h3 {
@@ -603,7 +789,11 @@ body.landing-page {
   display: block;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-line-200);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .landing-feature__img {
+  border-color: var(--color-line-300);
 }
 
 .landing-feature .badge {

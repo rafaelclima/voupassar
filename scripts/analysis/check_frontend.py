@@ -85,6 +85,10 @@ REQUIRED_FILES = [
     "assets/figures/manifest.json",
     "assets/landing/desk.webp",
     "assets/landing/hero.webp",
+    "assets/landing/hero-768.webp",
+    "assets/landing/hero-1100.webp",
+    "assets/landing/hero-1600.webp",
+    "assets/landing/hero-1856.webp",
     "assets/landing/numbers.webp",
     "assets/landing/simulation.webp",
     "assets/landing/students.webp",
@@ -124,7 +128,7 @@ REQUIRED_SECTIONS = [
 # de-onde-vem / cta-final). Mensagem genérica por decisão de produto;
 # o validador exige o hero completo + as seções + honestidade.
 REQUIRED_LANDING_SECTIONS = [
-    "hero-t", "hero-brand", "hero-visual",
+    "hero-t", "hero-brand", "hero-stats", "hero-visual",
     "o-que-e", "como-funciona", "como-praticar",
     "de-onde-vem", "cta-final",
 ]

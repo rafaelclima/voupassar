@@ -34,32 +34,47 @@
 
 ## 3. Ofício visual
 
-O hero segue a referência `assets/home_example.webp` (PIXORA): **faixa
-full-width** (largura inteira da página, sem gutters) contando a hero —
-copy à esquerda (kicker pill, headline, lead, 2 CTAs, faixa de marca
-como linha de confiança), arte sangrando até as bordas
-direita/topo/fundo. Coluna única no mobile (copy + arte inteira
-abaixo); 2 colunas no desktop. Sem overlay (o texto nunca cobre a
+O hero segue a referência `assets/home_hero_example.png` (PIXORA): **faixa
+full-bleed** (largura inteira da página até 1920px, sem gutters) contendo
+header + hero como uma coisa só — copy à esquerda (kicker pill, headline,
+lead, 2 CTAs, stats de formato, faixa de marca como linha de confiança),
+arte ao fundo da metade direita via `cover`. Coluna única no mobile **sem
+imagem** (fundo em gradiente navy + azul + toque de violeta, com anéis
+decorativos); 2 colunas no desktop. Sem overlay (o texto nunca cobre a
 arte), sem espelho, sem véu/scrim.
+
+Os stats da hero (`#hero-stats`) são só de **formato verificável** — 2
+disciplinas, 3 modos, 2 simulados. Sem contagens de acervo na landing: a
+curadoria segue pendente (0 `PUBLICÁVEL`), então 240/6 edições não aparecem
+aqui (AGENTS.md §4).
 
 Header e hero são **uma coisa só**: o header é transparente e flutua
 sobre o topo da hero (`position: absolute`), e a hero tem `min-height:
 100svh` (com fallback `100vh`) — abrir a página mostra exatamente
 header + hero, e a rolagem revela as seções claras abaixo. A copy tem
-`padding-top` calculado do `--header-h` para nunca ficar sob o header.
+`padding-top` calculado do `--header-h` para nunca ficar sob o header. No
+desktop a marca do header alinha à esquerda com o H1 (mesmo respiro
+`max(2.5rem, 6vw)`). Acima de 1920px de largura as laterais viram navy
+sólido (`navy-900`) e hero + header travam em 120rem centralizados.
 
-A arte (`hero.webp`, variante **retrato** gerada via prompt em
-`docs/hero-art-prompt.md`) mostra os dois estudantes — menino e menina,
-ambos com mochila — por inteiro, além de degraus e cronômetro; a borda
-esquerda desce em navy puro para encontrar a copy sem emenda. No mobile
-ela aparece inteira (proporção natural); no desktop preenche a metade
-direita via `cover` com crop só do navy vazio. `alt` vazio (decorativa
-— a mensagem está no H1 + CTAs), `width`/`height` declarados (sem CLS),
-`fetchpriority="high"`.
+A arte (família `hero-*.webp`, derivados responsivos da mestre
+`hero_portrait_45.jpg` 1856×2304 via `ffmpeg -vf "scale=W:-2" -quality
+80/82`: 768/1100/1600/1856, ~17–56 KB no total) mostra os dois estudantes
+— menino e menina, ambos com mochila — por inteiro, além de degraus e
+cronômetro; a borda esquerda desce em navy puro para encontrar a copy sem
+emenda. O `<picture>` usa `media="(min-width: 64rem)"` (o mobile nem baixa
+os arquivos grandes) com `sizes="(min-width: 120rem) 60rem, 48vw`; no
+desktop preenche a metade direita via `cover` com crop só do navy vazio
+(a coluna tem proporção ~0,84 em 1080p, quase a da mestre ~0,8).
+`alt` vazio (decorativa — a mensagem está no H1 + CTAs),
+`width`/`height` declarados (sem CLS), `fetchpriority="high"`.
 As seções abaixo são
 claras (tokens `surface`/`bg-100`, que adaptam ao
-dark) com grid de 3 cards (`desk`/`numbers`/`simulation`), passos
-numerados via CSS counter, modos de estudo, feature 2 colunas
+dark) com grid de 3 cards com faixa superior em gradiente da marca, zoom
+suave na imagem e elevação no hover (`desk`/`numbers`/`simulation`),
+passos com número em pill de gradiente + faixa superior, modos com faixa
+superior (todos com `border-color` reforçada no dark, onde surface sobre
+surface só se separa pela borda), feature 2 colunas
 (`students.webp` 1200px) e banda CTA navy com `vector.webp` ao fundo
 (1600px, `opacity: 0.55` + texto com `z-index`).
 
