@@ -42,6 +42,7 @@ gigante com linha de acento. A arte é servida de forma **responsiva**
 | Breakpoint | Layout | Fonte |
 |---|---|---|
 | `≥ 64rem` (desktop, tablet landscape) | Full-bleed: `absolute inset: 0`, `cover`, `object-position: 75% 50%`, texto à esquerda por cima (`z-index` maior, sem mudar copy/ordem/estilo) | `hero.webp` (1200w) / `hero-2400.webp` (2400w), `sizes="100vw"` — a 2400 cobre telas grandes sem upscale |
+| `≥ 112rem` (telas muito largas) | A hero cresce com a largura (`min-height: min(38vw, 60rem)`) para o crop do `cover` encolher; a partir de `128rem` o `object-position` ancora em `75% 30%` (cronômetro + estudantes + degraus; o que sai é perna) | mesma dupla acima; acima de 2752px de viewport há upscale (limite da fonte-mestre — regenerar maior se preciso) |
 | `< 64rem` (mobile, tablet retrato) | Empilhado: texto sobre o navy limpo + arte como **cartão contido** abaixo (`border-radius`, sem overlay, sem corte lateral) | `hero-portrait.webp` (900×1125, 4:5 — crop do terço direito da fonte, já enquadra estudantes, degraus e cronômetro) |
 
 A arte (gerada via prompt em `docs/hero-art-prompt.md`) já nasce com os

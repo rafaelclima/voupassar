@@ -400,6 +400,27 @@ body.landing-page {
   }
 }
 
+/* Telas muito largas (≥ 112rem): sem isso a hero continua com a altura
+ * do conteúdo (~750px) e o cover corta quase metade da arte (em 2560px
+ * só 53% da altura sobrevive: cronômetro fora, corpos cortados). A hero
+ * cresce suavemente com a largura (38vw, teto 60rem) para o crop
+ * encolher. Só a partir de 128rem o object-position ancora a faixa
+ * visível mais para o topo (cronômetro + cabeças + troncos + degraus;
+ * o que sai é perna) — abaixo disso o 50% padrão já entrega a cena
+ * aprovada sem jogar cartão para trás do lead.
+ * Acima da largura da fonte-mestre (2752px) há upscale — ver §3. */
+@media (min-width: 112rem) {
+  .landing-hero {
+    min-height: min(38vw, 60rem);
+  }
+}
+
+@media (min-width: 128rem) {
+  .hero-art img {
+    object-position: 75% 30%;
+  }
+}
+
 /* ============ Seções claras abaixo do hero ============
  * Hero navy (acima) é fixo nos dois temas; daqui para baixo tudo usa
  * tokens de surface/ink, que já adaptam ao dark. Imagens geradas têm
