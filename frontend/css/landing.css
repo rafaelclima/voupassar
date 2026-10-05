@@ -150,8 +150,6 @@ body.landing-page {
   gap: var(--space-10);
   grid-template-columns: 1fr;
   align-items: center;
-  position: relative;
-  z-index: 1;
   width: 100%;
 }
 
@@ -160,6 +158,11 @@ body.landing-page {
   display: grid;
   gap: var(--space-5);
   align-content: start;
+  /* Acima da arte no desktop (a arte é z 0): o grid em si é estático
+   * de propósito, para o inset:0 da arte ter a section como referência
+   * e forrar a hero inteira — não só o grid. */
+  position: relative;
+  z-index: 1;
 }
 
 /* Kicker com destaque de pill (ponto pulsante + contorno), para não
@@ -276,12 +279,37 @@ body.landing-page {
   color: #fff;
 }
 
-/* ============ Visual: coluna vazia (arte é full-bleed da hero) ============ */
+/* ============ Visual: cartão empilhado no retrato, full-bleed no desktop ============
+ * Até 64rem a hero é empilhada em coluna única: o texto assenta sobre
+ * o canvas navy limpo e a arte aparece como cartão contido abaixo —
+ * sem overlay, sem corte lateral. A variante retrato (4:5, via
+ * <picture>) já enquadra estudantes, degraus e cronômetro.
+ * A partir de 64rem a arte vira full-bleed atrás do texto (ver media
+ * query abaixo), com srcset 1200/2400 para não estourar nitidez em
+ * telas grandes. Sem espelho em nenhum breakpoint. */
 .landing-visual {
   position: relative;
   z-index: 1;
   min-width: 0;
-  min-height: 22rem;
+}
+
+.hero-art {
+  display: block;
+  width: min(100%, 26rem);
+  margin-inline: auto;
+}
+
+.hero-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.5);
+  pointer-events: none;
+  user-select: none;
 }
 
 /* O alternador de tema é visível em todas as páginas, conforme TASK 8.4.
@@ -289,28 +317,6 @@ body.landing-page {
  * permanece acessível e respeita o header. */
 .landing-page .theme-toggle {
   display: inline-flex;
-}
-
-/* Arte em full-bleed da hero inteira, atrás do conteúdo (grid z 1).
- * Ocupa toda a hero (absolute inset 0 + cover), sem espelho — na
- * orientação original (menino e menina com mochila à direita, degraus
- * ao centro, cronômetro no alto). O object-position deslocado para a
- * direita (75% 50%) escolhe o recorte do cover mantendo mochilas,
- * degraus e cronômetro no quadro, com o navy vazio da própria arte sob
- * o texto à esquerda. Sem véu/scrim: a leitura vem da sombra de texto
- * no H1/lead.
- *
- * `alt` vazio de propósito: decorativa, a mensagem está no H1 + CTAs. */
-.hero-art {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 75% 50%;
-  pointer-events: none;
-  user-select: none;
 }
 
 /* ============ Rodapé mínimo sobre o navy ============ */
@@ -359,16 +365,38 @@ body.landing-page {
     grid-template-columns: 1.05fr 0.95fr;
     gap: var(--space-10);
   }
+
+  /* Full-bleed: a arte sai do fluxo e forra a hero inteira atrás do
+   * texto (grid z 1, arte z 0). A trilha direita do grid fica vazia e
+   * reserva o respiro visual — é por ela que estudantes, degraus e
+   * cronômetro aparecem. Sem espelho, sem véu: a leitura vem da sombra
+   * de texto no H1/lead. `alt` vazio de propósito (decorativa). */
+  .landing-visual {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-art {
+    width: 100%;
+    height: 100%;
+    margin-inline: 0;
+  }
+
+  .hero-art img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-position: 75% 50%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 26rem) {
   .landing-actions .btn {
     flex: 1 1 100%;
-  }
-
-  .landing-visual {
-    /* Coluna vazia vira faixa da arte no mobile. */
-    min-height: 24rem;
   }
 }
 

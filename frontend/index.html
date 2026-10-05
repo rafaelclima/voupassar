@@ -62,11 +62,6 @@
          texto. As seções abaixo explicam o projeto com imagens geradas
          e texto honesto. -->
     <section class="landing-hero" aria-labelledby="hero-t">
-      <!-- Arte em full-bleed da hero inteira, na orientação original
-           (menino e menina com mochila à direita, degraus ao centro,
-           cronômetro no alto). Alt vazio: decorativa, a mensagem está
-           no H1 + CTAs. -->
-      <img class="hero-art" src="./assets/landing/hero.webp" alt="" width="1200" height="675" fetchpriority="high" />
       <div class="container landing-hero__grid">
         <div class="landing-hero__copy">
           <p class="landing-kicker"><span class="landing-kicker__dot" aria-hidden="true"></span>Direto ao ponto, sem enrolação</p>
@@ -86,10 +81,18 @@
           </p>
         </div>
 
-        <!-- Coluna direita vazia: reserva o espaço do grid para o texto
-             ficar à esquerda e a arte respirar à direita. O id é exigido
-             pelo check_frontend.py (bloco hero-visual). -->
-        <div class="landing-visual" id="hero-visual" aria-hidden="true"></div>
+        <!-- Arte da hero, na orientação original (menino e menina com
+             mochila à direita, degraus ao centro, cronômetro no alto).
+             Desktop: full-bleed atrás do texto. Retrato/mobile: cartão
+             empilhado abaixo do texto (variante 4:5). O id é exigido
+             pelo check_frontend.py (bloco hero-visual). Alt vazio:
+             decorativa, a mensagem está no H1 + CTAs. -->
+        <div class="landing-visual" id="hero-visual" aria-hidden="true">
+          <picture class="hero-art">
+            <source media="(max-width: 63.9375rem)" srcset="./assets/landing/hero-portrait.webp" width="900" height="1125" />
+            <img src="./assets/landing/hero.webp" srcset="./assets/landing/hero.webp 1200w, ./assets/landing/hero-2400.webp 2400w" sizes="100vw" alt="" width="1200" height="675" fetchpriority="high" />
+          </picture>
+        </div>
       </div>
     </section>
 

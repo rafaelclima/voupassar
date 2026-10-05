@@ -85,6 +85,8 @@ REQUIRED_FILES = [
     "assets/figures/manifest.json",
     "assets/landing/desk.webp",
     "assets/landing/hero.webp",
+    "assets/landing/hero-2400.webp",
+    "assets/landing/hero-portrait.webp",
     "assets/landing/numbers.webp",
     "assets/landing/simulation.webp",
     "assets/landing/students.webp",

@@ -64,19 +64,45 @@ characters, no distorted hands, no frame or border, no vignette.
 * Nível decompressionamento equivalente ao atual (`ffmpeg -q:v` baixo,
   tipo 4–6) para preservar os brilhos sem banding no navy.
 
-## Depois de gerar
+## Depois de gerar (pipeline de derivados — sem esticar, só crop + scale)
 
-1. Salvar como `frontend/assets/landing/hero.webp` (mesmo caminho, 1200×675).
+A fonte em alta (ex.: `hero_full.jpg`, 2752×1536) **não** entra no repo.
+Dela saem 3 derivados via ffmpeg (nunca `scale` com distorção: só crop
+ou scale proporcional):
+
+```bash
+# Desktop padrão (1200×675) — 10px de crop à esquerda preservam a direita
+ffmpeg -y -i hero_full.jpg \
+  -vf "scale=1210:675,crop=1200:675:10:0,scale=1200:675" \
+  -c:v libwebp -quality 80 frontend/assets/landing/hero.webp
+# Desktop grande (2400px; altura proporcional, sem crop)
+ffmpeg -y -i hero_full.jpg -vf "scale=2400:1339" \
+  -c:v libwebp -quality 78 frontend/assets/landing/hero-2400.webp
+# Retrato mobile/tablet (4:5 do terço direito: estudantes + degraus + cronômetro)
+ffmpeg -y -i hero_full.jpg -vf "crop=1228:1536:1524:0,scale=900:1125" \
+  -c:v libwebp -quality 80 frontend/assets/landing/hero-portrait.webp
+```
+
+Tamanhos de referência: `hero.webp` ~19 KB, `hero-2400.webp` ~43 KB,
+`hero-portrait.webp` ~30 KB.
+
+1. Salvar os 3 arquivos nos caminhos acima (o HTML já referencia os três
+   via `<picture>` + `srcset`; `hero.webp` segue exigido pelo
+   `check_frontend.py`, junto de `hero-2400.webp` e `hero-portrait.webp`).
 2. `python3 scripts/analysis/check_frontend.py` — deve continuar OK.
 3. Conferir no navegador (MCP `chrome-devtools`), com
    `python3 -m http.server 8899 --directory frontend`:
-   * 1440px: os dois estudantes (mochilas visíveis) à direita, o
-     terço esquerdo só com fundo navy atrás do texto, console limpo;
-   * 390px: sem overflow horizontal;
-   * se algum brilho da arte vazar atrás das letras, ajustar
+   * 1920px e 1440px: full-bleed nítido (fonte 2400, sem upscale — medir
+     `clientWidth / naturalWidth ≤ 1` no console), os dois estudantes
+     (mochilas visíveis) à direita, texto legível à esquerda;
+   * 1024×768 landscape: overlay com estudantes inteiros;
+   * 768×1024 retrato e 390px: cartão empilhado com a variante retrato,
+     texto sobre navy limpo, sem overflow horizontal, console limpo;
+   * se algum brilho da arte vazar atrás das letras no desktop, ajustar
      `text-shadow` do H1/lead (nunca voltar véu sobre a arte).
 4. Se `object-position` precisar de ajuste fino para manter os dois
-   estudantes no crop, ajustar **só** o valor (a arte é gerada nesta
-   orientação; `scaleX(-1)` continua proibido).
-5. Remover esta pendência da seção 3 de `docs/frontend-landing.md`
-   quando a arte nova entrar.
+   estudantes no crop do desktop, ajustar **só** o valor (a arte é gerada
+   nesta orientação; `scaleX(-1)` continua proibido).
+5. Cuidado com o containing block: o grid da hero é estático de
+   propósito — o `inset: 0` do full-bleed referencia a `section`. Ver
+   `docs/frontend-landing.md` §3.

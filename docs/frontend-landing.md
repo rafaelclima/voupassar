@@ -36,27 +36,31 @@
 
 O hero segue a referência PIXORA: canvas navy de borda a borda, header
 com pill de navegação branca ao centro e CTA à direita, headline
-gigante com linha de acento. O visual é a arte gerada (`hero.webp`,
-1200×675, 16:9) em **full-bleed da hero inteira**: `position: absolute;
-inset: 0`, `width`/`height` 100% e `object-fit: cover`, na **orientação
-original** (sem espelho em CSS). O `object-position` deslocado para a
-direita (`75% 50%`) define qual parte da arte sobrevive ao corte do
-`cover`: o `object-fit: cover` nunca é usado para esconder o estudante, e sim
-para escolher o recorte que deixa a região da arte sob o texto
-desocupada. `alt` vazio (decorativa — a mensagem está no H1 + CTAs).
+gigante com linha de acento. A arte é servida de forma **responsiva**
+(`<picture>` + `srcset`, sem espelho em CSS em nenhum breakpoint):
 
-Não há véu/scrim sobre a arte: a legibilidade do texto vem de **sombra
-de texto** no H1 e no lead (`0 2px 24px rgb(6 20 36 / 0.9)`), e não de
-uma camada que apagaria a arte. O texto atual (kicker, H1, lead, CTAs e
-a faixa `#hero-brand`) fica intacto à esquerda, por cima da arte, com
-`z-index` maior que o da imagem.
+| Breakpoint | Layout | Fonte |
+|---|---|---|
+| `≥ 64rem` (desktop, tablet landscape) | Full-bleed: `absolute inset: 0`, `cover`, `object-position: 75% 50%`, texto à esquerda por cima (`z-index` maior, sem mudar copy/ordem/estilo) | `hero.webp` (1200w) / `hero-2400.webp` (2400w), `sizes="100vw"` — a 2400 cobre telas grandes sem upscale |
+| `< 64rem` (mobile, tablet retrato) | Empilhado: texto sobre o navy limpo + arte como **cartão contido** abaixo (`border-radius`, sem overlay, sem corte lateral) | `hero-portrait.webp` (900×1125, 4:5 — crop do terço direito da fonte, já enquadra estudantes, degraus e cronômetro) |
 
-A arte (`hero.webp`, regenerada via prompt em
-`docs/hero-art-prompt.md`) já nasce com os dois estudantes — menino e
-menina, ambos com mochila — no terço direito, degraus ao centro e
-cronômetro no alto à direita; a metade esquerda é só fundo navy, a área
-do texto. Por isso nenhum espelho em CSS é necessário: a orientação
-original já coloca cada elemento no seu lugar.
+A arte (gerada via prompt em `docs/hero-art-prompt.md`) já nasce com os
+dois estudantes — menino e menina, ambos com mochila — no terço direito,
+degraus ao centro e cronômetro no alto à direita; a metade esquerda é só
+fundo navy, a área do texto. Por isso nenhum espelho em CSS é
+necessário: a orientação original já coloca cada elemento no seu lugar.
+
+Não há véu/scrim sobre a arte em nenhum breakpoint: no desktop a
+legibilidade vem de **sombra de texto** no H1 e no lead
+(`0 2px 24px rgb(6 20 36 / 0.9)`); no empilhado o texto nem toca a arte.
+`alt` vazio (decorativa — a mensagem está no H1 + CTAs), `width`/`height`
+declarados (sem CLS), `fetchpriority="high"`.
+
+Detalhe de implementação: o grid da hero é **estático** de propósito —
+o `inset: 0` da arte usa a `section` (que é `relative` + `overflow:
+hidden`) como referência. Se o grid voltasse a ser `relative`, o
+full-bleed encolheria para o tamanho do grid. O texto sobe via
+`.landing-hero__copy { position: relative; z-index: 1 }`.
 As seções abaixo são
 claras (tokens `surface`/`bg-100`, que adaptam ao
 dark) com grid de 3 cards (`desk`/`numbers`/`simulation`), passos
