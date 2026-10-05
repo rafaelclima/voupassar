@@ -34,23 +34,22 @@
 
 ## 3. Ofício visual
 
-O hero segue o padrão Stripe/Linear: copy centralizada no topo (kicker
-pill, headline gigante com linha de acento, lead, 2 CTAs, faixa de marca
-como linha de confiança) e a arte em **vitrine full-width abaixo, sempre
-inteira e sem corte** (`<img>` 16:9 natural, sem `cover`, sem espelho):
-painel com borda sutil e brilho azul da marca em camadas de box-shadow.
-Uma única coluna em todos os breakpoints — o mobile é o mesmo layout,
-só mais estreito. Como não há overlay, o texto assenta sobre o canvas
-navy limpo (sem `text-shadow`, sem véu/scrim).
+O hero segue a referência `assets/home_example.webp` (PIXORA): **faixa
+full-width** (largura inteira da página, sem gutters) contando a hero —
+copy à esquerda (kicker pill, headline, lead, 2 CTAs, faixa de marca
+como linha de confiança), arte sangrando até as bordas
+direita/topo/fundo. Coluna única no mobile (copy + arte inteira
+abaixo); 2 colunas no desktop. Sem overlay (o texto nunca cobre a
+arte), sem espelho, sem véu/scrim.
 
-A arte (gerada via prompt em `docs/hero-art-prompt.md`) mostra os dois
-estudantes — menino e menina, ambos com mochila — à direita, degraus ao
-centro e cronômetro no alto à direita. `alt` vazio (decorativa — a
-mensagem está no H1 + CTAs), `width`/`height` declarados (sem CLS),
-`fetchpriority="high"`, `srcset` 1200w/2400w com
-`sizes="(min-width: 64rem) 45vw, 100vw"` (a 2400 cobre telas grandes sem
-upscale; acima de ~2752px de viewport há upscale — limite da
-fonte-mestre, regenerar maior se preciso).
+A arte (`hero.webp`, variante **retrato** gerada via prompt em
+`docs/hero-art-prompt.md`) mostra os dois estudantes — menino e menina,
+ambos com mochila — por inteiro, além de degraus e cronômetro; a borda
+esquerda desce em navy puro para encontrar a copy sem emenda. No mobile
+ela aparece inteira (proporção natural); no desktop preenche a metade
+direita via `cover` com crop só do navy vazio. `alt` vazio (decorativa
+— a mensagem está no H1 + CTAs), `width`/`height` declarados (sem CLS),
+`fetchpriority="high"`.
 As seções abaixo são
 claras (tokens `surface`/`bg-100`, que adaptam ao
 dark) com grid de 3 cards (`desk`/`numbers`/`simulation`), passos
@@ -62,9 +61,9 @@ Imagens: `width`/`height` declarados (sem CLS), `loading="lazy"`,
 `aspect-ratio` + `object-fit: cover` para cartões uniformes.
 AGENTS.md §6: só navy + azul-claro + branco, sem infantil.
 
-Recursos: canvas navy fixo nos dois temas (gradiente próprio),
-coluna única com copy centralizada e vitrine full-width,
-`body` em flex com `min-height: 100dvh` (header +
+Recursos: canvas navy fixo nos dois temas (gradiente próprio, a faixa
+encosta nas bordas da viewport sem raio), `body` em flex com
+`min-height: 100dvh` (header +
 hero flexível + rodapé), anéis decorativos. Botões
 sobre navy usam cor fixa `#0d2b45` (tokens primary invertem no dark e
 quebravam o contraste para ~1,5:1). A pill usa `#0d2b45` sobre branco

@@ -1,6 +1,75 @@
-# Prompt de regeneração da arte da hero (`assets/landing/hero.webp`)
+# Arte da hero (`assets/landing/hero.webp`)
 
-## Por que regenerar (e não espelhar em CSS)
+## Variante atual: retrato para o cartão (EM USO)
+
+A hero é um **cartão arredondado** (referência `assets/home_example.webp`):
+copy à esquerda, arte sangrando até as bordas direita/topo/fundo. No
+mobile a mesma arte aparece **inteira** abaixo da copy; no desktop ela
+preenche a metade direita via `cover` (caixa ~0.85). Por isso a arte
+precisa nascer em **retrato** — a 16:9 anterior sangrava demais.
+
+### Prompt (usar como está, em inglês)
+
+```text
+Modern flat-vector illustration, VERTICAL portrait orientation (4:5),
+deep navy blue background with a soft radial gradient (lighter blue glow
+in the upper area, #0a2138 → #123a5e), no text, no logos, no watermark.
+
+TWO school-age students, a boy and a girl, seen from BEHIND, both wearing
+backpacks, standing side by side in the LOWER-RIGHT half of the frame,
+fully visible from head to feet. The boy has dark curly hair, a navy blue
+hoodie and a dark backpack; the girl stands slightly beside him, with dark
+hair in a ponytail, a light blue top and a blue backpack. Both look toward
+a rising path of glowing blue platforms/steps that ascend diagonally from
+lower-center toward the upper area, with small floating UI cards (question
+cards, abstract lines only, no readable text) and a glowing circular
+timer/gauge icon in the upper area.
+
+Keep faces, hands, feet and the timer at least 8% away from every edge of
+the frame (bleed-safe: edges get slightly trimmed where the art meets the
+card). The LEFT edge of the image must fade into plain deep navy #0a2138
+so it meets the text side seamlessly. The upper two thirds stay calm and
+airy (mostly gradient + glow), the characters anchor the lower right.
+
+Style: clean modern 2D vector, soft glowing edges, subtle depth, gentle
+blue rim light, calm and serious educational mood, not childish, not
+cartoonish, no photorealism, no heavy 3D. Palette: navy, deep blue, soft
+light blue and a single warm accent color only.
+
+Negative: no text, no letters, no numbers, no UI mockups with text, no
+watermark, no signature, no cropped heads/hands/feet, no duplicated
+characters, no distorted anatomy, no frame or border, no vignette.
+```
+
+### Por que cada exigência
+
+| Exigência | Motivo |
+|---|---|
+| Retrato 4:5 | A sangria do desktop (~0.85) + o mobile inteira pedem altura; 16:9 sangrava demais |
+| Sujeitos 8% para dentro | O `cover` do desktop apara as bordas — rostos/pés/cronômetro não podem encostar nelas |
+| Borda esquerda em navy puro | Encontra a copy sem emenda aparente |
+| Sem texto legível | Imagem gerada não pode exibir enunciado real (AGENTS.md §11) |
+
+### Pipeline (sem esticar, só scale proporcional)
+
+```bash
+# Exportar a mestre em ~1100px de largura, mantendo a proporção
+# (ex. hero45 1856×2304 → 1100×1366)
+ffmpeg -y -i hero_full.jpg -vf "scale=1100:-2" \
+  -c:v libwebp -quality 80 frontend/assets/landing/hero.webp
+```
+
+Referência: ~27 KB. Atualizar `width`/`height` do `<img>` no HTML para
+as dimensões finais.
+
+---
+
+## Histórico: variante 16:9 (substituída)
+
+> A 16:9 serviu às heroes full-bleed e vitrine. Com o cartão PIXORA ela
+> sangrava demais na metade direita — por isso a variante retrato acima.
+
+## Por que regenerar (e não espelhar em CSS) — contexto original
 
 O `hero.webp` atual tem o estudante no terço **esquerdo** do quadro. Com
 `object-fit: cover` em full-bleed, a arte sempre mapeia esquerda→esquerda:

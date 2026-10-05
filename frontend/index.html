@@ -58,38 +58,39 @@
   </header>
 
   <main id="conteudo" class="landing-main">
-    <!-- HERO: propósito, 2 ações e a arte gerada em full-bleed atrás do
-         texto. As seções abaixo explicam o projeto com imagens geradas
-         e texto honesto. -->
+    <!-- HERO em cartão (referência home_example.webp): copy à esquerda,
+         arte sangrando até a borda direita do cartão. As seções abaixo
+         explicam o projeto com imagens geradas e texto honesto. -->
     <section class="landing-hero" aria-labelledby="hero-t">
-      <div class="container landing-hero__grid">
-        <div class="landing-hero__copy">
-          <p class="landing-kicker"><span class="landing-kicker__dot" aria-hidden="true"></span>Direto ao ponto, sem enrolação</p>
-          <h1 id="hero-t">Questões, roteiro e simulados <em>para a sua prova</em></h1>
-          <p class="landing-lead">
-            Com base em provas reais organizadas por assunto, receba um
-            roteiro que explica o motivo de cada recomendação e faça
-            simulados como a prova de verdade.
-          </p>
-          <div class="landing-actions">
-            <a class="btn btn--on-navy btn--lg" href="./cadastro.html">Começar agora</a>
-            <a class="btn btn--hero-ghost btn--lg" href="./login.html">Entrar</a>
+      <div class="container">
+        <div class="hero-card">
+          <div class="hero-card__copy">
+            <p class="landing-kicker"><span class="landing-kicker__dot" aria-hidden="true"></span>Direto ao ponto, sem enrolação</p>
+            <h1 id="hero-t">Questões, roteiro e simulados <em>para a sua prova</em></h1>
+            <p class="landing-lead">
+              Com base em provas reais organizadas por assunto, receba um
+              roteiro que explica o motivo de cada recomendação e faça
+              simulados como a prova de verdade.
+            </p>
+            <div class="landing-actions">
+              <a class="btn btn--on-navy btn--lg" href="./cadastro.html">Começar agora</a>
+              <a class="btn btn--hero-ghost btn--lg" href="./login.html">Entrar</a>
+            </div>
+            <p class="hero-brand" id="hero-brand">
+              <img src="./assets/logo-mark-light.png" alt="" width="44" height="40" />
+              <strong>VouPassar</strong>
+            </p>
           </div>
-          <p class="hero-brand" id="hero-brand">
-            <img src="./assets/logo-mark-light.png" alt="" width="44" height="40" />
-            <strong>VouPassar</strong>
-          </p>
-        </div>
 
-        <!-- Arte da hero em destaque, sempre INTEIRA e sem corte, na
-             orientação original (menino e menina com mochila à direita,
-             degraus ao centro, cronômetro no alto): 2 colunas no
-             desktop (texto à esquerda, arte à direita), empilhada no
-             mobile (texto + arte abaixo). O id é exigido pelo
-             check_frontend.py (bloco hero-visual). Alt vazio:
-             decorativa, a mensagem está no H1 + CTAs. -->
-        <div class="landing-visual" id="hero-visual" aria-hidden="true">
-          <img class="hero-art" src="./assets/landing/hero.webp" srcset="./assets/landing/hero.webp 1200w, ./assets/landing/hero-2400.webp 2400w" sizes="(min-width: 72rem) 1152px, 100vw" alt="" width="1200" height="675" fetchpriority="high" />
+          <!-- Arte sangrando até as bordas do cartão (orientação
+               original: estudantes à direita, degraus ao centro,
+               cronômetro no alto). Crop retrato só do navy vazio —
+               nenhum sujeito é cortado. O id é exigido pelo
+               check_frontend.py (bloco hero-visual). Alt vazio:
+               decorativa, a mensagem está no H1 + CTAs. -->
+          <div class="landing-visual" id="hero-visual" aria-hidden="true">
+            <img class="hero-art" src="./assets/landing/hero.webp" alt="" width="1100" height="1366" fetchpriority="high" />
+          </div>
         </div>
       </div>
     </section>
