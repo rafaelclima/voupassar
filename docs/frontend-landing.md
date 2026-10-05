@@ -42,6 +42,12 @@ direita/topo/fundo. Coluna única no mobile (copy + arte inteira
 abaixo); 2 colunas no desktop. Sem overlay (o texto nunca cobre a
 arte), sem espelho, sem véu/scrim.
 
+Header e hero são **uma coisa só**: o header é transparente e flutua
+sobre o topo da hero (`position: absolute`), e a hero tem `min-height:
+100svh` (com fallback `100vh`) — abrir a página mostra exatamente
+header + hero, e a rolagem revela as seções claras abaixo. A copy tem
+`padding-top` calculado do `--header-h` para nunca ficar sob o header.
+
 A arte (`hero.webp`, variante **retrato** gerada via prompt em
 `docs/hero-art-prompt.md`) mostra os dois estudantes — menino e menina,
 ambos com mochila — por inteiro, além de degraus e cronômetro; a borda
