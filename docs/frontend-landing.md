@@ -34,14 +34,14 @@
 
 ## 3. Ofício visual
 
-O hero segue a referência PIXORA: canvas navy de borda a borda, header
-com pill de navegação branca ao centro e CTA à direita, headline
-gigante com linha de acento. A arte aparece **sempre inteira e sem
-corte, em qualquer dispositivo** (`<img>` em proporção natural 16:9,
-sem `cover`, sem espelho em CSS): 2 colunas no desktop (texto à
-esquerda, arte à direita ocupando a trilha toda) e empilhada no mobile
-(texto + arte abaixo, largura cheia). Como não há overlay, o texto
-assenta sobre o canvas navy limpo — sem `text-shadow`, sem véu/scrim.
+O hero segue o padrão Stripe/Linear: copy centralizada no topo (kicker
+pill, headline gigante com linha de acento, lead, 2 CTAs, faixa de marca
+como linha de confiança) e a arte em **vitrine full-width abaixo, sempre
+inteira e sem corte** (`<img>` 16:9 natural, sem `cover`, sem espelho):
+painel com borda sutil e brilho azul da marca em camadas de box-shadow.
+Uma única coluna em todos os breakpoints — o mobile é o mesmo layout,
+só mais estreito. Como não há overlay, o texto assenta sobre o canvas
+navy limpo (sem `text-shadow`, sem véu/scrim).
 
 A arte (gerada via prompt em `docs/hero-art-prompt.md`) mostra os dois
 estudantes — menino e menina, ambos com mochila — à direita, degraus ao
@@ -63,7 +63,8 @@ Imagens: `width`/`height` declarados (sem CLS), `loading="lazy"`,
 AGENTS.md §6: só navy + azul-claro + branco, sem infantil.
 
 Recursos: canvas navy fixo nos dois temas (gradiente próprio),
-2 colunas a 64rem, `body` em flex com `min-height: 100dvh` (header +
+coluna única com copy centralizada e vitrine full-width,
+`body` em flex com `min-height: 100dvh` (header +
 hero flexível + rodapé), anéis decorativos. Botões
 sobre navy usam cor fixa `#0d2b45` (tokens primary invertem no dark e
 quebravam o contraste para ~1,5:1). A pill usa `#0d2b45` sobre branco
