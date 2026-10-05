@@ -74,6 +74,12 @@ const state = {
   plan: null,
   planMissing: false,
   filters: { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", page: 0 },
+  // Origem da navegação ("painel" quando o aluno toca em "Praticar este
+  // assunto" no dashboard). Não é filtro de questões: serve só para o hero
+  // priorizar o assunto escolhido em vez do item genérico do roteiro.
+  // Limpa assim que o aluno navega por conta própria (filtrar, limpar ou
+  // tocar em "Estudar" no navegador) — ver bindFilterEvents/renderBrowser.
+  origin: "",
   pageData: null,
   studySessionId: null,
 };
@@ -157,6 +163,7 @@ function readUrlIntoFilters() {
   state.filters.difficulty = (q.get("dificuldade") || "").trim().toUpperCase();
   const p = Number.parseInt(q.get("pagina") || "0", 10);
   state.filters.page = Number.isFinite(p) && p >= 0 ? p : 0;
+  state.origin = (q.get("origem") || "").trim().toLowerCase();
 }
 
 function syncUrl() {
@@ -168,6 +175,9 @@ function syncUrl() {
   if (f.year) q.set("ano", f.year);
   if (f.difficulty) q.set("dificuldade", f.difficulty);
   if (f.page > 0) q.set("pagina", String(f.page));
+  // A origem ("painel") não volta para a URL: ela descreve como o aluno
+  // chegou, não o recorte atual. Manter na URL faria o hero dizer
+  // "escolhido no painel" mesmo depois de o aluno filtrar por conta própria.
   const qs = q.toString();
   window.history.replaceState(null, "", qs ? `./estudos.html?${qs}` : "./estudos.html");
 }
@@ -286,6 +296,7 @@ function bindFilterEvents() {
     state.filters.topicId = "";
     state.filters.subtopicId = "";
     state.filters.page = 0;
+    state.origin = "";
     await refreshDependentSelects();
     renderBrowser();
     renderHero();
@@ -293,6 +304,7 @@ function bindFilterEvents() {
   selTopic.addEventListener("change", async () => {
     state.filters.subtopicId = "";
     state.filters.page = 0;
+    state.origin = "";
     await refreshDependentSelects();
   });
   form.addEventListener("submit", async (e) => {
@@ -303,6 +315,7 @@ function bindFilterEvents() {
     state.filters.year = selYear.value || "";
     state.filters.difficulty = selDiff.value || "";
     state.filters.page = 0;
+    state.origin = "";
     syncUrl();
     setButtonLoading(btnFilter, true, "Filtrando…");
     try {
@@ -328,6 +341,7 @@ function bindFilterEvents() {
     selYear.value = "";
     selDiff.value = "";
     state.filters = { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", page: 0 };
+    state.origin = "";
     syncUrl();
     await refreshDependentSelects();
     renderBrowser();
@@ -453,18 +467,32 @@ function formatPercentValue(acc) {
   return Math.round(n * 100);
 }
 
-function currentTopicName() {
+function currentTopic() {
   const id = state.filters.topicId;
   if (!id) return null;
-  return state.allTopics.find((t) => String(t.id) === String(id))?.name
-    || state.topicsOfDisc.find((t) => String(t.id) === String(id))?.name
+  return state.allTopics.find((t) => String(t.id) === String(id))
+    || state.topicsOfDisc.find((t) => String(t.id) === String(id))
     || null;
+}
+
+function currentTopicName() {
+  return currentTopic()?.name || null;
 }
 
 function currentDisciplineName() {
   const code = state.filters.disciplineCode;
-  if (!code) return null;
-  return state.disciplines.find((d) => d.code === code)?.name || null;
+  if (code) {
+    return state.disciplines.find((d) => d.code === code)?.name || null;
+  }
+  // O painel manda disciplina + assunto, mas links antigos/manuais podem
+  // trazer só ?topico=. Deriva a disciplina do catálogo para o hero e os
+  // chips não caírem no item genérico do roteiro.
+  const topic = currentTopic();
+  const discCode = topic?.disciplineCode || "";
+  if (!discCode) return null;
+  return state.disciplines.find((d) => d.code === discCode)?.name
+    || state.allTopics.find((t) => t.disciplineCode === discCode)?.disciplineName
+    || null;
 }
 
 function planDoingItem() {
@@ -499,21 +527,40 @@ function renderHero() {
   // Sem recorte não há caderno aberto: o hero convida a escolher o
   // conteúdo (a lista abaixo mostra o estado-guia, não questões).
   const idle = !hasRecorte();
+  const hasTopic = Boolean(state.filters.topicId);
+  const hasDisc = Boolean(state.filters.disciplineCode);
+  const fromPanel = state.origin === "painel" && !idle;
 
+  // Precedência: o filtro da URL sempre vence o roteiro no hero. Antes o
+  // assunto pedido só aparecia com disciplina + assunto juntos — como o
+  // painel mandava só ?topico=, o hero caía no item do roteiro (outro
+  // assunto) enquanto o caderno listava o assunto pedido.
+  let eyebrow = "Continue de onde parou";
   let title = "Pratique no seu ritmo";
   let why = "Escolha uma disciplina e um assunto para ver as questões oficiais daquele recorte, com correção na hora.";
-  if (topicName && discName) {
-    title = topicName;
-    const ta = topicAccuracy(state.filters.topicId);
-    why = ta && ta.scored > 0
-      ? `Você acertou ${ta.correct} de ${ta.scored} neste assunto (${formatPercent(ta.accuracy)}). Continue praticando as questões abaixo.`
-      : `Você ainda não respondeu nada deste assunto. As questões abaixo são o melhor ponto de partida.`;
-  } else if (discName) {
+  if (hasTopic) {
+    eyebrow = fromPanel ? "Praticando agora — escolhido no painel" : "Praticando agora";
+    if (topicName) {
+      title = topicName;
+      const ta = topicAccuracy(state.filters.topicId);
+      why = ta && ta.scored > 0
+        ? `Você acertou ${ta.correct} de ${ta.scored} neste assunto (${formatPercent(ta.accuracy)}). Continue praticando as questões abaixo.`
+        : `Você ainda não respondeu nada deste assunto. As questões abaixo são o melhor ponto de partida.`;
+    } else {
+      title = "Assunto escolhido";
+      why = "Mostrando abaixo as questões deste filtro, com correção na hora.";
+    }
+  } else if (hasDisc && discName) {
+    eyebrow = fromPanel ? "Praticando agora — escolhido no painel" : "Praticando agora";
     title = discName;
     const da = disciplineAccuracy(state.filters.disciplineCode);
     why = da && da.scored > 0
       ? `Seu aproveitamento aqui é ${formatPercent(da.accuracy)} (${da.correct} acertos em ${da.scored}). Escolha um assunto para refinar.`
       : "Escolha um assunto desta disciplina para começar a praticar com correção imediata.";
+  } else if (!idle) {
+    eyebrow = fromPanel ? "Praticando agora — escolhido no painel" : "Praticando agora";
+    title = "Questões do filtro atual";
+    why = "Mostrando abaixo as questões deste filtro, com correção na hora. Refine por disciplina e assunto para focar.";
   } else if (doing) {
     const name = planTopicName(doing.topicId);
     title = name;
@@ -528,7 +575,7 @@ function renderHero() {
     title = "Monte seu roteiro para estudar com ordem";
     why = "O roteiro coloca os assuntos na ordem que vale mais a pena para você. Gere no painel e volte aqui para praticar.";
   }
-  card.appendChild(el("p", { className: "next-step__eyebrow", text: "Continue de onde parou" }));
+  card.appendChild(el("p", { className: "next-step__eyebrow", text: eyebrow }));
   card.appendChild(el("h3", { className: "next-step__title", text: title }));
   card.appendChild(el("p", { className: "next-step__why", text: why }));
 
@@ -536,7 +583,8 @@ function renderHero() {
   if (discName) chips.appendChild(el("span", { className: "chip", text: discName }));
   if (topicName) chips.appendChild(el("span", { className: "chip", text: topicName }));
   if (total !== null) chips.appendChild(el("span", { className: "chip", text: total === 1 ? "1 questão no recorte" : `${total} questões no recorte` }));
-  if (!discName && doing?.priority !== undefined && doing?.priority !== null) {
+  if (fromPanel) chips.appendChild(el("span", { className: "chip", text: "escolhido no painel" }));
+  if (!hasTopic && !hasDisc && doing?.priority !== undefined && doing?.priority !== null) {
     chips.appendChild(el("span", { className: "chip", text: `${doing.priority}º no roteiro` }));
   }
   if (chips.childNodes.length > 0) card.appendChild(chips);
@@ -554,17 +602,22 @@ function renderHero() {
       attrs: { href: "#sec-questoes-t" },
     });
   actions.appendChild(practice);
-  if (!topicName && doing?.topicId) {
+  if (!hasTopic && doing?.topicId) {
+    const doingTopic = state.allTopics.find((t) => String(t.id) === String(doing.topicId))
+      || state.topicsOfDisc.find((t) => String(t.id) === String(doing.topicId));
+    const hrefQ = new URLSearchParams();
+    if (doingTopic?.disciplineCode) hrefQ.set("disciplina", doingTopic.disciplineCode);
+    hrefQ.set("topico", String(doing.topicId));
     const open = el("a", {
       className: "btn btn--secondary",
       text: "Abrir assunto do roteiro",
-      attrs: { href: `./estudos.html?topico=${encodeURIComponent(String(doing.topicId))}` },
+      attrs: { href: `./estudos.html?${hrefQ.toString()}` },
     });
     actions.appendChild(open);
   } else {
     const dash = el("a", {
       className: "btn btn--secondary",
-      text: "Ver meu painel",
+      text: fromPanel ? "Voltar ao painel" : "Ver meu painel",
       attrs: { href: "./dashboard.html" },
     });
     actions.appendChild(dash);
@@ -661,6 +714,7 @@ function renderBrowser() {
           state.filters.topicId = String(t.id);
           state.filters.subtopicId = "";
           state.filters.page = 0;
+          state.origin = "";
           syncUrl();
           await refreshDependentSelects();
           renderBrowser();

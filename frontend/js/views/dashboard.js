@@ -153,6 +153,22 @@ function formatBucketDate(isoDate) {
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("pt-BR", { timeZone: "UTC", day: "2-digit", month: "short" });
 }
 
+/** Link para a área de estudos com o recorte já aplicado.
+ *
+ * O painel sempre informa a origem (`origem=painel`) para que o hero de
+ * estudos priorize o assunto escolhido em vez do item genérico do roteiro
+ * (ver js/views/estudos.js renderHero). A disciplina acompanha o assunto
+ * quando conhecida, para o hero não precisar adivinhar.
+ */
+function estudosHref({ disciplineCode = "", topicId = "" } = {}) {
+  const q = new URLSearchParams();
+  if (disciplineCode) q.set("disciplina", disciplineCode);
+  if (topicId) q.set("topico", String(topicId));
+  q.set("origem", "painel");
+  const qs = q.toString();
+  return qs ? `./estudos.html?${qs}` : "./estudos.html";
+}
+
 /** Classe de badge conforme o status (apresentação, não vocabulário). */
 function statusBadge(status) {
   const map = {
@@ -608,7 +624,7 @@ function renderWatch(overview, diagnosis) {
       value: formatPercent(d.accuracy),
       sub: `${d.correct ?? 0}/${d.attempts ?? 0}`,
       delta: null,
-      href: `./estudos.html?disciplina=${encodeURIComponent(discParam)}`,
+      href: estudosHref({ disciplineCode: discParam }),
       spark: [40, 55, 48, 62, pct ?? 50],
     });
   }
@@ -620,7 +636,7 @@ function renderWatch(overview, diagnosis) {
       value: p.historicalQuestions ? `${p.historicalQuestions} na prova` : formatPercent(p.accuracy),
       sub: disciplineLabel(p.disciplineCode, p.disciplineName),
       delta: null,
-      href: p.topicId ? `./estudos.html?topico=${encodeURIComponent(String(p.topicId))}` : "./estudos.html",
+      href: p.topicId ? estudosHref({ disciplineCode: p.disciplineCode || "", topicId: p.topicId }) : "./estudos.html",
       spark: [30, 42, 38, 55, 48],
     });
   }
@@ -760,7 +776,7 @@ function renderPriorities(diagnosis) {
         el("a", {
           className: "btn btn--ghost btn--sm",
           text: "Praticar",
-          attrs: { href: `./estudos.html?topico=${encodeURIComponent(String(p.topicId))}` },
+          attrs: { href: estudosHref({ disciplineCode: p.disciplineCode || "", topicId: p.topicId }) },
         }),
       );
     }
@@ -933,11 +949,12 @@ function renderNextStepOf(plan) {
   card.appendChild(chips);
 
   const actions = el("div", { className: "next-step__actions" });
+  const nextTopic = topicById.get(Number(next.topicId));
   actions.appendChild(
     el("a", {
       className: "btn btn--primary",
       text: "Praticar este assunto",
-      attrs: { href: `./estudos.html?topico=${encodeURIComponent(next.topicId ?? "")}` },
+      attrs: { href: estudosHref({ disciplineCode: nextTopic?.disciplineCode || "", topicId: next.topicId ?? "" }) },
     }),
   );
   if (next.status !== "DONE") {
