@@ -66,6 +66,13 @@ SESSION_CLOSED` reabre a sessão e repete uma vez.
   `Estudar` funcionavam). Agora o handler captura `topicId`/`subtopicId`
   antes do refresh; validado no navegador (assunto `2` → URL `topico=2`,
   60 questões, linha ativa).
+* **Ajustar filtros com foco gerenciado (U4 2026-10-05):** o link
+  `#study-ajustar` era âncora pura — rolava até `#sec-filtros-t` sem
+  mover o foco (o `tabindex="-1"` de U3 ficava morto; teclado/AT
+  permanecia no caderno). Agora `bindAjustarFiltros()` rola + foca o
+  título dos filtros (mesmo padrão da paginação → `#sec-questoes-t`),
+  com `preventScroll` + respeito a modificadores (nova aba intacta).
+  Só UI — sem novo fetch, sem mudar filtros, sem inventar conteúdo.
 * **Paginação:** `size=10` fixo (leitura confortável), `page` 0-based na URL
   como `pagina`. Anterior desabilitado na primeira; Próxima desabilitada na
   última (`first/last` do `PageResponse`).

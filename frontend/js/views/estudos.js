@@ -55,6 +55,8 @@ const btnFilter = document.getElementById("btn-filter");
 const browserBox = document.getElementById("study-browser");
 const browserCount = document.getElementById("study-browser-count");
 const heroBox = document.getElementById("study-hero");
+const ajustarLink = document.getElementById("study-ajustar");
+const filtrosTitle = document.getElementById("sec-filtros-t");
 const recortePill = document.getElementById("study-recorte");
 const recorteNum = document.getElementById("study-recorte-num");
 const listBox = document.getElementById("study-list");
@@ -104,6 +106,7 @@ async function main() {
   showLogoutButtons();
   readUrlIntoFilters();
   bindFilterEvents();
+  bindAjustarFiltros();
   state.studySessionId = readStoredSession();
   await loadAll();
 }
@@ -451,6 +454,22 @@ function bindFilterEvents() {
     renderRecorte();
     renderHero();
     document.getElementById("sec-questoes-t").scrollIntoView({ block: "start" });
+  });
+}
+
+// U4 — "Ajustar filtros" com foco gerenciado: a âncora nativa só rola, sem
+// mover o foco (o h2 tem tabindex="-1" desde U3 mas ninguém focava). Com
+// teclado/AT o aluno ficava no caderno sem saber onde caiu. Agora rola +
+// foca o título dos filtros (mesmo padrão da paginação → #sec-questoes-t).
+// Só UI: sem novo fetch, sem mudar filtros, sem inventar conteúdo.
+function bindAjustarFiltros() {
+  if (!ajustarLink || !filtrosTitle) return;
+  ajustarLink.addEventListener("click", (e) => {
+    // Deixa modificadores (nova aba) e botão não-primário com o navegador.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    filtrosTitle.scrollIntoView({ block: "start" });
+    filtrosTitle.focus({ preventScroll: true });
   });
 }
 
