@@ -2,25 +2,31 @@
 
 ## Derivados responsivos (EM USO)
 
-A mestre é `assets/landing/hero_portrait_45.jpg` (1856×2304). Dela saem 4
-derivados via ffmpeg (nunca `scale` com distorção: só scale proporcional),
-qualidade 80–82 para não perder os brilhos:
+A mestre é `assets/landing/hero_full.png` (1672×941, 16:9 gerada no Nano
+Banana 2 para este cenário: esquerda vazia em navy para o texto, cena à
+direita). Dela saem 3 derivados via ffmpeg (só scale proporcional),
+qualidade 80–82:
 
 ```bash
-ffmpeg -y -i hero_portrait_45.jpg -vf "scale=768:-2"  -c:v libwebp -quality 80 frontend/assets/landing/hero-768.webp   # ~17 KB
-ffmpeg -y -i hero_portrait_45.jpg -vf "scale=1100:-2" -c:v libwebp -quality 80 frontend/assets/landing/hero-1100.webp  # ~27 KB
-ffmpeg -y -i hero_portrait_45.jpg -vf "scale=1600:-2" -c:v libwebp -quality 82 frontend/assets/landing/hero-1600.webp  # ~46 KB
-ffmpeg -y -i hero_portrait_45.jpg -vf "scale=1856:-2" -c:v libwebp -quality 82 frontend/assets/landing/hero-1856.webp  # ~56 KB
-cp frontend/assets/landing/hero-1100.webp frontend/assets/landing/hero.webp  # fallback / compat
+ffmpeg -y -i hero_full.png -vf "scale=960:-2"  -c:v libwebp -quality 80 frontend/assets/landing/hero-960.webp    # ~15 KB
+ffmpeg -y -i hero_full.png -vf "scale=1280:-2" -c:v libwebp -quality 80 frontend/assets/landing/hero-1280.webp   # ~21 KB
+ffmpeg -y -i hero_full.png -vf "scale=1672:-2" -c:v libwebp -quality 82 frontend/assets/landing/hero-1672.webp   # ~33 KB
+cp frontend/assets/landing/hero-1280.webp frontend/assets/landing/hero.webp  # fallback / compat
 ```
 
 O HTML usa `<picture>` com `media="(min-width: 64rem)"` + `srcset`/`sizes`
-(`(min-width: 120rem) 60rem, 48vw`): o mobile nem baixa os arquivos
-grandes e cada viewport recebe resolução próxima da sua densidade — sem
-upscale (`clientWidth / naturalWidth ≤ 1`) e sem perda de qualidade. No
-mobile a arte some (`display:none`) e a hero vira gradiente navy com as
-cores do projeto. `check_frontend.py` exige os 5 arquivos (`hero.webp` +
-4 derivados).
+(`(min-width: 120rem) 120rem, 100vw`): o mobile nem baixa os arquivos
+grandes e cada viewport recebe resolução próxima da sua densidade. A arte
+entra em **tela cheia** (`absolute inset-0`, `cover`) atrás de tudo, com
+sombra sutil só à esquerda via CSS (texto legível, cena intacta).
+`check_frontend.py` exige os 4 arquivos (`hero.webp` + 3 derivados).
+
+Nota: a mestre tem 1672px — em viewport 1920 (DPR 1) há upscale leve de
+~1,15×, imperceptível nesta arte vetorial sem texto. Se um dia houver
+mestre 2560+, basta acrescentar o derivado e o `srcset`.
+Histórico: a variante retrato (`hero_portrait_45.jpg` + derivados
+768/1100/1600/1856) foi removida quando a paisagem chegou — metade
+direita prendia a arte numa coluna em vez da tela toda.
 
 ## Variante atual: retrato full-bleed (EM USO)
 

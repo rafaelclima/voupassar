@@ -27,9 +27,14 @@ body.landing-page {
  */
 .landing-header {
   background: transparent;
-  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  border-bottom: 0;
+  /* Sem o blur do .site-header: ele criava uma faixa fosca sobre a foto.
+   * Aqui o header é vidro limpo — 100% transparente. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   /* Fundido à hero: flutua sobre o topo dela em vez de ocupar faixa
-   * própria — header + hero parecem uma coisa só. */
+   * própria — header + hero parecem uma coisa só. (Teste: header 100%
+   * transparente, sem linha divisória.) */
   position: absolute;
   top: 0;
   left: 0;
@@ -128,20 +133,22 @@ body.landing-page {
   }
 }
 
-/* ============ Hero full-bleed (referência home_hero_example.png) ============
- * Canvas navy de borda a borda até 1920px: header + copy + arte são uma
- * coisa só e ocupam o primeiro viewport (100svh). Copy à esquerda, arte
- * à direita como fundo de tudo (coluna direita com cover). Sem overlay
- * sobre o texto, sem espelho, sem véu: a arte nasce com a borda esquerda
- * em navy puro e encontra a copy sem emenda.
+/* ============ Hero em TELA CHEIA (referência home_hero_example.png) ============
+ * A imagem ocupa 100% da hero atrás de TUDO: header + copy flutuam sobre
+ * ela. Copy à esquerda (sobre a parte escura/vazia da arte), cena visível
+ * à direita — texto nunca cobre os estudantes. Sem espelho.
  *
  * Mobile (<64rem): SEM imagem — .landing-visual em display:none e o
  * <source> com media impede o download dos arquivos grandes. O fundo vira
  * um desenho em gradiente com as cores do projeto (navy + azul + um toque
  * de violeta contido, como no body).
  *
- * >1920px (120rem): laterais em navy sólido harmonizado; .hero-card e o
- * header travam em 120rem centralizados — o conteúdo nunca vaza. */
+ * Sombra sutil: degradê navy só no terço esquerdo, sumindo antes da cena
+ * (cronômetro/degraus/estudantes intactos) — garante o contraste do texto
+ * sobre a foto nos dois temas (a hero é navy fixo).
+ *
+ * >1920px (120rem): laterais em navy sólido harmonizado; .hero-card (que
+ * contém a imagem) trava em 120rem centralizado — nada vaza. */
 .landing-main {
   flex: 1;
   display: flex;
@@ -174,6 +181,7 @@ body.landing-page {
   display: grid;
   grid-template-columns: 1fr;
   align-content: center;
+  overflow: clip;
 }
 
 .hero-card__copy {
@@ -181,7 +189,9 @@ body.landing-page {
   display: grid;
   gap: var(--space-5);
   align-content: start;
-  /* Topo livre para o header flutuante. */
+  justify-items: start;
+  /* Topo livre para o header flutuante. Largura travada: o texto mora no
+   * terço esquerdo, longe da cena (direita). */
   padding: calc(var(--header-h) + var(--space-6)) var(--space-6) var(--space-8);
   position: relative;
   z-index: 1;
@@ -371,12 +381,8 @@ body.landing-page {
   color: #fff;
 }
 
-/* O alternador de tema é visível em todas as páginas, conforme TASK 8.4.
- * Na landing o canvas navy é idêntico nos dois temas, mas o botão
- * permanece acessível e respeita o header. */
-.landing-page .theme-toggle {
-  display: inline-flex;
-}
+/* Sem alternador de tema na landing (decisão de produto — ver main.js):
+ * nenhuma regra de .theme-toggle aqui de propósito. */
 
 /* ============ Rodapé mínimo sobre o navy ============ */
 .landing-foot {
@@ -416,28 +422,30 @@ body.landing-page {
 }
 
 @media (min-width: 64rem) {
-  /* 2 colunas: copy com respiro à esquerda, arte ao fundo da metade
-   * direita (cover com crop só do navy vazio — a mestre retrato tem
-   * proporção ~0,8, quase a da coluna em 1080p, então o corte é mínimo). */
+  /* Tela cheia: a arte preenche a hero inteira (cover) atrás de tudo; a
+   * copy fica por cima, à esquerda, travada para não alcançar a cena. A
+   * mestre é 16:9 — em viewport 16:9 o crop é zero; em 16:10/21:9 o
+   * object-position 50% 60% protege o cronômetro (alto) e os pés. */
   .hero-card {
-    grid-template-columns: 1.05fr 0.95fr;
-    align-items: stretch;
+    display: block;
+    align-content: unset;
   }
 
   .hero-card__copy {
+    max-width: 46rem;
     padding: calc(var(--header-h) + var(--space-8)) var(--space-8) var(--space-12) max(var(--space-10), 6vw);
     align-content: center;
+    min-height: inherit;
   }
 
   .landing-visual {
     display: block;
-    min-width: 0;
-    min-height: 0;
-    position: relative;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
   }
 
-  /* O <picture> preenche a coluna; o <img> faz o cover. Sem véu sobre a
-   * arte: a borda esquerda do arquivo já desce em navy puro. */
+  /* A foto atrás de tudo, sem véu sobre a cena. */
   .landing-visual picture {
     position: absolute;
     inset: 0;
@@ -449,9 +457,25 @@ body.landing-page {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 30%;
+    object-position: 50% 60%;
     pointer-events: none;
     user-select: none;
+  }
+
+  /* Sombra sutil só à esquerda: navy que some até ~55% da largura, antes
+   * da cena. O texto ganha contraste; estudantes/degraus/cronômetro
+   * seguem intactos. */
+  .landing-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgb(6 15 25 / 0.72) 0%,
+      rgb(6 15 25 / 0.45) 30%,
+      transparent 55%
+    );
+    pointer-events: none;
   }
 }
 

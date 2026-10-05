@@ -58,12 +58,12 @@
   </header>
 
   <main id="conteudo" class="landing-main">
-    <!-- HERO full-bleed estilo PIXORA (referência home_hero_example.png):
-         header flutua sobre ela; copy à esquerda, arte à direita como
-         fundo de tudo (absolute). Até 1920px ocupa o viewport inteiro;
-         acima disso o conteúdo trava e as laterais viram navy sólido.
-         No mobile (<64rem) a arte some (display:none + source com media)
-         e o fundo vira gradiente navy com as cores do projeto. -->
+    <!-- HERO full-bleed total (referência home_hero_example.png): a imagem
+         ocupa 100% da viewport atrás de TUDO (header + textos flutuam sobre
+         ela); copy à esquerda sobre a parte escura, cena à direita. Até
+         1920px a hero é o primeiro viewport; acima disso o conteúdo trava e
+         as laterais viram navy sólido. No mobile (<64rem) a arte some
+         (display:none + source com media) e o fundo vira gradiente navy. -->
     <section class="landing-hero" aria-labelledby="hero-t">
       <div class="hero-card">
         <div class="hero-card__copy">
@@ -101,24 +101,26 @@
           </p>
         </div>
 
-        <!-- Arte à direita, ao fundo de tudo. Derivados responsivos da
-             mestre hero_portrait_45.jpg (1856×2304): o <source> com media
-             evita que o mobile baixe os arquivos grandes; o <img> fallback
-             (768, ~17 KB) fica com display:none abaixo de 64rem. Alt vazio:
-             decorativa, a mensagem está no H1 + CTAs. -->
+        <!-- Arte em TELA CHEIA atrás de tudo (hero_full.png 1672×1081:
+             16:9 gerada para este cenário + 140px de céu navy no topo para
+             o cronômetro sair de trás do header; esquerda vazia em navy,
+             cena à direita). Derivados por largura; o <source> com media
+             impede o mobile de baixar os arquivos grandes. Sombra sutil à
+             esquerda (CSS) garante a leitura do texto sem tocar na cena.
+             Alt vazio: decorativa, a mensagem está no H1 + CTAs. -->
         <div class="landing-visual" id="hero-visual" aria-hidden="true">
           <picture>
             <source
               media="(min-width: 64rem)"
               type="image/webp"
-              srcset="./assets/landing/hero-768.webp 768w, ./assets/landing/hero-1100.webp 1100w, ./assets/landing/hero-1600.webp 1600w, ./assets/landing/hero-1856.webp 1856w"
-              sizes="(min-width: 120rem) 60rem, 48vw" />
+              srcset="./assets/landing/hero-960.webp 960w, ./assets/landing/hero-1280.webp 1280w, ./assets/landing/hero-1672.webp 1672w"
+              sizes="(min-width: 120rem) 120rem, 100vw" />
             <img
               class="hero-art"
-              src="./assets/landing/hero-768.webp"
+              src="./assets/landing/hero-960.webp"
               alt=""
-              width="768"
-              height="954"
+              width="960"
+              height="620"
               fetchpriority="high"
               decoding="async" />
           </picture>

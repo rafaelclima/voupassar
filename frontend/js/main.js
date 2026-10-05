@@ -94,6 +94,26 @@ function wireTheme() {
   }
 
   const html = document.documentElement;
+
+  // Padrão do produto: tema claro. O escuro só entra com escolha manual
+  // (sem seguir prefers-color-scheme automaticamente).
+  const getPref = () => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark" || stored === "light") return stored;
+    return "light";
+  };
+
+  const saved = getPref();
+
+  // Landing sem alternador (decisão de produto): a hero é navy fixa nos
+  // dois temas e o botão poluiria o header sobre a foto. As demais páginas
+  // mantêm o botão. O tema salvo continua aplicado aqui — só não há troca
+  // nesta página.
+  if (document.body.classList.contains("landing-page")) {
+    html.setAttribute("data-theme", saved === "dark" ? "dark" : "light");
+    return;
+  }
+
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "theme-toggle";
@@ -114,14 +134,6 @@ function wireTheme() {
     }
   }
 
-  // Padrão do produto: tema claro. O escuro só entra com escolha manual
-  // (sem seguir prefers-color-scheme automaticamente).
-  const getPref = () => {
-    const stored = localStorage.getItem("theme");
-    if (stored === "dark" || stored === "light") return stored;
-    return "light";
-  };
-
   const apply = (theme) => {
     const dark = theme === "dark";
     html.setAttribute("data-theme", dark ? "dark" : "light");
@@ -135,7 +147,6 @@ function wireTheme() {
     }
   };
 
-  const saved = getPref();
   apply(saved);
 
   btn.addEventListener("click", () => {

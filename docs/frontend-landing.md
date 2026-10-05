@@ -34,14 +34,14 @@
 
 ## 3. Ofício visual
 
-O hero segue a referência `assets/home_hero_example.png` (PIXORA): **faixa
-full-bleed** (largura inteira da página até 1920px, sem gutters) contendo
-header + hero como uma coisa só — copy à esquerda (kicker pill, headline,
-lead, 2 CTAs, stats de formato, faixa de marca como linha de confiança),
-arte ao fundo da metade direita via `cover`. Coluna única no mobile **sem
+O hero segue a referência `assets/home_hero_example.png` (PIXORA): **imagem
+em tela cheia** atrás de tudo — header + copy flutuam sobre a foto. Copy à
+esquerda (kicker pill, headline, lead, 2 CTAs, stats de formato, faixa de
+marca), cena visível à direita, texto nunca cobrindo os estudantes. Sombra
+sutil em degradê navy só no terço esquerdo (some antes da cena) garante a
+leitura sem véu sobre a arte. Sem espelho. Coluna única no mobile **sem
 imagem** (fundo em gradiente navy + azul + toque de violeta, com anéis
-decorativos); 2 colunas no desktop. Sem overlay (o texto nunca cobre a
-arte), sem espelho, sem véu/scrim.
+decorativos).
 
 Os stats da hero (`#hero-stats`) são só de **formato verificável** — 2
 disciplinas, 3 modos, 2 simulados. Sem contagens de acervo na landing: a
@@ -58,14 +58,11 @@ desktop a marca do header alinha à esquerda com o H1 (mesmo respiro
 sólido (`navy-900`) e hero + header travam em 120rem centralizados.
 
 A arte (família `hero-*.webp`, derivados responsivos da mestre
-`hero_portrait_45.jpg` 1856×2304 via `ffmpeg -vf "scale=W:-2" -quality
-80/82`: 768/1100/1600/1856, ~17–56 KB no total) mostra os dois estudantes
-— menino e menina, ambos com mochila — por inteiro, além de degraus e
-cronômetro; a borda esquerda desce em navy puro para encontrar a copy sem
-emenda. O `<picture>` usa `media="(min-width: 64rem)"` (o mobile nem baixa
-os arquivos grandes) com `sizes="(min-width: 120rem) 60rem, 48vw`; no
-desktop preenche a metade direita via `cover` com crop só do navy vazio
-(a coluna tem proporção ~0,84 em 1080p, quase a da mestre ~0,8).
+`hero_full.png` 1672×941 16:9 gerada para este cenário via prompt em
+`docs/hero-art-prompt.md`: esquerda vazia em navy para o texto, cena à
+direita) entra em **tela cheia** (`absolute inset-0`, `cover`) atrás de
+tudo — em viewport 16:9 o crop é zero. `object-position: 50% 60%`
+protege o cronômetro (alto) e os pés em 16:10/21:9.
 `alt` vazio (decorativa — a mensagem está no H1 + CTAs),
 `width`/`height` declarados (sem CLS), `fetchpriority="high"`.
 As seções abaixo são
