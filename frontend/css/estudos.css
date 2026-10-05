@@ -154,6 +154,14 @@
   background: linear-gradient(90deg, var(--color-primary-600), var(--color-accent-500));
 }
 
+/* U2 — "Mostrar mais/menos" do navegador: texto explicativo + ação na
+ * mesma linha no desktop, empilhados no mobile (desktop+mobile). */
+.browser-disc .btn-group {
+  align-items: center;
+  justify-content: space-between;
+}
+.browser-disc .btn-group .muted { margin: 0; flex: 1 1 12rem; }
+
 /* ---------- 5. progresso + roteiro (reusa .stat-tile / .plan-items) ---------- */
 .study-tiles { display: grid; gap: var(--space-4); grid-template-columns: 1fr 1fr; }
 @media (max-width: 30rem) {

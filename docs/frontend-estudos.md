@@ -36,9 +36,20 @@ SESSION_CLOSED` reabre a sessão e repete uma vez.
   overview/diagnosis/plano ausentes viram vazios honestos. Filtros 400/404 do
   backend viram alerta com `traceId` + botão `Limpar filtros` (nunca página
   vazia silenciosa).
-* **Filtros dependentes:** trocar disciplina recarrega assuntos e limpa
-  assunto/subassunto; trocar assunto recarrega subassuntos. Ano sem 2021
-  (ausente do dataset — opção nem existe). Dificuldade só `FACIL/MEDIA/DIFICIL`.
+* **Filtros dependentes + lista automática (U1/U2 2026-10-05):** trocar
+  disciplina/assunto/subassunto/ano/dificuldade lista sozinho (1 passo,
+  com `syncUrl()` + `loadQuestions()` + progresso/plano/hero). O botão
+  `Filtrar` segue como ação explícita + rolagem até o caderno (teclado/AT).
+  Trocar disciplina recarrega assuntos e limpa assunto/subassunto; trocar
+  assunto recarrega subassuntos. Ano sem 2021 (ausente do dataset — opção
+  nem existe). Dificuldade só `FACIL/MEDIA/DIFICIL`.
+* **Abertura com conteúdo (U2):** sem recorte na URL, a carga aplica um
+  recorte padrão (item DOING/TODO do roteiro, senão 1ª disciplina) via
+  `applyDefaultRecorte()` — o caderno abre sozinho (`?disciplina=…` na URL).
+  `Limpar` volta ao mesmo padrão, nunca ao estado-guia vazio.
+* **Navegador paginado (U2):** 12 assuntos por disciplina por padrão, com
+  `Mostrar mais N assuntos` (+12) e `Mostrar menos` (volta a 12) — só UI,
+  sem novo fetch. Contador `N disciplinas · M assuntos` preservado.
 * **Paginação:** `size=10` fixo (leitura confortável), `page` 0-based na URL
   como `pagina`. Anterior desabilitado na primeira; Próxima desabilitada na
   última (`first/last` do `PageResponse`).
@@ -51,7 +62,14 @@ SESSION_CLOSED` reabre a sessão e repete uma vez.
 
 * Anuladas: cartão desabilita resposta, conta como conteúdo, fora do
   aproveitamento, com nota explícita (regra de pontuação DESCONHECIDA,
-  TASK 1.3 §4).
+  TASK 1.3 §4). Feedback U2: “O IFRN não informa como pontuar questões
+  anuladas.” (sem `o` minúsculo).
+* Vazio sem resultado (U2): “Tente outra disciplina, assunto ou edição…”
+  + botão `Limpar filtros` (antes: jargão “Origem válida sem linhas…”).
+  Erro de lista (U2): “Se precisar de ajuda, anote este código: …” (antes:
+  “Código de rastreio: …”).
+* `No seu roteiro` sem match (U2): explica que dá para praticar mesmo assim
+  + `Ver roteiro completo` + `Abrir assunto do roteiro` (quando há DOING/TODO).
 * Assuntos: classificação derivada, revisão humana PENDENTE (TASK 12.2) —
   linha `NÃO CONFIRMADO` quando sem vigente; notas da questão (máx. 4).
 * `accuracy` NULL → `—` (nunca zero). Origem válida sem linhas = vazio

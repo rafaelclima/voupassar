@@ -74,6 +74,10 @@ const state = {
   plan: null,
   planMissing: false,
   filters: { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", page: 0 },
+  // Limite visível de assuntos por disciplina no navegador ("Mostrar mais").
+  // Padrão 12 para a primeira pintura não virar lista infinita; expandir é
+  // só UI (sem novo fetch), então não inventa conteúdo — ver renderBrowser().
+  browserLimits: {},
   // Origem da navegação ("painel" quando o aluno toca em "Praticar este
   // assunto" no dashboard). Não é filtro de questões: serve só para o hero
   // priorizar o assunto escolhido em vez do item genérico do roteiro.
@@ -227,12 +231,20 @@ async function loadAll() {
     fillDisciplineSelect();
     applyFiltersToForm();
     await refreshDependentSelects();
+    // Sem recorte na URL, abrir direto num conteúdo útil em vez do
+    // estado-guia vazio (U2): prefere o item DOING/TODO do roteiro, senão
+    // a primeira disciplina do catálogo. Só UI — sem inventar questão.
+    if (!hasRecorte()) {
+      applyDefaultRecorte();
+      applyFiltersToForm();
+      await refreshDependentSelects();
+      syncUrl();
+    }
     renderBrowser();
     renderProgress();
     renderPlan();
-    // Sem conteúdo escolhido (nem na URL) não há caderno: a lista mostra
-    // um estado-guia pedindo a escolha do conteúdo. O caderno só abre
-    // depois que o aluno filtra ou toca em "Estudar" — ver hasRecorte().
+    // Com recorte (URL ou padrão acima) o caderno abre sozinho; sem
+    // catálogo/disciplinas, cai no estado-guia — ver hasRecorte().
     if (hasRecorte()) {
       await loadQuestions();
     } else {
@@ -292,13 +304,24 @@ function applyFiltersToForm() {
 }
 
 function bindFilterEvents() {
+  // U2: trocar disciplina/assunto/subassunto lista sozinho (1 passo).
+  // Ano/dificuldade também listam sozinhos; o botão Filtrar segue como
+  // ação explícita + rolagem até o caderno (teclado/AT).
   selDisc.addEventListener("change", async () => {
     state.filters.topicId = "";
     state.filters.subtopicId = "";
     state.filters.page = 0;
     state.origin = "";
     await refreshDependentSelects();
+    syncUrl();
     renderBrowser();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
+    renderProgress();
+    renderPlan();
     renderHero();
   });
   selTopic.addEventListener("change", async () => {
@@ -306,6 +329,58 @@ function bindFilterEvents() {
     state.filters.page = 0;
     state.origin = "";
     await refreshDependentSelects();
+    syncUrl();
+    renderBrowser();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
+    renderProgress();
+    renderPlan();
+    renderHero();
+  });
+  selSub.addEventListener("change", async () => {
+    state.filters.page = 0;
+    state.origin = "";
+    state.filters.subtopicId = selSub.disabled ? "" : (selSub.value || "");
+    syncUrl();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
+    renderProgress();
+    renderPlan();
+    renderHero();
+  });
+  selYear.addEventListener("change", async () => {
+    state.filters.page = 0;
+    state.origin = "";
+    state.filters.year = selYear.value || "";
+    syncUrl();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
+    renderProgress();
+    renderPlan();
+    renderHero();
+  });
+  selDiff.addEventListener("change", async () => {
+    state.filters.page = 0;
+    state.origin = "";
+    state.filters.difficulty = selDiff.value || "";
+    syncUrl();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
+    renderProgress();
+    renderPlan();
+    renderHero();
   });
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -342,10 +417,19 @@ function bindFilterEvents() {
     selDiff.value = "";
     state.filters = { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", page: 0 };
     state.origin = "";
+    state.browserLimits = {};
+    // Limpar volta ao ponto de partida útil (mesmo padrão da carga
+    // inicial), nunca ao estado-guia vazio — ver applyDefaultRecorte().
+    applyDefaultRecorte();
+    applyFiltersToForm();
     syncUrl();
     await refreshDependentSelects();
     renderBrowser();
-    renderQuestionsIdle();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
     renderProgress();
     renderPlan();
     renderHero();
@@ -424,6 +508,38 @@ async function refreshDependentSelects() {
       selTopic.value = "";
       toast("Assunto não encontrado. Filtro de assunto removido.", "info");
     }
+  }
+}
+
+/* ---------- recorte padrão (U2: abrir estudando) ---------- */
+
+function applyDefaultRecorte() {
+  if (hasRecorte()) return;
+  if (state.disciplines.length === 0) return;
+  // 1) Tenta o item DOING/TODO do roteiro (assunto + disciplina reais).
+  const doing = planDoingItem();
+  if (doing?.topicId) {
+    const topic = state.allTopics.find((t) => String(t.id) === String(doing.topicId));
+    if (topic?.disciplineCode) {
+      state.filters.disciplineCode = topic.disciplineCode;
+      state.filters.topicId = String(topic.id);
+      state.filters.subtopicId = "";
+      state.filters.page = 0;
+      return;
+    }
+    // Roteiro aponta para assunto fora do catálogo: cai para a disciplina.
+    const discCode = state.disciplines[0]?.code || "";
+    if (discCode) {
+      state.filters.disciplineCode = discCode;
+      state.filters.page = 0;
+    }
+    return;
+  }
+  // 2) Sem roteiro: primeira disciplina do catálogo (ordem da API).
+  const first = state.disciplines[0]?.code || "";
+  if (first) {
+    state.filters.disciplineCode = first;
+    state.filters.page = 0;
   }
 }
 
@@ -682,8 +798,10 @@ function renderBrowser() {
     if (topics.length === 0) {
       card.appendChild(el("p", { className: "muted", text: "Sem assuntos neste recorte." }));
     } else {
+      const DEFAULT_LIMIT = 12;
+      const limit = state.browserLimits[d.code] ?? DEFAULT_LIMIT;
       const ul = el("ul", { className: "browser-topics" });
-      for (const t of topics.slice(0, 12)) {
+      for (const t of topics.slice(0, limit)) {
         const li = el("li", { className: "browser-topics__row" });
         const left = el("div", { className: "browser-topics__main" });
         left.appendChild(el("div", { className: "browser-topics__name", text: t.name }));
@@ -728,13 +846,46 @@ function renderBrowser() {
         ul.appendChild(li);
       }
       card.appendChild(ul);
-      if (topics.length > 12) {
-        card.appendChild(
+      if (topics.length > limit) {
+        const remaining = topics.length - limit;
+        const step = Math.min(12, remaining);
+        const moreWrap = el("div", { className: "btn-group mt-4" });
+        moreWrap.appendChild(
           el("p", {
             className: "muted",
-            text: `Mostrando 12 de ${topics.length} assuntos — refine pelo filtro de assunto.`,
+            text: `Mostrando ${limit} de ${topics.length} assuntos.`,
           }),
         );
+        const moreBtn = el("button", {
+          className: "btn btn--secondary btn--sm",
+          text: remaining === 1 ? "Mostrar 1 assunto restante" : `Mostrar mais ${step} assuntos`,
+          attrs: { type: "button", "aria-expanded": "false", "aria-label": `Mostrar mais assuntos de ${d.name}` },
+        });
+        moreBtn.addEventListener("click", () => {
+          state.browserLimits[d.code] = limit + 12;
+          renderBrowser();
+        });
+        moreWrap.appendChild(moreBtn);
+        card.appendChild(moreWrap);
+      } else if (limit > DEFAULT_LIMIT && topics.length > DEFAULT_LIMIT) {
+        const lessWrap = el("div", { className: "btn-group mt-4" });
+        lessWrap.appendChild(
+          el("p", {
+            className: "muted",
+            text: `Mostrando todos os ${topics.length} assuntos.`,
+          }),
+        );
+        const lessBtn = el("button", {
+          className: "btn btn--ghost btn--sm",
+          text: "Mostrar menos",
+          attrs: { type: "button", "aria-expanded": "true", "aria-label": `Recolher assuntos de ${d.name}` },
+        });
+        lessBtn.addEventListener("click", () => {
+          state.browserLimits[d.code] = DEFAULT_LIMIT;
+          renderBrowser();
+        });
+        lessWrap.appendChild(lessBtn);
+        card.appendChild(lessWrap);
       }
     }
     browserBox.appendChild(card);
@@ -748,10 +899,10 @@ function renderBrowser() {
 
 /* ---------- questões + paginação ---------- */
 
-// Há recorte quando o aluno escolheu algum conteúdo (disciplina, assunto,
-// subassunto, edição ou dificuldade). Sem recorte não abrimos caderno: a
-// página é "estudar por conteúdo" e despejar todas as questões de cara
-// confunde. Nesse caso a lista mostra um estado-guia.
+// Há recorte quando algum filtro de conteúdo está ativo (disciplina,
+// assunto, subassunto, edição ou dificuldade). A carga inicial aplica um
+// recorte padrão (roteiro ou 1ª disciplina) para o caderno abrir sozinho;
+// sem catálogo, cai no estado-guia — ver applyDefaultRecorte().
 function hasRecorte() {
   const f = state.filters;
   return Boolean(f.disciplineCode || f.topicId || f.subtopicId || f.year || f.difficulty);
@@ -804,7 +955,7 @@ async function loadQuestions() {
     box.appendChild(el("strong", { text: "Não foi possível listar as questões. " }));
     box.appendChild(el("span", { text: friendlyMessage(err) }));
     if (err instanceof ApiError && err.traceId) {
-      box.appendChild(el("p", { className: "envelope mt-2", text: `Código de rastreio: ${err.traceId}` }));
+      box.appendChild(el("p", { className: "envelope mt-2", text: `Se precisar de ajuda, anote este código: ${err.traceId}` }));
     }
     if (err instanceof ApiError && [400, 404].includes(err.status)) {
       const reset = el("button", {
@@ -828,7 +979,9 @@ function renderQuestions(data) {
   if (total === 0) {
     renderEmpty(listBox, {
       title: "Nenhuma questão neste recorte",
-      description: "Ajuste os filtros (outra disciplina, assunto ou edição). Origem válida sem linhas é página vazia legítima — nunca erro silencioso.",
+      description: "Tente outra disciplina, assunto ou edição. Se o filtro parece certo, limpe e escolha de novo.",
+      actionLabel: "Limpar filtros",
+      onAction: () => btnClear.click(),
     });
     countNote.textContent = "0 questões neste recorte.";
     return;
@@ -1037,7 +1190,7 @@ function showFeedback(box, question, attempt, choice) {
   if (attempt?.wasAnnulled || question.annulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choiceText}. O gabarito oficial traz X (anulada). o IFRN não diz como pontuar questões anuladas.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceText}. O gabarito oficial marcou esta questão como anulada. O IFRN não informa como pontuar questões anuladas.` }));
   } else if (attempt?.isCorrect === true) {
     box.dataset.tone = "success";
     box.appendChild(el("strong", { text: `Você acertou — alternativa ${correct}.` }));
@@ -1249,12 +1402,29 @@ function renderPlan() {
     ? items.find((it) => String(it.topicId) === String(f.topicId))
     : (items.find((it) => it.status === "DOING") || items[0]);
   if (!match) {
-    planBox.appendChild(el("p", { className: "muted", text: "Este recorte não está no roteiro vigente." }));
-    planBox.appendChild(el("a", {
-      className: "btn btn--ghost btn--sm mt-2",
+    planBox.appendChild(el("p", {
+      className: "muted",
+      text: "Este recorte não está no seu roteiro atual. Você pode praticar mesmo assim — o roteiro só ordena o que vale mais a pena para você.",
+    }));
+    const actions = el("div", { className: "btn-group mt-4" });
+    actions.appendChild(el("a", {
+      className: "btn btn--secondary btn--sm",
       text: "Ver roteiro completo",
       attrs: { href: "./dashboard.html" },
     }));
+    const doing = items.find((it) => it.status === "DOING") || items.find((it) => it.status === "TODO");
+    if (doing?.topicId) {
+      const doingTopic = state.allTopics.find((t) => String(t.id) === String(doing.topicId));
+      const hrefQ = new URLSearchParams();
+      if (doingTopic?.disciplineCode) hrefQ.set("disciplina", doingTopic.disciplineCode);
+      hrefQ.set("topico", String(doing.topicId));
+      actions.appendChild(el("a", {
+        className: "btn btn--ghost btn--sm",
+        text: "Abrir assunto do roteiro",
+        attrs: { href: `./estudos.html?${hrefQ.toString()}` },
+      }));
+    }
+    planBox.appendChild(actions);
     return;
   }
   const done = items.filter((i) => i.status === "DONE").length;

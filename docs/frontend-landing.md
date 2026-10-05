@@ -108,6 +108,16 @@ azul-escuro no dark, então a banda usa `--color-hero-muted`.
   e `logo-full` com `brightness(0) invert(1)`): a arte é navy e ficaria
   invisível sobre navy no tema claro.
 
+## 4.1. Copy honesta (U1 2026-10-05)
+
+* Modo Estudo promete “gabarito oficial e assunto para revisar” (antes:
+  “explicação…”, removida por decisão V11 — plataforma testa, não ensina).
+* CTAs da seção `#como-praticar`: “Começar a estudar” / “Fazer simulado”
+  (antes: “Ver como é…”, que sugeria prévia pública) + nota “É preciso
+  entrar ou criar conta — leva menos de 1 minuto…”.
+* `recuperar-senha.html`: “O envio automático por e-mail ainda não está
+  disponível…” (antes: “ambiente de desenvolvimento” — jargão interno).
+
 ## 5. Verificação
 
 ```bash
