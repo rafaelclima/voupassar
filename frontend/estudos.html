@@ -95,6 +95,11 @@
             </div>
             <span class="badge" id="study-mode-badge">Correção imediata</span>
           </div>
+          <div class="study-recorte-line">
+            <p class="study-recorte" id="study-recorte-resumo">Recorte atual: todos os conteúdos.</p>
+            <a class="btn btn--ghost btn--sm" href="#sec-filtros-t" id="study-ajustar">Ajustar filtros</a>
+          </div>
+          <nav id="study-pagination-top" class="study-pagination study-pagination--top" aria-label="Paginação das questões (topo)"></nav>
           <div id="study-list" class="study-list"></div>
           <nav id="study-pagination" class="study-pagination" aria-label="Paginação das questões"></nav>
         </section>
@@ -103,7 +108,7 @@
         <section aria-labelledby="sec-filtros-t" class="perf-shell study-filters-shell">
           <div class="perf-shell__head">
             <div class="perf-shell__title">
-              <h2 id="sec-filtros-t">Filtrar questões</h2>
+              <h2 id="sec-filtros-t" tabindex="-1">Filtrar questões</h2>
               <p>Ordem fixa das questões (ano-fonte, número). A edição de 2021 não existe no acervo e não aparece como opção.</p>
             </div>
             <div class="perf-shell__tools">

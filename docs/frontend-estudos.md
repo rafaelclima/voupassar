@@ -50,6 +50,22 @@ SESSION_CLOSED` reabre a sessão e repete uma vez.
 * **Navegador paginado (U2):** 12 assuntos por disciplina por padrão, com
   `Mostrar mais N assuntos` (+12) e `Mostrar menos` (volta a 12) — só UI,
   sem novo fetch. Contador `N disciplinas · M assuntos` preservado.
+* **Recorte visível + paginação espelhada + assunto ativo (U3 2026-10-05):**
+  o topo do caderno mostra `Recorte atual: …` (disciplina · assunto ·
+  subassunto · edição · dificuldade, nomes do catálogo + `difficultyLabel`,
+  nunca código cru) com `Ajustar filtros` (`#sec-filtros-t`, com
+  `scroll-margin` do header). A paginação existe no topo
+  (`#study-pagination-top`, compacta, sem `role=status` duplo) e na base
+  (anúncio mantido); ambas chamam o mesmo `fillPager()`. No navegador, o
+  assunto do filtro atual vira linha `--active` com botão `Atual`
+  desabilitado (`aria-current="true"`). Só UI — sem novo fetch, sem
+  inventar conteúdo.
+* **Correção junto (U3):** trocar assunto/subassunto pelo select não
+  filtrava — o `change` lia a seleção depois de `refreshDependentSelects()`
+  reconstruir as opções (a escolha nova virava `""`; só `Filtrar` e
+  `Estudar` funcionavam). Agora o handler captura `topicId`/`subtopicId`
+  antes do refresh; validado no navegador (assunto `2` → URL `topico=2`,
+  60 questões, linha ativa).
 * **Paginação:** `size=10` fixo (leitura confortável), `page` 0-based na URL
   como `pagina`. Anterior desabilitado na primeira; Próxima desabilitada na
   última (`first/last` do `PageResponse`).

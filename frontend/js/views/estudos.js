@@ -60,6 +60,8 @@ const recorteNum = document.getElementById("study-recorte-num");
 const listBox = document.getElementById("study-list");
 const countNote = document.getElementById("study-count");
 const pagerBox = document.getElementById("study-pagination");
+const pagerTop = document.getElementById("study-pagination-top");
+const recorteResumo = document.getElementById("study-recorte-resumo");
 const progressBox = document.getElementById("study-progress");
 const planBox = document.getElementById("study-plan");
 
@@ -243,6 +245,7 @@ async function loadAll() {
     renderBrowser();
     renderProgress();
     renderPlan();
+    renderRecorte();
     // Com recorte (URL ou padrão acima) o caderno abre sozinho; sem
     // catálogo/disciplinas, cai no estado-guia — ver hasRecorte().
     if (hasRecorte()) {
@@ -308,6 +311,7 @@ function bindFilterEvents() {
   // Ano/dificuldade também listam sozinhos; o botão Filtrar segue como
   // ação explícita + rolagem até o caderno (teclado/AT).
   selDisc.addEventListener("change", async () => {
+    state.filters.disciplineCode = selDisc.value || "";
     state.filters.topicId = "";
     state.filters.subtopicId = "";
     state.filters.page = 0;
@@ -322,9 +326,14 @@ function bindFilterEvents() {
     }
     renderProgress();
     renderPlan();
+    renderRecorte();
     renderHero();
   });
   selTopic.addEventListener("change", async () => {
+    // U3 — captura ANTES de refreshDependentSelects(): ele reconstrói as
+    // opções do assunto e leria a seleção nova como "" se deixássemos para
+    // depois (mesmo padrão do subassunto abaixo).
+    state.filters.topicId = selTopic.disabled ? "" : (selTopic.value || "");
     state.filters.subtopicId = "";
     state.filters.page = 0;
     state.origin = "";
@@ -338,12 +347,15 @@ function bindFilterEvents() {
     }
     renderProgress();
     renderPlan();
+    renderRecorte();
     renderHero();
   });
   selSub.addEventListener("change", async () => {
+    // U3 — mesma captura antecipada do assunto: o refresh reconstrói este
+    // select a partir do assunto e apagaria a escolha nova.
+    state.filters.subtopicId = selSub.disabled ? "" : (selSub.value || "");
     state.filters.page = 0;
     state.origin = "";
-    state.filters.subtopicId = selSub.disabled ? "" : (selSub.value || "");
     syncUrl();
     if (hasRecorte()) {
       await loadQuestions();
@@ -352,6 +364,7 @@ function bindFilterEvents() {
     }
     renderProgress();
     renderPlan();
+    renderRecorte();
     renderHero();
   });
   selYear.addEventListener("change", async () => {
@@ -366,6 +379,7 @@ function bindFilterEvents() {
     }
     renderProgress();
     renderPlan();
+    renderRecorte();
     renderHero();
   });
   selDiff.addEventListener("change", async () => {
@@ -380,6 +394,7 @@ function bindFilterEvents() {
     }
     renderProgress();
     renderPlan();
+    renderRecorte();
     renderHero();
   });
   form.addEventListener("submit", async (e) => {
@@ -401,6 +416,7 @@ function bindFilterEvents() {
       }
       renderProgress();
       renderPlan();
+      renderRecorte();
       renderHero();
       // O caderno fica no topo (antes dos filtros): após filtrar, sobe a
       // tela até as questões para o aluno vê-las sem precisar rolar.
@@ -432,6 +448,7 @@ function bindFilterEvents() {
     }
     renderProgress();
     renderPlan();
+    renderRecorte();
     renderHero();
     document.getElementById("sec-questoes-t").scrollIntoView({ block: "start" });
   });
@@ -609,6 +626,33 @@ function currentDisciplineName() {
   return state.disciplines.find((d) => d.code === discCode)?.name
     || state.allTopics.find((t) => t.disciplineCode === discCode)?.disciplineName
     || null;
+}
+
+function currentSubtopicName() {
+  const id = state.filters.subtopicId;
+  if (!id) return null;
+  return state.subtopicsOfTopic.find((s) => String(s.id) === String(id))?.name || null;
+}
+
+// U3 — resumo do recorte no topo do caderno ("onde estou e o que vou
+// ver"). Só UI: deriva dos filtros + nomes do catálogo, sem novo fetch e
+// sem inventar conteúdo. Edição e dificuldade usam rótulos traduzidos;
+// código cru da API nunca vai para o texto (ver check_frontend.py).
+function renderRecorte() {
+  if (!recorteResumo) return;
+  const parts = [];
+  const discName = currentDisciplineName();
+  if (discName) parts.push(discName);
+  const topicName = currentTopicName();
+  if (topicName) parts.push(topicName);
+  const subName = currentSubtopicName();
+  if (subName) parts.push(subName);
+  if (state.filters.year) parts.push(`Edição ${state.filters.year}`);
+  const diffLabel = difficultyLabel(state.filters.difficulty);
+  if (diffLabel) parts.push(diffLabel);
+  recorteResumo.textContent = parts.length > 0
+    ? `Recorte atual: ${parts.join(" · ")}.`
+    : "Recorte atual: todos os conteúdos.";
 }
 
 function planDoingItem() {
@@ -803,6 +847,10 @@ function renderBrowser() {
       const ul = el("ul", { className: "browser-topics" });
       for (const t of topics.slice(0, limit)) {
         const li = el("li", { className: "browser-topics__row" });
+        // U3 — assunto ativo: o filtro atual ganha "onde estou" sem novo
+        // fetch. Só UI (classe + rótulo traduzido); o botão vira "Atual"
+        // desabilitado para não re-listar o mesmo recorte.
+        const isActive = String(t.id) === String(state.filters.topicId);
         const left = el("div", { className: "browser-topics__main" });
         left.appendChild(el("div", { className: "browser-topics__name", text: t.name }));
         const ta = topicAccuracy(t.id);
@@ -821,9 +869,14 @@ function renderBrowser() {
         li.appendChild(left);
         const btn = el("button", {
           className: "btn btn--secondary btn--sm",
-          text: "Estudar",
-          attrs: { type: "button", "aria-label": `Estudar ${t.name}` },
+          text: isActive ? "Atual" : "Estudar",
+          attrs: {
+            type: "button",
+            "aria-label": isActive ? `Estudando ${t.name} (filtro atual)` : `Estudar ${t.name}`,
+            ...(isActive ? { "aria-current": "true", disabled: "" } : {}),
+          },
         });
+        if (isActive) li.classList.add("browser-topics__row--active");
         btn.addEventListener("click", async () => {
           selDisc.value = d.code;
           state.filters.disciplineCode = d.code;
@@ -839,6 +892,7 @@ function renderBrowser() {
           await loadQuestions();
           renderProgress();
           renderPlan();
+          renderRecorte();
           renderHero();
           document.getElementById("sec-questoes-t").scrollIntoView({ block: "start" });
         });
@@ -912,6 +966,7 @@ function renderQuestionsIdle() {
   state.pageData = null;
   listBox.textContent = "";
   pagerBox.textContent = "";
+  if (pagerTop) pagerTop.textContent = "";
   renderEmpty(listBox, {
     title: "Escolha um conteúdo para começar",
     description: "Toque em “Estudar” num assunto abaixo ou use os filtros para escolher disciplina e assunto. As questões daquele conteúdo aparecem aqui no topo.",
@@ -935,6 +990,7 @@ function questionQuery() {
 async function loadQuestions() {
   listBox.textContent = "";
   pagerBox.textContent = "";
+  if (pagerTop) pagerTop.textContent = "";
   countNote.textContent = "Buscando questões…";
   const loading = el("div", { className: "loading-block", attrs: { role: "status" } });
   loading.appendChild(el("span", { className: "spinner", attrs: { "aria-hidden": "true" } }));
@@ -974,6 +1030,7 @@ async function loadQuestions() {
 function renderQuestions(data) {
   listBox.textContent = "";
   pagerBox.textContent = "";
+  if (pagerTop) pagerTop.textContent = "";
   const items = data?.content ?? [];
   const total = data?.totalElements ?? 0;
   if (total === 0) {
@@ -1207,14 +1264,19 @@ function showFeedback(box, question, attempt, choice) {
   // attempt.notes é trilha de auditoria do servidor — ver comentário acima.
 }
 
-function renderPager(data) {
-  pagerBox.textContent = "";
+// U3 — paginação espelhada topo/base: o caderno tem 10 cartões longos e
+// a troca de página morava só no rodapé. O topo é compacto (mesma ação,
+// sem novo conceito); o anúncio de página continua só no rodapé
+// (role=status no countNote + info da base) para não duplicar no AT.
+function fillPager(container, data, { announce = false } = {}) {
+  if (!container) return;
+  container.textContent = "";
   const page = data?.page ?? 0;
   const totalPages = data?.totalPages ?? 1;
   const info = el("span", {
     className: "study-pagination__info",
     text: `Página ${page + 1} de ${totalPages}`,
-    attrs: { role: "status" },
+    ...(announce ? { attrs: { role: "status" } } : {}),
   });
   const group = el("div", { className: "btn-group" });
   const prev = el("button", {
@@ -1245,8 +1307,13 @@ function renderPager(data) {
   });
   group.appendChild(prev);
   group.appendChild(next);
-  pagerBox.appendChild(info);
-  pagerBox.appendChild(group);
+  container.appendChild(info);
+  container.appendChild(group);
+}
+
+function renderPager(data) {
+  fillPager(pagerBox, data, { announce: true });
+  fillPager(pagerTop, data);
 }
 
 /* ---------- sessão de estudo ---------- */

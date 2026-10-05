@@ -318,6 +318,42 @@
   margin: 0;
 }
 
+/* U3 — recorte visível no topo do caderno ("onde estou") + paginação
+ * espelhada. Só layout sobre tokens existentes; sem cor nova, sem
+ * componente novo. */
+.study-recorte-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  border: 1px dashed var(--color-line-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-50);
+  padding: var(--space-3) var(--space-4);
+}
+.study-recorte {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+  font-variant-numeric: tabular-nums;
+  flex: 1 1 16rem;
+}
+.study-pagination--top {
+  border-top: 0;
+  padding-top: 0;
+  border-bottom: 1px solid var(--color-line-100);
+  padding-bottom: var(--space-5);
+}
+.study-pagination--top:empty { display: none; }
+
+/* U3 — assunto ativo no navegador: "onde estou" dentro da lista. */
+.browser-topics__row--active { background: var(--color-primary-50); }
+.browser-topics__row--active .browser-topics__name { color: var(--color-primary-700); }
+
+/* Âncora "Ajustar filtros": desconta o header sticky como o caderno. */
+#sec-filtros-t { scroll-margin-top: calc(var(--header-h, 68px) + var(--space-4)); }
+
 /* ---------- paginação ---------- */
 .study-pagination {
   display: flex;
