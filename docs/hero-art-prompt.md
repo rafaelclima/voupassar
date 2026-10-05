@@ -78,17 +78,14 @@ ffmpeg -y -i hero_full.jpg \
 # Desktop grande (2400px; altura proporcional, sem crop)
 ffmpeg -y -i hero_full.jpg -vf "scale=2400:1339" \
   -c:v libwebp -quality 78 frontend/assets/landing/hero-2400.webp
-# Retrato mobile/tablet (4:5 do terço direito: estudantes + degraus + cronômetro)
-ffmpeg -y -i hero_full.jpg -vf "crop=1228:1536:1524:0,scale=900:1125" \
-  -c:v libwebp -quality 80 frontend/assets/landing/hero-portrait.webp
 ```
 
-Tamanhos de referência: `hero.webp` ~19 KB, `hero-2400.webp` ~43 KB,
-`hero-portrait.webp` ~30 KB.
+Tamanhos de referência: `hero.webp` ~19 KB, `hero-2400.webp` ~43 KB.
+A arte entra **inteira** na página (sem `cover`, sem crop no CSS) nas
+duas variantes — por isso só existem esses dois derivados.
 
-1. Salvar os 3 arquivos nos caminhos acima (o HTML já referencia os três
-   via `<picture>` + `srcset`; `hero.webp` segue exigido pelo
-   `check_frontend.py`, junto de `hero-2400.webp` e `hero-portrait.webp`).
+1. Salvar os 2 arquivos nos caminhos acima (o HTML referencia os dois
+   via `srcset`; ambos seguem exigidos pelo `check_frontend.py`).
 2. `python3 scripts/analysis/check_frontend.py` — deve continuar OK.
 3. Conferir no navegador (MCP `chrome-devtools`), com
    `python3 -m http.server 8899 --directory frontend`:

@@ -142,8 +142,8 @@ body.landing-page {
   pointer-events: none;
 }
 
-/* Sem véu/scrim sobre a arte: a legibilidade do texto vem de sombra
- * de texto no H1/lead. Sem espelho (orientação original preservada). */
+/* Sem overlay, sem véu/scrim, sem espelho: a arte aparece inteira e o
+ * texto assenta sobre o canvas navy limpo. */
 
 .landing-hero__grid {
   display: grid;
@@ -158,11 +158,6 @@ body.landing-page {
   display: grid;
   gap: var(--space-5);
   align-content: start;
-  /* Acima da arte no desktop (a arte é z 0): o grid em si é estático
-   * de propósito, para o inset:0 da arte ter a section como referência
-   * e forrar a hero inteira — não só o grid. */
-  position: relative;
-  z-index: 1;
 }
 
 /* Kicker com destaque de pill (ponto pulsante + contorno), para não
@@ -200,7 +195,6 @@ body.landing-page {
   font-weight: 800;
   text-wrap: balance;
   max-width: 16ch;
-  text-shadow: 0 2px 24px rgb(6 20 36 / 0.9);
 }
 
 /* Linha de acento, como o "BOLD IDEAS" em teal da referência — aqui
@@ -215,7 +209,6 @@ body.landing-page {
   line-height: 1.55;
   color: #d7e7f6;
   max-width: 44ch;
-  text-shadow: 0 2px 24px rgb(6 20 36 / 0.9);
 }
 
 .landing-actions {
@@ -279,32 +272,24 @@ body.landing-page {
   color: #fff;
 }
 
-/* ============ Visual: cartão empilhado no retrato, full-bleed no desktop ============
- * Até 64rem a hero é empilhada em coluna única: o texto assenta sobre
- * o canvas navy limpo e a arte aparece como cartão contido abaixo —
- * sem overlay, sem corte lateral. A variante retrato (4:5, via
- * <picture>) já enquadra estudantes, degraus e cronômetro.
- * A partir de 64rem a arte vira full-bleed atrás do texto (ver media
- * query abaixo), com srcset 1200/2400 para não estourar nitidez em
- * telas grandes. Sem espelho em nenhum breakpoint. */
+/* ============ Visual: arte sempre inteira, sem corte ============
+ * A arte aparece por inteiro em todos os breakpoints (2 colunas no
+ * desktop, empilhada abaixo do texto no mobile): sem overlay, sem
+ * cover, sem espelho, sem véu. O texto assenta sobre o canvas navy
+ * limpo — por isso não há text-shadow no H1/lead.
+ *
+ * `alt` vazio de propósito: decorativa, a mensagem está no H1 + CTAs. */
 .landing-visual {
-  position: relative;
-  z-index: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-art {
   display: block;
   width: min(100%, 26rem);
-  margin-inline: auto;
-}
-
-.hero-art img {
-  display: block;
-  width: 100%;
   height: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
   border-radius: var(--radius-xl);
   border: 1px solid rgb(255 255 255 / 0.16);
   box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.5);
@@ -366,58 +351,15 @@ body.landing-page {
     gap: var(--space-10);
   }
 
-  /* Full-bleed: a arte sai do fluxo e forra a hero inteira atrás do
-   * texto (grid z 1, arte z 0). A trilha direita do grid fica vazia e
-   * reserva o respiro visual — é por ela que estudantes, degraus e
-   * cronômetro aparecem. Sem espelho, sem véu: a leitura vem da sombra
-   * de texto no H1/lead. `alt` vazio de propósito (decorativa). */
-  .landing-visual {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-
+  /* Na trilha direita a arte ocupa a largura toda, sempre inteira. */
   .hero-art {
     width: 100%;
-    height: 100%;
-    margin-inline: 0;
-  }
-
-  .hero-art img {
-    width: 100%;
-    height: 100%;
-    aspect-ratio: auto;
-    object-position: 75% 50%;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
   }
 }
 
 @media (max-width: 26rem) {
   .landing-actions .btn {
     flex: 1 1 100%;
-  }
-}
-
-/* Telas muito largas (≥ 112rem): sem isso a hero continua com a altura
- * do conteúdo (~750px) e o cover corta quase metade da arte (em 2560px
- * só 53% da altura sobrevive: cronômetro fora, corpos cortados). A hero
- * cresce suavemente com a largura (38vw, teto 60rem) para o crop
- * encolher. Só a partir de 128rem o object-position ancora a faixa
- * visível mais para o topo (cronômetro + cabeças + troncos + degraus;
- * o que sai é perna) — abaixo disso o 50% padrão já entrega a cena
- * aprovada sem jogar cartão para trás do lead.
- * Acima da largura da fonte-mestre (2752px) há upscale — ver §3. */
-@media (min-width: 112rem) {
-  .landing-hero {
-    min-height: min(38vw, 60rem);
-  }
-}
-
-@media (min-width: 128rem) {
-  .hero-art img {
-    object-position: 75% 30%;
   }
 }
 
