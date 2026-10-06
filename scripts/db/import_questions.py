@@ -27,10 +27,11 @@ Contrato de idempotencia (docs/database-erd.md §8):
 Checksum: SHA-256 hex de enunciado + alternativas A-D normalizados
 (NFC Unicode + colapso de whitespace). Definicao unica deste script.
 
-Regras de honestidade (AGENTS.md §4):
+Regras de honestidade (AGENTS.md §4, decisão de produto 2026-10-06):
   - difficulty_estimate vem da classificacao (palpite, confianca BAIXA);
-  - validation_status=PENDING, publication_status=PENDENTE_REVISAO em tudo;
-  - classificacao DB status=PENDING em tudo (revisao humana PENDENTE);
+  - sem carimbo humano: questions não tem validation/publication_status e
+    question_classifications não tem status (V12); confiança = pipeline;
+  - cada linha carimba pipeline_version (versão deste importador);
   - has_figure=TRUE nos NECESSITA_REVISAO com evidencia visual (36 itens);
     excecoes conceituais sem figura: (2023,Q40) e (2024,Q17) — ver
     observacao original em per-edition/*.json;
@@ -54,7 +55,7 @@ import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
-IMPORTER_VERSION = "1.0.0"
+IMPORTER_VERSION = "2.0.0"
 TAXONOMY_VERSION = "v1.1"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -230,6 +231,21 @@ def fetch_rows(env: dict[str, str], sql: str) -> list[list[str]]:
     return [l.split("|") for l in out.splitlines() if l.strip()]
 
 
+def check_schema(env: dict[str, str]) -> None:
+    """Falha alto se o banco ainda tem o contrato de curadoria (pré-V12)."""
+    cols = psql(env,
+        "SELECT column_name FROM information_schema.columns "
+        "WHERE table_name = 'questions'").split()
+    if "pipeline_version" not in cols:
+        raise ImportFailure(
+            "banco anterior à V12__drop_review_gates (sem pipeline_version); "
+            "aplicar database/migrations até V12 antes de importar")
+    for dead in ("validation_status", "publication_status"):
+        if dead in cols:
+            raise ImportFailure(
+                f"banco com coluna {dead} (pré-V12); aplicar V12 antes de importar")
+
+
 def load_refs(env: dict[str, str], items: list[dict]) -> dict:
     exams = {r[0]: int(r[1])
              for r in fetch_rows(env, "SELECT year, id FROM exams")}
@@ -331,13 +347,13 @@ def sql_insert_questions(new: list[dict], refs: dict) -> str:
             "source_year, source_question_number, statement, kind, "
             "discipline_id, page_start, page_end, answer_key, annulled, "
             "checksum, has_figure, difficulty_estimate, "
-            "validation_status, publication_status) VALUES "
+            "pipeline_version) VALUES "
             f"('OFFICIAL', {exam_id}, {doc_id}, {it['edition']}, "
             f"{it['number']}, {esc(it['statement'])}, 'OBJECTIVE', "
             f"{disc_id}, {it['page_start']}, {it['page_end']}, "
             f"{esc(it['answer_key'])}, {'TRUE' if it['annulled'] else 'FALSE'}, "
             f"{esc(it['checksum'])}, {'TRUE' if has_fig else 'FALSE'}, "
-            f"{esc(it['difficulty'])}, 'PENDING', 'PENDENTE_REVISAO') "
+            f"{esc(it['difficulty'])}, 'importer-{IMPORTER_VERSION}') "
             "ON CONFLICT DO NOTHING;")
     return "\n".join(stmts)
 
@@ -357,7 +373,7 @@ def sql_insert_children(items: list[dict], refs: dict,
 
     stmts = ["INSERT INTO question_tags (code, description) VALUES "
              "('FIGURA', 'Questao depende de figura/grafico/charge ausente "
-             "do texto extraido; requer revisao visual antes de publicar') "
+             "do texto extraido; ver paginas do caderno-fonte') "
              "ON CONFLICT (code) DO NOTHING;"]
     for it in items:
         qid = existing[(it["edition"], it["number"])]["id"]
@@ -391,11 +407,11 @@ def sql_insert_children(items: list[dict], refs: dict,
             stmts.append(
                 "INSERT INTO question_classifications (question_id, "
                 "taxonomy_version, topic_id, subtopic_id, skill, "
-                "reasoning_type, confidence, evidence, origin, status, observation) "
+                "reasoning_type, confidence, evidence, origin, observation) "
                 f"VALUES ({qid}, '{TAXONOMY_VERSION}', {topic_id}, {sub_id}, "
                 f"{esc(it['skill'])}, {esc(it['reasoning'])}, "
                 f"{esc(it['confidence'])}, {esc(it['evidence'])}, "
-                "'CLASSIFICACAO_DERIVADA_FONTE', 'PENDING', " + obs + ");")
+                "'CLASSIFICACAO_DERIVADA_FONTE', " + obs + ");")
         has_fig = it["needs_review"] and (it["edition"], it["number"]) \
             not in NON_FIGURE_REVIEW
         if has_fig and tag_counts.get(qid, 0) == 0:
@@ -450,6 +466,7 @@ def main() -> int:
     started = datetime.now(timezone.utc).isoformat()
     items = load_sources()
     env = pg_env()
+    check_schema(env)
     refs = load_refs(env, items)
     existing = fetch_existing(env)
 

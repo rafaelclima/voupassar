@@ -6,16 +6,15 @@ Só leitura por padrão. Verifica:
   - nomes dos arquivos em assets/figures/ batem com o manifest;
   - formatos aceitos (.webp preferido, .png/.jpg aceitos com aviso);
   - dimensões via cabeçalho (sem Pillow); lado maior <= 1600 px, < 300 KB;
-  - cada entrada tem `alt`, `page` (número > 0) e `status` (PENDENTE_REVISAO | PUBLICAVEL);
+  - cada entrada tem `alt`, `page` (número > 0) e `files` (lista não vazia);
   - cobertura das 36 questões com `has_figure=TRUE` no banco (via `data/linked/` + `docs/content-analysis/per-edition/`);
   - nenhuma duplicidade acidental (mesmo arquivo referenciado por chave diferente sem justificativa).
 
 Uso:
-    python3 scripts/analysis/check_figures.py [--fix-alt] [--publish <ano>-<num>]
+    python3 scripts/analysis/check_figures.py [--fix-alt]
 """
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from pathlib import Path
@@ -117,7 +116,6 @@ def check_meta(manifest):
             continue
         alt = entry.get("alt", "").strip()
         page = entry.get("page")
-        status = entry.get("status", "PENDENTE_REVISAO")
         if not alt:
             errors.append(f"[{key}] alt ausente")
         else:
@@ -128,18 +126,12 @@ def check_meta(manifest):
             errors.append(f"[{key}] page ausente")
         elif not isinstance(page, int) or page <= 0:
             errors.append(f"[{key}] page inválida: {page}")
-        if status not in ("PENDENTE_REVISAO", "PUBLICAVEL"):
-            errors.append(f"[{key}] status inválido: {status}")
         if "files" not in entry or not isinstance(entry.get("files"), list) or len(entry.get("files", [])) == 0:
             errors.append(f"[{key}] files ausente ou vazio")
     return errors, warnings
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--publish", metavar="CHAVE", help="Marca chave como PUBLICAVEL no manifest")
-    args = ap.parse_args()
-
     manifest = load_manifest()
     errors = check_names(manifest)
     warnings = check_formats(manifest)
@@ -153,15 +145,6 @@ def main():
     count = len(manifest.get("figures", {}))
     if count < EXPECTED_COUNT:
         warnings.append(f"cobertura: {count} de {EXPECTED_COUNT} figuras registradas (36 esperadas)")
-
-    if args.publish:
-        if args.publish not in manifest.get("figures", {}):
-            print(f"chave não encontrada: {args.publish}", file=sys.stderr)
-            sys.exit(2)
-        manifest["figures"][args.publish]["status"] = "PUBLICAVEL"
-        MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(f"publicado: {args.publish}")
-        sys.exit(0)
 
     for w in warnings:
         print("AVISO:", w)

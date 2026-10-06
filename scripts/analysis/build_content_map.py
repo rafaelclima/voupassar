@@ -103,7 +103,9 @@ def main() -> int:
         discs = sorted({it["disciplina"] for it in lst})
         conf = Counter(it["assunto_confianca"] for it in lst)
         n_ann = sum(1 for it in lst if it["anulada"])
-        n_rev = sum(1 for it in lst if it["status"] == "NECESSITA_REVISAO")
+        # NECESSITA_REVISAO na fonte = nota visual (36 com figura + 2
+        # conceituais sem figura: 2023 Q40, 2024 Q17). Sem gate humano.
+        n_nota_visual = sum(1 for it in lst if it["status"] == "NECESSITA_REVISAO")
         subs = Counter(it["subassunto"] for it in lst)
         agg["assuntos"][assunto] = {
             "n": len(lst), "pct_total": round(100 * len(lst) / total, 1),
@@ -112,7 +114,7 @@ def main() -> int:
             "trend": trend_label(per_ed),
             "disciplinas": discs,
             "confianca": dict(conf),
-            "n_anuladas": n_ann, "n_em_revisao": n_rev,
+            "n_anuladas": n_ann, "n_nota_visual": n_nota_visual,
             "subassuntos": dict(subs),
         }
 
@@ -122,14 +124,14 @@ def main() -> int:
 
     # Saida markdown (tabelas para docs/content-map.md)
     print("## Por assunto")
-    print("| Assunto | n | % total | Edições | Tendência | Conf (A/M/B) | Anul. | Em revisão |")
+    print("| Assunto | n | % total | Edições | Tendência | Conf (A/M/B) | Anul. | Nota visual |")
     print("|---|---|---|---|---|---|---|---|")
     for assunto, a in sorted(agg["assuntos"].items(), key=lambda kv: -kv[1]["n"]):
         c = a["confianca"]
         print(f"| {assunto} | {a['n']} | {a['pct_total']}% | "
               f"{','.join(a['editions_present'])} | {a['trend']} | "
               f"{c.get('ALTA',0)}/{c.get('MEDIA',0)}/{c.get('BAIXA',0)} | "
-              f"{a['n_anuladas']} | {a['n_em_revisao']} |")
+               f"{a['n_anuladas']} | {a['n_nota_visual']} |")
     print("\n## Por subassunto")
     print("| Assunto | Subassunto | n | Série 20-22-23-24-25-26 |")
     print("|---|---|---|---|")

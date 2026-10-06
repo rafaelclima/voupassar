@@ -82,9 +82,9 @@ def main() -> int:
                 errs.append(f"Q{n}: evidencia > 200 caracteres")
             if c.get("status") == "NECESSITA_REVISAO" and not str(c.get("observacao", "")).strip():
                 errs.append(f"Q{n}: NECESSITA_REVISAO sem observacao")
-        n_rev = sum(1 for c in cs if c.get("status") == "NECESSITA_REVISAO")
+        n_nota_visual = sum(1 for c in cs if c.get("status") == "NECESSITA_REVISAO")
         print(f"{ed}: {'OK' if not errs else 'FALHA'} "
-              f"(n={len(cs)}, em_revisao={n_rev})")
+              f"(n={len(cs)}, nota_visual={n_nota_visual})")
         for e in errs:
             print(f"  ERRO {ed}: {e}")
             ok = False

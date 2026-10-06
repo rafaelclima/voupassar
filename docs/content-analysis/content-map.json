@@ -63,7 +63,7 @@
         "MEDIA": 4
       },
       "n_anuladas": 0,
-      "n_em_revisao": 0,
+      "n_nota_visual": 0,
       "subassuntos": {
         "EQUACOES": 8,
         "FUNCAO_AFIM": 6,
@@ -100,7 +100,7 @@
         "BAIXA": 1
       },
       "n_anuladas": 1,
-      "n_em_revisao": 1,
+      "n_nota_visual": 1,
       "subassuntos": {
         "OPERACOES": 6,
         "FRACOES": 5,
@@ -138,7 +138,7 @@
         "MEDIA": 2
       },
       "n_anuladas": 0,
-      "n_em_revisao": 9,
+      "n_nota_visual": 9,
       "subassuntos": {
         "LEITURA_GRAFICO_TABELA": 4,
         "MEDIA": 6,
@@ -174,7 +174,7 @@
         "MEDIA": 3
       },
       "n_anuladas": 0,
-      "n_em_revisao": 7,
+      "n_nota_visual": 7,
       "subassuntos": {
         "AREA_PLANA": 8,
         "VOLUME": 1,
@@ -213,7 +213,7 @@
         "BAIXA": 3
       },
       "n_anuladas": 2,
-      "n_em_revisao": 3,
+      "n_nota_visual": 3,
       "subassuntos": {
         "MORFOLOGIA": 11,
         "SINTAXE_PERIODO": 7,
@@ -250,7 +250,7 @@
         "MEDIA": 1
       },
       "n_anuladas": 0,
-      "n_em_revisao": 0,
+      "n_nota_visual": 0,
       "subassuntos": {
         "TEMPO": 2,
         "VOLUME_CAPACIDADE": 1
@@ -285,7 +285,7 @@
         "BAIXA": 8
       },
       "n_anuladas": 0,
-      "n_em_revisao": 14,
+      "n_nota_visual": 14,
       "subassuntos": {
         "INTENCAO_COMUNICATIVA": 9,
         "INFORMACAO_EXPLICITA": 15,
@@ -321,7 +321,7 @@
         "ALTA": 5
       },
       "n_anuladas": 0,
-      "n_em_revisao": 0,
+      "n_nota_visual": 0,
       "subassuntos": {
         "JUROS_SIMPLES": 5
       }
@@ -355,7 +355,7 @@
         "MEDIA": 1
       },
       "n_anuladas": 1,
-      "n_em_revisao": 3,
+      "n_nota_visual": 3,
       "subassuntos": {
         "REPRESENTACAO_FRACAO": 3,
         "CALCULO_DIRETO": 6,
@@ -391,7 +391,7 @@
         "MEDIA": 6
       },
       "n_anuladas": 1,
-      "n_em_revisao": 1,
+      "n_nota_visual": 1,
       "subassuntos": {
         "RAZAO": 7,
         "PROPORCIONALIDADE": 5,

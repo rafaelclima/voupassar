@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Gera recortes iniciais (.webp) a partir das páginas dos PDFs das edições.
 
-Estratégia: para cada entrada no manifest com PENDENTE_REVISAO,
-renderiza a página mencionada (`page`) via pdftoppm, converte para .webp
-com redimensionamento (lado maior <= 1600 px, < 300 KB).
+Estratégia: para cada entrada no manifest, renderiza a página mencionada
+(`page`) via pdftoppm, converte para .webp com redimensionamento (lado
+maior <= 1600 px, < 300 KB).
 
-Não faz recorte preciso da figura — isso exige curadoria visual manual.
+Não faz recorte preciso da figura — isso exige recorte manual posterior.
 O arquivo gerado é a página completa, servindo como base para recorte
 ou como referência visual imediata.
 """

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Sincronizador do manifest.json para o banco (TASK 6.6 / docs/figuras-estrategia.md).
+"""Sincronizador do manifest.json para o banco (docs/figuras-estrategia.md).
 
-Le `frontend/assets/figures/manifest.json` (fonte de verdade da curadoria
-manual) e sincroniza com a tabela `question_figures` (V8__question_figures.sql).
+Le `frontend/assets/figures/manifest.json` (arquivo + alt + página + crédito)
+e sincroniza com a tabela `question_figures` (V8, sem coluna de status
+desde V12 — servir figura é crédito + página, sem gate).
 
 Idempotente: ON CONFLICT DO NOTHING + comparacao de checksum (file_path,
-alt_text, page, status). Divergencia = sai com codigo 2 sem alterar nada.
+alt_text, page). Divergencia = sai com codigo 2 sem alterar nada.
 
 Uso:
-    python3 scripts/db/sync_figures.py [--publish CHAVE]
+    python3 scripts/db/sync_figures.py [--check]
 """
 from __future__ import annotations
 import argparse
@@ -73,24 +74,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true",
                     help="Só valida manifest + estado do banco, sem escrever.")
-    ap.add_argument("--publish", metavar="CHAVE",
-                    help="Marca chave (ex. 2026-18) como PUBLICAVEL no manifest antes de sincronizar.")
     args = ap.parse_args()
 
     if not MANIFEST.exists():
         print(f"manifest ausente: {MANIFEST}", file=sys.stderr)
         return 1
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-
-    if args.publish:
-        if args.publish not in manifest.get("figures", {}):
-            print(f"chave nao encontrada: {args.publish}", file=sys.stderr)
-            return 2
-        manifest["figures"][args.publish]["status"] = "PUBLICAVEL"
-        MANIFEST.write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8")
-        print(f"publicado no manifest: {args.publish}")
 
     # Só valida se --check
     if args.check:
@@ -121,16 +110,15 @@ def main() -> int:
         file_path = files[0] if files else None
         alt_text = entry.get("alt", "")
         page = entry.get("page")
-        status = entry.get("status", "PENDENTE_REVISAO")
         if file_path is None:
             print(f"chave ignorada (sem arquivo): {key}")
             continue
-        # Inserta idempotente
+        # Inserta idempotente (sem status desde V12)
         sql = (f"INSERT INTO question_figures "
-               f"(question_id, position, file_path, alt_text, page, publication_status) "
+               f"(question_id, position, file_path, alt_text, page) "
                f"VALUES ({qid}, 1, '{file_path.replace(chr(39), chr(39)+chr(39))}', "
-               f"'{alt_text.replace(chr(39), chr(39)+chr(39))}', {page if page else 'NULL'}, "
-               f"'{status}') ON CONFLICT (question_id, position) DO NOTHING;")
+               f"'{alt_text.replace(chr(39), chr(39)+chr(39))}', {page if page else 'NULL'}) "
+               f"ON CONFLICT (question_id, position) DO NOTHING;")
         psql(env_vars, sql)
         inserted += 1
     print(f"sincronizado: {inserted} figuras (de {len(figures)} no manifest)")
