@@ -1,4 +1,11 @@
-# Curadoria Assistida — TASK 12.2
+# Curadoria Assistida — TASK 12.2 — HISTÓRICO (superseded em 2026-10-06)
+
+> **Este documento é registro histórico.** A decisão de produto 2026-10-06
+> (`docs/plano-remocao-curadoria.md`) removeu totalmente o contrato de
+> curadoria humana: sem fila de revisão, sem `PENDING/REVIEWED/APPROVED/
+> REJECTED`, sem `PUBLICAVEL/PENDENTE_REVISAO`, sem PATCH de curadoria
+> (V12 + backend + scripts + frontend). Abaixo, o relato original da
+> operação de 2026-10-02, preservado sem reescrita.
 
 > Data: 2026-10-02. Ferramenta: Claude/LLM via OpenCode, usuário
 > `curadoria@voupassar.local` (CURATOR+ADMIN) com novo token após promoção.

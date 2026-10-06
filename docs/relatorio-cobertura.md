@@ -6,6 +6,12 @@
 > (TASK 11.1) + `docs/content-map.md` (TASK 1.5). "Confirmada" abaixo significa
 > **revisão/aprovação humana** — não confundir com vinculação ao gabarito (essa é 100%).
 > Nada inventado: lacunas marcadas como `PENDENTE` / `DESCONHECIDO`.
+>
+> NOTA 2026-10-06 (decisão de produto, `docs/plano-remocao-curadoria.md`):
+> o contrato de curadoria humana foi removido (V12). As linhas de `APPROVED`/
+> `REVIEWED`/`REJECTED`/`PENDENTE_REVISAO`/`PUBLICAVEL` abaixo descrevem o banco
+> **em 2026-10-02** e ficam como registro histórico; a confiança atual é o
+> veredito do pipeline. Riscos assumidos em `docs/blockers.md`.
 
 ## 0. Resumo executivo
 
@@ -16,10 +22,10 @@
 | Assuntos distintos (banco v1.1) | 10 (2 LP + 8 MAT) |
 | Subassuntos distintos | 42 |
 | Vinculadas ao gabarito | 240/240 (100%); anuladas 5 |
-| Classificações com revisão humana `APPROVED` | **0/240 confirmadas** — 200 `APPROVED` nesta data são pré-curadoria LLM (referendo humano pendente); 39 `REVIEWED`; 1 `REJECTED` |
+| Classificações com revisão humana `APPROVED` (em 2026-10-02) | **0/240 confirmadas** — 200 `APPROVED` então eram pré-curadoria LLM (referendo humano pendente); 39 `REVIEWED`; 1 `REJECTED`. Colunas removidas na V12 (2026-10-06) |
 | Classificações `NECESSITA_REVISAO` na origem | 38/240 (15,8%) |
 | Confiança do assunto | ALTA 170 (70,8%) · MEDIA 46 (19,2%) · BAIXA 24 (10%) |
-| Publicáveis | 0 — 240 `PENDENTE_REVISAO` (curadoria final TASK 12.2 pendente; pré-curadoria aplicada 2026-10-02) |
+| Publicáveis (em 2026-10-02) | 0 — 240 `PENDENTE_REVISAO` (curadoria final TASK 12.2 então pendente; pré-curadoria aplicada 2026-10-02). Gate removido em 2026-10-06 |
 | Edição 2021 | ausente do dataset (documentado; séries pulam 2021, nada interpolado) |
 
 ## 1. Por edição
@@ -45,7 +51,7 @@ Divisão meio a meio em todas as 6 edições — padrão mais estável do datase
 
 ## 3. Por assunto (banco v1.1; % do total de 240)
 
-| Assunto | n | % | Edições presentes | Conf A/M/B | Anul. | Em revisão* |
+| Assunto | n | % | Edições presentes | Conf A/M/B | Anul. | Nota visual* |
 |---|---|---|---|---|---|---|
 | GRAMATICA_NORMA | 60 | 25,0% | 6/6 | 48/9/3 | 2 | 3 |
 | INTERPRETACAO_TEXTUAL | 60 | 25,0% | 6/6 | 35/17/8 | 0 | 14 |
@@ -58,9 +64,10 @@ Divisão meio a meio em todas as 6 edições — padrão mais estável do datase
 | MATEMATICA_FINANCEIRA | 5 | 2,1% | 5/6 (ausente 2020) | 5/0/0 | 0 | 0 |
 | GRANDEZAS_MEDIDAS | 3 | 1,2% | 3/6 (2023, 2024, 2026) | 2/1/0 | 0 | 0 |
 
-\* "Em revisão" = contagem do `content-map.json` v1.1 (itens `NECESSITA_REVISAO` por
-assunto; total 38). Anuladas contam como conteúdo que apareceu na prova; regra de
-pontuação de anuladas: DESCONHECIDA.
+\* "Nota visual" = contagem do `content-map.json` v1.1 (chave `n_nota_visual`;
+antes `n_em_revisao`; itens `NECESSITA_REVISAO` por assunto; total 38 =
+36 com figura + 2 conceituais). Anuladas contam como conteúdo que apareceu
+na prova; regra de pontuação de anuladas: DESCONHECIDA.
 
 ### 3.1 Matriz edição × assunto (banco v1.1)
 
@@ -134,40 +141,41 @@ conteúdo de matemática financeira observado. Séries por edição em `content-
 | Nível | Valor | O que significa |
 |---|---|---|
 | Vinculação ao gabarito | 240/240 (100%) | toda questão tem resposta oficial transcrita |
-| Classificação com `status=APPROVED` no banco | 200/240 (83,3%) — pré-curadoria LLM 2026-10-02; 39 REVIEWED; 1 REJECTED; **0 confirmadas por humano** |
-| Classificação `PENDING` | 0/240 | pré-curadoria esvaziou a fila |
+| Classificação com carimbo humano no banco (em 2026-10-02) | 200/240 (83,3%) `APPROVED` por pré-curadoria LLM; 39 REVIEWED; 1 REJECTED; **0 confirmadas por humano**. Colunas removidas na V12 (2026-10-06) |
+| Classificação sem carimbo | 0/240 com carimbo pendente à época | pré-curadoria esvaziara a fila |
 | `NECESSITA_REVISAO` na origem | 38/240 (15,8%) | 35 figuras/gráficos/charges + 3 conceituais (`summary.md §3`) |
 | Confiança ALTA do assunto | 170/240 (70,8%) | usável com filtro; não é aprovação |
 | Dificuldade estimada | FACIL 108 · MEDIA 121 · DIFICIL 11, **todas confiança BAIXA** | palpite sem dados de desempenho; fora do mapa |
 | Explicações redigidas | 0/240 em 2026-10-02; coluna removida em 2026-10-04 (V11, decisão de produto) | `explanation` existia e estava NULL em tudo — nada inventado |
-| Questões `PUBLICAVEL` | 0/240 | 240 `PENDENTE_REVISAO` — publicação bloqueada até curadoria |
+| Questões com gate de publicação (em 2026-10-02) | 0/240 publicáveis então | 240 `PENDENTE_REVISAO` — gate removido em 2026-10-06 |
 
-## 6. Pendências (herdadas, não bloqueiam a 11.2)
+## 6. Pendências (herdadas, não bloqueiam a 11.2; reler com a NOTA 2026-10-06 do topo)
 
-1. **Curadoria humana final** das 39 classificações em `REVIEWED` e do
-   referendo das 200 em `APPROVED` (pré-curadoria LLM de 2026-10-02 — ver
-   `docs/curadoria.md`). As 36 questões `has_figure` e os itens conceituais
-   seguem exigindo o caderno em mãos.
+1. **~~Curadoria humana final~~ REMOVIDA DO CONTRATO em 2026-10-06** — à época:
+   referendo das 200 em `APPROVED` e das 39 em `REVIEWED` (pré-curadoria LLM de
+   2026-10-02 — ver `docs/curadoria.md`, histórico). As 36 questões `has_figure`
+   e os itens conceituais seguem exigindo o caderno em mãos para conferência
+   voluntária (observabilidade, sem gate).
 2. Conferência visual amostral das grades e das 36 questões `has_figure` no PDF
    renderizado (ex. 2020 Q38 frações achatadas).
 3. Casos conceituais: 2020 Q26 e 2024 Q17 (anuladas, causa oficial DESCONHECIDA);
    2023 Q40 (MMC sugere 2032, gabarito oficial A=2044 — classificação marcada
    `REJECTED` em 2026-10-02, não reinterpretar sem o PDF).
-4. Decisão de curadoria: nome do gabarito 2025 (`…2024…` no nome, conteúdo 2025).
+4. ~~Decisão de curadoria~~ nome do gabarito 2025 (`…2024…` no nome, conteúdo 2025) — vinculação usa o conteúdo; renomear é decisão futura de gestão de arquivos.
 5. Cobertura fina: `MATEMATICA_FINANCEIRA` (5, ausente 2020) e `GRANDEZAS_MEDIDAS`
    (3, só 2023/2024/2026) são esparsos — fato do dataset, não falha de importação.
 6. Passo a passo textual fora do produto desde 2026-10-04 (coluna removida
-   na V11) — publicação `PUBLICAVEL` depende só do status de curadoria.
+   na V11).
 
 ## 7. Veredito
 
 Cobertura **completa em extensão** (240/240 questões, 6 edições, 20+20 por edição,
-10 assuntos / 42 subassuntos presentes no banco e no mapa v1.1) e **pendente em
-confirmação humana** (200/240 `APPROVED` por pré-curadoria LLM ainda sem
-referendo, 39 `REVIEWED`, 1 `REJECTED`, 15,8% `NECESSITA_REVISAO` na origem,
-0% publicável). Nenhum buraco de importação: os assuntos esparsos e as
+10 assuntos / 42 subassuntos presentes no banco e no mapa v1.1) e **sem carimbo
+humano desde 2026-10-06** (então: 200/240 `APPROVED` por pré-curadoria LLM ainda sem
+referendo, 39 `REVIEWED`, 1 `REJECTED`, 15,8% `NECESSITA_REVISAO` na origem).
+Nenhum buraco de importação: os assuntos esparsos e as
 ausências (2021, MAT_FIN 2020, GR_MED em 3 edições) são características do
 dataset, não perda de dados. A TASK 12.2 entregou a curadoria assistida com
-decisão item a item auditável (`docs/curadoria.md`); falta o referendo humano
-com o PDF. (Nota 2026-10-04: redação de passo a passo removida do escopo —
-V11.)
+decisão item a item auditável (`docs/curadoria.md`, histórico); o referendo humano
+foi removido do contrato em 2026-10-06 — riscos assumidos em `docs/blockers.md`.
+(Nota 2026-10-04: redação de passo a passo removida do escopo — V11.)

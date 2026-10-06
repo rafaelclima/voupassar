@@ -817,12 +817,11 @@ Implementar:
 
 ---
 
-# FASE 11 — DADOS E QUALIDADE
+# FASE 11 — DADOS E QUALIDADE (auditorias executadas 2026-10-02; ver docs/auditoria-questoes.md e docs/relatorio-cobertura.md)
 
-## TASK 11.1 — Auditoria do banco de questões
+## TASK 11.1 — Auditoria do banco de questões [HISTÓRICO]
 
-Verificar:
-
+Verificou (estado 2026-10-02, contrato então vigente):
 * duplicatas;
 * respostas;
 * fontes;
@@ -832,43 +831,37 @@ Verificar:
 
 ---
 
-## TASK 11.2 — Relatório de cobertura
+## TASK 11.2 — Relatório de cobertura [HISTÓRICO]
 
-Produzir:
+Produziu (estado 2026-10-02):
 
 * número de questões por edição;
 * disciplina;
 * assunto;
 * subassunto;
-* percentual de classificação confirmada;
+* ~~percentual de classificação confirmada~~ (métrica do contrato removido em 2026-10-06);
 * pendências.
 
 ---
 
-# FASE 12 — ADMINISTRAÇÃO
+# FASE 12 — ADMINISTRAÇÃO (redefinida em 2026-10-06: observabilidade, sem curadoria — ver docs/plano-remocao-curadoria.md)
 
-## TASK 12.1 — Área administrativa
+## TASK 12.1 — Área administrativa [REDEFINIDA]
 
-Criar ambiente administrativo para:
+Ambiente administrativo **somente leitura** para:
 
-* revisar questões;
-* revisar classificações;
-* alterar publicação;
 * visualizar inconsistências;
 * consultar métricas.
 
----
+Sem fila de revisão, sem PATCH de status, sem publicação por status.
 
-## TASK 12.2 — Curadoria
+## TASK 12.2 — Curadoria [REMOVIDA DO CONTRATO em 2026-10-06]
 
-Permitir revisão humana das classificações produzidas pela IA.
+A revisão humana das classificações foi removida do produto. Registro
+histórico da operação assistida de 2026-10-02 em `docs/curadoria.md`.
+Os status abaixo não existem mais no banco (V12), na API nem no frontend:
 
-Status:
-
-PENDING
-REVIEWED
-APPROVED
-REJECTED
+~~PENDING~~ · ~~REVIEWED~~ · ~~APPROVED~~ · ~~REJECTED~~
 
 ---
 

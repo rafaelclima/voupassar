@@ -5,6 +5,12 @@
 > (`data/extracted/`, `data/linked/`, `docs/content-analysis/`) + `docs/gabaritos-validation.md` (TASK 1.3)
 > + `docs/importacao-questoes.md` (TASK 2.3). Nada inventado: o que a fonte não comprova está
 > marcado como `PENDENTE` / `NECESSITA REVISÃO` / `DESCONHECIDO`.
+>
+> NOTA 2026-10-06 (decisão de produto, `docs/plano-remocao-curadoria.md`):
+> o contrato de curadoria humana foi removido (V12 — sem `validation_status`,
+> `publication_status`, `status`/`reviewed_by`/`reviewed_at`). Os estados
+> `PENDING`/`PENDENTE_REVISAO` abaixo descrevem o banco **em 2026-10-02** e
+> ficam como registro histórico; a confiança atual é o veredito do pipeline.
 
 ## 0. Método e reprodução
 
@@ -85,10 +91,10 @@ suspeita, nunca apaga conteúdo (AGENTS.md §23) — nenhum DELETE foi executado
 * Disciplina por edição: 20 `LINGUA_PORTUGUESA` + 20 `MATEMATICA` nas 6 edições (12/12 grupos = 20).
   Para 2022/2026 a divisão LP 1–20 / MAT 21–40 é herdada do caderno (`discipline_source`),
   pois o gabarito não rotula disciplinas (TASK 1.3 §2.4 item 3).
-* Status de publicação: **240/240 `validation_status=PENDING` / `publication_status=PENDENTE_REVISAO`**
-  — nenhuma questão marcada `PUBLICAVEL` sem curadoria (TASK 12.2). Mecanismo de proveniência
-  exigido pelo AGENTS.md §12 existe no schema (`question_sources`, `validation_status`,
-  `publication_status`); o conteúdo completo publicado segue pendente de revisão humana.
+* Status de publicação (em 2026-10-02): **240/240 `validation_status=PENDING` / `publication_status=PENDENTE_REVISAO`**
+  — nenhuma questão marcada `PUBLICAVEL` sem curadoria (TASK 12.2). Colunas removidas na V12 (2026-10-06).
+  Mecanismo de proveniência exigido pelo AGENTS.md §12 existe no schema (`question_sources`,
+  à época também `validation_status`, `publication_status`); o conteúdo completo publicado seguia, então, pendente de revisão humana.
 
 ## 5. Classificações
 
@@ -144,8 +150,8 @@ tratados pelo schema (tentativas em anuladas: `is_correct IS NULL`).
    Q27 (Gráfico 1 p/ Q28–Q29); 2024 Q24 (trecho p/ Q25–Q27); 2026 Q7 (trecho p/ Q8–Q10),
    Q10 (trecho p/ Q11–Q14). O rodapé do meio foi removido (V6), mas o trecho real foi
    **mantido em D sem perda de dado** — realocar para as questões dependentes é decisão
-   de modelagem + curadoria humana (TASK 12.2), não desta limpeza. 2023 Q24/Q27 já estão
-   na fila de revisão (figuras); os demais seguem `PENDING`/`PENDENTE_REVISAO`.
+   de modelagem (à época, com curadoria humana na TASK 12.2; desde 2026-10-06, sem gate humano — ver riscos em `docs/blockers.md`), não desta limpeza. 2023 Q24/Q27 já estão
+   mapeados na fase de figuras; os demais seguiam `PENDING`/`PENDENTE_REVISAO` em 2026-10-02.
 
 ## 8. Veredito TASK 11.1
 
@@ -154,13 +160,13 @@ tratados pelo schema (tentativas em anuladas: `is_correct IS NULL`).
 * **Respostas:** 240/240 vinculadas, 0 ausentes, 0 incoerências `annulled⟺X`,
   240/240 com 4 alternativas e resposta presente entre elas.
 * **Fontes:** 240/240 com `PRIMARY+GABARITO`, proveniência completa, páginas válidas.
-* **Classificações:** 240/240 presentes (v1.1/PENDING), 38 `NECESSITA_REVISAO` mapeados,
-  0 `APPROVED` sem revisão humana — estado honesto.
+* **Classificações:** 240/240 presentes (v1.1, sem carimbo humano desde 2026-10-06), 38 `NECESSITA_REVISAO` na fonte mapeados (nota 2026-10-02: então com `status=PENDING`; 0 `APPROVED` sem revisão humana — estado honesto à época).
 * **Anuladas:** 5 corretamente marcadas, por edição, sem generalização.
-* **Incompletos:** nenhum silenciado — 240 `PENDENTE_REVISAO`
+* **Incompletos:** nenhum silenciado — em 2026-10-02: 240 `PENDENTE_REVISAO`
   (nota 2026-10-04: coluna `explanation` removida na V11),
-  38 fila de revisão, pendências listadas no §7.
+  38 com nota visual, pendências listadas no §7 (reler com a NOTA 2026-10-06 do topo).
 
 **Conclusão:** o banco de questões está íntegro para os critérios da TASK 11.1.
-Nenhum bloqueador para a TASK 11.2 (relatório de cobertura). Curadoria humana
-(TASK 12.2) continua pendente por definição — não é falha da auditoria.
+Nenhum bloqueador para a TASK 11.2 (relatório de cobertura). A curadoria humana
+(TASK 12.2), pendente por definição em 2026-10-02, foi removida do contrato em
+2026-10-06 (`docs/plano-remocao-curadoria.md`) — não é falha da auditoria.

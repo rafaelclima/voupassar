@@ -234,10 +234,10 @@ Questões autorais/adaptadas reusam a mesma tabela com `source_type` distinto
 | answer_key | CHAR(1) NOT NULL | `CHECK (answer_key IN ('A','B','C','D','X'))`; `X` = anulada no próprio gabarito |
 | annulled | BOOLEAN NOT NULL DEFAULT FALSE | invariante: `CHECK ((annulled AND answer_key='X') OR (NOT annulled AND answer_key<>'X'))` |
 | checksum | CHAR(64) NOT NULL | SHA-256 normalizado do enunciado+alternativas (base da idempotência) |
-| has_figure | BOOLEAN NOT NULL DEFAULT FALSE | TRUE nos 38 itens `NECESSITA_REVISAO` de `summary.md §3` |
+| has_figure | BOOLEAN NOT NULL DEFAULT FALSE | TRUE nos 36 itens com figura (sinal `NECESSITA_REVISAO` na fonte; 2 conceituais sem figura: 2023 Q40, 2024 Q17) |
 | difficulty_estimate | TEXT NULL | `FACIL/MEDIA/DIFICIL` — sempre palpite (`ESTIMATIVA_ESPECIALISTA_SEM_DADOS`, conf. BAIXA) até a Fase 4 calibrar |
-| validation_status | TEXT NOT NULL DEFAULT 'PENDING' | `PENDING/REVIEWED/APPROVED/REJECTED` (ciclo da TASK 12.2) |
-| publication_status | TEXT NOT NULL DEFAULT 'PENDENTE_REVISAO' | `PUBLICAVEL/NAO_PUBLICAVEL/PENDENTE_REVISAO/SOMENTE_REFERENCIA` (§12); conteúdo `SOMENTE_REFERENCIA` nunca sai no GET público |
+| pipeline_version | TEXT NOT NULL DEFAULT 'importer-1.0.0' | versão do importador que produziu a linha (2.0.0 após a reescrita da Task 3); carimbo máquina-legível da confiança (V12) |
+| pipeline_verified_at | TIMESTAMPTZ NOT NULL DEFAULT now() | última verificação máquina do veredito do pipeline |
 | `UNIQUE (source_type, source_year, source_question_number, exam_document_id)` | — | chave de idempotência da TASK 2.3 (oficiais); parciais NULLs permitem múltiplas autorais |
 | `UNIQUE (checksum)` | — | trava contra importação duplicada do mesmo texto |
 
@@ -248,7 +248,7 @@ Questões autorais/adaptadas reusam a mesma tabela com `source_type` distinto
 | question_id → questions | `ON DELETE CASCADE`, `UNIQUE (question_id, label)` |
 | label | `CHECK (label IN ('A','B','C','D'))` |
 | option_text | TEXT NOT NULL |
-| `CHECK ((SELECT COUNT(*) …) = 4)` | aplicado em trigger/validação de importação para objetivas (não como CHECK inline); 2020 Q38 (frações achatadas) entra com `validation_status=PENDING` + `has_figure` até revisão visual |
+| `CHECK ((SELECT COUNT(*) …) = 4)` | aplicado em trigger/validação de importação para TODA objetiva (sem exceção desde V12); 2020 Q38 teve as frações corrigidas pela conferência no PDF (V10) |
 
 **`question_sources`** — cada evidência que sustenta a questão (`F`, auditável).
 Uma questão tem ≥2 fontes: extração do caderno + gabarito(s).
@@ -271,9 +271,9 @@ Uma questão tem ≥2 fontes: extração do caderno + gabarito(s).
 
 **`question_classifications`** — julgamento pedagógico versionado (`D` + `C`).
 Tabela **adicional** (o §13 embutiria tudo em `topics`; versionar é necessário
-porque a taxonomia evoluiu v1 → v1.1 sem reescrever os JSONs, e a revisão humana
-está PENDENTE). Um `question_id` tem N versões; só a `APPROVED` mais recente
-alimenta recomendação.
+porque a taxonomia evoluiu v1 → v1.1 sem reescrever os JSONs). Um `question_id`
+tem N versões; a vigente é a de maior `id` (sem carimbo humano desde a
+decisão de produto 2026-10-06 — confiança = veredito do pipeline).
 | coluna | regra / evidência |
 |---|---|
 | id | PK |
@@ -285,9 +285,7 @@ alimenta recomendação.
 | confidence | TEXT NOT NULL — `CHECK (confidence IN ('ALTA','MEDIA','BAIXA'))`; dificuldade sempre `BAIXA` até Fase 4 |
 | evidence | TEXT NOT NULL (≤200 chars, citação do enunciado) |
 | origin | TEXT NOT NULL DEFAULT 'CLASSIFICACAO_DERIVADA_FONTE' |
-| status | `PENDING/REVIEWED/APPROVED/REJECTED` |
-| reviewed_by → users / reviewed_at | NULL até curadoria (só `CURATOR/ADMIN`) |
-| observation | TEXT NULL (motivo do `NECESSITA_REVISAO`) |
+| observation | TEXT NULL (nota do pipeline; ex. motivo do `NECESSITA_REVISAO` na fonte) |
 
 ### 2.5 Tentativas e sessões (S — fato por resposta)
 
@@ -323,7 +321,7 @@ contagem.
 | coluna | regra |
 |---|---|
 | id | PK |
-| owner_user_id → users | NULL = template público/curadoria; `ON DELETE SET NULL` |
+| owner_user_id → users | NULL = template público; `ON DELETE SET NULL` |
 | type | `CHECK (type IN ('BY_DISCIPLINE','REAL_EDITION'))` |
 | exam_id → exams | NOT NULL quando `REAL_EDITION` (estrutura daquela edição); NULL no por-disciplina |
 | filter_json | JSONB NOT NULL (disciplina, tópicos, dificuldade, quantidade — validado contra o banco disponível) |
@@ -424,10 +422,9 @@ evolução, domínio — sem pressão excessiva).
 | Tabela | Índice | Serve a |
 |---|---|---|
 | questions | `(discipline_id, id)`, `(exam_id, source_question_number)` | filtros da API `GET /questions?disciplina&edicao` (TASK 3.4) |
-| questions | `(source_type, publication_status)` parcial `WHERE publication_status='PUBLICAVEL'` | GET público nunca vaza `SOMENTE_REFERENCIA` |
 | questions | `checksum` UNIQUE | idempotência + anti-duplicata exata |
-| questions | `statement gin_trgm_ops` (GIN, pg_trgm) | **suspeitas** de equivalência/OCR (fila de curadoria) |
-| question_classifications | `(question_id, status, taxonomy_version)` | "classificação vigente" + cobertura (TASK 11.2) |
+| questions | `statement gin_trgm_ops` (GIN, pg_trgm) | **suspeitas** de equivalência/OCR (observabilidade, nunca deleção automática) |
+| question_classifications | `(question_id, taxonomy_version)` | "classificação vigente" (maior id) + cobertura (TASK 11.2) |
 | question_classifications | `(topic_id, subtopic_id)` | estatísticas históricas por assunto |
 | question_options | `(question_id)` | correção em lote |
 | question_attempts | `(user_id, question_id, answered_at DESC)` | histórico + "já respondida?" |
@@ -444,11 +441,11 @@ evolução, domínio — sem pressão excessiva).
 1. `questions`: `CHECK (source_type='OFFICIAL' AND exam_id IS NOT NULL AND source_year IS NOT NULL AND source_question_number BETWEEN 1 AND 40)` **para as 6 edições conhecidas**; autorais com `exam_id IS NULL`.
 2. `questions`: `CHECK ((annulled AND answer_key='X') OR (NOT annulled AND answer_key IN ('A','B','C','D')))`.
 3. `questions`: `UNIQUE (source_type, source_year, source_question_number, exam_document_id)` + `UNIQUE (checksum)`.
-4. `question_options`: exatamente 4 linhas por objetiva (trigger `AFTER INSERT OR DELETE`, com exceção registrada para itens `PENDING` como 2020 Q38).
+4. `question_options`: exatamente 4 linhas por objetiva (trigger `AFTER INSERT OR DELETE`, universal desde V12).
 5. `question_attempts`: imutável — `REVOKE UPDATE/DELETE` do role da API; correção só por nova tentativa; `is_correct` NULL quando `was_annulled`.
 6. `question_attempts`: `CHECK (study_session_id IS NOT NULL OR simulation_attempt_id IS NOT NULL)` — resposta órfã proibida.
 7. `simulations`: `CHECK ((type='REAL_EDITION' AND exam_id IS NOT NULL) OR (type='BY_DISCIPLINE'))`.
-8. `question_classifications`: `CHECK (subtopic_id IS NULL OR subtopic→topic)` + vigente única por questão (índice parcial `UNIQUE (question_id) WHERE status='APPROVED'` — a TASK 2.2 decide entre índice parcial ou coluna `is_current`; registrado como pendência física, não conceitual).
+8. `question_classifications`: `CHECK (subtopic_id IS NULL OR subtopic→topic)` + vigente = maior `id` por questão (índice `(question_id, taxonomy_version)`).
 9. `users`: `email` CITEXT UNIQUE; `password_hash` nunca NULL/vazio.
 10. `study_plan_items`: `evidence_json` NOT NULL e não-vazio (plano sem evidência é inválido — AGENTS.md §8).
 
@@ -464,22 +461,28 @@ study_plan_items.evidence_json ──→ questions.id ──→ question_sources
 Toda recomendação percorre esse caminho nos dois sentidos: do conteúdo para as
 questões/edições que o sustentam, e do aluno para seu aproveitamento.
 
-## 7. Curadoria e publicação (AGENTS.md §12 + §22, TASK 12.2)
+## 7. Confiança do pipeline (decisão de produto 2026-10-06 — sem carimbo humano)
 
-* Entrada: `validation_status=PENDING, publication_status=PENDENTE_REVISAO`.
-* Fila: `has_figure=TRUE`, `confidence=BAIXA`, `status=NECESSITA_REVISAO`,
-  suspeitas do `pg_trgm`, divergência MMC×gabarito (2023 Q40).
-* Transição: `CURATOR/ADMIN` move `PENDING → REVIEWED → APPROVED/REJECTED`
-  (em `questions` e em `question_classifications`, com `reviewed_by/at`).
-* Publicação: só `APPROVED + PUBLICAVEL` aparece no GET público; `SOMENTE_REFERENCIA`
-  alimenta estatísticas agregadas sem expor enunciado (análise sem redistribuição).
+* Veredito: `checksum` SHA-256 estável + 40/40 vinculadas ao gabarito + 4
+  alternativas + resposta entre alternativas + páginas válidas +
+  `question_sources` (caderno + gabarito com SHA).
+* Carimbo máquina-legível: `questions.pipeline_version` +
+  `questions.pipeline_verified_at` (V12).
+* Observabilidade (nunca gate): `GET /admin/inconsistencies` e
+  `GET /admin/metrics` — `has_figure=TRUE`, `confidence=BAIXA`,
+  `NECESSITA_REVISAO` na fonte, suspeitas do `pg_trgm` e a divergência
+  MMC×gabarito (2023 Q40) seguem visíveis como observação.
+* Riscos assumidos e registrados em `docs/blockers.md` (Q40 sem sinal de
+  conflito; textos degradados servidos como íntegros; crédito + takedown
+  reativo no lugar do gate `SOMENTE_REFERENCIA`).
+* Histórico do contrato anterior: `docs/curadoria.md` (superseded).
 
 ## 8. Contrato para a TASK 2.3 (importador idempotente)
 
 Chave natural: `(source_type, source_year, source_question_number, exam_document_id)`
 com `ON CONFLICT DO NOTHING` + comparação de `checksum`:
-checksum igual = reexecução segura; checksum diferente = divergência registrada em
-fila de curadoria (nunca `UPDATE` silencioso, nunca `DELETE`).
+checksum igual = reexecução segura; checksum diferente = divergência registrada
+(nunca `UPDATE` silencioso, nunca `DELETE`).
 Documentos identificados por `sha256` (gabaritos auditados em
 `docs/gabaritos-validation.md §0`).
 

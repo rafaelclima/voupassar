@@ -265,3 +265,27 @@ de página, mesmo padrão das edições anteriores).
 - Critério de pronto: `--check` dos 6 anos OK + questões que citam
   `Texto N`/`trecho`/`tabela`/`gráfico` com vínculo + amostra por edição
   validada no navegador.
+
+---
+
+## Remoção do contrato de curadoria humana — riscos assumidos (decisão de produto 2026-10-06)
+
+Plano: `docs/plano-remocao-curadoria.md`. Confiança = veredito do pipeline
+(V12: sem `validation_status`, `publication_status`, `status`/`reviewed_by`/
+`reviewed_at`; carimbo `pipeline_version`/`pipeline_verified_at`).
+
+1. **2023 Q40 sem sinal de conflito.** Classificação sugere MMC=2032 e o
+   gabarito oficial indica A=2044. Era `REJECTED`; agora vale o gabarito
+   oficial sem marca de conflito. Mitigação futura (não gate): nota de
+   divergência derivada do pipeline.
+2. **Textos degradados servidos como íntegros.** 38 itens `NECESSITA_REVISAO`
+   na fonte (36 com figura ilegível no `pdftotext`, ex. 2020 Q38; 2
+   conceituais). Sem quarentena, o aluno vê o texto extraído + referência
+   ao caderno. Mitigação: `has_figure` + página sempre visíveis.
+3. **Sem gate `SOMENTE_REFERENCIA`.** Todo texto de terceiro segue com
+   crédito + página; a proteção passa a ser takedown reativo documentado,
+   não bloqueio de publicação.
+
+Validação pendente nesta VPS: navegador real (sem Chromium/Playwright aqui;
+`node --check` + `check_frontend.py` + serve 200 executados na Task 4).
+Deferido para a Task 6 pós-deploy (backend V12 + API nova no ar).

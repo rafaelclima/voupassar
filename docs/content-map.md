@@ -5,8 +5,9 @@
 > `scripts/analysis/build_content_map.py` (determinístico; agregados
 > máquina-legíveis em `docs/content-analysis/content-map.json`).
 > "Tendência" é DESCRITIVA (6 edições, sem teste estatístico; oscilações de
-> 1–2 questões são ruído — ver regra no script). Revisão humana das
-> classificações: PENDENTE; este mapa herda essa limitação.
+> 1–2 questões são ruído — ver regra no script). Confiança BAIXA = assunto
+> NÃO CONFIRMADO; sem carimbo humano desde 2026-10-06
+> (`docs/plano-remocao-curadoria.md`).
 
 ## 0. Normalização v1.1 (só nesta agregação; JSONs per-edition congelados)
 
@@ -17,7 +18,7 @@
 
 ## 1. Por assunto (240 questões; % do total; A/M/B = confiança ALTA/MEDIA/BAIXA)
 
-| Assunto | n | % total | Edições | Tendência | Conf (A/M/B) | Anul. | Em revisão |
+| Assunto | n | % total | Edições | Tendência | Conf (A/M/B) | Anul. | Nota visual |
 |---|---|---|---|---|---|---|---|
 | GRAMATICA_NORMA | 60 | 25.0% | 2020,2022,2023,2024,2025,2026 | RECORRENTE_OSCILANTE | 48/9/3 | 2 | 3 |
 | INTERPRETACAO_TEXTUAL | 60 | 25.0% | 2020,2022,2023,2024,2025,2026 | RECORRENTE_OSCILANTE | 35/17/8 | 0 | 14 |
