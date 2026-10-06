@@ -105,7 +105,6 @@ Quando uma informação não puder ser comprovada pelo material disponível, mar
 
 * DESCONHECIDA;
 * NÃO CONFIRMADA;
-* NECESSITA REVISÃO;
 * ou semelhante.
 
 Nunca transformar inferência em fato.
@@ -391,19 +390,14 @@ O sistema deve armazenar:
 * documento;
 * página;
 * número da questão;
-* status de validação;
-* status de publicação.
+* versão do pipeline que a produziu/verificou.
+
+Todo conteúdo de terceiros servido pela plataforma carrega crédito + página
+da fonte. Não há gate de publicação: a proteção é takedown reativo
+documentado (ver `docs/blockers.md`), nunca bloqueio silencioso nem
+redistribuição sem fonte.
 
 A existência de um documento disponível publicamente não deve ser interpretada automaticamente como autorização irrestrita para redistribuição.
-
-Criar um mecanismo que permita marcar conteúdo como:
-
-* PUBLICÁVEL;
-* NÃO PUBLICÁVEL;
-* PENDENTE DE REVISÃO;
-* SOMENTE REFERÊNCIA.
-
-O desenvolvimento deve permitir que o banco contenha a análise de uma questão mesmo quando a publicação do conteúdo completo estiver pendente de revisão.
 
 ---
 
@@ -609,7 +603,7 @@ Uma classificação feita pela IA deve possuir indicador de confiança.
 
 # 22. VALIDAÇÃO DE QUESTÕES
 
-Toda questão deve passar por validações:
+Toda questão deve passar pelas validações do veredito do pipeline:
 
 * existe enunciado;
 * existem alternativas quando aplicável;
@@ -617,14 +611,17 @@ Toda questão deve passar por validações:
 * resposta existe entre as alternativas;
 * gabarito corresponde à edição correta;
 * número da questão é válido;
-* fonte existe;
+* fonte existe (documento + SHA);
 * disciplina foi classificada;
 * assunto foi classificado;
+* checksum estável;
 * não existe duplicidade acidental.
 
-Questões problemáticas devem ficar em estado de revisão.
+Problemas detectados aparecem em `GET /admin/inconsistencies`
+(observabilidade, nunca deleção automática).
 
-Nunca publicar dados incompletos silenciosamente.
+Nunca servir dados incompletos silenciosamente: o que falta é marcado
+como DESCONHECIDO/NÃO CONFIRMADO na resposta.
 
 ---
 
