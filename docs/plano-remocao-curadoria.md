@@ -76,12 +76,18 @@ Objetivo: remover o contrato humano e introduzir o carimbo máquina-legível.
 
 Arquivos:
 
-- NOVO: `database/migrations/V12__drop_review_gates.sql`
-- Ajuste futuro: `database/migrations/V1__schema.sql` (não reescrever histórico aplicado; ajustar para novos ambientes)
-- Verificar: `database/migrations/V2__seed.sql` se referenciar status
-- Conferir trigger `enforce_four_options()` (hoje lê `validation_status <> 'PENDING'` em `V1__schema.sql:36`)
+- CRIADO: `database/migrations/V12__drop_review_gates.sql` (versão final difere do rascunho abaixo — ver notas).
+- NÃO TOCADO: `V1__schema.sql` (editar migração já aplicada quebraria o checksum do Flyway no DB vivo; instalação nova chega ao estado final pela cadeia V1..V12).
+- Verificado: `V2__seed.sql` sem referências a status (grep zerado).
+- Trigger `enforce_four_options()` reescrito na V12 sem a exceção `validation_status <> 'PENDING'` (regra volta a ser universal; baseline 240x4=960 confere).
 
-Conteúdo da V12 (rascunho):
+Notas de execução 2026-10-06 (divergências honestas do rascunho):
+
+1. V12 também remove `question_figures.publication_status` (criada em `V8__question_figures.sql:13-14`) — gate de figura não estava explícito no plano original, mas é o mesmo contrato.
+2. `pipeline_version DEFAULT 'importer-1.0.0'` (não `2.0.0`): é o produtor real das 240 linhas atuais; a Task 3 sobe para `2.0.0` na reescrita do importador.
+3. DROPs sem `IF EXISTS` (falha alto, AGENTS.md §4).
+
+Conteúdo da V12 (rascunho original — o arquivo criado prevalece):
 
 ```sql
 -- V12: remove gates humanos; confiança = pipeline
@@ -107,13 +113,11 @@ docker exec voupassar-db psql -U voupassar -d voupassar -c "\d question_classifi
 python3 scripts/db/import_questions.py --check
 ```
 
-Check de entrega Task 1:
+Check de entrega Task 1 (ARQUIVO + SCRATCH OK em 2026-10-06; APPLY NO VIVO ADIADO — ver nota):
 
-- [ ] V12 aplicada na VPS sem erro; `flyway_schema_history` mostra V10→V12 com `success=t`.
-- [ ] `\d questions` sem `validation_status/publication_status`, com `pipeline_version/pipeline_verified_at`.
-- [ ] `\d question_classifications` sem `status/reviewed_by/reviewed_at`.
-- [ ] Reexecução do importador idempotente (sem duplicatas, 240 questões preservadas).
-- [ ] `import --check` verde.
+- [x] V12 escrita e validada em banco scratch: restore do dump pré-V12 (V9, 240) → Flyway V10+V11+V12 aplicadas com sucesso; colunas gates removidas (`questions`, `question_classifications`, `question_figures`); `pipeline_version/pipeline_verified_at` presentes; índices (`idx_questions_public`, `uq_qclass_approved` removidos; `idx_qclass_q` recriado); trigger sem `validation_status`; contagens preservadas 240/960/480/240. Scratch destruído após verificação.
+- [ ] Apply no DB vivo + `import --check` pós-V12 — ADIADO PARA A TASK 6 (deploy junto com o backend da Task 2).
+- NOTA DE SEQUENCIAMENTO (segurança de produção): ao contrário de V10/V11 (compatíveis com a API no ar), a V12 remove colunas que a API swarm atual (`prod-20261003`) mapeia via JPA — aplicá-la agora derrubaria os endpoints de questões (500 `column does not exist`) até o deploy do backend novo. Por isso o DB vivo segue em V11 até o deploy conjunto código+migração da Task 6. O critério "V12 aplicada na VPS" original foi substituído por este sequenciamento.
 
 ---
 
