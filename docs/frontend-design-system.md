@@ -49,8 +49,9 @@ nasce dessas duas cores.
 | Ação em bloco de marca | `--color-hero-from/via/to` | `#0d2b45` → `#0f5084` | **iguais** |
 | Texto de link | `--color-primary-700` | `#0f3e63` | `#7fb4e4` |
 | Acento (uso parcimonioso) | `--color-accent-500/600` | `#6d43cc` / `#5b36b0` | `#a485ea` / `#7a4fdb` |
-| Texto | `--color-ink-900/700/500` | `#0e1720` / `#34465a` / `#5e7288` | `#eef3f8` / `#b9c6d4` / `#8b9cad` |
-| Superfície | `--color-surface` / `--color-bg-50/100` | `#ffffff` / `#fafcfd` / `#f4f7fa` | `#12283c` / `#0a1a2a` / `#0e1e2e` |
+| Texto | `--color-ink-900/700/500` | `#0e1720` / `#34465a` / `#556a80` | `#eef3f8` / `#b9c6d4` / `#8b9cad` |
+| Superfície | `--color-surface` / `--color-bg-50/100` | `#ffffff` / `#f0f4f8` / `#e8edf3` | `#12283c` / `#0a1a2a` / `#0e1e2e` |
+| Linha | `--color-line-200` | `#d7e0e9` | `#1e3346` |
 
 Três regras que a escala impõe:
 
@@ -64,8 +65,13 @@ Três regras que a escala impõe:
    invertem no escuro. Sem eles, o botão primário escuro passaria de 3,47:1
    para 4,82:1 só porque o texto deixou de ser branco.
 3. **Todo par texto/fundo foi medido**, não estimado. `--color-ink-500` é
-   `#5e7288` e não `#64798f` porque o segundo dava 4,49:1 no branco — 0,01
-   abaixo do AA. Para revalidar ao mexer na paleta, o procedimento está em
+   `#556a80` e não `#5e7288` porque, sobre o fundo de página `#f0f4f8`, o
+   segundo caía para 4,48:1 (abaixo do AA) enquanto o primeiro mede 5,05:1
+   (5,59:1 sobre branco). O fundo `#f0f4f8` foi escolhido por devolver
+   separação ao card branco (1,11:1 contra 1,03:1 do `#fafcfd` anterior)
+   sem pesar a leitura; `--color-line-200` acompanha (`#d7e0e9`, 1,21:1
+   sobre o fundo novo) para a borda continuar visível. Para revalidar ao
+   mexer na paleta, o procedimento está em
    `scripts/analysis/check_frontend.py` (a lista de pares medidos está no
    histórico deste doc).
 

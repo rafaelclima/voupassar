@@ -77,16 +77,23 @@
   --color-on-accent: #ffffff;
   --color-on-navy: #ffffff;
 
-  /* ============ Neutros (levemente frios, para acompanhar o azul) ============ */
+  /* ============ Neutros (levemente frios, para acompanhar o azul) ============
+   * Fundo de página --color-bg-50 levemente escurecido (#f0f4f8): surface
+   * branca sobre ele mede 1,11:1 (antes 1,03:1), devolvendo separação aos
+   * cards sem pesar a leitura. --color-bg-100 acompanha o degrau para
+   * manter insets legíveis. --color-line-200 escurece junto para a borda
+   * continuar visível sobre o fundo novo (1,21:1, antes 1,18:1).
+   * --color-ink-500 é #556a80 (e não #5e7288): sobre o fundo novo mede
+   * 5,05:1 (o antigo caía para 4,48:1, abaixo do AA). */
   --color-ink-900: #0e1720;
   --color-ink-700: #34465a;
-  --color-ink-500: #5e7288;
+  --color-ink-500: #556a80;
   --color-ink-400: #8a9caf;
   --color-line-300: #c9d4df;
-  --color-line-200: #e3eaf1;
+  --color-line-200: #d7e0e9;
   --color-line-100: #eff3f7;
-  --color-bg-100: #f4f7fa;
-  --color-bg-50: #fafcfd;
+  --color-bg-100: #e8edf3;
+  --color-bg-50: #f0f4f8;
   --color-surface: #ffffff;
 
   /* ============ Feedback ============ */
