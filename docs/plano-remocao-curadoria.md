@@ -28,13 +28,14 @@ curadoria) é removido por completo — não apenas destravado.
    coluna, tudo é servido; mitigação passa a ser crédito + página + takedown
    reativo documentado.
 
-## Critério global de pronto
+## Critério global de pronto (apurado em 2026-10-06)
 
-- [ ] Nenhum `grep -rn "PENDING\|REVIEWED\|APPROVED\|REJECTED\|PENDENTE_REVISAO\|PUBLICAVEL\|NAO_PUBLICAVEL\|SOMENTE_REFERENCIA" backend/src/main frontend/js database/migrations` retorna match (exceto docs históricos explicitamente marcados).
-- [ ] `mvn test` verde.
-- [ ] `import_questions.py --check` verde nos 6 anos + `report.json` sem divergência.
-- [ ] `node --check` + `scripts/analysis/check_frontend.py` + serve 200 + navegador real (loading/vazio/erro, mobile+desktop, console sem erros inesperados) verdes.
-- [ ] `docs/blockers.md` com os 3 riscos acima datados como decisão de produto.
+- [x] Grep de enums de curadoria zerado em `backend/src/main` e `frontend/js`; em `database/migrations` restam só V1/V8 (migrations aplicadas, imutáveis por checksum Flyway). Restam ainda comentários históricos intencionais + papel RBAC `CURATOR`.
+- [x] `mvn test` verde (225/225).
+- [x] `import_questions.py --check` verde + `report.json` sem divergência (scratch V12 e vivo V12).
+- [x] `node --check` + `check_frontend.py` + serve 200 verdes.
+- [ ] Navegador real (loading/vazio/erro, mobile+desktop) — PENDENTE, sem browser nesta VPS.
+- [x] `docs/blockers.md` com os 3 riscos datados como decisão de produto.
 
 ---
 
@@ -216,12 +217,12 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/estudos.html
 # + navegador real: guarda de autenticação, fluxo principal, loading/vazio/erro, mobile+desktop, console sem erros inesperados
 ```
 
-Check de entrega Task 4:
+Check de entrega Task 4 (CONCLUÍDA em 2026-10-06):
 
-- [ ] `node --check` verde nos arquivos tocados.
-- [ ] `check_frontend.py` verde.
-- [ ] Serve 200 em `estudos.html`, `questao.html`, `simulado.html`, `admin.html`.
-- [ ] Navegador real validado (ou pendência registrada se MCP indisponível).
+- [x] `node --check` verde nos 8 arquivos tocados.
+- [x] `check_frontend.py` verde (3 regras do próprio validador atualizadas).
+- [x] Serve 200 em `index/estudos/questao/simulado/admin.html`.
+- [ ] Navegador real — PENDENTE (sem Chromium/Playwright nesta VPS; deferido para pós-deploy).
 
 ---
 
@@ -243,11 +244,11 @@ Decisão explícita separada (NÃO no mesmo commit técnico — `AGENTS.md §28`
 
 - [ ] `AGENTS.md §§4,11,12,22,23` — reescrever regra de ouro, proveniência/direitos, validação e duplicidade para “pipeline como fonte de confiança”. Exige aprovação explícita do responsável.
 
-Check de entrega Task 5:
+Check de entrega Task 5 (CONCLUÍDA em 2026-10-06, 2 commits):
 
-- [ ] Docs técnicos atualizados e sem referência ativa a fila/curadoria.
-- [ ] `curadoria.md` preservado como histórico, não deletado.
-- [ ] Mudança do `AGENTS.md` aprovada explicitamente (sim/não + data).
+- [x] Docs técnicos atualizados e sem referência ativa a fila/curadoria.
+- [x] `curadoria.md` preservado como histórico, não deletado.
+- [x] Mudança do `AGENTS.md` aprovada explicitamente (sim, 2026-10-06; §§4/12/22 reescritos, §11/§23 mantidos) em commit separado.
 
 ---
 
@@ -270,12 +271,13 @@ docker compose up -d --build app
 curl -s http://localhost:8080/actuator/health || docker service ls
 ```
 
-Check de entrega Task 6:
+Check de entrega Task 6 (CONCLUÍDA em 2026-10-06 nesta VPS):
 
-- [ ] Testes + checks verdes antes do push.
-- [ ] Deploy feito via `pull + migrate.sh + compose up`, sem edição direta na VPS.
-- [ ] Pós-deploy: contagem de questões = 240, API de questões/simulado/roteiro respondendo, admin exibindo painel de saúde sem fila.
-- [ ] Falha em testes teria impedido o deploy (AGENTS.md §25).
+- [x] Testes + checks verdes antes do push (mvn 225/225; import --check em scratch V12; check_frontend.py).
+- [x] Deploy via repo, sem edição direta: backup fresco `/root/backups/voupassar-20261006-preV12.dump` → build `voupassar-backend:prod-20261006` (V12 no jar) → `docker service update --image` (Flyway V12 no boot, `success=t`). NOTA: `migrate.sh`/`compose up` do rascunho miram o stack local, não o swarm de produção — o caminho correto aqui é build + service update (runbook `docs/deploy-vps.md` §3).
+- [x] Pós-deploy: questions=240 preservadas; `/actuator/health` UP via domínio; `/editions` sem token 401 em envelope; `GET /questions` sem campos de status; `/admin/metrics` (CURATOR) com novo formato 240/5/36/240; `/admin/review-queue` 404 (endpoint extinto); inconsistências 4× zero; importador 2.0.0 `--check` verde contra o vivo (240/0/0, exit 0). Usuário de smoke criado e removido.
+- [x] Falha em testes teria impedido o deploy (suíte rodada antes do build).
+- [ ] Navegador real + Pages pós-CI — PENDENTE (sem browser nesta VPS).
 
 ---
 
