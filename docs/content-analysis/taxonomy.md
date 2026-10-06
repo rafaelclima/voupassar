@@ -59,9 +59,9 @@ ESTIMATIVA.
 
 | # | Lacuna | Evidência | Proposta |
 |---|---|---|---|
-| G1 | Acentuação gráfica sem código próprio (forçado em NORMA_PADRAO, conf. MEDIA) | 2022 Q12, 2023 Q12, 2024 Q17 | `GRAMATICA_NORMA / ACENTUACAO_GRAFICA` |
-| G2 | Numeração romana / sistemas de numeração (único OUTRO em 240) | 2026 Q21 (conf. BAIXA, status OK) | `ARITMETICA / SISTEMAS_NUMERACAO` |
-| G3 | Variação/registro linguístico sem código (mapeado p/ NORMA_PADRAO) | 2022 Q16 | avaliar `GRAMATICA_NORMA / VARIACAO_LINGUISTICA` |
+| G1 | Acentuação gráfica sem código próprio (forçado em NORMA_PADRAO, conf. MEDIA) | 2022 Q12, 2023 Q12, 2024 Q17 | `GRAMATICA_NORMA / ACENTUACAO_GRAFICA` — **RESOLVIDO (v1.1)**: código existe no seed (V2) e o importador aplica o override; banco de produção confere (2026-10-05) |
+| G2 | Numeração romana / sistemas de numeração (único OUTRO em 240) | 2026 Q21 (conf. BAIXA, status OK) | `ARITMETICA / SISTEMAS_NUMERACAO` — **RESOLVIDO (v1.1)**: idem; produção confere |
+| G3 | Variação/registro linguístico sem código (mapeado p/ NORMA_PADRAO) | 2022 Q16 | `GRAMATICA_NORMA / VARIACAO_LINGUISTICA` — **APROVADO pelo responsável em 2026-10-05, PENDENTE de migração**: criar o subcódigo exige migration + entrada no importador + testes; até lá, Q16 segue `NORMA_PADRAO` com nota (sem gate humano desde 2026-10-06) |
 | G4 | Comparação intertextual sem habilidade própria | 2026 Q20 | avaliar habilidade `COMPARAR_TEXTOS` |
 
 ## 4. Regras de confiança (aplicadas)
