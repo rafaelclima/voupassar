@@ -1,8 +1,7 @@
 /* VouPassar — componente de figura (TASK 6.6 + docs/figuras-estrategia.md)
  * Resolve a figura de uma questão oficial a partir do manifest.json.
- * Nunca inventa conteúdo: se o arquivo não existe, volta para o aviso.
- * Se `publicationStatus` é PENDENTE_REVISAO, ainda mostra a imagem
- * (se existir) com aviso de curadoria no caption — não bloqueia o aluno.
+ * Nunca inventa conteúdo: se o arquivo não existe, volta para o aviso
+ * com a referência ao caderno-fonte — não bloqueia o aluno.
  */
 
 import { el } from "./ui.js";
@@ -69,7 +68,7 @@ export async function renderFigure(q, container) {
       className: "qfigure__img",
       attrs: {
         src: url,
-        alt: meta?.alt || `Figura da questão ${q.questionNumber || q.id} (revisão visual pendente).`,
+        alt: meta?.alt || `Figura da questão ${q.questionNumber || q.id} (ver caderno-fonte).`,
         loading: "lazy",
         "aria-describedby": `qfigure-caption-${q.id || ""}`,
       },
@@ -79,9 +78,7 @@ export async function renderFigure(q, container) {
       img.hidden = true;
       const fallback = el("p", {
         className: "muted",
-        text: meta?.status === "PENDENTE_REVISAO"
-          ? "Figura em curadoria: o recorte está disponível, mas passa por revisão visual antes de ser confirmado."
-          : "Esta questão possui figura no caderno original (consulte o PDF-fonte).",
+        text: "Esta questão possui figura no caderno original (consulte o PDF-fonte).",
       });
       figureEl.appendChild(fallback);
     }, { once: true });
@@ -90,7 +87,7 @@ export async function renderFigure(q, container) {
   } else {
     // Sem arquivo publicado: aviso explícito com referência de localização
     const msg = meta
-      ? `Figura ainda em curadoria (${meta.status}): ver caderno ${q.examYear}, página ${meta.page || "—"}.`
+      ? `Figura indisponível neste recorte: ver caderno ${q.examYear}, página ${meta.page || "—"}.`
       : `Esta questão possui figura no caderno original (prova ${q.examYear || "desconhecida"}, página ${q.pageStart || "—"} — consulte o PDF-fonte).`;
     const notice = el("p", { className: "qfigure__notice muted", text: msg });
     figureEl.appendChild(notice);
@@ -104,12 +101,6 @@ export async function renderFigure(q, container) {
     attrs: { id: `qfigure-caption-${q.id || ""}` },
   });
   caption.appendChild(el("span", { text: captionText }));
-  if (meta && meta.status === "PENDENTE_REVISAO") {
-    caption.appendChild(el("span", {
-      className: "badge badge--warning",
-      text: "Revisão visual pendente",
-    }));
-  }
   figureEl.appendChild(caption);
 
   container.appendChild(figureEl);
@@ -125,7 +116,7 @@ export function injectFigureNotice(q, container) {
   const manifest = manifestCache || null;
   const meta = manifest ? getFigureMeta(manifest, resolveKey(q)) : null;
   const msg = meta
-    ? `Figura ainda em curadoria (${meta.status}): ver caderno ${q.examYear}, página ${meta.page || "—"}.`
+    ? `Figura indisponível neste recorte: ver caderno ${q.examYear}, página ${meta.page || "—"}.`
     : `Esta questão possui figura no caderno original (prova ${q.examYear || "desconhecida"}, página ${q.pageStart || "—"}).`;
   if (target && target.nodeType === 1) {
     target.textContent = msg;

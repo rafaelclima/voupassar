@@ -4,7 +4,7 @@
  * sem JS extra, sem animação — respeita prefers-reduced-motion por
  * construção). Colapsado por padrão; o aluno abre quando precisa.
  * Sem textContent inventado: só transcrição literal da API; quando a
- * passagem é puramente visual, exibe a descrição da curadoria + fonte.
+ * passagem é puramente visual, exibe a descrição verificada + fonte.
  * Parte do enunciado: aparece nos modos Estudo, Prova e Revisão.
  */
 
@@ -52,7 +52,7 @@ export function renderPassages(q, container) {
       body.appendChild(
         el("p", {
           className: "muted",
-          text: "O recorte da imagem original do caderno aparece na fase de figuras; acima está a descrição conferida pela curadoria.",
+          text: "O recorte da imagem original do caderno aparece na fase de figuras; acima está a descrição verificada.",
         }),
       );
     }

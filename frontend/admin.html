@@ -17,7 +17,7 @@
       document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   </script>
-  <meta name="description" content="Área administrativa do VouPassar — fila de revisão, inconsistências, métricas e curadoria do banco de questões (acesso restrito a CURATOR/ADMIN)." />
+  <meta name="description" content="Área administrativa do VouPassar — saúde do banco de questões: métricas e inconsistências (acesso restrito a CURATOR/ADMIN)." />
   <meta name="voupassar-api" content="http://localhost:8080" />
   <meta name="theme-color" content="#0d2b45" />
   <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
@@ -62,7 +62,7 @@
       <div class="admin-head">
         <p><span class="badge badge--primary">Área restrita — CURATOR / ADMIN</span></p>
         <h1 id="admin-title">Administração</h1>
-        <p class="lead" id="admin-subtitle">Fila de revisão, inconsistências, métricas e curadoria do banco de questões. Curadoria revisa — nunca inventa conteúdo.</p>
+        <p class="lead" id="admin-subtitle">Saúde do banco de questões: métricas e inconsistências, somente leitura.</p>
       </div>
 
       <div id="admin-guard" hidden></div>
@@ -80,57 +80,18 @@
           <h2 id="sec-metrics-t">Métricas do banco</h2>
           <p class="muted"><small>Fotografia do banco de questões (<span class="code-inline">GET /admin/metrics</span>). Sem PII, sem conteúdo integral.</small></p>
           <div class="admin-stats mt-4" id="admin-metrics" role="list" aria-label="Métricas do banco de questões"></div>
-          <div id="admin-metrics-tables" class="mt-4"></div>
         </section>
 
         <!-- 2. INCONSISTÊNCIAS -->
         <section class="mt-8" aria-labelledby="sec-inc-t">
           <h2 id="sec-inc-t">Inconsistências</h2>
-          <p class="muted"><small>Checagens vivas da auditoria 11.1 (<span class="code-inline">GET /admin/inconsistencies</span>). Contagem zero = saudável. Qualquer positivo é fila de curadoria — nunca deleção automática.</small></p>
+          <p class="muted"><small>Checagens vivas da auditoria 11.1 (<span class="code-inline">GET /admin/inconsistencies</span>). Contagem zero = saudável. Qualquer positivo é observação — nunca deleção automática.</small></p>
           <div id="admin-inconsistencies" class="mt-4"></div>
-        </section>
-
-        <!-- 3. FILA DE REVISÃO -->
-        <section class="mt-8" aria-labelledby="sec-queue-t">
-          <h2 id="sec-queue-t">Fila de revisão</h2>
-          <p class="muted mt-2"><small>Questões por status de validação (<span class="code-inline">GET /admin/review-queue</span>), opcionalmente por status da classificação ativa. O conteúdo integral sai no detalhe da questão — aqui vai o necessário para priorizar, com a observação e a evidência que sustentam a classificação.</small></p>
-          <form id="admin-filters" class="admin-filters mt-4" aria-label="Filtrar fila de revisão">
-            <div class="field" style="margin-bottom:0">
-              <label class="field__label" for="f-validation">Status de validação da questão</label>
-              <select class="select" id="f-validation">
-                <option value="PENDING" selected>Pendentes (PENDING)</option>
-                <option value="REVIEWED">Em revisão (REVIEWED)</option>
-                <option value="APPROVED">Aprovadas (APPROVED)</option>
-                <option value="REJECTED">Rejeitadas (REJECTED)</option>
-              </select>
-            </div>
-            <div class="field" style="margin-bottom:0">
-              <label class="field__label" for="f-classification">Status da classificação</label>
-              <select class="select" id="f-classification">
-                <option value="" selected>Todas</option>
-                <option value="PENDING">Pendente (PENDING)</option>
-                <option value="REVIEWED">Em revisão (REVIEWED)</option>
-                <option value="APPROVED">Aprovada (APPROVED)</option>
-                <option value="REJECTED">Rejeitada (REJECTED)</option>
-              </select>
-            </div>
-            <div class="btn-group">
-              <button type="submit" class="btn btn--primary btn--sm" id="btn-filter">Filtrar</button>
-              <button type="button" class="btn btn--ghost btn--sm" id="btn-clear">Limpar</button>
-            </div>
-          </form>
-          <p class="muted mt-2"><small id="admin-queue-count" role="status">Nenhuma consulta ainda.</small></p>
-          <div id="admin-queue" class="mt-4"></div>
-          <div class="admin-pagination mt-4">
-            <button type="button" class="btn btn--secondary btn--sm" id="admin-prev">Anterior</button>
-            <p class="muted" style="margin:0"><small id="admin-page-info" role="status">Página 1</small></p>
-            <button type="button" class="btn btn--secondary btn--sm" id="admin-next">Próxima</button>
-          </div>
         </section>
 
         <!-- NOTAS DE EVIDÊNCIA -->
         <section class="mt-8" aria-labelledby="sec-notes-t">
-          <h2 id="sec-notes-t">Leitura honesta da curadoria</h2>
+          <h2 id="sec-notes-t">Leitura honesta dos dados</h2>
           <div id="admin-notes" class="admin-notes mt-4"></div>
         </section>
       </div>
@@ -139,8 +100,8 @@
         <style>.site-nav__links{display:flex !important}.site-nav__toggle{display:none !important}</style>
         <div class="alert alert--warning mt-4" role="note">
           <div>
-            <strong>JavaScript desligado</strong>
-            <p>A área administrativa precisa de JavaScript para buscar fila, métricas e inconsistências na API. Ative para continuar.</p>
+          <strong>JavaScript desligado</strong>
+          <p>A área administrativa precisa de JavaScript para buscar métricas e inconsistências na API. Ative para continuar.</p>
           </div>
         </div>
       </noscript>

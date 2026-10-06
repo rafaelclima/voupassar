@@ -305,7 +305,7 @@ def main() -> int:
         if "voupassar-api" not in questao:
             fail("questao.html sem meta voupassar-api (config.js)")
         questao_js = (FRONT / "js" / "views" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "questao.js").exists() else ""
-        for token in ["fetchQuestion", "submitAttempt", "openStudySession", "BLANK", "NECESSITA REVISÃO", "voltar", "renderPassages"]:
+        for token in ["fetchQuestion", "submitAttempt", "openStudySession", "BLANK", "trilha de auditoria", "voltar", "renderPassages"]:
             if token not in questao_js:
                 fail(f"js/views/questao.js sem {token!r} (TASK 6.6)")
         questao_api = (FRONT / "js" / "api" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "questao.js").exists() else ""
@@ -404,16 +404,13 @@ def main() -> int:
             if nav and "perfil.html" not in nav:
                 fail(f"{page} sem link para perfil.html (TASK 6.8)")
 
-    # TASK 12.1 — admin: métricas + inconsistências + fila + curadoria (CURATOR/ADMIN)
+    # Admin (observabilidade): métricas + inconsistências, somente leitura (CURATOR/ADMIN).
     admin = (FRONT / "admin.html").read_text(encoding="utf-8") if (FRONT / "admin.html").exists() else ""
     if admin:
         for sid in ["admin-guard", "admin-forbidden", "admin-error", "admin-loading", "admin-content",
-                    "admin-metrics", "admin-metrics-tables", "admin-inconsistencies",
-                    "admin-filters", "f-validation", "btn-filter", "btn-clear",
-                    "admin-queue-count", "admin-queue", "admin-prev", "admin-next",
-                    "admin-page-info", "admin-notes"]:
+                    "admin-metrics", "admin-inconsistencies", "admin-notes"]:
             if f'id="{sid}"' not in admin:
-                fail(f"admin.html sem bloco #{sid} (TASK 12.1)")
+                fail(f"admin.html sem bloco #{sid} (admin)")
         if "css/admin.css" not in admin:
             fail("admin.html sem css/admin.css")
         if "js/views/admin.js" not in admin:
@@ -423,17 +420,14 @@ def main() -> int:
         if "CURATOR" not in admin:
             fail("admin.html sem menção a CURATOR/ADMIN (guarda de papel, TASK 12.1)")
         admin_js = (FRONT / "js" / "views" / "admin.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "admin.js").exists() else ""
-        for token in ["fetchReviewQueue", "fetchInconsistencies", "fetchAdminMetrics",
-                      "updateQuestionStatus", "reviewClassification", "next=admin.html",
-                      "CURATOR", "ADMIN", "questao.html?id="]:
+        for token in ["fetchInconsistencies", "fetchAdminMetrics", "next=admin.html",
+                      "CURATOR", "ADMIN"]:
             if token not in admin_js:
-                fail(f"js/views/admin.js sem {token!r} (TASK 12.1)")
+                fail(f"js/views/admin.js sem {token!r} (admin)")
         admin_api = (FRONT / "js" / "api" / "admin.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "admin.js").exists() else ""
-        for token in ["/api/v1/admin/review-queue", "/api/v1/admin/inconsistencies",
-                      "/api/v1/admin/metrics", "/api/v1/admin/questions",
-                      "/api/v1/admin/classifications"]:
+        for token in ["/api/v1/admin/inconsistencies", "/api/v1/admin/metrics"]:
             if token not in admin_api:
-                fail(f"js/api/admin.js sem endpoint {token!r} (TASK 12.1)")
+                fail(f"js/api/admin.js sem endpoint {token!r} (admin)")
 
     # JS: sem innerHTML; URL de API só em config.js/meta
     for js in (FRONT / "js").rglob("*.js"):
@@ -454,7 +448,7 @@ def main() -> int:
     # motor, não conteúdo de estudo); a honestidade do AGENTS.md §4 continua
     # expressa em português natural e na área administrativa.
     # A área admin fica de fora de propósito: lá os códigos são o vocabulário
-    # de trabalho de quem opera a curadoria.
+    # de trabalho de quem opera o banco.
     ALUNO_HTML = ["index.html", "login.html", "cadastro.html",
                   "dashboard.html", "estudos.html", "questao.html",
                   "simulado.html", "perfil.html",
@@ -489,14 +483,14 @@ def main() -> int:
     )
     TRADUTORES = (
         "disciplineLabel", "difficultyLabel", "modeLabel", "sourceTypeLabel",
-        "statusLabel", "masteryLabel", "classificationLabel",
-        "confidenceLabel", "publicationLabel", "topicLabel",
+        "statusLabel", "masteryLabel",
+        "confidenceLabel", "topicLabel",
     )
     VAZAMENTOS_JS = [
         "question_attempts", "discipline_id", "TASKs ",
     ]
     # As `notes` que a API devolve são trilha de auditoria do servidor
-    # ("curadoria TASK 12.2", "NECESSITA REVISÃO", "regra DESCONHECIDA").
+    # (evidência/pontuação, "regra DESCONHECIDA").
     # Já vazaram para a tela do aluno renderizando q.notes / attempt.notes;
     # a verificação estática não pega isso, então a regra é explícita.
     NOTAS_AUDITORIA = re.compile(

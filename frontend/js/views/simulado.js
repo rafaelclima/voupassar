@@ -793,12 +793,12 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
       if (v === fb.selectedOption && fb.selectedOption !== fb.correctAnswer) row.classList.add("sim-option--wrong");
     });
     const topicLine = fb.topicName
-      ? `Conteúdo: ${fb.topicName}${fb.subtopicName ? ` · ${fb.subtopicName}` : ""}. Passa por revisão antes de virar oficial.`
-      : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
+      ? `Conteúdo: ${fb.topicName}${fb.subtopicName ? ` · ${fb.subtopicName}` : ""}.`
+      : "Conteúdo: assunto ainda sem classificação.";
     box.appendChild(el("p", { text: topicLine }));
     // As `notes` que a API devolve são trilha de auditoria do servidor
-    // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
-    // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
+    // (evidência/pontuação), não conteúdo de estudo — por isso não entram
+    // na tela do aluno.
   } catch (err) {
     box.dataset.tone = "muted";
     box.appendChild(el("p", { text: `Resposta ${choiceLabel(choice)} registrada, mas o feedback falhou: ${friendlyMessage(err)}` }));
@@ -982,8 +982,8 @@ function renderScoreGrid(res) {
   );
   resultBox.appendChild(note);
   // As `notes` que a API devolve são trilha de auditoria do servidor
-  // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
-  // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
+  // (evidência/pontuação), não conteúdo de estudo — por isso não entram
+  // na tela do aluno.
 }
 
 function renderResultItems(res) {

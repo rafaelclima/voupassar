@@ -1104,7 +1104,7 @@ function renderQuestionCard(q) {
   // Textos-base (TASK 6.9): expansíveis logo após o enunciado, em todos os modos.
   renderPassages(q, card);
   if (q.hasFigure) {
-    // Usa componente para aviso com referência de curadoria + página
+    // Usa componente para aviso com referência ao caderno + página
     const noticeP = el("p", { className: "question-card__figure" });
     card.appendChild(noticeP);
     // Deixa a mensagem inicial; o componente pode enriquecer se o manifest estiver disponível
@@ -1112,7 +1112,7 @@ function renderQuestionCard(q) {
   }
   const topicLine = q.topic?.name
     ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}`
-    : "Assunto ainda sem classificação — passamos por revisão antes de mostrar.";
+    : "Assunto ainda sem classificação.";
   card.appendChild(el("p", { className: "question-card__figure", text: topicLine }));
 
   const startedAt = Date.now();
@@ -1278,7 +1278,7 @@ function showFeedback(box, question, attempt, choice) {
   }
   const topicLine = question.topic?.name
     ? `Conteúdo: ${question.topic.name}${question.subtopic?.name ? ` · ${question.subtopic.name}` : ""}.`
-    : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
+    : "Conteúdo: assunto ainda sem classificação.";
   box.appendChild(el("p", { text: topicLine }));
   // attempt.notes é trilha de auditoria do servidor — ver comentário acima.
 }

@@ -22,7 +22,7 @@ import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { sourceTypeLabel, difficultyLabel, classificationLabel, confidenceLabel, publicationLabel, choiceLabel } from "../vocab.js";
+import { sourceTypeLabel, difficultyLabel, confidenceLabel, choiceLabel } from "../vocab.js";
 import { renderFigure, injectFigureNotice } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
@@ -263,9 +263,9 @@ function renderAll(q) {
       }),
     );
   }
-  if (q.classificationStatus) {
+  if (q.classificationConfidence) {
     badgesEl.appendChild(
-      el("span", { className: "badge", text: classificationLabel(q.classificationStatus) }),
+      el("span", { className: "badge", text: confidenceLabel(q.classificationConfidence) }),
     );
   }
 
@@ -291,8 +291,8 @@ function renderAll(q) {
   topicEl.appendChild(
     el("small", {
       text: q.topic?.name
-        ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""} (classificação derivada, revisão humana pendente)`
-        : "Assunto ainda sem classificação — passamos por revisão antes de mostrar.",
+        ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""} (classificação derivada do pipeline)`
+        : "Assunto ainda sem classificação.",
     }),
   );
 
@@ -454,12 +454,12 @@ function showFeedback(q, attempt, choice) {
   markOptions(q, choice, correct);
 
   const topicLine = q.topic?.name
-    ? `Conteúdo: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}. Passa por revisão antes de virar oficial.`
-    : "Conteúdo: assunto ainda sem classificação (passa por revisão).";
+    ? `Conteúdo: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}.`
+    : "Conteúdo: assunto ainda sem classificação.";
   feedbackBox.appendChild(el("p", { text: topicLine }));
   // As `notes` que a API devolve são trilha de auditoria do servidor
-  // ("curadoria TASK 12.2", "NECESSITA REVISÃO"): documentação interna do
-  // motor, não conteúdo de estudo — por isso não entram na tela do aluno.
+  // (evidência/pontuação), não conteúdo de estudo — por isso não entram
+  // na tela do aluno.
   feedbackBox.focus?.();
 }
 
@@ -508,16 +508,9 @@ function renderSource(q) {
   dl.appendChild(
     sourceRow(
       "Assunto",
-      q.topic?.name ? `${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}` : "Ainda sem classificação",
+      q.topic?.name ? `${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""} (${confidenceLabel(q.classificationConfidence)})` : "Ainda sem classificação",
     ),
   );
-  dl.appendChild(
-    sourceRow(
-      "Classificação",
-      `${classificationLabel(q.classificationStatus)} · ${confidenceLabel(q.classificationConfidence)}`,
-    ),
-  );
-  dl.appendChild(sourceRow("Publicação", publicationLabel(q.publicationStatus)));
   sourceBox.appendChild(dl);
 }
 

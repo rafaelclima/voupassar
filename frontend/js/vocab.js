@@ -1,8 +1,8 @@
 /* VouPassar — vocabulário da API em português
  *
- * A API responde com códigos técnicos (FACIL, ESTUDO, LP, AUTHORAL,
- * PUBLICAVEL, PENDING…). Mostrar esses valores ao estudante é jargão:
- * ninguém que estuda para o IFRN sabe o que "PUBLICAVEL" significa.
+ * A API responde com códigos técnicos (FACIL, ESTUDO, LP, AUTHORAL…).
+ * Mostrar esses valores ao estudante é jargão: ninguém que estuda para o
+ * IFRN sabe o que um código interno significa.
  *
  * Este módulo é o único lugar onde a tradução acontece. Todos os rótulos
  * são fixos e não MDM: nenhuma informação é inventada aqui, apenas o
@@ -66,20 +66,6 @@ export function difficultyLabel(value) {
   return DIFFICULTIES[value] || "";
 }
 
-/** Estado da classificação de assunto, em linguagem de aluno. */
-const CLASSIFICATIONS = {
-  PENDING: "Assunto ainda em revisão",
-  REVIEWED: "Assunto revisado",
-  APPROVED: "Assunto confirmado",
-  REJECTED: "Assunto em correção",
-  NAO_AVALIADO: "Assunto ainda sem classificação",
-  DESCONHECIDO: "Assunto ainda sem classificação",
-};
-
-export function classificationLabel(value) {
-  return CLASSIFICATIONS[value] || "Assunto ainda em revisão";
-}
-
 /** Confiança da classificação automática, sem jargão de modelo. */
 const CONFIDENCES = {
   ALTA: "classificação confiável",
@@ -89,18 +75,6 @@ const CONFIDENCES = {
 
 export function confidenceLabel(value) {
   return CONFIDENCES[value] || "classificação ainda incerta";
-}
-
-/** Publicação da questão — só aparece para quem legenda conteúdo. */
-const PUBLICATIONS = {
-  PUBLICAVEL: "pode ser exibida",
-  NAO_PUBLICAVEL: "não pode ser exibida",
-  PENDENTE_REVISAO: "aguardando revisão",
-  SOMENTE_REFERENCIA: "somente referência",
-};
-
-export function publicationLabel(value) {
-  return PUBLICATIONS[value] || "aguardando revisão";
 }
 
 /** Status de item de roteiro / tentativa. */
