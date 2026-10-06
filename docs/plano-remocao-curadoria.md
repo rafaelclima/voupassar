@@ -60,13 +60,13 @@ docker exec voupassar-db psql -U voupassar -d voupassar -c "SELECT version, desc
 python3 scripts/db/import_questions.py --check
 ```
 
-Check de entrega Task 0:
+Check de entrega Task 0 (CONCLUÍDA em 2026-10-06 nesta VPS):
 
-- [ ] `git status` mostra apenas `M docs/content-analysis/taxonomy.md` + `?? docs/curadoria-rodada*.md` (ou decisão registrada sobre eles).
-- [ ] Dump `/tmp/opencode/voupassar-preV12.dump` existe e tem tamanho > 0.
-- [ ] Contagens `questions` e `question_classifications` anotadas neste doc ou em `docs/blockers.md`.
-- [ ] `import --check` verde antes de mudar qualquer código.
-- [ ] V10+V11 reconciliadas (`migrate.sh`) antes de criar a V12.
+- [x] `git status` mostra apenas `M docs/content-analysis/taxonomy.md` + `?? docs/curadoria-rodada*.md` (ou decisão registrada sobre eles).
+- [x] Dump `/tmp/opencode/voupassar-preV12.dump` existe e tem tamanho > 0 (240K, EXIT=0).
+- [x] Contagens anotadas: questions 240 (42 APPROVED/PUBLICAVEL, 197 PENDING/PENDENTE_REVISAO, 1 REJECTED/NAO_PUBLICAVEL); classifications 169/70/1; options 960; sources 480; has_figure=36.
+- [x] `import --check` verde antes de mudar qualquer código (240 candidatas, 0 a inserir, 0 divergências).
+- [x] V10+V11 reconciliadas antes da V12 — NOTA DE EXECUÇÃO: `migrate.sh` mira o stack compose local (sem `.env` aqui, e com pgdata separado), então foi aplicado Flyway direto no DB vivo via container `flyway/flyway:11-alpine` na rede `dokploy-network` (`migrate` V9→V11, `success=t`); pós-V11 o `--check` segue verde e a API swarm segue `healthy`. V11 sem perda (coluna `explanation` 0/240 não-NULL; zero referências em `backend/src/main`).
 
 ---
 
