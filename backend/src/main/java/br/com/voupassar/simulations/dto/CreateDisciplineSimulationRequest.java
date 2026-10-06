@@ -13,9 +13,12 @@ import jakarta.validation.constraints.Pattern;
  * <p>Disciplina e quantidade são obrigatórias; dificuldade é opcional (NULL =
  * todas — o filtro por dificuldade herda a limitação da estimativa: palpite
  * com confiança BAIXA global, questões sem estimativa ficam fora do recorte).
- * Modo segue o {@code CHECK} da DDL V1 para execuções ({@code ESTUDO/PROVA} —
- * Revisão não gera simulado novo, só filtra erros, ERD §2.6); minúsculas são
- * normalizadas pelo serviço antes de persistir.
+ * Origem é opcional (TASK 15.4): NULL/em-branco = {@code OFFICIAL} (padrão);
+ * {@code ALL} = sem filtro de origem (caderno misto); demais valores seguem
+ * o vocabulário de {@code questions.source_type}. Modo segue o {@code CHECK}
+ * da DDL V1 para execuções ({@code ESTUDO/PROVA} — Revisão não gera simulado
+ * novo, só filtra erros, ERD §2.6); minúsculas são normalizadas pelo serviço
+ * antes de persistir.
  */
 public record CreateDisciplineSimulationRequest(
     @Schema(example = "MATEMATICA")
@@ -36,4 +39,10 @@ public record CreateDisciplineSimulationRequest(
         @Pattern(
             regexp = "(?i)ESTUDO|PROVA",
             message = "Modo deve ser ESTUDO ou PROVA.")
-        String mode) {}
+        String mode,
+    @Schema(example = "OFFICIAL", nullable = true,
+        description = "OFFICIAL, AUTHORAL, ADAPTED, INTERNAL_REVIEW, EXPERIMENTAL ou ALL (misto). NULL = OFFICIAL.")
+        @Pattern(
+            regexp = "(?i)OFFICIAL|AUTHORAL|ADAPTED|INTERNAL_REVIEW|EXPERIMENTAL|ALL",
+            message = "Origem deve ser OFFICIAL, AUTHORAL, ADAPTED, INTERNAL_REVIEW, EXPERIMENTAL ou ALL.")
+        String sourceType) {}

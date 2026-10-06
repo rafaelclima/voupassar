@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -173,7 +174,7 @@ class SimulationServiceTest {
     List<Question> bank = List.of(
         question(21L, d, "A", false), question(22L, d, "B", false),
         question(23L, d, "C", false), question(24L, d, "D", false));
-    when(questions.findCandidateIdsByDiscipline("MATEMATICA", null))
+    when(questions.findCandidateIdsByDiscipline("MATEMATICA", null, "OFFICIAL"))
         .thenReturn(List.of(21L, 22L, 23L, 24L));
     when(questions.findAllById(any())).thenReturn(bank);
     when(simulations.save(any(Simulation.class))).thenAnswer(inv -> {
@@ -189,7 +190,7 @@ class SimulationServiceTest {
     when(caderno.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
 
     var out = service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("matematica", 3, null, "prova"));
+        new CreateDisciplineSimulationRequest("matematica", 3, null, "prova", null));
 
     assertEquals(55L, out.attemptId());
     assertEquals("BY_DISCIPLINE", out.type());
@@ -221,18 +222,18 @@ class SimulationServiceTest {
     when(disciplines.findByCode("FISICA")).thenReturn(Optional.empty());
 
     assertThrows(ResourceNotFoundException.class, () -> service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("FISICA", 5, null, "PROVA")));
+        new CreateDisciplineSimulationRequest("FISICA", 5, null, "PROVA", null)));
   }
 
   @Test
   void createBeyondAvailableIs400WithAvailable() {
     activeUser();
     stubMat(mat());
-    when(questions.findCandidateIdsByDiscipline("MATEMATICA", "DIFICIL"))
+    when(questions.findCandidateIdsByDiscipline("MATEMATICA", "DIFICIL", "OFFICIAL"))
         .thenReturn(List.of(21L, 22L));
 
     BadRequestException ex = assertThrows(BadRequestException.class, () -> service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("MATEMATICA", 10, "DIFICIL", "ESTUDO")));
+        new CreateDisciplineSimulationRequest("MATEMATICA", 10, "DIFICIL", "ESTUDO", null)));
     assertEquals("INSUFFICIENT_QUESTIONS", ex.getCode());
     assertTrue(ex.getMessage().contains("2"));
   }
@@ -243,13 +244,112 @@ class SimulationServiceTest {
     stubMat(mat());
 
     assertThrows(BadRequestException.class, () -> service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("MATEMATICA", 5, null, "REVISAO")));
+        new CreateDisciplineSimulationRequest("MATEMATICA", 5, null, "REVISAO", null)));
     assertThrows(BadRequestException.class, () -> service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("MATEMATICA", 5, "FACILIMA", "PROVA")));
+        new CreateDisciplineSimulationRequest("MATEMATICA", 5, "FACILIMA", "PROVA", null)));
     assertThrows(BadRequestException.class, () -> service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("MATEMATICA", 0, null, "PROVA")));
+        new CreateDisciplineSimulationRequest("MATEMATICA", 0, null, "PROVA", null)));
     assertThrows(BadRequestException.class, () -> service.createByDiscipline(1L,
-        new CreateDisciplineSimulationRequest("MATEMATICA", 101, null, "PROVA")));
+        new CreateDisciplineSimulationRequest("MATEMATICA", 101, null, "PROVA", null)));
+  }
+
+  // ---- origem (TASK 15.4) ----
+
+  @Test
+  void createWithoutSourceTypeDefaultsToOfficial() {
+    activeUser();
+    Discipline d = mat();
+    stubMat(d);
+    when(questions.findCandidateIdsByDiscipline("MATEMATICA", null, "OFFICIAL"))
+        .thenReturn(List.of(21L, 22L));
+    when(questions.findAllById(any()))
+        .thenReturn(List.of(question(21L, d, "A", false), question(22L, d, "B", false)));
+    when(simulations.save(any(Simulation.class))).thenAnswer(inv -> {
+      Simulation s = inv.getArgument(0);
+      ReflectionTestUtils.setField(s, "id", 7L);
+      return s;
+    });
+    when(attempts.save(any(SimulationAttempt.class))).thenAnswer(inv -> {
+      SimulationAttempt a = inv.getArgument(0);
+      ReflectionTestUtils.setField(a, "id", 55L);
+      return a;
+    });
+    when(caderno.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+
+    var out = service.createByDiscipline(1L,
+        new CreateDisciplineSimulationRequest("MATEMATICA", 2, null, "PROVA", null));
+
+    assertEquals(2, out.questionCount());
+    verify(questions).findCandidateIdsByDiscipline("MATEMATICA", null, "OFFICIAL");
+    ArgumentCaptor<Simulation> simCap = ArgumentCaptor.forClass(Simulation.class);
+    verify(simulations).save(simCap.capture());
+    assertTrue(simCap.getValue().getFilterJson().contains("\"sourceType\":\"OFFICIAL\""));
+  }
+
+  @Test
+  void createWithAuthoralSourceTypeFiltersBank() {
+    activeUser();
+    Discipline d = mat();
+    stubMat(d);
+    when(questions.findCandidateIdsByDiscipline("MATEMATICA", null, "AUTHORAL"))
+        .thenReturn(List.of(31L));
+    when(questions.findAllById(any())).thenReturn(List.of(question(31L, d, "C", false)));
+    when(simulations.save(any(Simulation.class))).thenAnswer(inv -> {
+      Simulation s = inv.getArgument(0);
+      ReflectionTestUtils.setField(s, "id", 7L);
+      return s;
+    });
+    when(attempts.save(any(SimulationAttempt.class))).thenAnswer(inv -> {
+      SimulationAttempt a = inv.getArgument(0);
+      ReflectionTestUtils.setField(a, "id", 55L);
+      return a;
+    });
+    when(caderno.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+
+    var out = service.createByDiscipline(1L,
+        new CreateDisciplineSimulationRequest("MATEMATICA", 1, null, "PROVA", "authoral"));
+
+    assertEquals(1, out.questionCount());
+    verify(questions).findCandidateIdsByDiscipline("MATEMATICA", null, "AUTHORAL");
+    ArgumentCaptor<Simulation> simCap = ArgumentCaptor.forClass(Simulation.class);
+    verify(simulations, atLeastOnce()).save(simCap.capture());
+    assertTrue(simCap.getValue().getFilterJson().contains("\"sourceType\":\"AUTHORAL\""));
+  }
+
+  @Test
+  void createWithAllSourceTypeDisablesFilter() {
+    activeUser();
+    Discipline d = mat();
+    stubMat(d);
+    when(questions.findCandidateIdsByDiscipline("MATEMATICA", null, null))
+        .thenReturn(List.of(21L));
+    when(questions.findAllById(any())).thenReturn(List.of(question(21L, d, "A", false)));
+    when(simulations.save(any(Simulation.class))).thenAnswer(inv -> {
+      Simulation s = inv.getArgument(0);
+      ReflectionTestUtils.setField(s, "id", 7L);
+      return s;
+    });
+    when(attempts.save(any(SimulationAttempt.class))).thenAnswer(inv -> {
+      SimulationAttempt a = inv.getArgument(0);
+      ReflectionTestUtils.setField(a, "id", 55L);
+      return a;
+    });
+    when(caderno.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+
+    var out = service.createByDiscipline(1L,
+        new CreateDisciplineSimulationRequest("MATEMATICA", 1, null, "PROVA", "ALL"));
+
+    assertEquals(1, out.questionCount());
+    verify(questions).findCandidateIdsByDiscipline("MATEMATICA", null, null);
+  }
+
+  @Test
+  void createWithInvalidSourceTypeIs400() {
+    activeUser();
+    stubMat(mat());
+
+    assertThrows(BadRequestException.class, () -> service.createByDiscipline(1L,
+        new CreateDisciplineSimulationRequest("MATEMATICA", 5, null, "PROVA", "FALSIFICADA")));
   }
 
   // ---- consulta ----

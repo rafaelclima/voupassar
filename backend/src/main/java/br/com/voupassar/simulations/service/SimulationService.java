@@ -101,6 +101,12 @@ public class SimulationService {
 
   private static final Set<String> MODES = Set.of("ESTUDO", "PROVA");
   private static final Set<String> DIFFICULTIES = Set.of("FACIL", "MEDIA", "DIFICIL");
+  private static final Set<String> SOURCE_TYPES =
+      Set.of("OFFICIAL", "AUTHORAL", "ADAPTED", "INTERNAL_REVIEW", "EXPERIMENTAL");
+  /** Origem padrão do simulado por disciplina (TASK 15.4): só oficiais. */
+  private static final String DEFAULT_SOURCE_TYPE = "OFFICIAL";
+  /** Valor que desliga o filtro de origem (caderno misto, TASK 15.4). */
+  private static final String SOURCE_TYPE_ALL = "ALL";
 
   private static final Logger log = LoggerFactory.getLogger(SimulationService.class);
 
@@ -168,13 +174,15 @@ public class SimulationService {
     int count = requireCount(req.questionCount());
     String difficulty = normalizeDifficulty(req.difficulty());
     String mode = normalizeMode(req.mode());
+    String sourceType = normalizeSimulationSourceType(req.sourceType());
 
-    List<Long> candidates = questions.findCandidateIdsByDiscipline(discipline.getCode(), difficulty);
+    List<Long> candidates =
+        questions.findCandidateIdsByDiscipline(discipline.getCode(), difficulty, sourceType);
     if (candidates.size() < count) {
       throw new BadRequestException(
           "INSUFFICIENT_QUESTIONS",
           "Disponíveis " + candidates.size() + " questões"
-              + describeFilter(discipline.getCode(), difficulty)
+              + describeFilter(discipline.getCode(), difficulty, sourceType)
               + " (solicitadas " + count + "). Reduza a quantidade ou remova o filtro de dificuldade.");
     }
 
@@ -187,7 +195,7 @@ public class SimulationService {
     simulation.setOwner(user);
     simulation.setType("BY_DISCIPLINE");
     simulation.setExamId(null);
-    simulation.setFilterJson(filterJson(discipline.getCode(), count, difficulty, mode));
+    simulation.setFilterJson(filterJson(discipline.getCode(), count, difficulty, mode, sourceType));
     simulation.setTitle(title(discipline.getName(), count, difficulty, mode));
     simulations.save(simulation);
 
@@ -211,8 +219,8 @@ public class SimulationService {
     }
     caderno.saveAll(rows);
 
-    log.info("simulado criado user_id={} attempt_id={} discipline={} count={} difficulty={} mode={}",
-        userId, attempt.getId(), discipline.getCode(), count, difficulty, mode);
+    log.info("simulado criado user_id={} attempt_id={} discipline={} count={} difficulty={} mode={} sourceType={}",
+        userId, attempt.getId(), discipline.getCode(), count, difficulty, mode, sourceType);
     return toAttemptResponse(attempt, simulation, rows, byId, Map.of(), false);
   }
 
@@ -561,6 +569,29 @@ public class SimulationService {
     return m;
   }
 
+  /**
+   * Origem do simulado por disciplina (TASK 15.4). NULL/em-branco = {@code
+   * OFFICIAL} (padrão); {@code ALL} = sem filtro (caderno misto, retorna
+   * NULL para a consulta). Demais valores seguem {@code
+   * questions.source_type}; outro valor = 400.
+   */
+  private static String normalizeSimulationSourceType(String sourceType) {
+    if (sourceType == null || sourceType.isBlank()) {
+      return DEFAULT_SOURCE_TYPE;
+    }
+    String normalized = sourceType.trim().toUpperCase();
+    if (SOURCE_TYPE_ALL.equals(normalized)) {
+      return null;
+    }
+    if (!SOURCE_TYPES.contains(normalized)) {
+      throw new BadRequestException(
+          "INVALID_SOURCE_TYPE",
+          "Origem inválida: " + sourceType
+              + " (permitido OFFICIAL, AUTHORAL, ADAPTED, INTERNAL_REVIEW, EXPERIMENTAL ou ALL).");
+    }
+    return normalized;
+  }
+
   private static int requireEditionYear(Integer year) {
     if (year == null) {
       throw new BadRequestException("Ano da edição é obrigatório.");
@@ -667,8 +698,20 @@ public class SimulationService {
     return notes;
   }
 
-  private static String describeFilter(String disciplineCode, String difficulty) {
-    return " em " + disciplineCode + (difficulty == null ? "" : " com dificuldade " + difficulty);
+  private static String describeFilter(String disciplineCode, String difficulty, String sourceType) {
+    return " em " + disciplineCode + (difficulty == null ? "" : " com dificuldade " + difficulty)
+        + describeSourceType(sourceType);
+  }
+
+  private static String describeSourceType(String sourceType) {
+    if (sourceType == null) {
+      return " de todas as origens";
+    }
+    return switch (sourceType) {
+      case "OFFICIAL" -> " oficiais";
+      case "AUTHORAL" -> " autorais";
+      default -> " (origem " + sourceType + ")";
+    };
   }
 
   private static String title(String disciplineName, int count, String difficulty, String mode) {
@@ -685,10 +728,12 @@ public class SimulationService {
     return "{\"type\":\"REAL_EDITION\",\"editionYear\":" + year + ",\"mode\":\"" + mode + "\"}";
   }
 
-  private static String filterJson(String disciplineCode, int count, String difficulty, String mode) {
+  private static String filterJson(
+      String disciplineCode, int count, String difficulty, String mode, String sourceType) {
     return "{\"type\":\"BY_DISCIPLINE\",\"discipline\":\"" + disciplineCode
         + "\",\"questionCount\":" + count
         + ",\"difficulty\":" + (difficulty == null ? "null" : "\"" + difficulty + "\"")
+        + ",\"sourceType\":" + (sourceType == null ? "\"ALL\"" : "\"" + sourceType + "\"")
         + ",\"mode\":\"" + mode + "\"}";
   }
 

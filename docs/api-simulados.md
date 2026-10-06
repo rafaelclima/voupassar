@@ -36,9 +36,12 @@ traceId, timestamp, path}`, sem stack trace; `traceId` também no header
 ## Regras de evidência
 
 * **Seleção:** amostra aleatória simples sem reposição (`SecureRandom`) sobre
-  as candidatas elegíveis (disciplina + filtro opcional de dificuldade,
-  **não-anuladas**). Anuladas ficam fora da seleção: com `isCorrect` NULL
-  quebrariam o aproveitamento (pontuação DESCONHECIDA, TASK 1.3 §4). O
+  as candidatas elegíveis (disciplina + filtro opcional de dificuldade
+  + filtro de origem TASK 15.4, **não-anuladas**). Origem ausente =
+  `OFFICIAL` (padrão); `ALL` = sem filtro (caderno misto); demais valores
+  seguem `questions.source_type` (inválido → `400 INVALID_SOURCE_TYPE`).
+  A origem efetiva fica registrada em `simulations.filter_json.sourceType`.
+  Anuladas ficam fora da seleção: com `isCorrect` NULL quebrariam o aproveitamento (pontuação DESCONHECIDA, TASK 1.3 §4). O
   recorte por dificuldade herda a limitação da estimativa (palpite com
   confiança BAIXA global — questões sem estimativa saem só no recorte sem
   filtro). A ordem sorteada vira a ordem do caderno (posições 1..N).

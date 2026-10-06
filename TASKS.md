@@ -936,6 +936,96 @@ O README deve explicar:
 
 ---
 
+# FASE 15 — QUESTÕES AUTORAIS (lote piloto 60)
+
+> Decisão de produto 2026-10-06: expandir o banco com questões não oficiais
+> derivadas do perfil observado nas 6 edições, sem fila de curadoria humana —
+> o gate é o veredito do pipeline (validadores determinísticos + checksum).
+> Autoral consome evidência oficial, nunca a produz: `content-map` e
+> `evidence_json` do roteiro seguem 100% oficiais. Simulado de edição real
+> segue 100% oficial. Textos-base de LP autorais são inéditos (redação
+> própria), sem copiar IFRN ou terceiros. Produção textual fora do escopo.
+
+## TASK 15.1 — Manual do item + validadores + 10 itens-teste [DONE — 2026-10-06, aprovado pelo responsável]
+
+Elaborar:
+
+* `docs/authoral/manual-item-v1.md` (molde por subassunto + checklist de distrator);
+* `scripts/authoral/validate_authoral.py` (`--check`, falha alta);
+* `data/authoral/specs/` com 10 itens-teste (5 MAT: REGRA_DE_TRES,
+  FUNCAO_AFIM, EQUACOES, CALCULO_DIRETO, MEDIA; 5 LP: INFERENCIA,
+  INFORMACAO_EXPLICITA, PONTUACAO, COESAO_REFERENCIA, MORFOLOGIA).
+
+Cada spec contém: `discipline, topic, subtopic, skill, reasoning_type,
+difficulty_alvo, referencias_oficiais (IDs), texto_base próprio quando LP,
+enunciado, options[4], answerKey (A–D, nunca X), distractor_rationale[3]`.
+
+Validadores exigem: enunciado com comando; 4 opções distintas não-vazias;
+códigos v1.1 válidos com par topic↔subtopic coerente; checksum SHA-256
+(mesma normalização do importador) distinto dos 240 oficiais e dentro do
+lote; ausência das strings `IFRN/Edital/prova 20XX`.
+
+Critérios:
+
+* 10/10 specs verdes no `--check`;
+* 0 colisão de checksum contra os 240 oficiais;
+* parar para aprovação do responsável antes da 15.2.
+
+## TASK 15.2 — Lote piloto 60 (LLM + validadores) [DONE — 2026-10-06]
+
+Gerar via LLM travada (temperatura baixa, schema do spec, 2–3 oficiais
+como molde de forma) e validar: MAT 30 (REGRA_DE_TRES 6, FUNCAO_AFIM 5,
+EQUACOES 5, CALCULO_DIRETO 5, MEDIA 4, PROBABILIDADE 3, AREA_PLANA 2) +
+LP 30 (INFERENCIA 8, INFORMACAO_EXPLICITA 6, PONTUACAO 5,
+COESAO_REFERENCIA 4, MORFOLOGIA 4, INTENCAO_COMUNICATIVA 3).
+
+Fora do piloto: GRANDEZAS_MEDIDAS, SISTEMAS_NUMERACAO, VOLUME/PERIMETRO/
+UNIDADES (n=1), JUROS_COMPOSTOS/DESCONTO (0 observados), itens com figura.
+
+Critérios:
+
+* 60/60 verdes nos validadores; rejeitados retornam com motivo, sem edição
+  manual silenciosa;
+* relatório `docs/authoral/report-60.md` (por assunto/subassunto/dificuldade
+  + taxa de reprovação nos validadores).
+
+## TASK 15.3 — Pipeline V13 + importador de autorais [DONE — 2026-10-06]
+
+> Nome do arquivo ajustado de `V12__` para `V13__authoral_pipeline.sql`
+> (V12 ocupada pela remoção da curadoria).
+
+Criar:
+
+* migração `V12__authoral_pipeline.sql` (`questions.pipeline_version NOT
+  NULL`, `questions.pipeline_verified_at`; autorais com `exam_id/
+  exam_document_id/source_year/source_number` NULL — CHECK atual já permite);
+* `scripts/db/import_authoral.py` (`--check`, `--report
+  data/authoral/report.json`, idempotente por checksum);
+* classificação da autoral: 1 linha `taxonomy_version='v1.1'`,
+  `origin='AUTORAL_DERIVADA_PERFIL'`.
+
+Critérios:
+
+* `import_authoral.py --check` verde em dev; reexecução sem duplicar;
+* `GET /questions?sourceType=AUTHORAL` lista as 60; `OFFICIAL` intacto (240).
+
+## TASK 15.4 — Vitrine Estudo + simulado (toggle) [DONE — 2026-10-06]
+
+Expor:
+
+* filtro Origem em Estudos (Todos/Oficial/Autoral, selo "Criada pelo
+  VouPassar" via `vocab.js`);
+* toggle no setup do simulado por disciplina (default `OFFICIAL`);
+* nota fixa de origem em `QuestionResponse.notes[]`.
+
+Critérios:
+
+* edição real intocada (sem toggle);
+* `node --check`, `check_frontend.py`, serve 200 + navegador real
+  (filtro, simulado misto, selo, mobile, console limpo).
+
+---
+
 # CRITÉRIO GLOBAL DE CONCLUSÃO
 
 O projeto só pode ser considerado MVP quando o seguinte fluxo funcionar de ponta a ponta:

@@ -13,7 +13,7 @@
 | Conteúdo | `#sec-conteudo-t` → `#study-browser` (disciplinas + top 12 assuntos, com contagem histórica) | `GET /disciplines`, `GET /topics?disciplineCode=` (TASK 3.3); `GET /subtopics?topicId=` alimenta o filtro |
 | Questões | `#sec-questoes-t` → `#study-list` (cartões com enunciado, alternativas, gabarito e assunto) + `#study-pagination` | `GET /questions?disciplineCode=&topicId=&subtopicId=&year=&difficulty=&page=&size=10` + detalhe já incluso na página (TASK 3.4, ordem fixa ano/número/id) |
 | Progresso | `aside` → `#study-progress` (geral + recorte atual) e `#study-plan` (item do roteiro no assunto) | `GET /performance/overview` (TASK 4.1); `GET /recommendations/plan` + `GET /diagnosis` p/ contexto (TASKs 4.2–4.4) |
-| Navegação | `#study-filters` (5 selects + Filtrar/Limpar), botões `Estudar` do navegador, `← Anterior/Próxima →`, URL sincronizada (`?disciplina=&topico=&subtopico=&ano=&dificuldade=&pagina=`) | Estado local + `history.replaceState`; sem rota futura linkada (só `dashboard.html` e `index.html`) |
+| Navegação | `#study-filters` (6 selects + Filtrar/Limpar), botões `Estudar` do navegador, `← Anterior/Próxima →`, URL sincronizada (`?disciplina=&topico=&subtopico=&ano=&dificuldade=&fonte=&pagina=`) | Estado local + `history.replaceState`; sem rota futura linkada (só `dashboard.html` e `index.html`) |
 
 Prática livre (Modo Estudo, AGENTS.md §9): cada cartão tem `fieldset` de
 alternativas + `Responder` / `Responder em branco`. A resposta abre (lazy)

@@ -29,7 +29,13 @@ ausência do dataset (AGENTS.md §3). Questão inexistente →
 
 * `OFFICIAL` = prova real do IFRN; qualquer outro `sourceType` nunca é do
   IFRN e sai identificado como tal (AGENTS.md §11). Hoje o banco tem 240
-  `OFFICIAL` (40 × 6 edições, importador TASK 2.3).
+  `OFFICIAL` (40 × 6 edições, importador TASK 2.3) + 60 `AUTHORAL` (lote
+  piloto, TASK 15.2/15.3).
+* Toda questão traz **nota fixa de origem** em `notes[]` (TASK 15.4):
+  oficial cita a edição (`Questão oficial do IFRN (edição 2026).`); autoral
+  declara-se (`Questão autoral criada pelo VouPassar… — não é uma questão
+  oficial do IFRN.`). É proveniência, não gabarito: segue visível no Modo
+  Prova.
 * `answerKey = "X"` ⟺ anulada (5 no banco): sai normalmente, conta como
   conteúdo que apareceu na prova, nunca pontua aqui; cada item anulado traz
   a nota explícita (regra de pontuação DESCONHECIDA, TASK 1.3 §4).

@@ -62,10 +62,12 @@ public class Question {
   @JoinColumn(name = "discipline_id", nullable = false)
   private Discipline discipline;
 
-  @Column(name = "page_start", nullable = false)
+  // NULL em AUTHORAL (V13: sem documento-fonte; NULL = DESCONHECIDO).
+  @Column(name = "page_start")
   private Short pageStart;
 
-  @Column(name = "page_end", nullable = false)
+  // NULL em AUTHORAL (ver acima).
+  @Column(name = "page_end")
   private Short pageEnd;
 
   @Column(name = "annulled", nullable = false)

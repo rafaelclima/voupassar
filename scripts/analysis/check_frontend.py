@@ -271,7 +271,7 @@ def main() -> int:
     if study:
         for sid in ["study-guard", "study-error", "study-loading", "study-content",
                     "study-filters", "f-disciplina", "f-topico", "f-subtopico",
-                    "f-ano", "f-dificuldade", "study-browser", "study-list",
+                    "f-ano", "f-dificuldade", "f-origem", "study-browser", "study-list",
                     "study-pagination", "study-progress", "study-plan",
                     "study-count", "btn-clear", "btn-filter"]:
             if f'id="{sid}"' not in study:
@@ -283,6 +283,9 @@ def main() -> int:
         study_js = (FRONT / "js" / "views" / "estudos.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "estudos.js").exists() else ""
         if "2021" not in study and "2021" not in study_js:
             fail("estudos (html/js) omite a ausência de 2021 (AGENTS.md §3)")
+        for token in ["f-origem", "sourceType"]:
+            if token not in study_js:
+                fail(f"js/views/estudos.js sem filtro de origem {token!r} (TASK 15.4)")
         if "estudos.html" not in dash:
             fail("dashboard.html sem link para estudos.html (TASK 6.5)")
 
@@ -320,7 +323,7 @@ def main() -> int:
     if sim:
         for sid in ["sim-guard", "sim-error", "sim-loading", "sim-content",
                     "sim-hub", "sim-create-discipline", "s-disc-disciplina",
-                    "s-disc-qtd", "s-disc-dificuldade", "s-disc-modo",
+                    "s-disc-qtd", "s-disc-dificuldade", "s-disc-origem", "s-disc-modo",
                     "sim-disc-submit", "sim-create-edition", "s-ed-edicao",
                     "s-ed-modo", "sim-ed-submit", "sim-history",
                     "sim-history-count", "sim-more", "sim-exec", "sim-back",
@@ -343,9 +346,10 @@ def main() -> int:
         sim_js = (FRONT / "js" / "views" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "simulado.js").exists() else ""
         for token in ["createByDiscipline", "createByEdition", "fetchAttempt",
                       "submitSimulation", "abandonSimulation", "fetchResult",
-                      "fetchFeedback", "simulationAttemptId", "2021"]:
+                      "fetchFeedback", "simulationAttemptId", "2021",
+                      "s-disc-origem", "OFFICIAL"]:
             if token not in sim_js:
-                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7)")
+                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4)")
         sim_api = (FRONT / "js" / "api" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "simulado.js").exists() else ""
         for token in ["/api/v1/simulations/by-discipline", "/api/v1/simulations/by-edition",
                       "/api/v1/simulations/attempts", "/feedback/", "/api/v1/attempts",

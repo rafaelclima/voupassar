@@ -78,3 +78,28 @@ os PDFs + JSONs da Fase 1).
 * Regra de pontuação de anuladas segue DESCONHECIDA (TASK 1.3 §4).
 * Nota 2026-10-04: coluna `questions.explanation` removida (V11) por decisão
   de produto — a plataforma testa conhecimento, não ensina passo a passo.
+
+## 5. Questões autorais — TASK 15.3 (`scripts/db/import_authoral.py` v1.0.0)
+
+Lê `data/authoral/specs/*.json` (contrato em
+`docs/authoral/manual-item-v1.md`) com gate obrigatório do
+`scripts/authoral/validate_authoral.py --check` (vermelho = aborto, sem
+escrita). Exige banco em V13 (`chk_questions_authoral_nulls`,
+`chk_questions_official_pages`).
+
+Mapeamento (decisões auditáveis): `source_type=AUTHORAL`, sem vínculo de
+edição (4 colunas NULL) e páginas NULL (DESCONHECIDO, nunca 1/1 inventado);
+4 `question_options`; 1 `question_classifications` por questão
+(`taxonomy_version=v1.1`, `origin=AUTORAL_DERIVADA_PERFIL`,
+`confidence=MEDIA` — códigos válidos com molde documentado, mas sem
+verificação independente; evidência = citação genuína, LP do texto_base,
+MAT do enunciado, ≤200 chars); **sem** `question_sources` (exige documento,
+só faz sentido para oficiais) — proveniência em
+`classifications.observation` (`spec=` + `refs=`) + `checksum` +
+`pipeline_version=authoral-1.0.0`.
+
+Idempotência: chave = `checksum` (UNIQUE) + `spec=<id>` na observation
+(spec conhecido com checksum diferente = DIVERGENCIA, exit 2, sem
+UPDATE/DELETE). `--check` valida sem escrever; `--report PATH` (padrão
+`data/authoral/report.json`). Contagem final verifica specs presentes +
+`OFFICIAL` intacto (240) + 4 opções e 1 classificação por autoral.

@@ -169,6 +169,35 @@ class QuestionServiceTest {
   }
 
   @Test
+  void detailCarriesFixedOriginNote() {
+    Question official = question(1L, 21, "A", false);
+    when(questions.findById(1L)).thenReturn(Optional.of(official));
+    when(options.findByQuestionIdOrdered(1L)).thenReturn(List.of(option(official, "A", "4")));
+    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(official)));
+
+    QuestionResponse o = service.getById(1L);
+    assertTrue(o.notes().stream().anyMatch(n -> n.contains("oficial do IFRN (edição 2026)")));
+
+    Question authoral = question(2L, 0, "B", false);
+    ReflectionTestUtils.setField(authoral, "sourceType", "AUTHORAL");
+    ReflectionTestUtils.setField(authoral, "sourceYear", null);
+    ReflectionTestUtils.setField(authoral, "sourceQuestionNumber", null);
+    ReflectionTestUtils.setField(authoral, "pageStart", null);
+    ReflectionTestUtils.setField(authoral, "pageEnd", null);
+    when(questions.findById(2L)).thenReturn(Optional.of(authoral));
+    when(options.findByQuestionIdOrdered(2L)).thenReturn(List.of(option(authoral, "B", "7")));
+    when(classifications.findActiveByQuestionId(2L)).thenReturn(List.of(classification(authoral)));
+
+    QuestionResponse a = service.getById(2L);
+    assertTrue(a.notes().stream().anyMatch(n -> n.contains("autoral criada pelo VouPassar")));
+    assertTrue(a.notes().stream().anyMatch(n -> n.contains("não é uma questão oficial do IFRN")));
+    assertNull(a.examYear());
+    assertNull(a.questionNumber());
+    assertNull(a.pageStart());
+    assertNull(a.pageEnd());
+  }
+
+  @Test
   void searchNormalizesFilters() {
     Discipline lp = new Discipline("LINGUA_PORTUGUESA", "Língua Portuguesa");
     when(disciplines.findByCode("LINGUA_PORTUGUESA")).thenReturn(Optional.of(lp));

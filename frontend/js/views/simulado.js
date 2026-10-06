@@ -37,7 +37,7 @@ import {
   submitAttempt,
 } from "../api/simulado.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural } from "../vocab.js";
+import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, sourceTypeLabel } from "../vocab.js";
 
 const PAGE_SIZE = 20;
 
@@ -55,6 +55,7 @@ const formDisc = document.getElementById("sim-create-discipline");
 const selDisc = document.getElementById("s-disc-disciplina");
 const inpQtd = document.getElementById("s-disc-qtd");
 const selDiff = document.getElementById("s-disc-dificuldade");
+const selDiscOrigin = document.getElementById("s-disc-origem");
 const selDiscMode = document.getElementById("s-disc-modo");
 const btnDisc = document.getElementById("sim-disc-submit");
 const formEd = document.getElementById("sim-create-edition");
@@ -279,6 +280,9 @@ function bindHubForms() {
           disciplineCode,
           questionCount,
           difficulty: selDiff.value || undefined,
+          // Origem (TASK 15.4): padrão Oficiais; o backend também assume
+          // OFFICIAL quando ausente. Edição real não tem este campo.
+          sourceType: selDiscOrigin?.value || "OFFICIAL",
           mode: selDiscMode.value || "PROVA",
         });
         window.location.href = `./simulado.html?id=${encodeURIComponent(String(created.attemptId))}`;
@@ -606,6 +610,16 @@ function renderSimCard(item, detail) {
   head.appendChild(el("span", { className: "sim-card__pos", text: `Posição ${item.position}`, attrs: { id: `sim-p${item.position}-t` } }));
   head.appendChild(el("span", { className: "badge", text: ref }));
   if (disc) head.appendChild(el("span", { className: "badge", text: disc }));
+  // Selo de origem (TASK 15.4): no caderno misto cada cartão declara o que
+  // é. Metadado de proveniência, não gabarito — visível também no Modo
+  // Prova (mesmo critério de textos-base e figuras).
+  if (detail?.sourceType) {
+    const origin = sourceTypeLabel(detail.sourceType);
+    head.appendChild(el("span", {
+      className: "badge",
+      text: detail.sourceType === "OFFICIAL" ? origin : `${origin} — não é questão do IFRN`,
+    }));
+  }
   if (item.wasAnnulled || detail?.annulled) {
     head.appendChild(el("span", { className: "badge badge--warning", text: "Anulada" }));
   }

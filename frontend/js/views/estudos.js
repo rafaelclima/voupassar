@@ -6,6 +6,8 @@
  * - Conteúdo: disciplinas + assuntos/subassuntos observados (3.3, taxonomia
  *   v1.1) com contagem histórica e aproveitamento do aluno (4.1).
  * - Questões: lista paginada com filtros (3.4, ordem fixa ano/número/id).
+ *   Filtro Origem (TASK 15.4: Todas/Oficiais/Autorais, `?fonte=`, selo via
+ *   `sourceTypeLabel` + resumo do recorte traduzido, nunca enum cru).
  * - Progresso: retrato geral + recorte atual (4.1) e item do roteiro (4.4).
  * - Navegação: filtros sincronizados na URL, paginação e atalhos do
  *   navegador de conteúdo para a lista. Prática livre em modo ESTUDO (3.7)
@@ -49,6 +51,7 @@ const selTopic = document.getElementById("f-topico");
 const selSub = document.getElementById("f-subtopico");
 const selYear = document.getElementById("f-ano");
 const selDiff = document.getElementById("f-dificuldade");
+const selOrigem = document.getElementById("f-origem");
 const btnClear = document.getElementById("btn-clear");
 const btnFilter = document.getElementById("btn-filter");
 
@@ -77,7 +80,7 @@ const state = {
   diagnosis: null,
   plan: null,
   planMissing: false,
-  filters: { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", page: 0 },
+  filters: { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", sourceType: "", page: 0 },
   // Limite visível de assuntos por disciplina no navegador ("Mostrar mais").
   // Padrão 12 para a primeira pintura não virar lista infinita; expandir é
   // só UI (sem novo fetch), então não inventa conteúdo — ver renderBrowser().
@@ -170,6 +173,7 @@ function readUrlIntoFilters() {
   state.filters.subtopicId = (q.get("subtopico") || "").trim();
   state.filters.year = (q.get("ano") || "").trim();
   state.filters.difficulty = (q.get("dificuldade") || "").trim().toUpperCase();
+  state.filters.sourceType = (q.get("fonte") || "").trim().toUpperCase();
   const p = Number.parseInt(q.get("pagina") || "0", 10);
   state.filters.page = Number.isFinite(p) && p >= 0 ? p : 0;
   state.origin = (q.get("origem") || "").trim().toLowerCase();
@@ -183,6 +187,7 @@ function syncUrl() {
   if (f.subtopicId) q.set("subtopico", f.subtopicId);
   if (f.year) q.set("ano", f.year);
   if (f.difficulty) q.set("dificuldade", f.difficulty);
+  if (f.sourceType) q.set("fonte", f.sourceType);
   if (f.page > 0) q.set("pagina", String(f.page));
   // A origem ("painel") não volta para a URL: ela descreve como o aluno
   // chegou, não o recorte atual. Manter na URL faria o hero dizer
@@ -303,6 +308,12 @@ function applyFiltersToForm() {
   if (!["FACIL", "MEDIA", "DIFICIL"].includes(state.filters.difficulty)) {
     state.filters.difficulty = "";
   }
+  // Origem (TASK 15.4): só os dois valores do filtro; "fonte" inválida na
+  // URL volta para Todas, nunca para um enum cru (ver check_frontend.py).
+  if (!["OFFICIAL", "AUTHORAL"].includes(state.filters.sourceType)) {
+    state.filters.sourceType = "";
+  }
+  selOrigem.value = state.filters.sourceType || "";
   if (state.filters.year && !["2020", "2022", "2023", "2024", "2025", "2026"].includes(state.filters.year)) {
     state.filters.year = "";
     selYear.value = "";
@@ -400,6 +411,23 @@ function bindFilterEvents() {
     renderRecorte();
     renderHero();
   });
+  // Origem (TASK 15.4): mesmo padrão de ano/dificuldade — listar sozinha,
+  // com o botão Filtrar como ação explícita + rolagem (teclado/AT).
+  selOrigem.addEventListener("change", async () => {
+    state.filters.page = 0;
+    state.origin = "";
+    state.filters.sourceType = selOrigem.value || "";
+    syncUrl();
+    if (hasRecorte()) {
+      await loadQuestions();
+    } else {
+      renderQuestionsIdle();
+    }
+    renderProgress();
+    renderPlan();
+    renderRecorte();
+    renderHero();
+  });
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     state.filters.disciplineCode = selDisc.value || "";
@@ -407,6 +435,7 @@ function bindFilterEvents() {
     state.filters.subtopicId = selSub.disabled ? "" : (selSub.value || "");
     state.filters.year = selYear.value || "";
     state.filters.difficulty = selDiff.value || "";
+    state.filters.sourceType = selOrigem.value || "";
     state.filters.page = 0;
     state.origin = "";
     syncUrl();
@@ -434,7 +463,8 @@ function bindFilterEvents() {
     selSub.value = "";
     selYear.value = "";
     selDiff.value = "";
-    state.filters = { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", page: 0 };
+    selOrigem.value = "";
+    state.filters = { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: "", sourceType: "", page: 0 };
     state.origin = "";
     state.browserLimits = {};
     // Limpar volta ao ponto de partida útil (mesmo padrão da carga
@@ -669,6 +699,8 @@ function renderRecorte() {
   if (state.filters.year) parts.push(`Edição ${state.filters.year}`);
   const diffLabel = difficultyLabel(state.filters.difficulty);
   if (diffLabel) parts.push(diffLabel);
+  // Origem no resumo (TASK 15.4): traduzida via vocab, nunca o enum cru.
+  if (state.filters.sourceType) parts.push(sourceTypeLabel(state.filters.sourceType));
   recorteResumo.textContent = parts.length > 0
     ? `Recorte atual: ${parts.join(" · ")}.`
     : "Recorte atual: todos os conteúdos.";
@@ -973,12 +1005,12 @@ function renderBrowser() {
 /* ---------- questões + paginação ---------- */
 
 // Há recorte quando algum filtro de conteúdo está ativo (disciplina,
-// assunto, subassunto, edição ou dificuldade). A carga inicial aplica um
-// recorte padrão (roteiro ou 1ª disciplina) para o caderno abrir sozinho;
-// sem catálogo, cai no estado-guia — ver applyDefaultRecorte().
+// assunto, subassunto, edição, dificuldade ou origem). A carga inicial
+// aplica um recorte padrão (roteiro ou 1ª disciplina) para o caderno abrir
+// sozinho; sem catálogo, cai no estado-guia — ver applyDefaultRecorte().
 function hasRecorte() {
   const f = state.filters;
-  return Boolean(f.disciplineCode || f.topicId || f.subtopicId || f.year || f.difficulty);
+  return Boolean(f.disciplineCode || f.topicId || f.subtopicId || f.year || f.difficulty || f.sourceType);
 }
 
 function renderQuestionsIdle() {
@@ -1001,6 +1033,7 @@ function questionQuery() {
     ...(f.subtopicId ? { subtopicId: f.subtopicId } : {}),
     ...(f.year ? { year: f.year } : {}),
     ...(f.difficulty ? { difficulty: f.difficulty } : {}),
+    ...(f.sourceType ? { sourceType: f.sourceType } : {}),
     page: f.page,
     size: PAGE_SIZE,
   };

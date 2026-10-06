@@ -87,12 +87,14 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       Pageable pageable);
 
   /**
-   * Candidatas ao simulado por disciplina (TASK 5.1).
+   * Candidatas ao simulado por disciplina (TASK 5.1 + filtro de origem 15.4).
    *
    * <p>Anuladas ficam fora da seleção: com {@code isCorrect} NULL quebrariam
    * o aproveitamento (pontuação DESCONHECIDA, TASK 1.3 §4). O recorte por
    * dificuldade herda a limitação da estimativa (palpite com confiança BAIXA
    * global): questões sem estimativa saem só no recorte sem filtro.
+   * {@code sourceType} NULL = sem filtro de origem (caderno misto); o padrão
+   * OFFICIAL é aplicado no serviço (TASK 15.4).
    * Ordem fixa por id — o sorteio sem reposição acontece no serviço.
    */
   @Query("""
@@ -101,11 +103,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       WHERE d.code = :disciplineCode
         AND q.annulled = false
         AND (:difficulty IS NULL OR q.difficultyEstimate = :difficulty)
+        AND (:sourceType IS NULL OR q.sourceType = :sourceType)
       ORDER BY q.id ASC
       """)
   List<Long> findCandidateIdsByDiscipline(
       @Param("disciplineCode") String disciplineCode,
-      @Param("difficulty") String difficulty);
+      @Param("difficulty") String difficulty,
+      @Param("sourceType") String sourceType);
 
   /**
    * Caderno integral de uma edição real (TASK 5.5).

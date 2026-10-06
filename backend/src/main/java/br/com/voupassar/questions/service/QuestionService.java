@@ -474,6 +474,20 @@ public class QuestionService {
             : new SubtopicRef(subtopic.getId(), subtopic.getCode(), subtopic.getName());
 
     List<String> notes = new ArrayList<>();
+    // Origem fixa (TASK 15.4): toda questão declara o que é — oficial de
+    // que edição, ou autoral (nunca do IFRN). É dado de proveniência, não
+    // gabarito: segue visível também no Modo Prova (via maskForProva).
+    if ("AUTHORAL".equals(q.getSourceType())) {
+      notes.add(
+          "Questão autoral criada pelo VouPassar a partir do perfil das provas"
+              + " — não é uma questão oficial do IFRN.");
+    } else if ("OFFICIAL".equals(q.getSourceType())) {
+      notes.add(q.getSourceYear() == null
+          ? "Questão oficial de prova do IFRN."
+          : "Questão oficial do IFRN (edição " + q.getSourceYear() + ").");
+    } else {
+      notes.add("Questão não oficial.");
+    }
     if (q.isAnnulled()) {
       notes.add(
           "Anulada (X no gabarito): contou como conteúdo que apareceu na prova, sem pontuar; regra de pontuação DESCONHECIDA.");

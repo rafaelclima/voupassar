@@ -1,0 +1,25 @@
+{
+  "importer": "scripts/db/import_authoral.py",
+  "importer_version": "1.0.0",
+  "pipeline_version": "authoral-1.0.0",
+  "taxonomy_version": "v1.1",
+  "origin": "AUTORAL_DERIVADA_PERFIL",
+  "started_at_utc": "2026-10-06T14:19:04.868874+00:00",
+  "check_only": true,
+  "candidates": 60,
+  "to_insert": 0,
+  "already_present": 60,
+  "divergences": [],
+  "db_state": {
+    "specs": 60,
+    "specs_present": 60,
+    "missing": [],
+    "wrong_source_type": [],
+    "official": 240,
+    "authoral": 60,
+    "authoral_options": 240,
+    "authoral_classifications": 60
+  },
+  "status": "OK",
+  "finished_at_utc": "2026-10-06T14:19:05.272252+00:00"
+}

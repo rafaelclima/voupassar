@@ -17,13 +17,14 @@ export function fetchEditions() {
   return request("/api/v1/editions");
 }
 
-export function createByDiscipline({ disciplineCode, questionCount, difficulty, mode }) {
+export function createByDiscipline({ disciplineCode, questionCount, difficulty, sourceType, mode }) {
   return request("/api/v1/simulations/by-discipline", {
     method: "POST",
     body: {
       disciplineCode,
       questionCount,
       ...(difficulty ? { difficulty } : {}),
+      ...(sourceType ? { sourceType } : {}),
       mode,
     },
   });
