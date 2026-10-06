@@ -8,7 +8,7 @@ import java.util.List;
  *
  * <p>Versão viva das auditorias 11.1/11.2: conta ocorrências atuais e devolve
  * até 20 ids de amostra para investigação. Contagem zero = saudável; qualquer
- * positivo é fila de curadoria, nunca deleção automática (AGENTS.md §23).
+ * positivo é observação, nunca deleção automática (AGENTS.md §23).
  */
 public record InconsistencyResponse(
     @Schema(example = "OPTIONS_COUNT") String check,

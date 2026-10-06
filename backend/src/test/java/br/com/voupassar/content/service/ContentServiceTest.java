@@ -1,7 +1,6 @@
 package br.com.voupassar.content.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -35,7 +34,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * <p>Valida regras de evidência: códigos inexistentes → 404 com código
  * explícito; banco vazio não inventa (zeros + notas); anuladas contam como
- * conteúdo; revisão PENDENTE é sinalizada, nunca omitida.
+ * conteúdo; confiança BAIXA é sinalizada, nunca omitida.
  */
 @ExtendWith(MockitoExtension.class)
 class ContentServiceTest {
@@ -241,7 +240,6 @@ class ContentServiceTest {
     when(questions.count()).thenReturn(0L);
     when(classifications.countClassified()).thenReturn(0L);
     when(classifications.distinctTaxonomyVersions()).thenReturn(List.of());
-    when(classifications.existsByStatus("PENDING")).thenReturn(false);
     when(disciplines.findAllByOrderByCodeAsc()).thenReturn(List.of());
     when(topics.findAllOrdered()).thenReturn(List.of());
     when(classifications.statsByTopic()).thenReturn(List.of());
@@ -250,18 +248,16 @@ class ContentServiceTest {
 
     assertEquals(0L, stats.totalQuestions());
     assertEquals(0L, stats.totalClassified());
-    assertFalse(stats.classificationReviewPending());
     assertTrue(stats.notes().stream().anyMatch(n -> n.contains("Nenhuma questão importada")));
   }
 
   @Test
-  void statsComputesPercentAndFlagsPendingReview() {
+  void statsComputesPercent() {
     Discipline mat = discipline(2L, "MATEMATICA", "Matemática");
     Topic algebra = topic(5L, mat, "ALGEBRA", "Álgebra");
     when(questions.count()).thenReturn(240L);
     when(classifications.countClassified()).thenReturn(240L);
     when(classifications.distinctTaxonomyVersions()).thenReturn(List.of("v1.1"));
-    when(classifications.existsByStatus("PENDING")).thenReturn(true);
     when(disciplines.findAllByOrderByCodeAsc()).thenReturn(List.of(mat));
     when(topics.countByDisciplineCode("MATEMATICA")).thenReturn(1L);
     when(questions.countByDisciplineCode("MATEMATICA")).thenReturn(120L);
@@ -276,9 +272,8 @@ class ContentServiceTest {
 
     assertEquals(240L, stats.totalQuestions());
     assertEquals(List.of("v1.1"), stats.taxonomyVersions());
-    assertTrue(stats.classificationReviewPending());
     assertEquals(7.5, stats.perTopic().get(0).percentOfClassified(), 0.001);
     assertEquals(6, stats.perTopic().get(0).editionsCount());
-    assertTrue(stats.notes().stream().anyMatch(n -> n.contains("PENDENTE")));
+    assertTrue(stats.notes().stream().anyMatch(n -> n.contains("DESCONHECIDA")));
   }
 }

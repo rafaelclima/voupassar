@@ -63,10 +63,6 @@ public record ReviewQueueResponse(
       @Schema(nullable = true) Long subtopicId,
       @Schema(nullable = true) String subtopicCode,
       @Schema(nullable = true) String subtopicName,
-      @Schema(nullable = true,
-          allowableValues = {"PENDING", "REVIEWED", "APPROVED", "REJECTED"},
-          description = "Status da classificação vigente (NULL quando sem classificação).")
-      String classificationStatus,
       @Schema(nullable = true) String classificationConfidence,
       @Schema(nullable = true) String taxonomyVersion,
       @Schema(example = "3") long attempts,

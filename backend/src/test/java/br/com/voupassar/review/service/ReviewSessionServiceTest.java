@@ -92,7 +92,7 @@ class ReviewSessionServiceTest {
         1, questionId, d.getCode(), d.getName(), 2026, (int) questionId,
         10L, "PORC", "Porcentagem",
         null, null, null,
-        "PENDING", "ALTA", "v1.1",
+        "ALTA", "v1.1",
         2L, 0L, 2L, false,
         OffsetDateTime.parse("2026-09-02T10:00:00Z"), 5L,
         "EM_OBSERVACAO", 2L, 0.0,

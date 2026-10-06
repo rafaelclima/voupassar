@@ -97,7 +97,6 @@ class ReviewServiceTest {
     ReflectionTestUtils.setField(c, "topic", t);
     ReflectionTestUtils.setField(c, "subtopic", null);
     ReflectionTestUtils.setField(c, "confidence", "ALTA");
-    ReflectionTestUtils.setField(c, "status", "PENDING");
     ReflectionTestUtils.setField(c, "taxonomyVersion", "v1.1");
     return c;
   }

@@ -296,8 +296,7 @@ public class QuestionService {
         null, r.annulled(), r.difficultyEstimate(),
         r.pageStart(), r.pageEnd(), r.hasFigure(),
         r.topic(), r.subtopic(),
-        r.classificationConfidence(), r.taxonomyVersion(), r.classificationStatus(),
-        r.validationStatus(), r.publicationStatus(),
+        r.classificationConfidence(), r.taxonomyVersion(),
         List.copyOf(notes),
         r.figures() != null ? r.figures() : java.util.List.of(),
         r.passages() != null ? r.passages() : java.util.List.of());
@@ -489,14 +488,11 @@ public class QuestionService {
     }
     if (classification == null) {
       notes.add("Sem classificação pedagógica: assunto NÃO CONFIRMADO.");
-    } else if ("PENDING".equals(classification.getStatus())) {
+    } else if ("BAIXA".equals(classification.getConfidence())) {
       notes.add(
           "Classificação pedagógica "
               + classification.getTaxonomyVersion()
-              + " com revisão humana PENDENTE (TASK 12.2).");
-    }
-    if ("PENDENTE_REVISAO".equals(q.getPublicationStatus())) {
-      notes.add("Publicação PENDENTE_REVISAO (curadoria TASK 12.2).");
+              + " com confiança BAIXA: assunto NÃO CONFIRMADO.");
     }
     if (q.isHasFigure()) {
       notes.add("Enunciado com figura no PDF-fonte (ver páginas).");
@@ -526,9 +522,6 @@ public class QuestionService {
         subtopicRef,
         classification == null ? null : classification.getConfidence(),
         classification == null ? null : classification.getTaxonomyVersion(),
-        classification == null ? null : classification.getStatus(),
-        q.getValidationStatus(),
-        q.getPublicationStatus(),
         List.copyOf(notes),
         java.util.List.of(), // figuras: vazio até sync_figures.py preencher
         List.copyOf(questionPassages == null ? List.of() : questionPassages));

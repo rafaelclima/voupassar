@@ -211,7 +211,6 @@ public class ReviewService {
           c != null && c.getSubtopic() != null ? c.getSubtopic().getId() : null,
           c != null && c.getSubtopic() != null ? c.getSubtopic().getCode() : null,
           c != null && c.getSubtopic() != null ? c.getSubtopic().getName() : null,
-          c == null ? null : c.getStatus(),
           c == null ? null : c.getConfidence(),
           c == null ? null : c.getTaxonomyVersion(),
           s.acc.attempts,

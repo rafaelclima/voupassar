@@ -16,10 +16,11 @@ import org.hibernate.annotations.Immutable;
  * Classificação pedagógica versionada (TASK 3.3, projeção mínima).
  *
  * <p>Julgamento derivado da fonte ({@code CLASSIFICACAO_DERIVADA_FONTE}),
- * taxonomia v1.1, revisão humana PENDENTE. Só a {@code APPROVED} mais recente
- * alimenta recomendação (Fase 4); as estatísticas históricas aqui contam o que
- * está no banco sem filtrar confiança — com nota explícita de revisão
- * pendente, nunca como verdade oficial do IFRN.
+ * taxonomia v1.1. Fonte de confiança é o veredito do pipeline (decisão de
+ * produto 2026-10-06, sem carimbo humano): checksum estável + vínculo ao
+ * gabarito + páginas válidas. As estatísticas contam o que está no banco
+ * sem filtrar confiança — com nota explícita quando a confiança é BAIXA,
+ * nunca como verdade oficial do IFRN.
  */
 @Entity
 @Immutable
@@ -47,9 +48,6 @@ public class QuestionClassification {
 
   @Column(name = "confidence", nullable = false)
   private String confidence;
-
-  @Column(name = "status", nullable = false)
-  private String status;
 
   @Column(name = "origin", nullable = false)
   private String origin;
@@ -84,10 +82,6 @@ public class QuestionClassification {
 
   public String getConfidence() {
     return confidence;
-  }
-
-  public String getStatus() {
-    return status;
   }
 
   public String getOrigin() {

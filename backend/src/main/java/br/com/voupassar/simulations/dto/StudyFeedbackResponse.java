@@ -16,8 +16,7 @@ import java.util.List;
  *       o placar da TASK 5.1 mesmo após reclassificação posterior.</li>
  *   <li>Anuladas saem com {@code isCorrect} NULL (pontuação DESCONHECIDA, TASK
  *       1.3 §4): contam como conteúdo respondido, nunca como acerto nem erro.</li>
- *   <li>Assunto/subassunto vêm da classificação vigente
- *       (revisão humana PENDENTE, TASK 12.2).</li>
+ *   <li>Assunto/subassunto vêm da classificação vigente mais recente.</li>
  *   <li>Enunciado e alternativas NÃO são duplicados aqui: resolve-se via
  *       {@code GET /api/v1/questions/{id}} (TASK 3.4).</li>
  * </ul>
@@ -45,8 +44,6 @@ public record StudyFeedbackResponse(
     @Schema(example = "11", nullable = true) Long subtopicId,
     @Schema(example = "JUROS_SIMPLES", nullable = true) String subtopicCode,
     @Schema(example = "Juros simples", nullable = true) String subtopicName,
-    @Schema(nullable = true, description = "Status da classificação vigente (NULL = sem classificação).")
-    String classificationStatus,
     @Schema(nullable = true) String classificationConfidence,
     @Schema(nullable = true) String taxonomyVersion,
     List<String> notes) {}

@@ -14,10 +14,8 @@ import java.util.List;
  *       (regra de pontuação DESCONHECIDA).</li>
  *   <li>Gabarito oculto em {@code PROVA} em andamento (TASK 5.3, com nota explícita).</li>
  *   <li>{@code difficultyEstimate} é palpite com confiança BAIXA global.</li>
- *   <li>Assunto/subassunto vêm da classificação não-rejeitada mais recente
- *       (revisão humana PENDENTE); nulos = assunto NÃO CONFIRMADO.</li>
- *   <li>{@code publicationStatus} em todas as importadas é
- *       {@code PENDENTE_REVISAO} (curadoria TASK 12.2).</li>
+ *   <li>Assunto/subassunto vêm da classificação vigente mais recente
+ *       (confiança BAIXA = assunto NÃO CONFIRMADO); nulos = sem classificação.</li>
  *   <li>Em simulado {@code PROVA} {@code IN_PROGRESS} deste aluno, {@code
  *       answerKey} sai NULL (oculto até encerrar).</li>
  * </ul>
@@ -46,9 +44,6 @@ public record QuestionResponse(
     SubtopicRef subtopic,
     @Schema(example = "ALTA") String classificationConfidence,
     @Schema(example = "v1.1") String taxonomyVersion,
-    @Schema(example = "PENDING") String classificationStatus,
-    @Schema(example = "PENDING") String validationStatus,
-    @Schema(example = "PENDENTE_REVISAO") String publicationStatus,
     @Schema(description = "Notas de evidência/auditoria desta questão.") List<String> notes,
     @Schema(description = "Figuras oficiais associadas (caminho + metadados). Vazio quando sem recorte publicado.")
         java.util.List<FigureResponse> figures,

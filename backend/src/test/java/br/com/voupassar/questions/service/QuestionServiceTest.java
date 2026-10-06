@@ -108,8 +108,6 @@ class QuestionServiceTest {
     ReflectionTestUtils.setField(q, "answerKey", answerKey);
     ReflectionTestUtils.setField(q, "hasFigure", false);
     ReflectionTestUtils.setField(q, "difficultyEstimate", "FACIL");
-    ReflectionTestUtils.setField(q, "validationStatus", "PENDING");
-    ReflectionTestUtils.setField(q, "publicationStatus", "PENDENTE_REVISAO");
     return q;
   }
 
@@ -130,7 +128,6 @@ class QuestionServiceTest {
     ReflectionTestUtils.setField(c, "topic", algebra);
     ReflectionTestUtils.setField(c, "subtopic", equacoes);
     ReflectionTestUtils.setField(c, "confidence", "ALTA");
-    ReflectionTestUtils.setField(c, "status", "PENDING");
     return c;
   }
 
@@ -168,7 +165,7 @@ class QuestionServiceTest {
     assertEquals("ALGEBRA", item.topic().code());
     assertEquals("EQUACOES", item.subtopic().code());
     assertEquals("ALTA", item.classificationConfidence());
-    assertTrue(item.notes().stream().anyMatch(n -> n.contains("PENDENTE")));
+    assertTrue(item.notes().stream().anyMatch(n -> n.contains("Dificuldade FACIL estimada")));
   }
 
   @Test
@@ -298,8 +295,7 @@ class QuestionServiceTest {
     assertEquals(1L, out.id());
     assertEquals("Quanto é 2 + 2?", out.statement());
     assertEquals(4, out.options().size());
-    assertEquals("PENDING", out.validationStatus());
-    assertEquals("PENDENTE_REVISAO", out.publicationStatus());
+    assertEquals("ALTA", out.classificationConfidence());
     assertNotNull(out.topic());
   }
 

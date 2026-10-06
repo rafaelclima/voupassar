@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Referência à figura de uma questão oficial (docs/figuras-estrategia.md).
  * Não contém o binário — apenas o caminho relativo ao arquivo no frontend
- * e os metadados de proveniência/revisão.
+ * e os metadados de proveniência (crédito + página do caderno-fonte).
  */
 public record FigureResponse(
     @Schema(description = "Caminho relativo ao arquivo no frontend/assets/figures/.")
@@ -15,6 +15,4 @@ public record FigureResponse(
     @Schema(description = "Posição quando há múltiplas figuras (1, 2, ...).")
         int position,
     @Schema(description = "Página do caderno-fonte onde a figura aparece.")
-        Integer page,
-    @Schema(description = "Status de curadoria: PENDENTE_REVISAO ou PUBLICAVEL.")
-        String publicationStatus) {}
+        Integer page) {}

@@ -197,7 +197,7 @@ class SimulationControllerTest {
         55L, 1, 21L, "MATEMATICA", "Matemática", 2026, 17,
         "C", true, false, "C",
         3L, "PORCENTAGEM", "Porcentagem", 11L, "CALCULO_PERCENTUAL", "Cálculo percentual",
-        "PENDING", "ALTA", "v1.1", List.of("nota")));
+        "ALTA", "v1.1", List.of("nota")));
 
     mvc().perform(get("/api/v1/simulations/attempts/55/feedback/1"))
         .andExpect(status().isOk())

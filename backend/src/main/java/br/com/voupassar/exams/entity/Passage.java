@@ -17,7 +17,7 @@ import org.hibernate.annotations.Immutable;
  *
  * <p>Transcrição literal do caderno oficial (nunca parafraseada); quando o
  * conteúdo é puramente visual, {@code content} é NULL e {@code
- * visualDescription} descreve o que a curadoria viu no PDF-fonte. Sem gate
+ * visualDescription} descreve o que foi verificado no PDF-fonte. Sem gate
  * de publicação (decisão em docs/passagens-estrategia.md §1): só
  * proveniência (edição, páginas, nota de fonte) para rastreabilidade.
  * {@code @Immutable} impede updates acidentais por este contexto.

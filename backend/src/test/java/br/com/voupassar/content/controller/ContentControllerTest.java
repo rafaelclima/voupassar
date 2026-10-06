@@ -192,18 +192,17 @@ class ContentControllerTest {
                 240L,
                 240L,
                 List.of("v1.1"),
-                true,
                 List.of(new ContentDisciplineStatsResponse("MATEMATICA", "Matemática", 8, 120)),
                 List.of(
                     new ContentTopicStatsResponse(
                         5L, "ALGEBRA", "Álgebra", "MATEMATICA", "Matemática", 18, 7.5, 6, 0)),
-                List.of("Classificações com revisão humana PENDENTE.")));
+                List.of("Anuladas contam como conteúdo que apareceu na prova.")));
 
     mvc().perform(get("/api/v1/content/stats"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalQuestions").value(240))
         .andExpect(jsonPath("$.totalClassified").value(240))
         .andExpect(jsonPath("$.perTopic.length()").value(1))
-        .andExpect(jsonPath("$.classificationReviewPending").value(true));
+        .andExpect(jsonPath("$.classificationReviewPending").doesNotExist());
   }
 }

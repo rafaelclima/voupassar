@@ -487,7 +487,6 @@ public class SimulationService {
         subtopic == null ? null : subtopic.getId(),
         subtopic == null ? null : subtopic.getCode(),
         subtopic == null ? null : subtopic.getName(),
-        classification == null ? null : classification.getStatus(),
         classification == null ? null : classification.getConfidence(),
         classification == null ? null : classification.getTaxonomyVersion(),
         List.copyOf(notes));
@@ -956,9 +955,9 @@ public class SimulationService {
     }
     if (classification == null) {
       notes.add("Sem classificação pedagógica vigente: assunto NÃO CONFIRMADO.");
-    } else if ("PENDING".equals(classification.getStatus())) {
+    } else if ("BAIXA".equals(classification.getConfidence())) {
       notes.add("Classificação pedagógica " + classification.getTaxonomyVersion()
-          + " com revisão humana PENDENTE (TASK 12.2) — nunca verdade oficial do IFRN.");
+          + " com confiança BAIXA: assunto NÃO CONFIRMADO — nunca verdade oficial do IFRN.");
     }
     notes.add("Enunciado e alternativas em GET /api/v1/questions/" + question.getId()
         + " (este feedback referencia, nunca duplica).");

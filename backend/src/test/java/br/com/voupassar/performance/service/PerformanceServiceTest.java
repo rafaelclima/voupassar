@@ -121,7 +121,6 @@ class PerformanceServiceTest {
     ReflectionTestUtils.setField(c, "topic", t);
     ReflectionTestUtils.setField(c, "subtopic", s);
     ReflectionTestUtils.setField(c, "confidence", "ALTA");
-    ReflectionTestUtils.setField(c, "status", "PENDING");
     return c;
   }
 

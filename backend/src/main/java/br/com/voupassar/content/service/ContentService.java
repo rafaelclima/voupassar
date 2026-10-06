@@ -204,12 +204,11 @@ public class ContentService {
         toConfidence(classifications.confidenceBySubtopic(s.getId())));
   }
 
-  /** Panorama histórico global (frequências derivadas, revisão pendente). */
+  /** Panorama histórico global (frequências derivadas do banco). */
   public ContentStatsResponse getContentStats() {
     long totalQuestions = questions.count();
     long totalClassified = classifications.countClassified();
     List<String> versions = classifications.distinctTaxonomyVersions();
-    boolean reviewPending = classifications.existsByStatus("PENDING");
 
     Map<Long, long[]> topicStats = new HashMap<>();
     for (Object[] row : classifications.statsByTopic()) {
@@ -252,10 +251,6 @@ public class ContentService {
     if (totalClassified == 0) {
       notes.add("Nenhuma classificação no banco — estatísticas históricas indisponíveis.");
     }
-    if (reviewPending) {
-      notes.add(
-          "Classificações com revisão humana PENDENTE (TASK 12.2): frequências são derivadas, não verdade oficial do IFRN.");
-    }
     notes.add("Anuladas contam como conteúdo que apareceu na prova; regra de pontuação DESCONHECIDA.");
     notes.add("Tendência não calculada (6 edições, sem teste estatístico; oscilações de 1–2 questões são ruído).");
 
@@ -263,7 +258,6 @@ public class ContentService {
         totalQuestions,
         totalClassified,
         List.copyOf(versions),
-        reviewPending,
         List.copyOf(perDiscipline),
         List.copyOf(perTopic),
         List.copyOf(notes));

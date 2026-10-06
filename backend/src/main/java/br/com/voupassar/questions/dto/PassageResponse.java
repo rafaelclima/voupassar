@@ -21,7 +21,7 @@ public record PassageResponse(
     @Schema(description = "Linha fina do texto-base, quando houver.") String subtitle,
     @Schema(description = "Cabeçalho do bloco (ex. trechos), quando houver.") String intro,
     @Schema(description = "Transcrição literal; nula quando puramente visual.") String content,
-    @Schema(description = "Descrição da curadoria quando o conteúdo é visual.") String visualDescription,
+    @Schema(description = "Descrição verificada quando o conteúdo é visual.") String visualDescription,
     @Schema(description = "Nota de formatação do caderno (moldura, sublinhados).") String formatNote,
     @Schema(description = "Fonte/legenda impressa no caderno.") String sourceNote,
     @Schema(example = "2", description = "Primeira página do caderno onde aparece.") Integer pageStart,

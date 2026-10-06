@@ -222,7 +222,7 @@ public class RecommendationService {
     return "{\"topic_id\":" + topicId
         + ",\"historical_evidence\":\"taxonomia_v1.1\",\"source_type\":\"DERIVADO_EVIDENCIA\","
         + "\"attempts\":" + attempts
-        + ",\"note\":\"Evidência completa requer curadoria e vinculação a edições (TASK 1.5, 11.2).\"}";
+        + ",\"note\":\"Evidência completa requer vinculação a edições (TASK 1.5, 11.2).\"}";
   }
 
   /**

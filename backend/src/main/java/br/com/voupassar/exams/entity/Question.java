@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -80,11 +81,11 @@ public class Question {
   @Column(name = "difficulty_estimate")
   private String difficultyEstimate;
 
-  @Column(name = "validation_status", nullable = false)
-  private String validationStatus;
+  @Column(name = "pipeline_version", nullable = false)
+  private String pipelineVersion;
 
-  @Column(name = "publication_status", nullable = false)
-  private String publicationStatus;
+  @Column(name = "pipeline_verified_at", nullable = false)
+  private OffsetDateTime pipelineVerifiedAt;
 
   public Question() {}
 
@@ -148,11 +149,11 @@ public class Question {
     return difficultyEstimate;
   }
 
-  public String getValidationStatus() {
-    return validationStatus;
+  public String getPipelineVersion() {
+    return pipelineVersion;
   }
 
-  public String getPublicationStatus() {
-    return publicationStatus;
+  public OffsetDateTime getPipelineVerifiedAt() {
+    return pipelineVerifiedAt;
   }
 }

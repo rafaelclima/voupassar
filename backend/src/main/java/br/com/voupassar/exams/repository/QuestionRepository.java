@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -40,8 +39,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
    * Busca paginada do banco de questões (TASK 3.4).
    *
    * <p>Todos os filtros são opcionais ({@code null} = sem filtro). Filtros por
-   * assunto/subassunto usam {@code EXISTS} sobre classificações não-rejeitadas
-   * (mesmo critério das contagens da TASK 3.3). Ordem fixa e determinística:
+   * assunto/subassunto usam {@code EXISTS} sobre as classificações vigentes
+   * (maior id por questão — sem carimbo humano desde a decisão de produto
+   * 2026-10-06). Ordem fixa e determinística:
    * ano-fonte crescente, número da questão, id — nunca inventar ordenação por
    * relevância sem algoritmo auditável (Fase 4).
    */
@@ -56,10 +56,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             AND (:sourceType IS NULL OR q.sourceType = :sourceType)
             AND (:topicId IS NULL OR EXISTS (
               SELECT 1 FROM QuestionClassification c
-              WHERE c.question = q AND c.topic.id = :topicId AND c.status <> 'REJECTED'))
+              WHERE c.question = q AND c.topic.id = :topicId))
             AND (:subtopicId IS NULL OR EXISTS (
               SELECT 1 FROM QuestionClassification c
-              WHERE c.question = q AND c.subtopic.id = :subtopicId AND c.status <> 'REJECTED'))
+              WHERE c.question = q AND c.subtopic.id = :subtopicId))
           ORDER BY q.sourceYear ASC NULLS LAST, q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
           """,
       countQuery = """
@@ -72,10 +72,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             AND (:sourceType IS NULL OR q.sourceType = :sourceType)
             AND (:topicId IS NULL OR EXISTS (
               SELECT 1 FROM QuestionClassification c
-              WHERE c.question = q AND c.topic.id = :topicId AND c.status <> 'REJECTED'))
+              WHERE c.question = q AND c.topic.id = :topicId))
             AND (:subtopicId IS NULL OR EXISTS (
               SELECT 1 FROM QuestionClassification c
-              WHERE c.question = q AND c.subtopic.id = :subtopicId AND c.status <> 'REJECTED'))
+              WHERE c.question = q AND c.subtopic.id = :subtopicId))
           """)
   Page<Question> search(
       @Param("disciplineCode") String disciplineCode,
@@ -123,62 +123,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       """)
   List<Question> findByEditionYearOrdered(@Param("year") Short year);
 
-  /**
-   * Fila de curadoria (TASK 12.1): questões por status de validação.
-   *
-   * <p>Opcionalmente também pelo status da classificação ativa
-   * ({@code classificationStatus} = {@code null} = sem filtro) — é o que
-   * permite ao curador achar, por exemplo, as 39 classificações em REVIEWED
-   * espalhadas pelas 240 questões. O filtro é por {@code EXISTS} sobre
-   * {@code question_classifications}, então a paginação e a contagem seguem
-   * o conjunto filtrado (nunca pós-paginação, que mentiria no total).
-   *
-   * <p>Ordenação determinística pela chamadora (ano-fonte, número, id).
-   * Entidade segue {@code @Immutable} para leitura; a escrita da curadoria
-   * usa {@link #updateStatuses} abaixo (UPDATE dirigido, auditável).
-   */
-  @Query(
-      value = """
-          SELECT q FROM Question q
-          WHERE q.validationStatus = :validationStatus
-            AND (:classificationStatus IS NULL OR EXISTS (
-              SELECT 1 FROM QuestionClassification c
-              WHERE c.question = q AND c.status = :classificationStatus))
-          """,
-      countQuery = """
-          SELECT COUNT(q) FROM Question q
-          WHERE q.validationStatus = :validationStatus
-            AND (:classificationStatus IS NULL OR EXISTS (
-              SELECT 1 FROM QuestionClassification c
-              WHERE c.question = q AND c.status = :classificationStatus))
-          """)
-  Page<Question> findByValidationStatus(
-      @Param("validationStatus") String validationStatus,
-      @Param("classificationStatus") String classificationStatus,
-      Pageable pageable);
-
-  long countByValidationStatus(String validationStatus);
-
-  long countByPublicationStatus(String publicationStatus);
-
   long countByAnnulledTrue();
 
   long countByHasFigureTrue();
-
-  /**
-   * Escrita da curadoria (TASK 12.1): atualiza os dois status sem carregar a
-   * entidade imutável. Retorna linhas afetadas (0 = questão inexistente).
-   */
-  @Modifying
-  @Query(
-      value =
-          "UPDATE questions SET validation_status = :validationStatus,"
-              + " publication_status = :publicationStatus WHERE id = :id",
-      nativeQuery = true)
-  int updateStatuses(
-      @Param("id") long id,
-      @Param("validationStatus") String validationStatus,
-      @Param("publicationStatus") String publicationStatus);
 
   /**
    * Questões objetivas com contagem de alternativas diferente de 4

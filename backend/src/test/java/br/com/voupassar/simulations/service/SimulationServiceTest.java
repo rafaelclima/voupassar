@@ -428,7 +428,7 @@ class SimulationServiceTest {
   }
 
   private static QuestionClassification classification(
-      long id, Question q, Topic topic, Subtopic subtopic, String status) {
+      long id, Question q, Topic topic, Subtopic subtopic) {
     QuestionClassification c = new QuestionClassification();
     ReflectionTestUtils.setField(c, "id", id);
     ReflectionTestUtils.setField(c, "question", q);
@@ -436,7 +436,6 @@ class SimulationServiceTest {
     ReflectionTestUtils.setField(c, "topic", topic);
     ReflectionTestUtils.setField(c, "subtopic", subtopic);
     ReflectionTestUtils.setField(c, "confidence", "ALTA");
-    ReflectionTestUtils.setField(c, "status", status);
     return c;
   }
 
@@ -483,7 +482,7 @@ class SimulationServiceTest {
     when(responses.findBySimulationAttemptIdAndUserId(55L, 1L)).thenReturn(List.of(
         estudoResponse(101L, q1, u, 55L, "C", true, false, "2026-10-01T10:05:00Z")));
     when(classifications.findActiveByQuestionId(21L))
-        .thenReturn(List.of(classification(9L, q1, t, st, "PENDING")));
+        .thenReturn(List.of(classification(9L, q1, t, st)));
 
     var out = service.getStudyFeedback(1L, 55L, 1);
 
@@ -496,7 +495,7 @@ class SimulationServiceTest {
     assertEquals("PORCENTAGEM", out.topicCode());
     assertEquals("Porcentagem", out.topicName());
     assertEquals("CALCULO_PERCENTUAL", out.subtopicCode());
-    assertEquals("PENDING", out.classificationStatus());
+    assertEquals("ALTA", out.classificationConfidence());
     assertTrue(out.notes().stream().anyMatch(n -> n.contains("congelado")));
   }
 
@@ -917,7 +916,7 @@ class SimulationServiceTest {
     var out = service.getStudyFeedback(1L, 55L, 1);
 
     assertNull(out.topicCode());
-    assertNull(out.classificationStatus());
+    assertNull(out.classificationConfidence());
     assertTrue(out.notes().stream().anyMatch(n -> n.contains("NÃO CONFIRMADO")));
   }
 }

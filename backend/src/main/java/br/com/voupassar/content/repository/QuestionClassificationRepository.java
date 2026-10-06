@@ -3,29 +3,27 @@ package br.com.voupassar.content.repository;
 import br.com.voupassar.content.entity.QuestionClassification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
  * Agregados históricos sobre {@code question_classifications} (TASK 3.3).
  *
- * <p>Contam classificações não-rejeitadas ({@code status <> 'REJECTED'} com
- * tópico presente). Anuladas ({@code X} no gabarito) contam como conteúdo que
+ * <p>Contam classificações com tópico presente (sem filtro de status desde
+ * a decisão de produto 2026-10-06 — vigente é o maior id por questão).
+ * Anuladas ({@code X} no gabarito) contam como conteúdo que
  * apareceu na prova — aqui só contamos, nunca pontuamos (regra de pontuação
  * DESCONHECIDA, TASK 1.3 §4).
  */
 public interface QuestionClassificationRepository
     extends JpaRepository<QuestionClassification, Long> {
 
-  /** Total de questões classificadas (tópico presente, não-rejeitada). */
+  /** Total de questões classificadas (tópico presente). */
   @Query("""
       SELECT COUNT(c) FROM QuestionClassification c
-      WHERE c.topic IS NOT NULL AND c.status <> 'REJECTED'
+      WHERE c.topic IS NOT NULL 
       """)
   long countClassified();
-
-  boolean existsByStatus(String status);
 
   /** Versões de taxonomia presentes no banco (ex. {@code ["v1.1"]}). */
   @Query("SELECT DISTINCT c.taxonomyVersion FROM QuestionClassification c ORDER BY c.taxonomyVersion")
@@ -34,7 +32,7 @@ public interface QuestionClassificationRepository
   /** Retorna linhas {@code [topicId(Long), total(Long)]}. */
   @Query("""
       SELECT c.topic.id, COUNT(c) FROM QuestionClassification c
-      WHERE c.topic IS NOT NULL AND c.status <> 'REJECTED'
+      WHERE c.topic IS NOT NULL 
       GROUP BY c.topic.id
       """)
   List<Object[]> countByTopic();
@@ -42,20 +40,20 @@ public interface QuestionClassificationRepository
   /** Retorna linhas {@code [subtopicId(Long), total(Long)]}. */
   @Query("""
       SELECT c.subtopic.id, COUNT(c) FROM QuestionClassification c
-      WHERE c.subtopic IS NOT NULL AND c.status <> 'REJECTED'
+      WHERE c.subtopic IS NOT NULL 
       GROUP BY c.subtopic.id
       """)
   List<Object[]> countBySubtopic();
 
   @Query("""
       SELECT COUNT(c) FROM QuestionClassification c
-      WHERE c.topic.id = :topicId AND c.status <> 'REJECTED'
+      WHERE c.topic.id = :topicId 
       """)
   long countByTopicId(@Param("topicId") Long topicId);
 
   @Query("""
       SELECT COUNT(c) FROM QuestionClassification c
-      WHERE c.subtopic.id = :subtopicId AND c.status <> 'REJECTED'
+      WHERE c.subtopic.id = :subtopicId 
       """)
   long countBySubtopicId(@Param("subtopicId") Long subtopicId);
 
@@ -67,7 +65,7 @@ public interface QuestionClassificationRepository
       SELECT q.exam.year, COUNT(c),
              SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
       FROM QuestionClassification c JOIN c.question q
-      WHERE c.topic.id = :topicId AND c.status <> 'REJECTED'
+      WHERE c.topic.id = :topicId 
       GROUP BY q.exam.year
       ORDER BY q.exam.year ASC
       """)
@@ -81,7 +79,7 @@ public interface QuestionClassificationRepository
       SELECT q.exam.year, COUNT(c),
              SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
       FROM QuestionClassification c JOIN c.question q
-      WHERE c.subtopic.id = :subtopicId AND c.status <> 'REJECTED'
+      WHERE c.subtopic.id = :subtopicId 
       GROUP BY q.exam.year
       ORDER BY q.exam.year ASC
       """)
@@ -92,7 +90,7 @@ public interface QuestionClassificationRepository
    */
   @Query("""
       SELECT c.confidence, COUNT(c) FROM QuestionClassification c
-      WHERE c.topic.id = :topicId AND c.status <> 'REJECTED'
+      WHERE c.topic.id = :topicId 
       GROUP BY c.confidence
       """)
   List<Object[]> confidenceByTopic(@Param("topicId") Long topicId);
@@ -102,7 +100,7 @@ public interface QuestionClassificationRepository
    */
   @Query("""
       SELECT c.confidence, COUNT(c) FROM QuestionClassification c
-      WHERE c.subtopic.id = :subtopicId AND c.status <> 'REJECTED'
+      WHERE c.subtopic.id = :subtopicId 
       GROUP BY c.confidence
       """)
   List<Object[]> confidenceBySubtopic(@Param("subtopicId") Long subtopicId);
@@ -115,7 +113,7 @@ public interface QuestionClassificationRepository
       SELECT c.topic.id, COUNT(c),
              SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
       FROM QuestionClassification c JOIN c.question q
-      WHERE c.topic IS NOT NULL AND c.status <> 'REJECTED'
+      WHERE c.topic IS NOT NULL 
       GROUP BY c.topic.id
       """)
   List<Object[]> statsByTopic();
@@ -125,7 +123,7 @@ public interface QuestionClassificationRepository
    */
   @Query("""
       SELECT DISTINCT q.exam.year FROM QuestionClassification c JOIN c.question q
-      WHERE c.topic.id = :topicId AND c.status <> 'REJECTED'
+      WHERE c.topic.id = :topicId 
       ORDER BY q.exam.year ASC
       """)
   List<Short> editionsByTopic(@Param("topicId") Long topicId);
@@ -135,99 +133,46 @@ public interface QuestionClassificationRepository
    */
   @Query("""
       SELECT DISTINCT q.exam.year FROM QuestionClassification c JOIN c.question q
-      WHERE c.subtopic.id = :subtopicId AND c.status <> 'REJECTED'
+      WHERE c.subtopic.id = :subtopicId 
       ORDER BY q.exam.year ASC
       """)
   List<Short> editionsBySubtopic(@Param("subtopicId") Long subtopicId);
 
   /**
-   * Classificações vigentes (não-rejeitadas) de um lote de questões (TASK 3.4).
+   * Classificações vigentes de um lote de questões (TASK 3.4).
    *
    * <p>Traz tópico + subassunto em fetch para montar a página sem N+1. Pode
-   * haver mais de uma por questão (histórico PENDING); o serviço escolhe a
+   * haver mais de uma por questão (histórico); o serviço escolhe a
    * mais recente (maior id).
    */
   @Query("""
       SELECT c FROM QuestionClassification c
       LEFT JOIN FETCH c.topic t
       LEFT JOIN FETCH c.subtopic s
-      WHERE c.question.id IN :ids AND c.status <> 'REJECTED'
+      WHERE c.question.id IN :ids 
       ORDER BY c.question.id ASC, c.id DESC
       """)
   List<QuestionClassification> findActiveByQuestionIds(@Param("ids") List<Long> ids);
 
   /**
-   * Classificações vigentes (não-rejeitadas) de uma questão, mais recente
-   * primeiro.
+   * Classificações vigentes de uma questão, mais recente primeiro.
    */
   @Query("""
       SELECT c FROM QuestionClassification c
       LEFT JOIN FETCH c.topic t
       LEFT JOIN FETCH c.subtopic s
-      WHERE c.question.id = :questionId AND c.status <> 'REJECTED'
+      WHERE c.question.id = :questionId 
       ORDER BY c.id DESC
       """)
   List<QuestionClassification> findActiveByQuestionId(@Param("questionId") Long questionId);
 
   /**
-   * Classificação mais recente de cada questão do lote, <b>qualquer que seja
-   * o status</b> (TASK 12.2 — triagem de curadoria).
-   *
-   * <p>Diferente de {@link #findActiveByQuestionIds}: a fila do admin precisa
-   * também mostrar o que foi rejeitado, senão o item apareceria sem
-   * classificação e a UI afirmaria falsamente "sem classificação ativa".
-   * As demais consultas (recomendação, filtros de assunto) seguem contando
-   * só as não-rejeitadas — rejeição significa "não usar para recomendar".
-   */
-  @Query("""
-      SELECT c FROM QuestionClassification c
-      LEFT JOIN FETCH c.topic t
-      LEFT JOIN FETCH c.subtopic s
-      WHERE c.question.id IN :ids
-      ORDER BY c.question.id ASC, c.id DESC
-      """)
-  List<QuestionClassification> findLatestByQuestionIds(@Param("ids") List<Long> ids);
-
-  /**
-   * Fila de curadoria (TASK 12.1): classificações por status, mais recentes
-   * primeiro dentro da página ordenada pela chamadora.
-   */
-  @Query("""
-      SELECT c FROM QuestionClassification c
-      LEFT JOIN FETCH c.topic t
-      LEFT JOIN FETCH c.subtopic s
-      WHERE c.status = :status
-      """)
-  List<QuestionClassification> findByStatusWithTaxonomy(@Param("status") String status);
-
-  long countByStatus(String status);
-
-  /**
-   * Classificações ativas sem tópico (inconsistência — TASK 12.1).
+   * Classificações ativas sem tópico (inconsistência — observabilidade).
    */
   @Query("""
       SELECT c.id FROM QuestionClassification c
-      WHERE c.topic IS NULL AND c.status <> 'REJECTED'
+      WHERE c.topic IS NULL 
       ORDER BY c.id ASC
       """)
   List<Long> findIdsWithoutTopic();
-
-  /**
-   * Escrita da curadoria (TASK 12.1): revisa uma classificação carimbando
-   * revisor e instante. Entidade segue {@code @Immutable} para leitura;
-   * este UPDATE dirigido é a única escrita, auditável por
-   * {@code reviewed_by/at}. Retorna linhas afetadas (0 = inexistente).
-   */
-  @Modifying
-  @Query(
-      value =
-          "UPDATE question_classifications SET status = :status,"
-              + " observation = :observation, reviewed_by = :reviewedBy,"
-              + " reviewed_at = now() WHERE id = :id",
-      nativeQuery = true)
-  int review(
-      @Param("id") long id,
-      @Param("status") String status,
-      @Param("observation") String observation,
-      @Param("reviewedBy") long reviewedBy);
 }

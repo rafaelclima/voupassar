@@ -87,10 +87,7 @@ class QuestionControllerTest {
         null,
         null,
         null,
-        null,
-        "PENDING",
-        "PENDENTE_REVISAO",
-        List.of("Publicação PENDENTE_REVISAO (curadoria TASK 12.2)."),
+        List.of("Dificuldade NÃO CONFIRMADA."),
         List.of(),
         List.of());
   }
@@ -191,7 +188,7 @@ class QuestionControllerTest {
             new QuestionOptionResponse("C", "6"),
             new QuestionOptionResponse("D", "7")),
         null, false, "FACIL", 10, 10, false,
-        null, null, null, null, null, "PENDING", "PENDENTE_REVISAO",
+        null, null, null, null,
         List.of("Gabarito oculto durante a execução no Modo Prova (questão em simulado PROVA em andamento): conclua ou abandone para ver a correção."),
         List.of(),
         List.of());
