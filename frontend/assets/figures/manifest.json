@@ -225,8 +225,7 @@
     },
     "2025-15": {
       "files": [
-        "2025/Q15.webp",
-        "2025/Q26.webp"
+        "2025/Q15.webp"
       ],
       "page": 6,
       "alt": "Texto-base compartilhado (Texto 2 — charge) da prova 2025.",
@@ -234,8 +233,7 @@
     },
     "2025-16": {
       "files": [
-        "2025/Q16.webp",
-        "2025/Q26.webp"
+        "2025/Q16.webp"
       ],
       "page": 6,
       "alt": "Texto-base compartilhado (Texto 2 — charge) da prova 2025.",
@@ -246,13 +244,12 @@
         "2025/Q26.webp"
       ],
       "page": 9,
-      "alt": "Texto-base compartilhado (Texto 2 — charge) da prova 2025.",
+      "alt": "Gráfico de barras (Horas de Estudo por Grupo) da questão 26 da prova 2025 (página 9 do caderno).",
       "credit": "Fonte: IFRN — Caderno 2025, p. 9 (recorte para estudo)."
     },
     "2025-27": {
       "files": [
-        "2025/Q27.webp",
-        "2025/Q26.webp"
+        "2025/Q27.webp"
       ],
       "page": 9,
       "alt": "Texto-base compartilhado (Texto 2 — charge) da prova 2025.",
@@ -302,11 +299,10 @@
     },
     "2026-30": {
       "files": [
-        "2026/Q30.webp",
-        "2026/Q18.webp"
+        "2026/Q30.webp"
       ],
       "page": 10,
-      "alt": "Texto-base compartilhado (Texto 2 — charge) da prova 2026.",
+      "alt": "Figura 1 (triângulo retângulo com painel) da questão 30 da prova 2026 (página 10 do caderno).",
       "credit": "Fonte: IFRN — Caderno 2026, p. 10 (recorte para estudo)."
     },
     "2026-39": {
