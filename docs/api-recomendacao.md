@@ -11,21 +11,28 @@
 
 | Método | Rota | Autenticação | Descrição |
 |---|---|---|---|
-| `POST` | `/api/v1/recommendations` | Bearer JWT | Gera/regenera roteiro (cria `study_plan` + `study_plan_items`) |
-| `GET` | `/api/v1/recommendations/plan` | Bearer JWT | Recupera roteiro vigente com itens ordenados |
-| `POST` | `/api/v1/recommendations/items/{itemId}/status` | Bearer JWT | Atualiza status (`TODO` → `DOING` → `DONE`/`SKIPPED`) |
+| `POST` | `/api/v1/recommendations` | Bearer JWT (dono do token; sem `?userId` desde 16.1) | Gera/regenera roteiro (cria `study_plan` + `study_plan_items`) |
+| `GET` | `/api/v1/recommendations/plan` | Bearer JWT (dono do token; sem `?userId` desde 16.1) | Recupera roteiro vigente com itens ordenados |
+| `POST` | `/api/v1/recommendations/items/{itemId}/status?status=` | Bearer JWT (só o dono; item alheio → `403`) | Atualiza status (`TODO` → `DOING` → `DONE`/`SKIPPED`) |
+
+> TASK 16.1 (P1 — IDOR, 2026-10-07): removido `?userId` dos dois GETs/POST de
+> geração. O backend usa só `principal.userId()`. `POST .../status` checa
+> `plan.userId == principal.userId` e responde `403 FORBIDDEN` se divergir
+> (via `AccessDeniedException` → envelope `FORBIDDEN`), `404 ITEM_NOT_FOUND`
+> se o item não existir, `400 INVALID_STATUS` para status inválido, `401`
+> sem token. Sem `?userId` não há como pedir o plano de outro aluno.
 
 ## Contrato de resposta
 
 ### POST `/api/v1/recommendations`
 
-Retorna o `StudyPlan` criado (com `items` populados após geração).
+Retorna o `StudyPlanResponse` (DTO — nunca a entidade JPA `StudyPlan`).
 
-Campos principais:
+Campos principais (`StudyPlanResponse` + `StudyPlanItemResponse`, TASK 16.1):
 - `id`, `userId`, `isActive`, `algorithmVersion` (`v1-deterministico`)
 - `generatedAt`, `createdAt`, `updatedAt`
-- `items` (lista de `StudyPlanItem`):
-  - `topicId`, `subtopicId` (NULL na versão inicial)
+- `items` (lista de DTOs, ordenados por `priority` no `GET /plan`):
+  - `id`, `topicId`, `subtopicId` (NULL na versão inicial)
   - `priority` (1–5, determinístico: maior prioridade = menor número)
   - `reason` (texto explicável, derivado de desempenho + histórico)
   - `evidenceJson` (JSONB com referência a edições/questões — inicial simplificado)

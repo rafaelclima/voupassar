@@ -11,6 +11,8 @@ import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.profile.entity.StudentTopicPerformance;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
 import br.com.voupassar.profile.repository.StudentTopicPerformanceRepository;
+import br.com.voupassar.studyplan.dto.StudyPlanItemResponse;
+import br.com.voupassar.studyplan.dto.StudyPlanResponse;
 import br.com.voupassar.studyplan.entity.StudyPlan;
 import br.com.voupassar.studyplan.entity.StudyPlanItem;
 import br.com.voupassar.studyplan.repository.StudyPlanItemRepository;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,7 +87,7 @@ public class RecommendationService {
  * </ol>
    */
   @Transactional
-  public StudyPlan generatePlan(long userId) {
+  public StudyPlanResponse generatePlan(long userId) {
     User user = users.findById(userId)
         .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND", "Conta não encontrada."));
 
@@ -109,7 +112,7 @@ public class RecommendationService {
     studyPlanItems.saveAll(items);
 
     savedPlan.setItems(items);
-    return savedPlan;
+    return toResponse(savedPlan, items);
   }
 
   /**
@@ -229,10 +232,12 @@ public class RecommendationService {
    * Recupera o roteiro vigente do aluno.
    */
   @Transactional(readOnly = true)
-  public StudyPlan getPlan(long userId) {
-    return studyPlans.findByUserIdAndIsActiveTrue(userId)
+  public StudyPlanResponse getPlan(long userId) {
+    StudyPlan plan = studyPlans.findByUserIdAndIsActiveTrue(userId)
         .orElseThrow(() -> new ResourceNotFoundException("NO_ACTIVE_PLAN",
             "Nenhum roteiro vigente. Gere um roteiro primeiro."));
+    List<StudyPlanItem> items = studyPlanItems.findByStudyPlanIdOrderByPriorityAsc(plan.getId());
+    return toResponse(plan, items);
   }
 
   /**
@@ -244,10 +249,15 @@ public class RecommendationService {
   }
 
   /**
-   * Registra uma atualização de status de item do roteiro pelo aluno.
+   * Registra uma atualização de status de item do roteiro pelo dono do token.
+   *
+   * <p>TASK 16.1 (P1 — IDOR): o {@code userId} é sempre o autenticado
+   * (o controller não aceita mais {@code ?userId}). Item de plano alheio
+   * responde {@code 403} via {@link AccessDeniedException} (nunca 404
+   * silencioso nem 200 cruzado).
    */
   @Transactional
-  public StudyPlanItem updateItemStatus(Long itemId, String status) {
+  public StudyPlanItemResponse updateItemStatus(Long itemId, String status, long principalUserId) {
     if (status == null
         || (!status.equals("TODO") && !status.equals("DOING")
             && !status.equals("DONE") && !status.equals("SKIPPED"))) {
@@ -257,8 +267,49 @@ public class RecommendationService {
     StudyPlanItem item = studyPlanItems.findById(itemId)
         .orElseThrow(() -> new ResourceNotFoundException("ITEM_NOT_FOUND",
             "Item do roteiro não encontrado."));
+    StudyPlan plan = item.getStudyPlan();
+    Long ownerId = (plan != null) ? plan.getUserId() : null;
+    if (ownerId == null && plan != null && plan.getId() != null) {
+      // Plano pode chegar como proxy lazy sem userId carregado: recarrega o dono.
+      ownerId = studyPlans.findById(plan.getId())
+          .map(StudyPlan::getUserId)
+          .orElse(null);
+    }
+    if (ownerId == null || ownerId.longValue() != principalUserId) {
+      throw new AccessDeniedException("Item de roteiro de outro aluno.");
+    }
     item.setStatus(status);
-    return studyPlanItems.save(item);
+    return toResponse(studyPlanItems.save(item));
+  }
+
+  /**
+   * Converte entidade em DTO (TASK 16.1 — nunca vazar JPA no JSON).
+   */
+  private static StudyPlanItemResponse toResponse(StudyPlanItem item) {
+    return new StudyPlanItemResponse(
+        item.getId(),
+        item.getTopicId(),
+        item.getSubtopicId(),
+        item.getPriority(),
+        item.getReason(),
+        item.getEvidenceJson(),
+        item.getStatus(),
+        item.getCreatedAt(),
+        item.getUpdatedAt());
+  }
+
+  private static StudyPlanResponse toResponse(StudyPlan plan, List<StudyPlanItem> items) {
+    List<StudyPlanItemResponse> dtoItems = (items == null) ? List.of()
+        : items.stream().map(RecommendationService::toResponse).toList();
+    return new StudyPlanResponse(
+        plan.getId(),
+        plan.getUserId(),
+        plan.getIsActive(),
+        plan.getAlgorithmVersion(),
+        plan.getGeneratedAt(),
+        plan.getCreatedAt(),
+        plan.getUpdatedAt(),
+        dtoItems);
   }
 
   /**

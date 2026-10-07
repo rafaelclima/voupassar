@@ -9,6 +9,14 @@
 
 > Os endpoints são compartilhados com a TASK 4.3 (`/api/v1/recommendations`),
 > mas esta documentação foca na estrutura do roteiro e no acompanhamento de progresso.
+>
+> TASK 16.1 (P1 — IDOR, 2026-10-07): sem `?userId` em nenhum endpoint do
+> roteiro. `POST /recommendations` e `GET /recommendations/plan` usam só o
+> dono do token (`principal.userId()`). `POST .../items/{id}/status` exige o
+> dono (`plan.userId == principal.userId`, senão `403 FORBIDDEN`). Respostas
+> são DTOs (`StudyPlanResponse` / `StudyPlanItemResponse` em
+> `studyplan/dto/`), nunca a entidade JPA `StudyPlan`
+> (`RecommendationController.java`, `RecommendationService.java`).
 
 ## Modelo de dados
 
@@ -44,9 +52,9 @@
 
 ## Critérios de aceitação
 
-- [x] `POST /api/v1/recommendations` retorna `StudyPlan` com `algorithm_version` documentado.
-- [x] `GET /api/v1/recommendations/plan` retorna roteiro vigente ordenado por `priority`.
-- [x] `POST .../items/{id}/status` atualiza `status` sem inventar progresso.
+- [x] `POST /api/v1/recommendations` retorna `StudyPlanResponse` (DTO) com `algorithm_version` documentado.
+- [x] `GET /api/v1/recommendations/plan` retorna roteiro vigente do dono do token, ordenado por `priority`.
+- [x] `POST .../items/{id}/status` atualiza `status` sem inventar progresso; item alheio → `403`.
 - [x] `evidence_json` não vazio (`CHECK`) — rastreabilidade obrigatória (AGENTS.md §8, §11).
 - [x] Nenhuma recomendação apresentada como verdade absoluta — `reason` inclui nota de evidência derivada (`PENDING` — revisão humana necessária).
 

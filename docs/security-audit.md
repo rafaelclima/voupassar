@@ -23,11 +23,12 @@
 
 ### 2.2. Autorização (`authorization`)
 
-* **Status**: `OK`.
+* **Status**: `OK` (com correção IDOR 16.1 aplicada em 2026-10-07).
 * **Observação**:
   - `SecurityConfig.java`: `anyRequest().authenticated()` após rotas públicas; nenhuma rota protegida exposta sem `Bearer`.
   - `ApiAuthHandlers.java`: retorna `401`/`403` em JSON (`ApiError`) sem redirecionamento para página de login — correto (`AGENTS.md` §15).
-  - Nenhum endpoint administrativo (`/admin`, `/manage`) observado no código; a tarefa `TASK 12.1` ainda não implementada.
+  - `AdminController.java:30` existe com RBAC (`@PreAuthorize("hasAnyRole('CURATOR','ADMIN')")`) — corrige a afirmação antiga de "nenhum endpoint `/admin`".
+  - `RecommendationController.java` (TASK 16.1, P1 — IDOR): sem `?userId` em `POST /recommendations`, `GET /recommendations/plan` (só `principal.userId()`) e `POST .../items/{id}/status` checa `plan.userId == principal.userId` (`RecommendationService.java:updateItemStatus(itemId,status,principalUserId)`) → `403 FORBIDDEN` (`AccessDeniedException` → `GlobalExceptionHandler.java:107-110`) se divergir. Retorno é DTO (`StudyPlanResponse`/`StudyPlanItemResponse`), nunca entidade JPA. Cobertura: `RecommendationControllerTest` (401/403/404/200) + `RecommendationServiceTest.updateItemStatusOfAnotherStudentIs403`.
 
 ### 2.3. CORS (`cors`)
 
