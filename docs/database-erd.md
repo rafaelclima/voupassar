@@ -234,7 +234,7 @@ Questões autorais/adaptadas reusam a mesma tabela com `source_type` distinto
 | answer_key | CHAR(1) NOT NULL | `CHECK (answer_key IN ('A','B','C','D','X'))`; `X` = anulada no próprio gabarito |
 | annulled | BOOLEAN NOT NULL DEFAULT FALSE | invariante: `CHECK ((annulled AND answer_key='X') OR (NOT annulled AND answer_key<>'X'))` |
 | checksum | CHAR(64) NOT NULL | SHA-256 normalizado do enunciado+alternativas (base da idempotência) |
-| has_figure | BOOLEAN NOT NULL DEFAULT FALSE | TRUE nos 36 itens com figura (sinal `NECESSITA_REVISAO` na fonte; 2 conceituais sem figura: 2023 Q40, 2024 Q17) |
+| has_figure | BOOLEAN NOT NULL DEFAULT FALSE | TRUE nos 33 itens com figura (sinal `NECESSITA_REVISAO` na fonte; 5 sem figura: 2023 Q40, 2024 Q17, 2020 Q26, 2025 Q33, 2025 Q36 — ver V14) |
 | difficulty_estimate | TEXT NULL | `FACIL/MEDIA/DIFICIL` — sempre palpite (`ESTIMATIVA_ESPECIALISTA_SEM_DADOS`, conf. BAIXA) até a Fase 4 calibrar |
 | pipeline_version | TEXT NOT NULL DEFAULT 'importer-1.0.0' | versão do importador que produziu a linha (2.0.0 após a reescrita da Task 3); carimbo máquina-legível da confiança (V12) |
 | pipeline_verified_at | TIMESTAMPTZ NOT NULL DEFAULT now() | última verificação máquina do veredito do pipeline |

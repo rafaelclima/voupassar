@@ -105,9 +105,10 @@ suspeita, nunca apaga conteúdo (AGENTS.md §23) — nenhum DELETE foi executado
 * `validate_classification.py`: OK nas 6 edições; **38 itens em `NECESSITA_REVISAO`**
   (fila detalhada em `summary.md §3`: 35 figuras/gráficos/charges + 3 conceituais —
   2020 Q26, 2024 Q17, 2023 Q40).
-* `has_figure=TRUE` em 36 questões; tag `FIGURA` em 36 (`question_tag_map`).
-  Divergência aparente 36 vs 38: 2 itens da fila são conceituais sem figura
-  ((2023,Q40) e (2024,Q17)) — coerente com o importador (TASK 2.3 §2).
+* `has_figure=TRUE` em 33 questões; tag `FIGURA` em 33 (`question_tag_map`).
+  Divergência aparente 33 vs 38: 5 itens da fila são só-texto/conceituais
+  sem figura ((2023,Q40), (2024,Q17), (2020,Q26), (2025,Q33), (2025,Q36))
+  — coerente com o importador (TASK 2.3 §2) + V14 (curadoria 2026-10-07).
 * `explanation` (2026-10-02): **NULL em 240/240** — nenhuma explicação
   inventada (correto à época). Nota 2026-10-04: coluna removida (V11) por
   decisão de produto — a plataforma testa conhecimento, não ensina passo

@@ -32,7 +32,7 @@ Regras de honestidade (AGENTS.md §4, decisão de produto 2026-10-06):
   - sem carimbo humano: questions não tem validation/publication_status e
     question_classifications não tem status (V12); confiança = pipeline;
   - cada linha carimba pipeline_version (versão deste importador);
-  - has_figure=TRUE nos NECESSITA_REVISAO com evidencia visual (36 itens);
+  - has_figure=TRUE nos NECESSITA_REVISAO com evidencia visual (33 itens);
     excecoes conceituais sem figura: (2023,Q40) e (2024,Q17) — ver
     observacao original em per-edition/*.json;
   - normalizacao v1.1 (4 itens) = mesma V11_OVERRIDES de
@@ -76,8 +76,12 @@ V11_OVERRIDES = {
 }
 
 # NECESSITA_REVISAO cuja observacao nao indica figura ausente, mas questao
-# conceitual (sem has_figure). Todo outro NECESSITA_REVISAO tem figura.
-NON_FIGURE_REVIEW = {("2023", 40), ("2024", 17)}
+# conceitual ou só-texto (sem has_figure). Todo outro NECESSITA_REVISAO
+# tem figura. Curadoria manual 2026-10-07 (espelha V14):
+# 2020 Q26 só texto; 2025 Q33 sem figura; 2025 Q36 com o percentual
+# (83%) no próprio bloco textual (2025 Q39 já é OK/sem figura).
+NON_FIGURE_REVIEW = {("2023", 40), ("2024", 17),
+                     ("2020", 26), ("2025", 33), ("2025", 36)}
 
 ALLOWED_CONF = {"ALTA", "MEDIA", "BAIXA"}
 ALLOWED_DIFF = {"FACIL": "FACIL", "MEDIA": "MEDIA", "DIFICIL": "DIFICIL"}
@@ -534,7 +538,7 @@ def main() -> int:
     report["db_state"] = state
     ok = (state["questions"] == 240 and state["options"] == 960
           and state["sources"] == 480 and state["classifications"] == 240
-          and state["has_figure"] == 36 and not state["checksum_mismatches"])
+          and state["has_figure"] == 33 and not state["checksum_mismatches"])
     report["status"] = "OK" if ok else "MISMATCH"
     report["finished_at_utc"] = datetime.now(timezone.utc).isoformat()
     write_report(args.report, report)

@@ -7,7 +7,7 @@ Só leitura por padrão. Verifica:
   - formatos aceitos (.webp preferido, .png/.jpg aceitos com aviso);
   - dimensões via cabeçalho (sem Pillow); lado maior <= 1600 px, < 300 KB;
   - cada entrada tem `alt`, `page` (número > 0) e `files` (lista não vazia);
-  - cobertura das 36 questões com `has_figure=TRUE` no banco (via `data/linked/` + `docs/content-analysis/per-edition/`);
+  - cobertura das 33 questões com `has_figure=TRUE` no banco (via `data/linked/` + `docs/content-analysis/per-edition/`);
   - nenhuma duplicidade acidental (mesmo arquivo referenciado por chave diferente sem justificativa).
 
 Uso:
@@ -23,7 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ASSETS_DIR = REPO_ROOT / "frontend" / "assets" / "figures"
 MANIFEST = ASSETS_DIR / "manifest.json"
 
-EXPECTED_COUNT = 36  # conforme importador: 36 has_figure=TRUE
+EXPECTED_COUNT = 33  # conforme importador + V14: 33 has_figure=TRUE
 ALLOWED_FORMATS = {".webp", ".png", ".jpg", ".jpeg"}
 PREFERRED_FORMAT = ".webp"
 
@@ -140,11 +140,11 @@ def main():
     errors += meta_errors
     warnings += meta_warnings
 
-    # Cobertura: compara com as 36 questões de `docs/content-analysis/per-edition/`
+    # Cobertura: compara com as questões de `docs/content-analysis/per-edition/`
     # (simplificado: apenas verifica quantidade no manifest)
     count = len(manifest.get("figures", {}))
     if count < EXPECTED_COUNT:
-        warnings.append(f"cobertura: {count} de {EXPECTED_COUNT} figuras registradas (36 esperadas)")
+        warnings.append(f"cobertura: {count} de {EXPECTED_COUNT} figuras registradas (33 esperadas)")
 
     for w in warnings:
         print("AVISO:", w)

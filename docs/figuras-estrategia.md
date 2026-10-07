@@ -1,6 +1,6 @@
 # Estratégia de Figuras — Questões com Imagem (PORTUGUÊS + MATEMÁTICA)
 
-> Problema: ~36 questões oficiais dependem de figura/gráfico/charge ausente do
+> Problema: ~33 questões oficiais dependem de figura/gráfico/charge ausente do
 > texto extraído (`has_figure=TRUE`, tag `FIGURA`). Sem a imagem, o aluno não
 > consegue responder. Antes desta estratégia, a UI só exibia
 > "consulte o PDF-fonte" — sem imagem e sem link acionável.
@@ -129,7 +129,7 @@ Módulo único `frontend/js/components/figure.js`:
 
 * `python3 scripts/analysis/check_figures.py` (novo, só leitura por padrão):
   nomes, formatos, dimensões via cabeçalho (sem Pillow), manifest íntegro,
-  páginas contra `data/extracted/`, cobertura das 36 com figura.
+  páginas contra `data/extracted/`, cobertura das 33 com figura.
 * `python3 scripts/analysis/check_frontend.py`: passa a exigir
   `js/components/figure.js`, `assets/figures/manifest.json` e o container
   `#questao-figure` (ver §8 das notas de implementação).
