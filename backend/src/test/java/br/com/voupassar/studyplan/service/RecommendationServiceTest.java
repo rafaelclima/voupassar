@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import br.com.voupassar.auth.entity.User;
 import br.com.voupassar.auth.repository.StudentProfileRepository;
 import br.com.voupassar.auth.repository.UserRepository;
+import br.com.voupassar.content.entity.Subtopic;
 import br.com.voupassar.content.entity.Topic;
 import br.com.voupassar.content.repository.QuestionClassificationRepository;
 import br.com.voupassar.content.repository.TopicRepository;
@@ -21,6 +22,8 @@ import br.com.voupassar.studyplan.entity.StudyPlan;
 import br.com.voupassar.studyplan.entity.StudyPlanItem;
 import br.com.voupassar.studyplan.repository.StudyPlanItemRepository;
 import br.com.voupassar.studyplan.repository.StudyPlanRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -316,5 +319,106 @@ class RecommendationServiceTest {
     assertEquals(2, RecommendationService.priorityBandSize(10, 1.0));
     assertEquals(1, RecommendationService.priorityBandSize(0, 1.0));
     assertEquals(1, RecommendationService.priorityBandSize(6, 1.0));
+  }
+
+  // ---- TASK 18.2 (evidência rica + subtópico) ----
+
+  private static Subtopic subtopic(long id, String code, Topic t) {
+    Subtopic s = new Subtopic();
+    ReflectionTestUtils.setField(s, "id", id);
+    ReflectionTestUtils.setField(s, "code", code);
+    ReflectionTestUtils.setField(s, "name", code);
+    ReflectionTestUtils.setField(s, "topic", t);
+    return s;
+  }
+
+  private static StudentTopicPerformance subPerf(Topic t, Subtopic s, int attempts) {
+    StudentTopicPerformance p = mock(StudentTopicPerformance.class);
+    when(p.getTopic()).thenReturn(t);
+    when(p.getSubtopic()).thenReturn(s);
+    when(p.getAttempts()).thenReturn(attempts);
+    return p;
+  }
+
+  private void stubHistory(long topicId, long hist, List<Short> years, List<Long> officialIds) {
+    when(classifications.countByTopic()).thenReturn(List.<Object[]>of(
+        new Object[] {topicId, hist}));
+    when(classifications.editionsByTopic(topicId)).thenReturn(years);
+    when(classifications.officialQuestionIdsByTopic(topicId)).thenReturn(officialIds);
+  }
+
+  @Test
+  void evidenceCitesEditionsAndOfficialQuestions() throws Exception {
+    // Cada item cita ≥1 edição e ≥1 questão oficial existentes (mocks).
+    Discipline d = discipline("MAT");
+    Topic t = topic(1L, "FREQUENTE", d);
+    stubUserWithPlan(1L);
+    when(topics.findAllOrdered()).thenReturn(List.of(t));
+    OffsetDateTime last = OffsetDateTime.now().minusDays(10);
+    StudentTopicPerformance p = perf(t, 5, "0.2", last);
+    when(performanceRepo.findProgressByUserId(1L)).thenReturn(List.of(p));
+    stubHistory(1L, 70L,
+        List.of((short) 2020, (short) 2022, (short) 2023, (short) 2024, (short) 2025, (short) 2026),
+        List.of(101L, 102L, 103L));
+    when(classifications.difficultyByTopic()).thenReturn(List.of());
+
+    StudyPlanResponse plan = service.generatePlan(1L);
+
+    assertEquals(1, plan.items().size());
+    JsonNode ev = new ObjectMapper().readTree(plan.items().get(0).evidenceJson());
+    assertEquals(70L, ev.get("historicalQuestions").asLong());
+    assertEquals(6, ev.get("editionsCount").asInt());
+    assertEquals(6, ev.get("editions").size());
+    assertEquals(2020, ev.get("editions").get(0).asInt());
+    assertTrue(ev.get("sampleQuestionIds").size() >= 1);
+    assertEquals(101L, ev.get("sampleQuestionIds").get(0).asLong());
+    assertEquals(5, ev.get("attempts").asInt());
+    assertEquals(0.2, ev.get("accuracy").asDouble(), 1e-9);
+    assertNotNull(ev.get("lastAttemptAt").asText());
+    assertEquals("v2-deterministico", ev.get("algorithmVersion").asText());
+    assertNull(plan.items().get(0).subtopicId());
+  }
+
+  @Test
+  void weakestSubtopicWinsWhenSignal() {
+    // Dois subassuntos com sinal: o mais fraco (10%) vira subtopicId.
+    Discipline d = discipline("MAT");
+    Topic t = topic(1L, "ALGEBRA", d);
+    Subtopic weak = subtopic(11L, "EQUACOES", t);
+    Subtopic mid = subtopic(12L, "SISTEMAS", t);
+    stubUserWithPlan(1L);
+    when(topics.findAllOrdered()).thenReturn(List.of(t));
+    StudentTopicPerformance rowMid = subPerf(t, mid, 4);
+    when(rowMid.getAccuracy()).thenReturn(new BigDecimal("0.5"));
+    StudentTopicPerformance rowWeak = subPerf(t, weak, 5);
+    when(rowWeak.getAccuracy()).thenReturn(new BigDecimal("0.1"));
+    when(performanceRepo.findProgressByUserId(1L)).thenReturn(List.of(rowMid, rowWeak));
+    stubHistory(1L, 18L, List.of((short) 2026), List.of(201L));
+    when(classifications.difficultyByTopic()).thenReturn(List.of());
+    when(subtopics.findByIdWithTopic(11L)).thenReturn(Optional.of(weak));
+
+    StudyPlanResponse plan = service.generatePlan(1L);
+
+    assertEquals(11L, plan.items().get(0).subtopicId());
+  }
+
+  @Test
+  void subtopicNullWithoutSignalOrIncoherent() {
+    // Sem linhas de subassunto → NULL; incoerente (outro tópico) → NULL.
+    Discipline d = discipline("MAT");
+    Topic t = topic(1L, "ALGEBRA", d);
+    Topic other = topic(2L, "OUTRO", d);
+    Subtopic foreign = subtopic(99L, "FORA", other);
+    stubUserWithPlan(1L);
+    when(topics.findAllOrdered()).thenReturn(List.of(t));
+    StudentTopicPerformance rowForeign = subPerf(t, foreign, 5);
+    when(performanceRepo.findProgressByUserId(1L)).thenReturn(List.of(rowForeign));
+    stubHistory(1L, 18L, List.of((short) 2026), List.of(201L));
+    when(classifications.difficultyByTopic()).thenReturn(List.of());
+    when(subtopics.findByIdWithTopic(99L)).thenReturn(Optional.of(foreign));
+
+    StudyPlanResponse plan = service.generatePlan(1L);
+
+    assertNull(plan.items().get(0).subtopicId());
   }
 }

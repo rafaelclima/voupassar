@@ -37,11 +37,39 @@
 | `id` | BIGINT PK | Identidade |
 | `study_plan_id` | BIGINT FK (`study_plans`) | `ON DELETE CASCADE` |
 | `topic_id` | BIGINT FK (`topics`) | `NOT NULL` — recomendação sempre por conteúdo controlado |
-| `subtopic_id` | BIGINT FK (`subtopics`) | `NULL` na versão inicial |
+| `subtopic_id` | BIGINT FK (`subtopics`) | `NULL` sem sinal; subassunto mais fraco do aluno no assunto quando há linhas de subassunto com tentativas (TASK 18.2, coerência checada no `SubtopicRepository`) |
 | `priority` | SMALLINT (1–5) | Ordem determinística (menor = maior prioridade) |
 | `reason` | TEXT NOT NULL | Motivo textual explicável |
-| `evidence_json` | JSONB NOT NULL | `CHECK (evidence_json <> '{}')` — rastreabilidade |
+| `evidence_json` | JSONB NOT NULL | Schema rico TASK 18.2 (abaixo) — rastreabilidade |
 | `status` | TEXT DEFAULT 'TODO' | `TODO` / `DOING` / `DONE` / `SKIPPED` |
+
+### Schema do `evidence_json` (TASK 18.2)
+
+```json
+{
+  "topic_id": 5,
+  "historicalQuestions": 70,
+  "editionsCount": 6,
+  "editions": [2020, 2022, 2023, 2024, 2025, 2026],
+  "sampleQuestionIds": [101, 102, 103],
+  "accuracy": 0.2,
+  "attempts": 5,
+  "lastAttemptAt": "2026-09-27T10:00:00Z",
+  "algorithmVersion": "v2-deterministico"
+}
+```
+
+Regras:
+
+- `editions[]` vem de `classifications.editionsByTopic` (anos crescentes);
+  `sampleQuestionIds[]` (máx 5) só com `source_type = 'OFFICIAL'`
+  (`classifications.officialQuestionIdsByTopic`, ordem ano/número/id) —
+  autorais/adaptadas nunca produzem evidência (regra Fase 15, AGENTS.md §11).
+- `accuracy`/`attempts`/`lastAttemptAt` espelham o agregado do aluno no
+  momento da geração (`lastAttemptAt = null` sem tentativas).
+- Todo item de plano gerado com histórico cita ≥1 edição e ≥1 questão oficial
+  existentes (coberto por `RecommendationServiceTest`); assunto sem questão
+  oficial carrega `sampleQuestionIds: []` honesto, nunca id inventado.
 
 ## Fluxo do roteiro
 
@@ -60,9 +88,8 @@
 
 ## Pendências (não decididas sem evidência)
 
-- Vinculação completa de `evidence_json` a edições/questões concretas (requer `question_classifications` `APPROVED` + curadoria, TASK 11.2, 12.2).
-- Refinamento por subassunto (`subtopic_id`) — requer classificação confirmada por subtópico.
-- Calibração de `difficultyFactor` e `recencyFactor` — palpitues BAIXA / 1.0 no MVP.
+- Calibração fina de `difficultyFactor` (usa palpite BAIXA com peso limitado a
+  +50%) e pesos da frequência — só com desempenho por edição (Fase 4).
 - Regeneração automática após cada `POST /attempts` — avaliado para Fase 4 completa, mas não obrigatório no MVP.
 
 ## Referências

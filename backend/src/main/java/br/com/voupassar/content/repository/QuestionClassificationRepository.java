@@ -155,6 +155,20 @@ public interface QuestionClassificationRepository
   List<Object[]> difficultyByTopic();
 
   /**
+   * IDs de questões OFICIAIS de um assunto, ordem determinística
+   * (ano, número na edição, id) — fonte da evidência do roteiro (TASK 18.2).
+   *
+   * <p>Só `source_type = 'OFFICIAL'`: autorais/adaptadas nunca produzem
+   * evidência (regra Fase 15, AGENTS.md §11).
+   */
+  @Query("""
+      SELECT q.id FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.sourceType = 'OFFICIAL'
+      ORDER BY q.sourceYear ASC NULLS LAST, q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
+      """)
+  List<Long> officialQuestionIdsByTopic(@Param("topicId") Long topicId);
+
+  /**
    * Classificações vigentes de um lote de questões (TASK 3.4).
    *
    * <p>Traz tópico + subassunto em fetch para montar a página sem N+1. Pode

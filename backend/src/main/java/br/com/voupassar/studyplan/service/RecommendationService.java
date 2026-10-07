@@ -72,6 +72,9 @@ public class RecommendationService {
   /** Piso de score de lacuna (0 tentativas); +0.1 × frequência ordena entre lacunas. */
   static final double GAP_FLOOR = 0.9;
 
+  /** Quantas questões oficiais de amostra a evidência carrega por assunto. */
+  static final int EVIDENCE_SAMPLE_LIMIT = 5;
+
   private final UserRepository users;
   private final StudyPlanRepository studyPlans;
   private final StudyPlanItemRepository studyPlanItems;
@@ -150,11 +153,17 @@ public class RecommendationService {
     List<Topic> taxonomy = topics.findAllOrdered();
     List<StudyPlanItem> out = new ArrayList<>();
 
-    // Performance materializada por usuário (rebuild automático na 4.1)
+    // Performance materializada por usuário (rebuild automático na 4.1):
+    // nível tópico + nível subassunto (linhas com subtopic não-nulo).
     Map<Long, StudentTopicPerformance> perfByTopic = new HashMap<>();
+    Map<Long, List<StudentTopicPerformance>> subPerfByTopic = new HashMap<>();
     for (StudentTopicPerformance p : performanceRepo.findProgressByUserId(userId)) {
       if (p.getTopic() != null) {
-        perfByTopic.put(p.getTopic().getId(), p);
+        if (p.getSubtopic() == null) {
+          perfByTopic.put(p.getTopic().getId(), p);
+        } else if (p.getAttempts() > 0) {
+          subPerfByTopic.computeIfAbsent(p.getTopic().getId(), k -> new ArrayList<>()).add(p);
+        }
       }
     }
 
@@ -165,17 +174,20 @@ public class RecommendationService {
       histByTopic.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
     }
     Map<Long, Integer> editionsByTopic = new HashMap<>();
+    Map<Long, List<Integer>> editionYearsByTopic = new HashMap<>();
     long maxHist = 0;
     int maxEditions = 0;
     for (Topic t : taxonomy) {
       long hist = histByTopic.getOrDefault(t.getId(), 0L);
-      int editions = classifications.editionsByTopic(t.getId()).size();
-      editionsByTopic.put(t.getId(), editions);
+      List<Integer> years = classifications.editionsByTopic(t.getId()).stream()
+          .map(Short::intValue).sorted().toList();
+      editionYearsByTopic.put(t.getId(), years);
+      editionsByTopic.put(t.getId(), years.size());
       if (hist > maxHist) {
         maxHist = hist;
       }
-      if (editions > maxEditions) {
-        maxEditions = editions;
+      if (years.size() > maxEditions) {
+        maxEditions = years.size();
       }
     }
 
@@ -256,13 +268,17 @@ public class RecommendationService {
       TopicScore ts = scores.get(i);
       Topic t = ts.topic;
       String reason = buildReason(t, ts, loadMultiplier);
-      String evidence = buildEvidence(t.getId(), ts.attempts);
+      List<Integer> years = editionYearsByTopic.getOrDefault(t.getId(), List.of());
+      List<Long> sampleIds = classifications.officialQuestionIdsByTopic(t.getId()).stream()
+          .limit(EVIDENCE_SAMPLE_LIMIT).toList();
+      String evidence = buildEvidence(t.getId(), ts, years, sampleIds);
       int priority = Math.min(5, 1 + i / bandSize);
+      Long subtopicId = weakestSubtopicId(t.getId(), subPerfByTopic.get(t.getId()));
 
       StudyPlanItem item = new StudyPlanItem(
           plan,
           t.getId(),
-          null, // subtopic refinado na TASK 18.2 quando houver sinal
+          subtopicId,
           (short) priority,
           reason,
           evidence
@@ -271,6 +287,47 @@ public class RecommendationService {
     }
 
     return out;
+  }
+
+  /**
+   * Subassunto mais fraco do tópico com sinal do aluno (TASK 18.2): menor
+   * accuracy, desempate por mais tentativas, depois por código (determinístico).
+   * A coerência (subassunto pertence ao tópico) é checada no
+   * {@code SubtopicRepository} (antes ocioso); sem sinal ou incoerente → NULL.
+   */
+  Long weakestSubtopicId(Long topicId, List<StudentTopicPerformance> candidates) {
+    if (candidates == null || candidates.isEmpty()) {
+      return null;
+    }
+    List<StudentTopicPerformance> ordered = new ArrayList<>(candidates);
+    ordered.sort((a, b) -> {
+      double accA = accuracyOrOne(a);
+      double accB = accuracyOrOne(b);
+      int cmp = Double.compare(accA, accB);
+      if (cmp != 0) return cmp;
+      cmp = Integer.compare(b.getAttempts(), a.getAttempts());
+      if (cmp != 0) return cmp;
+      String codeA = a.getSubtopic() == null ? "" : String.valueOf(a.getSubtopic().getCode());
+      String codeB = b.getSubtopic() == null ? "" : String.valueOf(b.getSubtopic().getCode());
+      return codeA.compareTo(codeB);
+    });
+    for (StudentTopicPerformance p : ordered) {
+      if (p.getSubtopic() == null || p.getSubtopic().getId() == null) {
+        continue;
+      }
+      boolean coherent = subtopics.findByIdWithTopic(p.getSubtopic().getId())
+          .map(s -> s.getTopic() != null && topicId.equals(s.getTopic().getId()))
+          .orElse(false);
+      if (coherent) {
+        return p.getSubtopic().getId();
+      }
+    }
+    return null;
+  }
+
+  private static double accuracyOrOne(StudentTopicPerformance p) {
+    BigDecimal acc = p.getAccuracy();
+    return acc == null ? 1.0 : acc.doubleValue();
   }
 
   /**
@@ -384,16 +441,39 @@ public class RecommendationService {
   }
 
   /**
-   * Gera o JSON de evidência rastreável, apontando para edições/questões
-   * que sustentam a recomendação (AGENTS.md §8, §11).
+   * Gera o JSON de evidência rastreável (TASK 18.2), apontando para edições e
+   * questões OFICIAIS que sustentam a recomendação (AGENTS.md §8, §11).
+   * Autorais/adaptadas nunca aparecem em {@code sampleQuestionIds} (regra Fase 15).
    */
-  private String buildEvidence(Long topicId, int attempts) {
-    // Versão inicial simplificada: evidencia a existência do tópico e a quantidade de tentativas.
-    // Na Fase 4 completa, deve referenciar edições/questões concretas via question_classifications.
-    return "{\"topic_id\":" + topicId
-        + ",\"historical_evidence\":\"taxonomia_v1.1\",\"source_type\":\"DERIVADO_EVIDENCIA\","
-        + "\"attempts\":" + attempts
-        + ",\"note\":\"Evidência completa requer vinculação a edições (TASK 1.5, 11.2).\"}";
+  private String buildEvidence(Long topicId, TopicScore ts, List<Integer> years, List<Long> sampleIds) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{\"topic_id\":").append(topicId);
+    sb.append(",\"historicalQuestions\":").append(ts.hist);
+    sb.append(",\"editionsCount\":").append(years == null ? 0 : years.size());
+    sb.append(",\"editions\":[");
+    if (years != null) {
+      for (int i = 0; i < years.size(); i++) {
+        if (i > 0) sb.append(",");
+        sb.append(years.get(i));
+      }
+    }
+    sb.append("],\"sampleQuestionIds\":[");
+    if (sampleIds != null) {
+      for (int i = 0; i < sampleIds.size(); i++) {
+        if (i > 0) sb.append(",");
+        sb.append(sampleIds.get(i));
+      }
+    }
+    sb.append("],\"accuracy\":").append(ts.accuracy);
+    sb.append(",\"attempts\":").append(ts.attempts);
+    sb.append(",\"lastAttemptAt\":");
+    if (ts.lastAttemptAt == null) {
+      sb.append("null");
+    } else {
+      sb.append("\"").append(ts.lastAttemptAt).append("\"");
+    }
+    sb.append(",\"algorithmVersion\":\"").append(ALGORITHM_VERSION).append("\"}");
+    return sb.toString();
   }
 
   /**
