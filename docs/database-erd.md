@@ -216,6 +216,15 @@ no mapa v1.1.
 
 ### 2.4 Questões e evidências (F + D + C)
 
+> Nota 2026-10-07 (TASK 16.2): sem gates humanos nesta seção desde a
+> `V12__drop_review_gates.sql:13-29` (decisão de produto 2026-10-06) — sem
+> `questions.validation_status` / `questions.publication_status`,
+> sem `question_figures.publication_status`,
+> sem `question_classifications.status` / `reviewed_by` / `reviewed_at`.
+> Confiança = carimbo do pipeline (`pipeline_version` /
+> `pipeline_verified_at` abaixo); classificação vigente = maior `id`
+> por questão (`question_classifications`, sem carimbo humano).
+
 **`questions`** — grão: uma questão objetiva oficial por edição (`F` + `C`).
 Questões autorais/adaptadas reusam a mesma tabela com `source_type` distinto
 (AGENTS.md §11) e sem vínculo de edição oficial.

@@ -16,7 +16,7 @@
 
 | Página | Estado observado |
 |---|---|
-| `index.html` (landing) | Funcional; hero com estatísticas auditadas (`240`, `6 edições`, `120+120`); links para `cadastro.html`/`login.html`; `noscript` informado; `skip-link` presente. |
+| `index.html` (landing) | Funcional; hero com estatísticas de formato (`2` disciplinas, `3` modos, `2` simulados — `frontend/index.html:83-96`, `docs/frontend-landing.md:46-49`; sem contagens de acervo na landing por decisão de honestidade); links para `cadastro.html`/`login.html`; `noscript` informado; `skip-link` presente. (Nota 2026-10-07: versão anterior deste doc citava `240`, `6 edições`, `120+120` aqui — exemplo histórico superado; a landing vigente não promete acervo.) |
 | `dashboard.html` | Guarda de autenticação ativa: sem sessão exibe painel de acesso (`Entre para ver seu dashboard`) com links `login.html?next=dashboard.html` e `cadastro.html`; com sessão carrega 6 seções (`stats`, `disciplines`, `priorities`, `plan`, `evolution`, `simulations`, `notes`). Erros de API tratados isoladamente. |
 | `estudos.html` | Guarda de autenticação ativa (`Entre para estudar`); filtros (`disciplina`, `assunto`, `subassunto`, `ano`, `dificuldade`) presentes; progresso no recorte visível na sidebar; `noscript` informado. |
 | `simulado.html` | Guarda de autenticação ativa; hub com `Por disciplina` e `Edição real`; formas de criação com `disciplina`, `quantidade`, `dificuldade`, `modo` (`ESTUDO`/`PROVA`); histórico de simulações; execução com progresso (`progressbar`) e confirmação (`dialog`). |

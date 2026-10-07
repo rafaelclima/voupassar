@@ -8,7 +8,7 @@
 
 | Página | Form | Endpoint | Sucesso |
 |---|---|---|---|
-| `login.html` (+ `js/views/login.js`) | e-mail, senha, “manter conectado” | `POST /api/v1/auth/login` | Painel logado (nome + e-mail) ou segue `?next=` interno; dashboard real chega na TASK 6.4 |
+| `login.html` (+ `js/views/login.js`) | e-mail, senha, “manter conectado” | `POST /api/v1/auth/login` | Redireciona para `?next=` interno seguro ou `./dashboard.html` (`js/views/login.js:29-34`); sem painel logado nesta tela — só erro aparece aqui |
 | `cadastro.html` (+ `js/views/cadastro.js`) | nome, e-mail, senha + opcionais (ano escolar, ano da prova, objetivo) | `POST /api/v1/auth/register` | “Conta criada”, já conectado (papel STUDENT, perfil mínimo) |
 | `recuperar-senha.html` (+ `js/views/recuperar-senha.js`) | e-mail | `POST /api/v1/auth/password/forgot` | Mensagem **sempre genérica** (exista ou não a conta) + link p/ redefinir |
 | `redefinir-senha.html` (+ `js/views/redefinir-senha.js`) | token, nova senha + confirmação local | `POST /api/v1/auth/password/reset` | “Senha redefinida, sessões encerradas” + link p/ login; `?token=` preenche sozinho |
