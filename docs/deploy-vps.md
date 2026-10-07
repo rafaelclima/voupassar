@@ -29,7 +29,11 @@ criados como swarm services isolados — **nenhum outro projeto foi tocado**
 `JWT_SECRET` (48 bytes, base64), `JWT_ISSUER=voupassar`,
 `ACCESS_TTL_MINUTES=15`, `REFRESH_TTL_DAYS=7`, `RESET_TTL_MINUTES=60`,
 `BCRYPT_STRENGTH=10`, `RATE_LIMIT_ENABLED=true`, `RATE_LIMIT_MAX=60`,
-`RATE_LIMIT_WINDOW_SECONDS=60`, `JAVA_OPTS=-Xms256m -Xmx512m→384m` (VPS 2 GB).
+`RATE_LIMIT_WINDOW_SECONDS=60`, `RATE_LIMIT_WRITE_MAX=120` (default no código;
+escrita em `/attempts`, `/simulations`, `/recommendations` — TASK 22.1),
+`BEHIND_PROXY=true` (desde 2026-10-07: traefik injeta `X-Forwarded-For` real;
+sem isso o rate limit usa o IP do proxy, compartilhado — TASK 22.1/22.3),
+`JAVA_OPTS=-Xms256m -Xmx512m→384m` (VPS 2 GB).
 
 ## 3. Operação
 
@@ -53,7 +57,26 @@ docker run --rm --network dokploy-network -v /root/backups:/backups:ro \
 # rebuild + redeploy do backend (nunca compilar fora de container)
 docker build -f backend/Dockerfile -t voupassar-backend:<TAG> .
 docker service update --image voupassar-backend:<TAG> voupassar-api
+# com env junto (um restart só):
+# docker service update --image voupassar-backend:<TAG> --env-add BEHIND_PROXY=true voupassar-api
+# rollback: docker service update --image voupassar-backend:<TAG-ANTERIOR> voupassar-api
 ```
+
+## 3b. Deploy 2026-10-07 (trilha VPS 16.1–22.3)
+
+- Imagem `voupassar-backend:prod-20261007` (era `prod-20261006`, V13):
+  IDOR do roteiro, score v2, evidência rica, PROVISORIO, rate-limit em
+  escrita + `Retry-After`, XFF atrás de proxy, logs JSON, contadores +
+  `GET /admin/diagnostics`, README.
+- Flyway aplicou V14+V15+V16 limpas no start (validadas antes em scratch
+  via restore do prod).
+- Smoke pós-deploy: `/api/v1/health` UP, 401 em envelope sem `stackTrace`,
+  preflight CORS 200, logs JSON, `BEHIND_PROXY=true` no spec.
+- Rollback (se necessário):
+  `docker service update --image voupassar-backend:prod-20261006 voupassar-api`
+  (nota: V14–V16 já aplicadas no banco permanecem — são compatíveis com
+  leitura pelo código antigo: só adicionam coluna `study_plans.status` com
+  default e um marker; downgrade de código não desfaz DDL).
 
 ## 4. Smoke executado em 2026-10-03 (todos OK)
 
