@@ -12,7 +12,6 @@
         <timestamp>@timestamp</timestamp>
         <message>message</message>
       </fieldNames>
-      <charset>UTF-8</charset>
     </encoder>
   </appender>
 

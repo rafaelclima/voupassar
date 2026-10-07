@@ -289,3 +289,50 @@ Plano: `docs/plano-remocao-curadoria.md`. Confiança = veredito do pipeline
 Validação pendente nesta VPS: navegador real (sem Chromium/Playwright aqui;
 `node --check` + `check_frontend.py` + serve 200 executados na Task 4).
 Deferido para a Task 6 pós-deploy (backend V12 + API nova no ar).
+
+---
+
+## Pré-lançamento 2026-10-07 (TASK 22.3, trilha VPS)
+
+Checklist backend executado contra scratch (restore do prod: 300 questões,
+5 usuários) com imagem `voupassar-backend:prelaunch-20261007` — tudo verde,
+evidências nos logs do fluxo (conta A/B criadas no scratch, removidas com
+os containers):
+
+- auth (register/login/refresh) → 200; IDOR roteiro: B em item de A → 403,
+  sem token → 401, dono → 200;
+- diagnóstico conta nova → DESCONHECIDO; após 3 pontuáveis → INICIAL;
+- roteiro v2: conta nova → PROVISORIO (10 itens, `evidenceJson` com
+  `editions[]` + `sampleQuestionIds[]` oficiais checados no banco);
+  após 3 pontuáveis → regeneração PESSOAL;
+- questões paginadas; simulado por disciplina (2Q PROVA: gabarito oculto
+  durante, revelado após submit) + 1Q ESTUDO (feedback imediato);
+- revisão: fila com 3 erros (ERRO_SEM_ACERTO primeiro) → sessão criada →
+  consulta OK;
+- perfil + performance/overview OK;
+- rajada 65× login → 66ª `429 RATE_LIMITED + Retry-After: 58`;
+- `GET /admin/diagnostics` (CURATOR): `dbStatus UP`, contadores do fluxo
+  (`attempts 3, diagnoses 2, plans 2, review 1, sims 2`);
+- 404/401 em envelope, sem `stackTrace`; CORS prod restrito
+  (`https://rafaelclima.github.io`); sem `.env` no Git, segredos via env;
+- backup/restore: `pg_dump -Fc` do prod → restore em scratch com
+  300/300 questões e 5/5 usuários; dump com dados de usuário apagado após;
+- migrations V14+V15+V16 aplicadas limpas sobre a cópia do prod
+  (achado e corrigido no ato: `max(version)` textual devolvia "9" em vez de
+  V16 — diagnóstico usa `installed_rank`);
+- suíte backend 257/257 + `check_frontend.py` OK.
+
+Pendências (não bloqueiam o backend; donas: trilha local / ambiente):
+
+1. **Navegador real (MCP indisponível nesta VPS):** responsividade
+   desktop/tablet/mobile, a11y prática (teclado, foco, contraste, labels) e
+   E2E das telas novas (revisão 17.x, evidência 18.3, raio-X 19.x, wizard
+   20.2, ritmo 21.1) — fazer local com Chromium antes do lançamento.
+2. **`BEHIND_PROXY=true` no env de produção:** o proxy reverso (traefik)
+   injeta `X-Forwarded-For` real, mas o prod está sem a var (default false =
+   header ignorado, balde por IP do proxy, compartilhado). Sem isso o rate
+   limit por IP não distingue clientes atrás do proxy. Ação: definir
+   `BEHIND_PROXY=true` no ambiente do serviço prod e restart.
+3. **Deploy da imagem nova:** o prod roda `voupassar-backend:prod-20261006`
+   (V13); V14–V16 + código 16.1–22.2 entram via rebuild + restart
+   (validados no scratch). Revalidar `/admin/diagnostics` após o deploy.

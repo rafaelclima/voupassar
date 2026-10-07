@@ -66,7 +66,8 @@ class AdminServiceTest {
   void diagnosticsAssemblesSnapshotWithoutPii() {
     when(jdbc.queryForObject("SELECT 1", Integer.class)).thenReturn(1);
     when(jdbc.queryForObject(
-            "SELECT max(version) FROM flyway_schema_history", String.class))
+            "SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 1",
+            String.class))
         .thenReturn("V16");
     when(metrics.snapshot()).thenReturn(java.util.Map.of("voupassar.plans.generated", 2.0));
 
@@ -85,7 +86,8 @@ class AdminServiceTest {
     when(jdbc.queryForObject("SELECT 1", Integer.class))
         .thenThrow(new RuntimeException("boom"));
     when(jdbc.queryForObject(
-            "SELECT max(version) FROM flyway_schema_history", String.class))
+            "SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 1",
+            String.class))
         .thenThrow(new RuntimeException("boom"));
     when(metrics.snapshot()).thenReturn(java.util.Map.of());
 

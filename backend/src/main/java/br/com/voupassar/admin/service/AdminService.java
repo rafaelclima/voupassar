@@ -80,7 +80,7 @@ public class AdminService {
   /**
    * Diagnóstico técnico (TASK 22.2): serviço, versão, banco, migração, uptime
    * e contadores. Sem PII. O banco é checado com `SELECT 1`; a migração é o
-   * maior `version` da `flyway_schema_history` (DESCONHECIDA se ilegível).
+   * maior `installed_rank` da `flyway_schema_history` (DESCONHECIDA se ilegível).
    */
   public DiagnosticsResponse diagnostics() {
     String dbStatus;
@@ -92,8 +92,10 @@ public class AdminService {
     }
     String lastMigration;
     try {
+      // installed_rank (não max(version) textual: "9" > "16" no léxico).
       lastMigration = jdbc.queryForObject(
-          "SELECT max(version) FROM flyway_schema_history", String.class);
+          "SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 1",
+          String.class);
       if (lastMigration == null) {
         lastMigration = "DESCONHECIDA";
       }
