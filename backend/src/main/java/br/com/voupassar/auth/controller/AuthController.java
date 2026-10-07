@@ -45,9 +45,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final AuthService service;
+  private final br.com.voupassar.security.ClientIpResolver clientIpResolver;
 
-  public AuthController(AuthService service) {
+  public AuthController(AuthService service,
+      br.com.voupassar.security.ClientIpResolver clientIpResolver) {
     this.service = service;
+    this.clientIpResolver = clientIpResolver;
   }
 
   @Operation(summary = "Cadastrar conta (papel STUDENT + perfil mínimo).")
@@ -162,14 +165,9 @@ public class AuthController {
     return principal.userId();
   }
 
-  private static String clientIp(HttpServletRequest request) {
-    String forwarded = request.getHeader("X-Forwarded-For");
-    if (forwarded != null && !forwarded.isBlank()) {
-      int comma = forwarded.indexOf(',');
-      return (comma < 0 ? forwarded : forwarded.substring(0, comma)).trim();
-    }
-    String remote = request.getRemoteAddr();
-    return remote != null ? remote : "-";
+  private String clientIp(HttpServletRequest request) {
+    // TASK 22.1: X-Forwarded-For só vale atrás de proxy configurado.
+    return clientIpResolver.resolve(request);
   }
 
   private static String userAgent(HttpServletRequest request) {

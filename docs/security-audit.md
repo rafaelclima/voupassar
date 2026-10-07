@@ -93,12 +93,28 @@
 
 ### 2.10. Rate Limiting (`rate-limiting`)
 
-* **Status**: `OK` (com ressalva de produção).
+* **Status**: `OK` (estendido na TASK 22.1, 2026-10-07).
 * **Observação**:
-  - `AuthRateLimitFilter.java`: limite por `(IP + caminho)`; janela fixa (`ConcurrentHashMap`); padrão `60 req/min`; aplicável apenas a `/api/v1/auth/**` (`shouldNotFilter` verifica `request.getRequestURI()`).
-  - `SecurityConfig.java`: `addFilterBefore(rateLimitFilter, JwtAuthenticationFilter.class)` — ordem correta (rate limit antes de JWT, para proteger o endpoint de login de força bruta).
-  - `application.yml`: `rate-limit.enabled: true` (default), `max-requests: 60`, `window-seconds: 60`.
-* **Ressalva**: o `ConcurrentHashMap` em memória (`buckets`) não persiste entre instâncias; em ambiente com múltiplas réplicas (VPS com Docker Compose com `replicas > 1`), o limite é por instância, não global. O `docs/architecture.md` menciona `proxy reverso` para limite real por IP público — correto (`TASK 10.2`).
+  - `AuthRateLimitFilter.java`: janela fixa em memória por `(IP + caminho)`;
+    `SecurityConfig.java`: `addFilterBefore(rateLimitFilter, JwtAuthenticationFilter.class)` — rate limit antes de JWT.
+  - Limites (todos com `429 RATE_LIMITED` em envelope + header `Retry-After`
+    com segundos até resetar a janela):
+    | Escopo | Limite default/janela | Env |
+    |---|---|---|
+    | `/api/v1/auth/**` (todos os métodos) | 60/min | `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_SECONDS` |
+    | Escrita (`POST/PUT/PATCH/DELETE`) em `/api/v1/attempts`, `/api/v1/simulations`, `/api/v1/recommendations` | 120/min | `RATE_LIMIT_WRITE_MAX` (mesma janela) |
+  - Leituras (`GET`) das rotas de escrita não são limitadas — uso normal
+    (simulado, roteiro) não trava; rajada de escrita acima do teto recebe
+    `429 + Retry-After` (coberto por `AuthRateLimitFilterTest`).
+  - `X-Forwarded-For` (`ClientIpResolver.java`) só vale com
+    `app.security.behind-proxy=true` (env `BEHIND_PROXY`; VPS prod = true
+    atrás do proxy reverso). Com `false` (default local), o header é
+    ignorado — cliente direto não forja IP de balde alheio. Mesma regra no
+    `AuthController.clientIp` (auditoria de login/senha).
+  - `application.yml:18-26` + `.env.example` documentam os envs.
+* **Ressalva**: o `ConcurrentHashMap` em memória não persiste entre
+  instâncias; com `replicas > 1` o limite é por instância — o proxy reverso
+  aplica o limite real por IP público.
 
 ## 3. Observações adicionais
 

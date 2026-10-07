@@ -29,6 +29,13 @@ public class AuthProperties {
   /** Custo do bcrypt (10 = padrão; VPS fraca — não subir sem calibrar). */
   private int bcryptStrength = 10;
 
+  /**
+   * Atrás de proxy reverso que injeta {@code X-Forwarded-For} real
+   * (env {@code BEHIND_PROXY}; VPS prod = true). Quando false, o header é
+   * ignorado no rate limiting e na auditoria (TASK 22.1).
+   */
+  private boolean behindProxy = false;
+
   private final RateLimit rateLimit = new RateLimit();
 
   public String getJwtSecret() {
@@ -83,11 +90,26 @@ public class AuthProperties {
     return rateLimit;
   }
 
+  public boolean isBehindProxy() {
+    return behindProxy;
+  }
+
+  public void setBehindProxy(boolean behindProxy) {
+    this.behindProxy = behindProxy;
+  }
+
   /** Janela fixa em memória para {@code /api/v1/auth/**} (proteção básica; proxy faz o resto). */
   public static class RateLimit {
     private boolean enabled = true;
     private int maxRequests = 60;
     private long windowSeconds = 60;
+    /**
+     * Teto das rotas de escrita (POST/PUT/PATCH/DELETE em
+     * {@code /attempts}, {@code /simulations}, {@code /recommendations} —
+     * TASK 22.1). Maior que o do auth: escrita legítima em rajada curta
+     * (simulado, roteiro) não pode travar uso normal.
+     */
+    private int writeMaxRequests = 120;
 
     public boolean isEnabled() {
       return enabled;
@@ -111,6 +133,14 @@ public class AuthProperties {
 
     public void setWindowSeconds(long windowSeconds) {
       this.windowSeconds = windowSeconds;
+    }
+
+    public int getWriteMaxRequests() {
+      return writeMaxRequests;
+    }
+
+    public void setWriteMaxRequests(int writeMaxRequests) {
+      this.writeMaxRequests = writeMaxRequests;
     }
   }
 }

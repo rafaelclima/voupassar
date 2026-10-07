@@ -40,6 +40,8 @@ class AuthControllerTest {
 
   @Mock AuthService service;
 
+  @Mock br.com.voupassar.security.ClientIpResolver clientIpResolver;
+
   @InjectMocks AuthController controller;
 
   private MockMvc mvc() {

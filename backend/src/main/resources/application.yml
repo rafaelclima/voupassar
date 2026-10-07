@@ -19,6 +19,10 @@ app:
       enabled: "${RATE_LIMIT_ENABLED:true}"
       max-requests: "${RATE_LIMIT_MAX:60}"
       window-seconds: "${RATE_LIMIT_WINDOW_SECONDS:60}"
+      write-max-requests: "${RATE_LIMIT_WRITE_MAX:120}"
+    # TASK 22.1: true atrás de proxy reverso que injeta X-Forwarded-For real
+    # (VPS prod). Quando false, o header é ignorado (anti-spoofing).
+    behind-proxy: "${BEHIND_PROXY:false}"
 
 server:
   port: "${SERVER_PORT:8080}"

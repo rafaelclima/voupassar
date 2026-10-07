@@ -19,12 +19,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Rate limiting básico do {@code /api/v1/auth/**} (TASK 3.5, AGENTS.md §15).
+ * Rate limiting de borda (TASK 3.5, estendido na TASK 22.1, AGENTS.md §15).
  *
- * <p>Janela fixa em memória por (IP + caminho): padrão 60 req/min.
- * Proteção de borda — o proxy reverso em produção aplica o limite real por
- * IP público. Responde 429 no envelope padrão. Desligável em teste
- * ({@code app.security.rate-limit.enabled=false}).
+ * <p>Janela fixa em memória por (IP + caminho):
+ * <ul>
+ *   <li>{@code /api/v1/auth/**} (todos os métodos): {@code max-requests}/janela;</li>
+ *   <li>escrita em {@code /api/v1/attempts}, {@code /api/v1/simulations},
+ *       {@code /api/v1/recommendations} (POST/PUT/PATCH/DELETE):
+ *       {@code write-max-requests}/janela.</li>
+ * </ul>
+ * Leituras (GET) das rotas de escrita não são limitadas. Responde 429 no
+ * envelope padrão com header {@code Retry-After} (segundos até resetar a
+ * janela). O proxy reverso em produção aplica o limite real por IP público.
+ * Desligável em teste ({@code app.security.rate-limit.enabled=false}).
  */
 @Component
 public class AuthRateLimitFilter extends OncePerRequestFilter {
@@ -32,25 +39,48 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
   private record Window(long count, Instant windowStart) {}
 
   private final AuthProperties props;
+  private final ClientIpResolver clientIp;
   private final ObjectMapper mapper;
   private final Map<String, Window> buckets = new ConcurrentHashMap<>();
 
-  public AuthRateLimitFilter(AuthProperties props, ObjectMapper mapper) {
+  public AuthRateLimitFilter(AuthProperties props, ClientIpResolver clientIp, ObjectMapper mapper) {
     this.props = props;
+    this.clientIp = clientIp;
     this.mapper = mapper;
   }
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    return !props.getRateLimit().isEnabled()
-        || !request.getRequestURI().startsWith("/api/v1/auth/");
+    if (!props.getRateLimit().isEnabled()) {
+      return true;
+    }
+    String uri = request.getRequestURI();
+    if (uri.startsWith("/api/v1/auth/")) {
+      return false;
+    }
+    return !isWrite(request) || !isWriteScope(uri);
+  }
+
+  private static boolean isWrite(HttpServletRequest request) {
+    String method = request.getMethod();
+    return "POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)
+        || "PATCH".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method);
+  }
+
+  private static boolean isWriteScope(String uri) {
+    return uri.startsWith("/api/v1/attempts")
+        || uri.startsWith("/api/v1/simulations")
+        || uri.startsWith("/api/v1/recommendations");
   }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain) throws ServletException, IOException {
     AuthProperties.RateLimit cfg = props.getRateLimit();
-    String key = clientIp(request) + "|" + request.getRequestURI();
+    int limit = request.getRequestURI().startsWith("/api/v1/auth/")
+        ? cfg.getMaxRequests()
+        : cfg.getWriteMaxRequests();
+    String key = clientIp.resolve(request) + "|" + request.getRequestURI();
     Instant now = Instant.now();
     Window next =
         buckets.compute(key, (k, prev) -> {
@@ -59,23 +89,17 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
           }
           return new Window(prev.count() + 1, prev.windowStart());
         });
-    if (next.count() > cfg.getMaxRequests()) {
-      write429(request, response);
+    if (next.count() > limit) {
+      long elapsed = next.windowStart().until(now, java.time.temporal.ChronoUnit.SECONDS);
+      long retryAfter = Math.max(1L, cfg.getWindowSeconds() - elapsed);
+      write429(request, response, retryAfter);
       return;
     }
     chain.doFilter(request, response);
   }
 
-  private static String clientIp(HttpServletRequest request) {
-    String forwarded = request.getHeader("X-Forwarded-For");
-    if (forwarded != null && !forwarded.isBlank()) {
-      int comma = forwarded.indexOf(',');
-      return (comma < 0 ? forwarded : forwarded.substring(0, comma)).trim();
-    }
-    return request.getRemoteAddr();
-  }
-
-  private void write429(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  private void write429(HttpServletRequest request, HttpServletResponse response, long retryAfter)
+      throws IOException {
     String traceId = MDC.get("traceId");
     ApiError body =
         new ApiError(
@@ -88,6 +112,7 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
     response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding("UTF-8");
+    response.setHeader("Retry-After", Long.toString(retryAfter));
     mapper.writeValue(response.getWriter(), body);
   }
 }
