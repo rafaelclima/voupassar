@@ -328,11 +328,9 @@ Pendências (não bloqueiam o backend; donas: trilha local / ambiente):
    desktop/tablet/mobile, a11y prática (teclado, foco, contraste, labels) e
    E2E das telas novas (revisão 17.x, evidência 18.3, raio-X 19.x, wizard
    20.2, ritmo 21.1) — fazer local com Chromium antes do lançamento.
-2. **`BEHIND_PROXY=true` no env de produção:** o proxy reverso (traefik)
-   injeta `X-Forwarded-For` real, mas o prod está sem a var (default false =
-   header ignorado, balde por IP do proxy, compartilhado). Sem isso o rate
-   limit por IP não distingue clientes atrás do proxy. Ação: definir
-   `BEHIND_PROXY=true` no ambiente do serviço prod e restart.
-3. **Deploy da imagem nova:** o prod roda `voupassar-backend:prod-20261006`
-   (V13); V14–V16 + código 16.1–22.2 entram via rebuild + restart
-   (validados no scratch). Revalidar `/admin/diagnostics` após o deploy.
+2. **`BEHIND_PROXY=true` no env de produção — RESOLVIDO 2026-10-07:**
+   adicionado ao spec do serviço (`docker service update --env-add`) e ao
+   `/root/.voupassar-prod.env` (backup `.bak-20261007`).
+3. **Deploy da imagem nova — RESOLVIDO 2026-10-07:**
+   `voupassar-backend:prod-20261007` no ar, Flyway V16, smoke verde
+   (detalhes em `docs/deploy-vps.md` §3b).
