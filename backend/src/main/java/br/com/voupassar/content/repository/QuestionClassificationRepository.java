@@ -139,6 +139,22 @@ public interface QuestionClassificationRepository
   List<Short> editionsBySubtopic(@Param("subtopicId") Long subtopicId);
 
   /**
+   * Dificuldade por assunto (TASK 18.1) — mesma fonte das frequências.
+   * Retorna linhas {@code [topicId(Long), difficultyEstimate(String, NULLável), total(Long)]}.
+   *
+   * <p>{@code difficulty_estimate} é palpite global BAIXA
+   * ({@code Question.java:28}, {@code database-erd.md} §2.4) — o serviço
+   * trata tópico sem sinal como neutro e documenta o peso.
+   */
+  @Query("""
+      SELECT c.topic.id, q.difficultyEstimate, COUNT(c)
+      FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic IS NOT NULL
+      GROUP BY c.topic.id, q.difficultyEstimate
+      """)
+  List<Object[]> difficultyByTopic();
+
+  /**
    * Classificações vigentes de um lote de questões (TASK 3.4).
    *
    * <p>Traz tópico + subassunto em fetch para montar a página sem N+1. Pode

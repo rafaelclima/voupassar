@@ -27,7 +27,7 @@
 | `id` | BIGINT PK | Identidade |
 | `user_id` | BIGINT FK (`users`) | `ON DELETE CASCADE` |
 | `is_active` | BOOLEAN DEFAULT TRUE | Único ativo por usuário (`UNIQUE` parcial) |
-| `algorithm_version` | TEXT NOT NULL | `v1-deterministico` (sem ML no MVP) |
+| `algorithm_version` | TEXT NOT NULL | `v2-deterministico` desde a 18.1 (`v1-…` nos planos antigos; sem ML no MVP) |
 | `generated_at` | TIMESTAMPTZ | Quando o roteiro foi criado |
 
 ### `study_plan_items`

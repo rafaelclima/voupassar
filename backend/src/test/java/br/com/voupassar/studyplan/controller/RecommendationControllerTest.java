@@ -67,7 +67,7 @@ class RecommendationControllerTest {
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
         OffsetDateTime.parse("2026-10-01T10:00:00Z"));
     return new StudyPlanResponse(
-        3L, userId, true, "v1-deterministico",
+        3L, userId, true, "v2-deterministico",
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
@@ -98,7 +98,7 @@ class RecommendationControllerTest {
     mvc().perform(get("/api/v1/recommendations/plan"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.userId").value(1))
-        .andExpect(jsonPath("$.algorithmVersion").value("v1-deterministico"));
+        .andExpect(jsonPath("$.algorithmVersion").value("v2-deterministico"));
   }
 
   @Test
