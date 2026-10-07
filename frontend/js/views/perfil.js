@@ -9,7 +9,7 @@
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
-import { restoreSession, logout } from "../api/auth.js";
+import { logout } from "../api/auth.js";
 import {
   fetchProfile,
   updateProfile,
@@ -24,10 +24,12 @@ import {
   el,
   renderEmpty,
   renderErrorSummary,
+  renderErrorWithRetry,
   setButtonLoading,
   setFieldError,
   toast,
 } from "../components/ui.js";
+import { renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import {
   disciplineLabel,
   topicLabel,
@@ -67,6 +69,7 @@ const achievementsBox = document.getElementById("perfil-achievements");
 let overviewCache = null;
 let diagnosisCache = null;
 let statsCache = null;
+let lastSectionErrors = {};
 let historyPage = 0;
 const HISTORY_SIZE = 20;
 let historyTotal = null;
@@ -78,9 +81,8 @@ wireGoalCounter();
 main();
 
 async function main() {
-  const user = await restoreSession().catch(() => null);
+  const user = await requireSessionOrGuard(showGuard);
   if (!user) {
-    showGuard();
     return;
   }
   showLogoutButtons();
@@ -111,29 +113,11 @@ function showGuard() {
   content.hidden = true;
   if (form) form.hidden = true;
   guard.hidden = false;
-  guard.textContent = "";
-  const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para ver seu perfil" }));
-  box.appendChild(
-    el("p", {
-      text: "O perfil mostra seus dados, estatísticas e histórico. Ele precisa da sua sessão — entre ou crie uma conta para continuar.",
-    }),
-  );
-  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
-  const login = el("a", {
-    className: "btn btn--primary",
-    text: "Entrar",
-    attrs: { href: "./login.html?next=perfil.html" },
+  renderAuthGuard(guard, {
+    title: "Entre para ver seu perfil",
+    description: "O perfil mostra seus dados, estatísticas e histórico. Ele precisa da sua sessão — entre ou crie uma conta para continuar.",
+    next: "perfil.html",
   });
-  const register = el("a", {
-    className: "btn btn--secondary",
-    text: "Criar conta",
-    attrs: { href: "./cadastro.html" },
-  });
-  actions.appendChild(login);
-  actions.appendChild(register);
-  box.appendChild(actions);
-  guard.appendChild(box);
 }
 
 /* ---------- formato ---------- */
@@ -296,6 +280,13 @@ async function loadAll() {
   overviewCache = overview.status === "fulfilled" ? overview.value : null;
   diagnosisCache = diagnosis.status === "fulfilled" ? diagnosis.value : null;
   const planData = plan.status === "fulfilled" ? plan.value : null;
+  lastSectionErrors.profile = profile.status === "rejected" ? profile.reason : null;
+  lastSectionErrors.stats = stats.status === "rejected" ? stats.reason : null;
+  lastSectionErrors.overview = overview.status === "rejected" ? overview.reason : null;
+  lastSectionErrors.diagnosis = diagnosis.status === "rejected" ? diagnosis.reason : null;
+  lastSectionErrors.plan = plan.status === "rejected" ? plan.reason : null;
+  lastSectionErrors.evolution = evolution.status === "rejected" ? evolution.reason : null;
+  lastSectionErrors.history = history.status === "rejected" ? history.reason : null;
 
   const firstName = (profileData?.displayName || "").split(" ")[0];
   if (profileData) {
@@ -331,6 +322,52 @@ async function loadAll() {
   content.hidden = false;
 }
 
+/* ---------- retentativa por seção (TASK 16.3) ---------- */
+
+async function retryProfileSection() {
+  const profile = await fetchProfile();
+  lastSectionErrors.profile = null;
+  errorBox.textContent = "";
+  renderHero(profile, null);
+  renderDados(profile, null);
+}
+
+async function retryStatsSections() {
+  const [stats, overview, diagnosis] = await Promise.all([
+    fetchProfileStats(),
+    fetchOverview(),
+    fetchDiagnosis(),
+  ]);
+  statsCache = stats;
+  overviewCache = overview;
+  diagnosisCache = diagnosis;
+  lastSectionErrors.stats = null;
+  lastSectionErrors.overview = null;
+  lastSectionErrors.diagnosis = null;
+  errorBox.textContent = "";
+  renderStats(statsCache, overviewCache, diagnosisCache);
+  renderLevel(statsCache, overviewCache, diagnosisCache);
+  renderModes(statsCache);
+  renderDisciplines(statsCache, overviewCache);
+  renderStrengths(diagnosisCache);
+  renderWeaknesses(diagnosisCache);
+}
+
+async function retryEvolutionSection() {
+  const data = await fetchEvolution(evoSelect?.value || "WEEK");
+  lastSectionErrors.evolution = null;
+  renderEvolution(data, null);
+}
+
+async function retryHistorySection() {
+  const page = await fetchHistory(0, HISTORY_SIZE);
+  lastSectionErrors.history = null;
+  historyPage = 0;
+  historyTotal = null;
+  historyExhausted = false;
+  renderHistoryPage(page, null, { reset: true });
+}
+
 /* ---------- 1. hero de identidade ---------- */
 
 function renderHero(profile, loadError) {
@@ -346,6 +383,19 @@ function renderHero(profile, loadError) {
         text: loadError ? friendlyMessage(loadError) : "Tente novamente em alguns instantes.",
       }),
     );
+    if (loadError) {
+      const retry = el("button", { className: "btn btn--secondary btn--sm mt-2", text: "Tentar de novo", attrs: { type: "button" } });
+      retry.addEventListener("click", async () => {
+        retry.disabled = true;
+        try {
+          await retryProfileSection();
+        } catch (err2) {
+          toast(friendlyMessage(err2), "info");
+          retry.disabled = false;
+        }
+      });
+      card.appendChild(retry);
+    }
     heroBox.appendChild(card);
     return;
   }
@@ -387,10 +437,19 @@ function renderHero(profile, loadError) {
 function renderDados(profile, loadError) {
   dadosBox.textContent = "";
   if (loadError || !profile) {
-    renderEmpty(dadosBox, {
-      title: "Dados indisponíveis",
-      description: loadError ? friendlyMessage(loadError) : "Não foi possível carregar seus dados agora.",
-    });
+    if (loadError) {
+      renderErrorWithRetry(dadosBox, {
+        title: "Dados indisponíveis. ",
+        description: friendlyMessage(loadError),
+        traceId: loadError instanceof ApiError ? loadError.traceId : null,
+        onRetry: retryProfileSection,
+      });
+    } else {
+      renderEmpty(dadosBox, {
+        title: "Dados indisponíveis",
+        description: "Não foi possível carregar seus dados agora.",
+      });
+    }
     if (form) form.hidden = true;
     return;
   }
@@ -543,10 +602,20 @@ function statTile({ label, value, hint, empty = false, textual = false, accent }
 function renderStats(stats, overview, diagnosis) {
   statsBox.textContent = "";
   if (!stats && !overview && !diagnosis) {
-    renderEmpty(statsBox, {
-      title: "Sem dados de desempenho",
-      description: "Não foi possível carregar suas estatísticas agora. Tente novamente em instantes.",
-    });
+    const err = lastSectionErrors.stats || lastSectionErrors.overview || lastSectionErrors.diagnosis;
+    if (err) {
+      renderErrorWithRetry(statsBox, {
+        title: "Sem dados de desempenho. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retryStatsSections,
+      });
+    } else {
+      renderEmpty(statsBox, {
+        title: "Sem dados de desempenho",
+        description: "Não foi possível carregar suas estatísticas agora. Tente novamente em instantes.",
+      });
+    }
     return;
   }
   const total = stats?.totalAttempts ?? overview?.totalAttempts ?? diagnosis?.totalAttempts ?? 0;
@@ -664,10 +733,20 @@ function renderModes(stats) {
   modesBox.textContent = "";
   const rows = stats?.byMode || null;
   if (!rows) {
-    renderEmpty(modesBox, {
-      title: "Dados indisponíveis",
-      description: "Não foi possível carregar este recorte agora.",
-    });
+    const err = lastSectionErrors.stats;
+    if (err) {
+      renderErrorWithRetry(modesBox, {
+        title: "Dados indisponíveis. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retryStatsSections,
+      });
+    } else {
+      renderEmpty(modesBox, {
+        title: "Dados indisponíveis",
+        description: "Não foi possível carregar este recorte agora.",
+      });
+    }
     return;
   }
   if (!rows.length) {
@@ -719,10 +798,20 @@ function renderDisciplines(stats, overview) {
   discBox.textContent = "";
   const rows = stats?.byDiscipline ?? overview?.byDiscipline ?? null;
   if (!rows) {
-    renderEmpty(discBox, {
-      title: "Dados indisponíveis",
-      description: "Não foi possível carregar este recorte agora.",
-    });
+    const err = lastSectionErrors.stats || lastSectionErrors.overview;
+    if (err) {
+      renderErrorWithRetry(discBox, {
+        title: "Dados indisponíveis. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retryStatsSections,
+      });
+    } else {
+      renderEmpty(discBox, {
+        title: "Dados indisponíveis",
+        description: "Não foi possível carregar este recorte agora.",
+      });
+    }
     return;
   }
   if (!rows.length) {
@@ -803,7 +892,12 @@ function renderDisciplines(stats, overview) {
 function renderMetas(profile, plan, planError) {
   metasBox.textContent = "";
   if (!profile && planError) {
-    renderEmpty(metasBox, { title: "Metas indisponíveis", description: friendlyMessage(planError) });
+    renderErrorWithRetry(metasBox, {
+      title: "Metas indisponíveis. ",
+      description: friendlyMessage(planError),
+      traceId: planError instanceof ApiError ? planError.traceId : null,
+      onRetry: retryProfileSection,
+    });
     return;
   }
   const items = plan?.items || plan?.recommendations || [];
@@ -899,7 +993,17 @@ function practiceLink(item) {
 function renderTopicList(container, items, { emptyTitle, emptyDescription, badgeFor }) {
   container.textContent = "";
   if (!items) {
-    renderEmpty(container, { title: "Diagnóstico indisponível", description: "Não foi possível carregar este recorte agora." });
+    const err = lastSectionErrors.diagnosis;
+    if (err) {
+      renderErrorWithRetry(container, {
+        title: "Diagnóstico indisponível. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retryStatsSections,
+      });
+    } else {
+      renderEmpty(container, { title: "Diagnóstico indisponível", description: "Não foi possível carregar este recorte agora." });
+    }
     return;
   }
   if (!items.length) {
@@ -943,10 +1047,20 @@ function renderStrengths(diagnosis) {
 function renderWeaknesses(diagnosis) {
   weaknessesBox.textContent = "";
   if (!diagnosis) {
-    renderEmpty(weaknessesBox, {
-      title: "Diagnóstico indisponível",
-      description: "Não foi possível carregar seus pontos de atenção agora.",
-    });
+    const err = lastSectionErrors.diagnosis;
+    if (err) {
+      renderErrorWithRetry(weaknessesBox, {
+        title: "Diagnóstico indisponível. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retryStatsSections,
+      });
+    } else {
+      renderEmpty(weaknessesBox, {
+        title: "Diagnóstico indisponível",
+        description: "Não foi possível carregar seus pontos de atenção agora.",
+      });
+    }
     return;
   }
   const weak = diagnosis.weaknesses || [];
@@ -1081,7 +1195,12 @@ function renderEvolution(data, loadError) {
   if (evoDelta) evoDelta.hidden = true;
   if (loadError) {
     if (evoHeadline) evoHeadline.textContent = "Indisponível";
-    renderEmpty(evoBox, { title: "Evolução indisponível", description: friendlyMessage(loadError) });
+    renderErrorWithRetry(evoBox, {
+      title: "Evolução indisponível. ",
+      description: friendlyMessage(loadError),
+      traceId: loadError instanceof ApiError ? loadError.traceId : null,
+      onRetry: retryEvolutionSection,
+    });
     return;
   }
   const buckets = data?.buckets || [];
@@ -1161,7 +1280,14 @@ function historyItemNode(item) {
 function renderHistoryPage(page, loadError, { reset = false } = {}) {
   if (reset) historyBox.textContent = "";
   if (loadError) {
-    if (reset) renderEmpty(historyBox, { title: "Histórico indisponível", description: friendlyMessage(loadError) });
+    if (reset) {
+      renderErrorWithRetry(historyBox, {
+        title: "Histórico indisponível. ",
+        description: friendlyMessage(loadError),
+        traceId: loadError instanceof ApiError ? loadError.traceId : null,
+        onRetry: retryHistorySection,
+      });
+    }
     if (moreBtn) moreBtn.hidden = true;
     return;
   }

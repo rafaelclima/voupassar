@@ -70,6 +70,7 @@ export async function refreshSession() {
   const data = await request("/api/v1/auth/refresh", {
     method: "POST",
     body: { refreshToken: persisted },
+    skipAuthRetry: true,
   });
   return setSession(toSessionPayload(data), remember);
 }

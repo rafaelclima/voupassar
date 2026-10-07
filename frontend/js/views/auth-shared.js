@@ -113,18 +113,87 @@ export function clearFieldErrors(inputs) {
   }
 }
 
+/** Validador único de caminho interno (TASK 16.3).
+ * Une `safeNextParam` (login) + `sanitizeBack` (questao voltar): só aceita
+ * relativo interno `./…`, absoluto de mesma origem `/…` (nunca `//`) ou
+ * `pagina.html…`. Rejeita `https?:`, `\`, `//` embutido, espaços/`<>"/`,
+ * comprimento > 400. Retorna `fallback` quando inválido. Usado por login
+ * (?next=), voltar da questão (?voltar=) e guarda do simulado.
+ */
+export function sanitizeInternalPath(raw, fallback = "") {
+  const v = String(raw || "").trim();
+  if (!v || v.length > 400) return fallback;
+  if (v.includes("\\") || /[\s<>"]/.test(v) || /https?:/i.test(v)) return fallback;
+  // Absoluto de mesma origem: /… mas nunca //…
+  if (v.startsWith("/")) {
+    if (v.startsWith("//")) return fallback;
+    if (v.includes("//")) return fallback;
+    return v;
+  }
+  // Relativo ./… (sem // embutido).
+  if (v.startsWith("./")) {
+    if (v.includes("//")) return fallback;
+    return v;
+  }
+  // Curto tipo pagina.html?x#y (sem barra inicial).
+  if (/^[a-z0-9-]+\.html(\?.*)?(#.*)?$/i.test(v)) return v;
+  return fallback;
+}
+
 /** ?next= só aceita caminho relativo interno (anti open-redirect). */
-export function safeNextParam() {
+export function safeNextParam(fallback = "") {
   try {
     const next = new URLSearchParams(window.location.search).get("next") || "";
-    if (next.startsWith("/") && !next.startsWith("//")) return next;
-    if (next.startsWith("./") || /^[a-z0-9-]+\.html(\?.*)?(#.*)?$/i.test(next)) {
-      if (!/^https?:/i.test(next)) return next;
-    }
+    return sanitizeInternalPath(next, fallback);
   } catch {
     // Parâmetro ilegível: sem redirecionamento.
   }
-  return "";
+  return fallback;
+}
+
+/** ?voltar= da questão: só relativo ./… (usa o validador único). */
+export function sanitizeBack(raw, fallback = "./estudos.html") {
+  const clean = sanitizeInternalPath(raw, "");
+  // Voltar nunca usa absoluto /…: só ./… ou pagina.html curtos.
+  if (!clean) return fallback;
+  if (clean.startsWith("/") && !clean.startsWith("./")) return fallback;
+  return clean;
+}
+
+/** Guarda de acesso compartilhada (TASK 16.3).
+ * Monta o painel "entre para continuar" sem duplicar markup nas views:
+ * título + descrição + Entrar (com ?next= seguro) + Criar conta.
+ * `next` já deve vir sanitizado (ex.: safeNextParam ou literal interno).
+ */
+export function renderAuthGuard(container, { title, description, next, registerHref = "./cadastro.html" } = {}) {
+  container.textContent = "";
+  const box = el("div", { className: "empty" });
+  box.appendChild(el("h2", { text: title || "Entre para continuar" }));
+  box.appendChild(el("p", { text: description || "Esta área precisa da sua sessão — entre ou crie uma conta para continuar." }));
+  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
+  const loginHref = next ? `./login.html?next=${encodeURIComponent(next)}` : "./login.html";
+  actions.appendChild(el("a", { className: "btn btn--primary", text: "Entrar", attrs: { href: loginHref } }));
+  actions.appendChild(el("a", { className: "btn btn--secondary", text: "Criar conta", attrs: { href: registerHref } }));
+  box.appendChild(actions);
+  container.appendChild(box);
+  return box;
+}
+
+/** Restaura a sessão ou mostra a guarda (TASK 16.3).
+ * Centraliza o `restoreSession().catch(() => null)` repetido nas views:
+ * retorna o usuário ou null (após exibir a guarda). Não muda o
+ * comportamento visível — só remove duplicação.
+ */
+export async function requireSessionOrGuard(showGuard) {
+  try {
+    const { restoreSession: restore } = await import("../api/auth.js");
+    const user = await restore().catch(() => null);
+    if (!user) showGuard?.();
+    return user;
+  } catch {
+    showGuard?.();
+    return null;
+  }
 }
 
 /** Painel "você já está conectado" — esconde o form, oferece sair/continuar. */

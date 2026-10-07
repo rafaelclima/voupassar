@@ -21,14 +21,20 @@
 
 ## 2. Comportamentos
 
-* **Guarda de auth:** `restoreSession()` (TASK 6.3). Sem sessão →
-  `#perfil-guard` com vazio + `Entrar` (`login.html?next=perfil.html`) e
-  `Criar conta`. `401` no meio da carga/evolução/histórico → mesmo painel
-  com nota de expiração. `Sair` (`[data-logout]`) revoga no servidor e volta
-  ao login preservando o `?next=`.
+* **Guarda de auth:** `requireSessionOrGuard(showGuard)` + `renderAuthGuard()`
+  (`js/views/auth-shared.js`, TASK 16.3; envolve `restoreSession()` da 6.3).
+  Sem sessão → `#perfil-guard` com vazio + `Entrar`
+  (`login.html?next=perfil.html`) e `Criar conta`. `401` no meio da
+  carga/evolução/histórico → mesmo painel com nota de expiração (o
+  `request()` de `js/api/client.js` já tentou `refresh` 1× antes). `Sair`
+  (`[data-logout]`) revoga no servidor e volta ao login preservando o `?next=`.
 * **Carga paralela:** `Promise.allSettled` — cada seção falha isolada; o
   resto continua. Falhas viram resumo no topo (`#perfil-error`, com `traceId`)
-  + vazio na seção. `404 NO_ACTIVE_PLAN` não é erro: vira vazio nas metas.
+  + erro na seção com botão **"Tentar de novo"** (`renderErrorWithRetry()`,
+  TASK 16.3): dados/hero (`retryProfileSection`), stats/modos/disciplinas/
+  forças/atenção (`retryStatsSections`), evolução (`retryEvolutionSection`) e
+  histórico (`retryHistorySection`) recarregam só a seção, sem reload.
+  `404 NO_ACTIVE_PLAN` não é erro: vira vazio nas metas.
 * **Edição de dados:** validação cliente (nome 2–80, ano ≤ 40, alvo
   2000–2100, objetivo ≤ 500 com contador) + `PUT` completo; `400
   VALIDATION_ERROR` mapeia `details` por campo (`setFieldError`), demais

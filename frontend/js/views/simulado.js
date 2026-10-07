@@ -18,7 +18,8 @@
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
-import { restoreSession, logout } from "../api/auth.js";
+import { logout } from "../api/auth.js";
+import { sanitizeInternalPath, renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import { mountExpandableFigure, preloadManifest } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
@@ -103,9 +104,8 @@ wireLogoutButtons();
 main();
 
 async function main() {
-  const user = await restoreSession().catch(() => null);
+  const user = await requireSessionOrGuard(showGuard);
   if (!user) {
-    showGuard();
     return;
   }
   state.user = user;
@@ -151,32 +151,15 @@ function showGuard() {
   loadingBox.hidden = true;
   content.hidden = true;
   guard.hidden = false;
-  guard.textContent = "";
-  const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para fazer simulados" }));
-  box.appendChild(
-    el("p", {
-      text: "O simulado monta um caderno, registra suas respostas e corrige no servidor. Ele precisa da sua sessão — entre ou crie uma conta para continuar.",
-    }),
-  );
-  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
-  const next = readAttemptId() !== null ? `simulado.html?id=${readAttemptId()}` : "simulado.html";
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--primary",
-      text: "Entrar",
-      attrs: { href: `./login.html?next=${encodeURIComponent(next)}` },
-    }),
-  );
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--secondary",
-      text: "Criar conta",
-      attrs: { href: "./cadastro.html" },
-    }),
-  );
-  box.appendChild(actions);
-  guard.appendChild(box);
+  // Guarda usa o validador único (TASK 16.3): o ?next= construído aqui
+  // passa pelo mesmo sanitizeInternalPath do login/questão.
+  const rawNext = readAttemptId() !== null ? `simulado.html?id=${readAttemptId()}` : "simulado.html";
+  const next = sanitizeInternalPath(rawNext, "simulado.html");
+  renderAuthGuard(guard, {
+    title: "Entre para fazer simulados",
+    description: "O simulado monta um caderno, registra suas respostas e corrige no servidor. Ele precisa da sua sessão — entre ou crie uma conta para continuar.",
+    next,
+  });
 }
 
 function readAttemptId() {

@@ -13,7 +13,7 @@
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
-import { restoreSession, logout } from "../api/auth.js";
+import { logout } from "../api/auth.js";
 import {
   fetchOverview,
   fetchEvolution,
@@ -24,7 +24,8 @@ import {
   fetchTopics,
   fetchRecentSimulations,
 } from "../api/dashboard.js";
-import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { el, renderEmpty, renderErrorSummary, renderErrorWithRetry, setButtonLoading, toast } from "../components/ui.js";
+import { renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import { disciplineLabel, modeLabel, statusLabel, masteryLabel, topicLabel, plural, simulationTitle } from "../vocab.js";
 
 const guard = document.getElementById("dash-guard");
@@ -60,9 +61,8 @@ wireLogoutButtons();
 main();
 
 async function main() {
-  const user = await restoreSession().catch(() => null);
+  const user = await requireSessionOrGuard(showGuard);
   if (!user) {
-    showGuard();
     return;
   }
   const name = (user.displayName || "").split(" ")[0] || "você";
@@ -98,29 +98,11 @@ function showGuard() {
   loadingBox.hidden = true;
   content.hidden = true;
   guard.hidden = false;
-  guard.textContent = "";
-  const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para ver seu painel" }));
-  box.appendChild(
-    el("p", {
-      text: "Seu painel mostra o que estudar agora e como você está indo. Entre com sua conta para continuar.",
-    }),
-  );
-  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
-  const login = el("a", {
-    className: "btn btn--primary",
-    text: "Entrar",
-    attrs: { href: "./login.html?next=dashboard.html" },
+  renderAuthGuard(guard, {
+    title: "Entre para ver seu painel",
+    description: "Seu painel mostra o que estudar agora e como você está indo. Entre com sua conta para continuar.",
+    next: "dashboard.html",
   });
-  const register = el("a", {
-    className: "btn btn--secondary",
-    text: "Criar conta",
-    attrs: { href: "./cadastro.html" },
-  });
-  actions.appendChild(login);
-  actions.appendChild(register);
-  box.appendChild(actions);
-  guard.appendChild(box);
 }
 
 /* ---------- formato ---------- */
@@ -339,6 +321,11 @@ async function loadAll() {
 
   overviewCache = overview.status === "fulfilled" ? overview.value : null;
   diagnosisCache = diagnosis.status === "fulfilled" ? diagnosis.value : null;
+  lastSectionErrors.overview = overview.status === "rejected" ? overview.reason : null;
+  lastSectionErrors.diagnosis = diagnosis.status === "rejected" ? diagnosis.reason : null;
+  lastSectionErrors.plan = plan.status === "rejected" ? plan.reason : null;
+  lastSectionErrors.evolution = evolution.status === "rejected" ? evolution.reason : null;
+  lastSectionErrors.simulations = simulations.status === "rejected" ? simulations.reason : null;
 
   renderStats(overviewCache, diagnosisCache);
   renderDisciplines(overviewCache);
@@ -358,6 +345,69 @@ async function loadAll() {
 
   loadingBox.hidden = true;
   content.hidden = false;
+}
+
+/* ---------- retentativa por seção (TASK 16.3) ---------- */
+
+let lastSectionErrors = {};
+
+async function retrySummarySections() {
+  errorBox.textContent = "";
+  try {
+    const [overview, diagnosis, topics] = await Promise.all([
+      fetchOverview(),
+      fetchDiagnosis(),
+      fetchTopics(),
+    ]);
+    topicById = new Map((topics || []).map((t) => [Number(t.id), t]));
+    overviewCache = overview;
+    diagnosisCache = diagnosis;
+    lastSectionErrors.overview = null;
+    lastSectionErrors.diagnosis = null;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    toast(friendlyMessage(err), "info");
+    throw err;
+  }
+  renderStats(overviewCache, diagnosisCache);
+  renderDisciplines(overviewCache);
+  renderPriorities(diagnosisCache);
+  renderWatch(overviewCache, diagnosisCache);
+  renderLevel(overviewCache, diagnosisCache);
+}
+
+async function retryPlanSection() {
+  try {
+    const plan = await fetchPlan().catch((err) => {
+      if (err instanceof ApiError && err.code === "NO_ACTIVE_PLAN") return null;
+      throw err;
+    });
+    currentPlan = plan;
+    lastSectionErrors.plan = null;
+    errorBox.textContent = "";
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    throw err;
+  }
+  renderPlan(currentPlan, null);
+}
+
+async function retryEvolutionSection() {
+  const data = await fetchEvolution(evoSelect?.value || "WEEK");
+  lastSectionErrors.evolution = null;
+  renderEvolution(data, null);
+}
+
+async function retrySimulationsSection() {
+  const page = await fetchRecentSimulations(5);
+  lastSectionErrors.simulations = null;
+  renderSimulations(page, null);
 }
 
 /* ---------- 1. o passo agora ---------- */
@@ -418,10 +468,20 @@ function statTile({ label, value, hint, empty = false, textual = false, accent }
 function renderStats(overview, diagnosis) {
   statsBox.textContent = "";
   if (!overview && !diagnosis) {
-    renderEmpty(statsBox, {
-      title: "Não deu para carregar seu progresso",
-      description: "Tente novamente em alguns instantes.",
-    });
+    const err = lastSectionErrors.overview || lastSectionErrors.diagnosis;
+    if (err) {
+      renderErrorWithRetry(statsBox, {
+        title: "Não deu para carregar seu progresso. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retrySummarySections,
+      });
+    } else {
+      renderEmpty(statsBox, {
+        title: "Não deu para carregar seu progresso",
+        description: "Tente novamente em alguns instantes.",
+      });
+    }
     updateHealth(null);
     return;
   }
@@ -495,10 +555,20 @@ function updateHealth(acc) {
 function renderDisciplines(overview) {
   discBox.textContent = "";
   if (!overview) {
-    renderEmpty(discBox, {
-      title: "Ainda não deu para carregar",
-      description: "Seu desempenho por disciplina aparece aqui.",
-    });
+    const err = lastSectionErrors.overview;
+    if (err) {
+      renderErrorWithRetry(discBox, {
+        title: "Desempenho por disciplina não carregou. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retrySummarySections,
+      });
+    } else {
+      renderEmpty(discBox, {
+        title: "Ainda não deu para carregar",
+        description: "Seu desempenho por disciplina aparece aqui.",
+      });
+    }
     return;
   }
   const rows = overview?.byDiscipline || [];
@@ -727,10 +797,20 @@ function renderLevel(overview, diagnosis) {
 function renderPriorities(diagnosis) {
   prioBox.textContent = "";
   if (!diagnosis) {
-    renderEmpty(prioBox, {
-      title: "Ainda não deu para carregar",
-      description: "Aqui entram os assuntos que mais valem a pena treinar.",
-    });
+    const err = lastSectionErrors.diagnosis;
+    if (err) {
+      renderErrorWithRetry(prioBox, {
+        title: "Prioridades não carregaram. ",
+        description: friendlyMessage(err),
+        traceId: err instanceof ApiError ? err.traceId : null,
+        onRetry: retrySummarySections,
+      });
+    } else {
+      renderEmpty(prioBox, {
+        title: "Ainda não deu para carregar",
+        description: "Aqui entram os assuntos que mais valem a pena treinar.",
+      });
+    }
     return;
   }
   const all = diagnosis.priorities || [];
@@ -820,9 +900,11 @@ function renderPlan(plan, loadError) {
   nextBox.textContent = "";
 
   if (loadError) {
-    renderEmpty(planBox, {
-      title: "Roteiro indisponível",
+    renderErrorWithRetry(planBox, {
+      title: "Roteiro indisponível. ",
       description: friendlyMessage(loadError),
+      traceId: loadError instanceof ApiError ? loadError.traceId : null,
+      onRetry: retryPlanSection,
     });
     renderNextStepEmpty(
       "Não deu para carregar seu roteiro",
@@ -1097,7 +1179,19 @@ function renderEvolution(data, loadError) {
   if (evoDelta) evoDelta.hidden = true;
   if (loadError) {
     if (evoHeadline) evoHeadline.textContent = "Indisponível";
-    renderEmpty(evoBox, { title: "Sua evolução não carregou", description: friendlyMessage(loadError) });
+    renderErrorWithRetry(evoBox, {
+      title: "Sua evolução não carregou. ",
+      description: friendlyMessage(loadError),
+      traceId: loadError instanceof ApiError ? loadError.traceId : null,
+      onRetry: async () => {
+        try {
+          await retryEvolutionSection();
+        } catch (err) {
+          renderEvolution(null, err);
+          throw err;
+        }
+      },
+    });
     return;
   }
   const buckets = data?.buckets || [];
@@ -1138,7 +1232,19 @@ function renderEvolution(data, loadError) {
 function renderSimulations(page, loadError) {
   simBox.textContent = "";
   if (loadError) {
-    renderEmpty(simBox, { title: "Seus simulados não carregaram", description: friendlyMessage(loadError) });
+    renderErrorWithRetry(simBox, {
+      title: "Seus simulados não carregaram. ",
+      description: friendlyMessage(loadError),
+      traceId: loadError instanceof ApiError ? loadError.traceId : null,
+      onRetry: async () => {
+        try {
+          await retrySimulationsSection();
+        } catch (err) {
+          renderSimulations(null, err);
+          throw err;
+        }
+      },
+    });
     return;
   }
   const items = page?.content || [];

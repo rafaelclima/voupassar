@@ -80,7 +80,7 @@ function buildUrl(path, query) {
  * a cookie HttpOnly + CORS com allowCredentials, usar `credentials:
  * "include"` na chamada específica.
  */
-export async function request(path, { method = "GET", body, query, signal, timeoutMs = 15000, credentials = "same-origin" } = {}) {
+export async function request(path, { method = "GET", body, query, signal, timeoutMs = 15000, credentials = "same-origin", skipAuthRetry = false, _retried = false } = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const combined = signal
@@ -127,6 +127,37 @@ export async function request(path, { method = "GET", body, query, signal, timeo
   }
 
   if (res.ok) return data;
+
+  // Interceptor 401 central (TASK 16.3): tenta refresh 1× via api/auth.js
+  // (mesma lógica de restoreSession) e repete a requisição original uma
+  // vez. Rotas de auth nunca tentam (evita loop login/refresh). Import
+  // dinâmico para não criar ciclo estático client ↔ auth. Em falha,
+  // devolve o 401 original para a view exibir a guarda (showGuard).
+  if (
+    res.status === 401 &&
+    !skipAuthRetry &&
+    !_retried &&
+    !String(path || "").startsWith("/api/v1/auth/")
+  ) {
+    try {
+      const auth = await import("./auth.js");
+      if (typeof auth.refreshSession === "function") {
+        await auth.refreshSession();
+        return request(path, {
+          method,
+          body,
+          query,
+          signal,
+          timeoutMs,
+          credentials,
+          skipAuthRetry,
+          _retried: true,
+        });
+      }
+    } catch {
+      // Refresh falhou: cai no throw do 401 original abaixo.
+    }
+  }
 
   throw new ApiError({
     status: res.status,

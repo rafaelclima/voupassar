@@ -19,7 +19,8 @@
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
-import { restoreSession, logout } from "../api/auth.js";
+import { logout } from "../api/auth.js";
+import { sanitizeBack, renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, confidenceLabel, choiceLabel } from "../vocab.js";
@@ -80,9 +81,8 @@ async function main() {
   }
   state.questionId = id;
 
-  const user = await restoreSession().catch(() => null);
+  const user = await requireSessionOrGuard(() => showGuard(id));
   if (!user) {
-    showGuard(id);
     return;
   }
   state.user = user;
@@ -118,31 +118,11 @@ function showGuard(id) {
   loadingBox.hidden = true;
   content.hidden = true;
   guard.hidden = false;
-  guard.textContent = "";
-  const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para resolver questões" }));
-  box.appendChild(
-    el("p", {
-      text: "A tela de questão mostra o enunciado e registra sua resposta com correção imediata. Ela precisa da sua sessão — entre ou crie uma conta para continuar.",
-    }),
-  );
-  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--primary",
-      text: "Entrar",
-      attrs: { href: `./login.html?next=${encodeURIComponent(`questao.html?id=${id}`)}` },
-    }),
-  );
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--secondary",
-      text: "Criar conta",
-      attrs: { href: "./cadastro.html" },
-    }),
-  );
-  box.appendChild(actions);
-  guard.appendChild(box);
+  renderAuthGuard(guard, {
+    title: "Entre para resolver questões",
+    description: "A tela de questão mostra o enunciado e registra sua resposta com correção imediata. Ela precisa da sua sessão — entre ou crie uma conta para continuar.",
+    next: `questao.html?id=${id}`,
+  });
 }
 
 /* ---------- URL ---------- */
@@ -158,15 +138,8 @@ function readQuestionId() {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-/** Só aceita voltar relativo ./… (anti open-redirect); default ./estudos.html. */
-function sanitizeBack(raw) {
-  const v = String(raw || "").trim();
-  if (!v.startsWith("./")) return "./estudos.html";
-  if (v.includes("//") || v.includes("\\") || /https?:/i.test(v)) return "./estudos.html";
-  if (/[\s<>"]/.test(v)) return "./estudos.html";
-  if (v.length > 400) return "./estudos.html";
-  return v;
-}
+/* sanitizeBack unificado em views/auth-shared.js (TASK 16.3):
+ * mesma regra do ?next= do login — só caminho interno, default ./estudos.html. */
 
 function applyBackLink() {
   let voltar = "./estudos.html";

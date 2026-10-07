@@ -537,6 +537,35 @@ def main() -> int:
             if secret in html:
                 fail(f"{html_file.name} contém possível segredo: {secret}")
 
+    # TASK 16.3 — higiene de frontend: retry por seção + auth global + next/voltar único.
+    ui_js = (FRONT / "js" / "components" / "ui.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "ui.js").exists() else ""
+    if "renderErrorWithRetry" not in ui_js or "Tentar de novo" not in ui_js:
+        fail("js/components/ui.js sem renderErrorWithRetry com 'Tentar de novo' (TASK 16.3)")
+    for name in ["dashboard.js", "perfil.js"]:
+        v = (FRONT / "js" / "views" / name).read_text(encoding="utf-8") if (FRONT / "js" / "views" / name).exists() else ""
+        if "renderErrorWithRetry" not in v and "Tentar de novo" not in v:
+            fail(f"js/views/{name} sem retry por seção ('Tentar de novo') (TASK 16.3)")
+        if "requireSessionOrGuard" not in v or "renderAuthGuard" not in v:
+            fail(f"js/views/{name} sem guarda compartilhada (requireSessionOrGuard/renderAuthGuard) (TASK 16.3)")
+    shared = (FRONT / "js" / "views" / "auth-shared.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "auth-shared.js").exists() else ""
+    for token in ["sanitizeInternalPath", "safeNextParam", "sanitizeBack", "renderAuthGuard", "requireSessionOrGuard"]:
+        if token not in shared:
+            fail(f"js/views/auth-shared.js sem {token!r} (TASK 16.3 — validador/guarda únicos)")
+    questao_js = (FRONT / "js" / "views" / "questao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "questao.js").exists() else ""
+    if "function sanitizeBack" in questao_js:
+        fail("js/views/questao.js com sanitizeBack local (usar o unificado de auth-shared.js — TASK 16.3)")
+    if "sanitizeBack" not in questao_js:
+        fail("js/views/questao.js sem sanitizeBack unificado (TASK 16.3)")
+    sim_js = (FRONT / "js" / "views" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "simulado.js").exists() else ""
+    if "sanitizeInternalPath" not in sim_js:
+        fail("js/views/simulado.js sem sanitizeInternalPath (guarda usa validador único — TASK 16.3)")
+    client_js = (FRONT / "js" / "api" / "client.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "client.js").exists() else ""
+    for token in ["skipAuthRetry", "_retried", "refreshSession"]:
+        if token not in client_js:
+            fail(f"js/api/client.js sem {token!r} (interceptor 401 central — TASK 16.3)")
+    if 'import("./auth.js")' not in client_js and "import('./auth.js')" not in client_js:
+        fail("js/api/client.js sem import dinâmico de auth.js (evitar ciclo — TASK 16.3)")
+
     if errors:
         print(f"check_frontend: {len(errors)} falha(s):")
         for e in errors:

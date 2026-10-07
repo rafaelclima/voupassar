@@ -12,7 +12,8 @@
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
-import { restoreSession, logout } from "../api/auth.js";
+import { logout } from "../api/auth.js";
+import { renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import {
   fetchInconsistencies,
   fetchAdminMetrics,
@@ -34,9 +35,8 @@ wireLogoutButtons();
 main();
 
 async function main() {
-  const user = await restoreSession().catch(() => null);
+  const user = await requireSessionOrGuard(() => showGuard(false));
   if (!user) {
-    showGuard();
     return;
   }
   showLogoutButtons();
@@ -75,33 +75,13 @@ function showGuard(expired = false) {
   content.hidden = true;
   forbiddenBox.hidden = true;
   guard.hidden = false;
-  guard.textContent = "";
-  const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para acessar a administração" }));
-  box.appendChild(
-    el("p", {
-      text: expired
-        ? "Sua sessão expirou. Entre novamente para continuar."
-        : "A área administrativa é restrita a gestores (CURATOR/ADMIN). Entre com uma conta autorizada.",
-    }),
-  );
-  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--primary",
-      text: "Entrar",
-      attrs: { href: "./login.html?next=admin.html" },
-    }),
-  );
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--secondary",
-      text: "Criar conta",
-      attrs: { href: "./cadastro.html" },
-    }),
-  );
-  box.appendChild(actions);
-  guard.appendChild(box);
+  renderAuthGuard(guard, {
+    title: "Entre para acessar a administração",
+    description: expired
+      ? "Sua sessão expirou. Entre novamente para continuar."
+      : "A área administrativa é restrita a gestores (CURATOR/ADMIN). Entre com uma conta autorizada.",
+    next: "admin.html",
+  });
 }
 
 function showForbidden(revoked) {

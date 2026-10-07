@@ -155,6 +155,40 @@ export function setFieldError(input, message) {
   }
 }
 
+/** Erro de seção com botão "Tentar de novo" (TASK 16.3).
+ * Mesmo padrão do caderno do simulado (`renderMissingCard`): mostra a
+ * mensagem amigável + traceId e um retry que recarrega só a seção, sem
+ * reload da página. `onRetry` pode ser async; o botão desabilita durante
+ * a tentativa e reabilita em falha. Sem innerHTML (só textContent via el()).
+ */
+export function renderErrorWithRetry(container, { title, description, traceId, onRetry, retryLabel = "Tentar de novo" } = {}) {
+  container.textContent = "";
+  const box = el("div", { className: "alert alert--danger", attrs: { role: "alert" } });
+  box.appendChild(el("strong", { text: title || "Não foi possível carregar esta parte. " }));
+  if (description) box.appendChild(el("span", { text: description }));
+  if (traceId) {
+    box.appendChild(el("p", { className: "envelope mt-2", text: `Código de rastreio: ${traceId}` }));
+  }
+  if (typeof onRetry === "function") {
+    const retry = el("button", {
+      className: "btn btn--secondary btn--sm mt-2",
+      text: retryLabel,
+      attrs: { type: "button" },
+    });
+    retry.addEventListener("click", async () => {
+      retry.disabled = true;
+      try {
+        await onRetry();
+      } catch {
+        retry.disabled = false;
+      }
+    });
+    box.appendChild(retry);
+  }
+  container.appendChild(box);
+  return box;
+}
+
 /** Resumo de erros no topo do form (foco vai para ele — WCAG 3.3.1). */
 export function renderErrorSummary(container, { title, items, traceId } = {}) {
   container.textContent = "";

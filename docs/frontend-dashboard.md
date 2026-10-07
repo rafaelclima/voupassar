@@ -23,14 +23,21 @@ aparece como `Assunto #id` com nota `DESCONHECIDO — NECESSITA REVISÃO`
 
 ## 2. Comportamentos
 
-* **Guarda de auth:** `restoreSession()` (TASK 6.3). Sem sessão → `#dash-guard`
-  com vazio + `Entrar` (`login.html?next=dashboard.html`) e `Criar conta`.
-  `401` no meio da carga → mesmo painel com nota de expiração. `Sair`
-  (`[data-logout]`) revoga no servidor e volta ao login.
+* **Guarda de auth:** `requireSessionOrGuard(showGuard)` + `renderAuthGuard()`
+  (`js/views/auth-shared.js`, TASK 16.3; envolve `restoreSession()` da 6.3).
+  Sem sessão → `#dash-guard` com vazio + `Entrar`
+  (`login.html?next=dashboard.html`) e `Criar conta`. `401` no meio da
+  carga → mesmo painel com nota de expiração (o `request()` de
+  `js/api/client.js` já tentou `refresh` 1× antes). `Sair` (`[data-logout]`)
+  revoga no servidor e volta ao login.
 * **Carga paralela:** `Promise.allSettled` — cada seção falha isolada; o
   resto continua. Falhas viram resumo no topo (`#dash-error`, com `traceId`)
-  + vazio na seção. `404 NO_ACTIVE_PLAN` não é erro: vira vazio com
-  `Gerar roteiro` (`POST /recommendations`).
+  + erro na seção com botão **"Tentar de novo"** (`renderErrorWithRetry()` em
+  `js/components/ui.js`, mesmo padrão do `renderMissingCard` do simulado —
+  TASK 16.3): resumo (`stats/disciplinas/prioridades`), roteiro, evolução e
+  simulados recarregam só a seção, sem reload da página.
+  `404 NO_ACTIVE_PLAN` não é erro: vira vazio com `Gerar roteiro`
+  (`POST /recommendations`).
 * **Roteiro:** `Gerar roteiro` / `Gerar novamente` (`POST`, preserva histórico
   no servidor); `Começar agora` (`TODO→DOING`) e `Concluir` (`→DONE`,
   `POST ...?status=`) atualizam o próximo estudo sem recarregar.

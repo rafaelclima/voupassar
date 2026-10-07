@@ -18,7 +18,8 @@
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
-import { restoreSession, logout } from "../api/auth.js";
+import { logout } from "../api/auth.js";
+import { renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import { mountExpandableFigure, preloadManifest } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
@@ -99,9 +100,8 @@ wireLogoutButtons();
 main();
 
 async function main() {
-  const user = await restoreSession().catch(() => null);
+  const user = await requireSessionOrGuard(showGuard);
   if (!user) {
-    showGuard();
     return;
   }
   state.user = user;
@@ -138,31 +138,11 @@ function showGuard() {
   loadingBox.hidden = true;
   content.hidden = true;
   guard.hidden = false;
-  guard.textContent = "";
-  const box = el("div", { className: "empty" });
-  box.appendChild(el("h2", { text: "Entre para estudar" }));
-  box.appendChild(
-    el("p", {
-      text: "A área de estudos mostra conteúdos, questões e seu progresso. Ela precisa da sua sessão — entre ou crie uma conta para continuar.",
-    }),
-  );
-  const actions = el("div", { className: "btn-group", attrs: { style: "justify-content:center" } });
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--primary",
-      text: "Entrar",
-      attrs: { href: "./login.html?next=estudos.html" },
-    }),
-  );
-  actions.appendChild(
-    el("a", {
-      className: "btn btn--secondary",
-      text: "Criar conta",
-      attrs: { href: "./cadastro.html" },
-    }),
-  );
-  box.appendChild(actions);
-  guard.appendChild(box);
+  renderAuthGuard(guard, {
+    title: "Entre para estudar",
+    description: "A área de estudos mostra conteúdos, questões e seu progresso. Ela precisa da sua sessão — entre ou crie uma conta para continuar.",
+    next: "estudos.html",
+  });
 }
 
 /* ---------- URL ---------- */

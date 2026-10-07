@@ -25,8 +25,16 @@ Módulos compartilhados:
 * `js/views/auth-shared.js` — validação cliente (espelha Bean Validation),
   `authErrorMessage()` por código do envelope, `renderAuthError()` (resumo +
   `traceId` + distribui `campo: msg` nos inputs), toggle Mostrar/Ocultar
-  senha, `safeNextParam()` (só relativo interno, anti open-redirect),
-  painel “já conectado” com Sair.
+  senha, validador único `sanitizeInternalPath()` (TASK 16.3; `safeNextParam()`
+  do login + `sanitizeBack()` do voltar da questão + guarda do simulado usam
+  a mesma função — só `./…`, `/…` sem `//` ou `pagina.html…`, anti
+  open-redirect), `renderAuthGuard()` + `requireSessionOrGuard()` (guarda
+  compartilhada das 6 telas protegidas, sem mudar o texto visível), painel
+  “já conectado” com Sair.
+* `js/api/client.js` — interceptor 401 central (TASK 16.3): em `401` fora de
+  `/api/v1/auth/**`, tenta `refreshSession()` 1× (import dinâmico, sem ciclo)
+  e repete a requisição uma vez (`skipAuthRetry`/`_retried`); em falha,
+  devolve o 401 original para a view exibir a guarda.
 * `css/auth.css` — layout do cartão estreito (`.auth-wrap/.auth-card`),
   campo de senha com toggle e links, mais o split-screen do `login.html`
   e do `cadastro.html` (painel de marca navy + painel de acesso, pílulas,
