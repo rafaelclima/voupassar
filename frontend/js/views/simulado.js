@@ -15,6 +15,11 @@
  * Sem innerHTML (só textContent via el()). Enunciados vêm de
  * GET /questions/{id} (3.4) — mascarados em PROVA em andamento (5.3).
  * 2021 nunca aparece: edições vêm do backend (ausente do dataset, §3).
+ *
+ * TASK 17.2 (revisão guiada): os selects de modo ganham REVISAO, que não
+ * cria simulação (o backend devolveria 400 INVALID_MODE) — roteia para a
+ * fila em estudos.html?aba=revisao. ?review=<sessionId> mostra o resumo
+ * provisório da sessão (responder + resultado chegam na 17.3).
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
@@ -37,6 +42,7 @@ import {
   fetchQuestion,
   submitAttempt,
 } from "../api/simulado.js";
+import { getSession as getReviewSession } from "../api/review.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, sourceTypeLabel } from "../vocab.js";
 
@@ -50,6 +56,10 @@ const subtitle = document.getElementById("sim-subtitle");
 
 const hub = document.getElementById("sim-hub");
 const execBox = document.getElementById("sim-exec");
+const reviewBox = document.getElementById("sim-review");
+const reviewMeta = document.getElementById("sim-review-meta");
+const reviewBody = document.getElementById("sim-review-body");
+const reviewTitle = document.getElementById("sim-review-title");
 
 // Hub
 const formDisc = document.getElementById("sim-create-discipline");
@@ -116,15 +126,30 @@ async function main() {
   if (id !== null) {
     state.attemptId = id;
     hub.hidden = true;
+    if (reviewBox) reviewBox.hidden = true;
     execBox.hidden = false;
     loadingBox.hidden = true;
     content.hidden = false;
     await loadExecution(id);
-  } else {
-    execBox.hidden = true;
-    hub.hidden = false;
-    await loadHub();
+    return;
   }
+  // Revisão guiada (TASK 17.2): ?review=<sessionId> criado pela fila em
+  // Estudos. Estado provisório (resumo + voltar à fila); responder e ver o
+  // resultado chegam na TASK 17.3, que reutiliza este mesmo endereço.
+  const reviewId = readReviewId();
+  if (reviewId !== null) {
+    hub.hidden = true;
+    execBox.hidden = true;
+    if (reviewBox) reviewBox.hidden = false;
+    loadingBox.hidden = true;
+    content.hidden = false;
+    await loadReviewSession(reviewId);
+    return;
+  }
+  execBox.hidden = true;
+  if (reviewBox) reviewBox.hidden = true;
+  hub.hidden = false;
+  await loadHub();
 }
 
 function wireLogoutButtons() {
@@ -171,6 +196,72 @@ function readAttemptId() {
   }
   const n = Number.parseInt(String(raw).trim(), 10);
   return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function readReviewId() {
+  let raw = "";
+  try {
+    raw = new URLSearchParams(window.location.search).get("review") || "";
+  } catch {
+    raw = "";
+  }
+  const n = Number.parseInt(String(raw).trim(), 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/* Provisório 17.2: confirma que a sessão existe e mostra o resumo
+ * (caderno congelado + progresso). Não renderiza questões nem resultado —
+ * isso é a TASK 17.3, no mesmo endereço. */
+async function loadReviewSession(sessionId) {
+  if (!reviewBox || !reviewMeta || !reviewBody) {
+    window.location.href = "./estudos.html?aba=revisao";
+    return;
+  }
+  reviewMeta.textContent = "Carregando sessão…";
+  reviewBody.textContent = "";
+  try {
+    const s = await getReviewSession(sessionId);
+    const total = s?.totalItems ?? 0;
+    const answered = s?.answered ?? 0;
+    const pending = s?.unanswered ?? Math.max(0, total - answered);
+    reviewTitle.textContent = `Sessão de revisão #${s?.sessionId ?? sessionId}`;
+    reviewMeta.textContent = `${total} ${total === 1 ? "questão" : "questões"} · ${answered} respondidas · ${pending} pendentes · ${statusLabel(s?.status)}`;
+    const note = el("div", { className: "alert alert--info", attrs: { role: "status" } });
+    note.appendChild(el("strong", { text: "Sessão salva. " }));
+    note.appendChild(el("span", {
+      text: "Responder as questões e ver o resultado chegam na próxima etapa — a fila já considera esta sessão criada.",
+    }));
+    reviewBody.appendChild(note);
+    const actions = el("div", { className: "btn-group mt-4" });
+    actions.appendChild(el("a", {
+      className: "btn btn--primary btn--sm",
+      text: "Voltar à fila",
+      attrs: { href: "./estudos.html?aba=revisao" },
+    }));
+    reviewBody.appendChild(actions);
+    reviewTitle.focus({ preventScroll: true });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    reviewMeta.textContent = "Falha ao carregar a sessão.";
+    const missing = err instanceof ApiError && err.status === 404;
+    renderErrorSummary(errorBox, {
+      title: missing ? "Sessão de revisão não encontrada" : "Não foi possível carregar a sessão de revisão",
+      items: [missing
+        ? "Ela pode ser de outra conta ou ter sido criada em outro fluxo. Volte à fila e inicie uma nova revisão."
+        : friendlyMessage(err)],
+      traceId: err instanceof ApiError ? err.traceId : null,
+    });
+    const back = el("div", { className: "btn-group mt-4" });
+    back.appendChild(el("a", {
+      className: "btn btn--secondary btn--sm",
+      text: "Voltar à fila",
+      attrs: { href: "./estudos.html?aba=revisao" },
+    }));
+    reviewBody.appendChild(back);
+  }
 }
 
 /* ================= HUB ================= */
@@ -258,6 +349,17 @@ function bindHubForms() {
         inpQtd.focus();
         return;
       }
+      // Revisão (TASK 17.2): o backend não aceita REVISAO em simulados
+      // (SimulationService MODES = ESTUDO/PROVA → 400 INVALID_MODE), então o
+      // modo Revisão no hub não cria simulação — abre a fila em Estudar com
+      // a disciplina já filtrada. Quantidade/dificuldade/origem não seguem:
+      // a revisão tem filtros próprios (limit/disciplina/tópico/só-erros).
+      if ((selDiscMode.value || "PROVA") === "REVISAO") {
+        const q = new URLSearchParams({ aba: "revisao", disciplina: disciplineCode });
+        toast("Abrindo a fila de revisão…", "info");
+        window.location.href = `./estudos.html?${q.toString()}`;
+        return;
+      }
       setButtonLoading(btnDisc, true, "Sorteando…");
       try {
         const created = await createByDiscipline({
@@ -296,6 +398,13 @@ function bindHubForms() {
       if (!Number.isFinite(editionYear)) {
         toast("Escolha uma edição.", "info");
         selEd.focus();
+        return;
+      }
+      // Revisão (TASK 17.2): mesmo roteamento do modo por disciplina — a
+      // revisão não tem recorte por edição, então abre a fila sem filtro.
+      if ((selEdMode.value || "PROVA") === "REVISAO") {
+        toast("Abrindo a fila de revisão…", "info");
+        window.location.href = "./estudos.html?aba=revisao";
         return;
       }
       setButtonLoading(btnEd, true, "Montando…");

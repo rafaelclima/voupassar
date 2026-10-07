@@ -77,6 +77,7 @@ REQUIRED_FILES = [
     "js/views/redefinir-senha.js",
     "js/views/dashboard.js",
     "js/views/estudos.js",
+    "js/views/revisao.js",
     "js/views/questao.js",
     "js/views/simulado.js",
     "js/views/perfil.js",
@@ -273,19 +274,39 @@ def main() -> int:
                     "study-filters", "f-disciplina", "f-topico", "f-subtopico",
                     "f-ano", "f-dificuldade", "f-origem", "study-browser", "study-list",
                     "study-pagination", "study-progress", "study-plan",
-                    "study-count", "btn-clear", "btn-filter"]:
+                    "study-count", "btn-clear", "btn-filter",
+                    # TASK 17.2 — revisão guiada: seção própria na mesma página
+                    "sec-revisao-t", "revisao-filters", "r-disciplina", "r-topico",
+                    "r-so-erros", "revisao-buscar", "revisao-limpar",
+                    "revisao-lista", "revisao-count", "revisao-iniciar"]:
             if f'id="{sid}"' not in study:
-                fail(f"estudos.html sem bloco #{sid} (TASK 6.5)")
+                fail(f"estudos.html sem bloco #{sid} (TASK 6.5/17.2)")
         if "css/estudos.css" not in study:
             fail("estudos.html sem css/estudos.css")
         if "js/views/estudos.js" not in study:
             fail("estudos.html sem js/views/estudos.js")
+        if "js/views/revisao.js" not in study:
+            fail("estudos.html sem js/views/revisao.js (TASK 17.2)")
         study_js = (FRONT / "js" / "views" / "estudos.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "estudos.js").exists() else ""
         if "2021" not in study and "2021" not in study_js:
             fail("estudos (html/js) omite a ausência de 2021 (AGENTS.md §3)")
         for token in ["f-origem", "sourceType"]:
             if token not in study_js:
                 fail(f"js/views/estudos.js sem filtro de origem {token!r} (TASK 15.4)")
+        # TASK 17.2 — revisão guiada: dono é views/revisao.js; estudos.js só inicia após auth
+        for token in ["revisao.js", "initReviewSection"]:
+            if token not in study_js:
+                fail(f"js/views/estudos.js sem {token!r} (TASK 17.2 — fiação da revisão)")
+        revisao_js = (FRONT / "js" / "views" / "revisao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "revisao.js").exists() else ""
+        for token in ["getQueue", "createSession", "reviewCategoryLabel", "reviewCategoryHint",
+                      "Buscando fila…", "Iniciar revisão (", "simulado.html?review=",
+                      "r-so-erros", "renderErrorWithRetry"]:
+            if token not in revisao_js:
+                fail(f"js/views/revisao.js sem {token!r} (TASK 17.2)")
+        revisao_api = (FRONT / "js" / "api" / "review.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "review.js").exists() else ""
+        for token in ["/api/v1/review/queue", "/api/v1/review/sessions"]:
+            if token not in revisao_api:
+                fail(f"js/api/review.js sem endpoint {token!r} (TASK 17.1/17.2)")
         if "estudos.html" not in dash:
             fail("dashboard.html sem link para estudos.html (TASK 6.5)")
 
@@ -326,15 +347,19 @@ def main() -> int:
                     "s-disc-qtd", "s-disc-dificuldade", "s-disc-origem", "s-disc-modo",
                     "sim-disc-submit", "sim-create-edition", "s-ed-edicao",
                     "s-ed-modo", "sim-ed-submit", "sim-history",
-                    "sim-history-count", "sim-more", "sim-exec", "sim-back",
+                    "sim-history-count", "sim-more",                     "sim-exec", "sim-back",
                     "sim-mode-badge", "sim-exec-title", "sim-exec-meta",
                     "sim-exec-badges", "sim-progress-text", "sim-progress-bar",
                     "sim-progress-fill", "sim-hidden-note", "sim-questions",
                     "sim-submit", "sim-abandon", "sim-result-section",
                     "sim-result", "sim-confirm", "sim-confirm-text",
-                    "sim-confirm-yes", "sim-confirm-no"]:
+                    "sim-confirm-yes", "sim-confirm-no",
+                    # TASK 17.2 — revisão: opção nos modos + destino ?review=
+                    "sim-review", "sim-review-title", "sim-review-meta", "sim-review-body"]:
             if f'id="{sid}"' not in sim:
                 fail(f"simulado.html sem bloco #{sid} (TASK 6.7)")
+        if 'value="REVISAO"' not in sim:
+            fail("simulado.html sem opção REVISAO nos modos (TASK 17.2)")
         if "css/simulado.css" not in sim:
             fail("simulado.html sem css/simulado.css")
         if "js/views/simulado.js" not in sim:
@@ -347,9 +372,11 @@ def main() -> int:
         for token in ["createByDiscipline", "createByEdition", "fetchAttempt",
                       "submitSimulation", "abandonSimulation", "fetchResult",
                       "fetchFeedback", "simulationAttemptId", "2021",
-                      "s-disc-origem", "OFFICIAL"]:
+                      "s-disc-origem", "OFFICIAL",
+                      # TASK 17.2 — REVISAO roteia à fila; ?review= é o destino da sessão
+                      "REVISAO", "aba=revisao", "readReviewId", "getReviewSession", "sim-review-body"]:
             if token not in sim_js:
-                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4)")
+                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4/17.2)")
         sim_api = (FRONT / "js" / "api" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "simulado.js").exists() else ""
         for token in ["/api/v1/simulations/by-discipline", "/api/v1/simulations/by-edition",
                       "/api/v1/simulations/attempts", "/feedback/", "/api/v1/attempts",
@@ -474,8 +501,8 @@ def main() -> int:
             if token in src:
                 fail(f"{name} expõe detalhe interno {token!r} ao aluno")
 
-    ALUNO_JS = ["dashboard.js", "estudos.js", "questao.js",
-                "simulado.js", "perfil.js"]
+    ALUNO_JS = ["dashboard.js", "estudos.js", "revisao.js",
+                "questao.js", "simulado.js", "perfil.js"]
     # Bug real que já ocorreu: interpolar direto no texto um campo enum da
     # API, fazendo "FACIL", "PROVA" ou "LP" aparecerem na tela. A tradução
     # mora em js/vocab.js — aqui na view o valor tem que passar por ela.
@@ -489,6 +516,7 @@ def main() -> int:
         "disciplineLabel", "difficultyLabel", "modeLabel", "sourceTypeLabel",
         "statusLabel", "masteryLabel",
         "confidenceLabel", "topicLabel",
+        "reviewCategoryLabel", "reviewCategoryHint",
     )
     VAZAMENTOS_JS = [
         "question_attempts", "discipline_id", "TASKs ",

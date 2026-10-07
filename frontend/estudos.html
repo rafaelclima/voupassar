@@ -104,7 +104,46 @@
           <nav id="study-pagination" class="study-pagination" aria-label="Paginação das questões"></nav>
         </section>
 
-        <!-- 3. FILTROS — painel de recorte -->
+        <!-- 3. REVISÃO GUIADA — fila priorizada -->
+        <section aria-labelledby="sec-revisao-t" class="panel panel--insight">
+          <div class="panel__head panel__head--split">
+            <div>
+              <h2 id="sec-revisao-t" tabindex="-1">Revisão guiada</h2>
+              <p><span id="revisao-count" role="status">Sua fila de revisão, na ordem do servidor.</span></p>
+            </div>
+            <span class="badge" id="revisao-badge">Fila priorizada</span>
+          </div>
+          <form id="revisao-filters" class="study-filters" aria-label="Filtrar fila de revisão">
+            <div class="field">
+              <label class="field__label" for="r-disciplina">Disciplina</label>
+              <select class="select" id="r-disciplina" name="disciplina">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="r-topico">Assunto</label>
+              <select class="select" id="r-topico" name="topico" disabled>
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="check-row" for="r-so-erros">
+                <input type="checkbox" id="r-so-erros" name="so-erros" />
+                <span>Só erros (sem acerto + recentes)</span>
+              </label>
+            </div>
+            <div class="study-filters__actions">
+              <button type="submit" class="btn btn--primary btn--sm" id="revisao-buscar">Buscar fila</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="revisao-limpar">Limpar</button>
+            </div>
+          </form>
+          <div id="revisao-lista" class="study-list mt-4"></div>
+          <div class="btn-group mt-4">
+            <button type="button" class="btn btn--primary btn--sm" id="revisao-iniciar" hidden>Iniciar revisão</button>
+          </div>
+        </section>
+
+        <!-- 4. FILTROS — painel de recorte -->
         <section aria-labelledby="sec-filtros-t" class="perf-shell study-filters-shell">
           <div class="perf-shell__head">
             <div class="perf-shell__title">
@@ -173,7 +212,7 @@
           </form>
         </section>
 
-        <!-- 4. CONTEÚDO — faixa de disciplinas e assuntos -->
+        <!-- 5. CONTEÚDO — faixa de disciplinas e assuntos -->
         <section aria-labelledby="sec-conteudo-t" class="study-sec">
           <div class="section-head section-head--row">
             <div>
@@ -185,7 +224,7 @@
           <div id="study-browser" class="study-browser"></div>
         </section>
 
-        <!-- 5. DUO — progresso no recorte + item do roteiro -->
+        <!-- 6. DUO — progresso no recorte + item do roteiro -->
         <div class="dash-grid dash-grid--2">
           <section aria-labelledby="sec-progresso-t" class="panel">
             <div class="panel__head">
@@ -233,5 +272,6 @@
 
   <script type="module" src="./js/main.js"></script>
   <script type="module" src="./js/views/estudos.js"></script>
+  <script type="module" src="./js/views/revisao.js"></script>
 </body>
 </html>

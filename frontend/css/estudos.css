@@ -354,6 +354,48 @@
 /* Âncora "Ajustar filtros": desconta o header sticky como o caderno. */
 #sec-filtros-t { scroll-margin-top: calc(var(--header-h, 68px) + var(--space-4)); }
 
+/* ---------- 3. revisão guiada (TASK 17.2; reusa .panel/.study-filters/.study-list) ---------- */
+#sec-revisao-t { scroll-margin-top: calc(var(--header-h, 68px) + var(--space-4)); }
+
+.review-item {
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(1rem, 1rem + 1vw, 1.5rem);
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  min-width: 0;
+}
+.review-item:hover { border-color: var(--color-primary-200); }
+.review-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.review-item__rank {
+  font-weight: 800;
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  margin-right: auto;
+}
+.review-item__source {
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.review-item__hint { margin: 0; max-width: var(--measure); }
+.review-item__meta {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-500);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
 /* ---------- paginação ---------- */
 .study-pagination {
   display: flex;

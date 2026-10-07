@@ -144,3 +144,55 @@ catálogo (2 disciplinas, 10 assuntos), lista paginada (240, 24 págs),
 Conta de teste `pwtest_*@example.com` (id 20) + 1 tentativa mantidas no
 banco dev (tentativas são imutáveis por trigger — remoção bloqueada por
 desenho); concessão temporária de `CURATOR` revogada.
+
+## 7. Revisão guiada (TASK 17.2 — fila priorizada)
+
+Seção `#sec-revisao-t` na mesma página, com dono próprio
+(`js/views/revisao.js`; `estudos.js` só chama `initReviewSection()` após
+auth + conteúdo — sem ciclo). Fonte: `GET /review/queue` + `POST
+/review/sessions` via `js/api/review.js` (TASK 17.1). Ordem e motivos vivem
+no backend; o frontend nunca reordena.
+
+* **Filtros** (`#revisao-filters`): `#r-disciplina`, `#r-topico`
+  (dependente, via `GET /topics?disciplineCode=`), `#r-so-erros` (só baldes
+  0–1, `ERRO_SEM_ACERTO` + `ERRO_RECENTE`), `Buscar fila`/`Limpar`. Trocar
+  lista sozinho (mesmo padrão U2 dos filtros de questões); `Buscar` é a ação
+  explícita + rolagem. Filtros locais (sem URL), exceto a leitura inicial.
+* **Linha do item** (nunca o `reason` bruto nem `notes` — ver § Honestidade):
+  `#rank` + selo da categoria (`reviewCategoryLabel`) + origem (`2026 Q17 ·
+  Matemática`, nomes da API) + dica (`reviewCategoryHint`) + fatos
+  (`X/Y nesta questão (Z%) · última incorreta há N dias`, `daysSince`
+  informativo, omitido quando NULL) + assunto (`topicName ·
+  masteryLabel(topicMastery) · você X% em N`, ou "ainda sem classificação")
+  + `Abrir questão` (`questao.html?id=…&voltar=…?aba=revisao`).
+* **Estados:** loading (`Buscando fila…`), vazio honesto em conta nova
+  (`Nada para revisar ainda` — responder no Estudo/simulados alimenta a fila;
+  o "3+" citado é o sinal mínimo do diagnóstico, nunca promessa de item
+  oculto), vazio de filtro (`Nada neste filtro` + limpar), erro com
+  `Tentar de novo` por seção (`renderErrorWithRetry`, traceId; 401 vira
+  convite a entrar de novo — o interceptor do `client.js` já tentou 1
+  refresh).
+* **Iniciar revisão (N):** congela exatamente o top-N exibido
+  (`createSession({limit: N, …filtros})`, mesma ordem da fila) e navega para
+  `simulado.html?review=<sessionId>` (resumo provisório em 17.2; responder +
+  resultado chegam na 17.3). Fila esvaziada na corrida (`400
+  NO_REVIEW_ITEMS`) recarrega em vez de travar.
+* **Atalhos:** `estudos.html?aba=revisao` rola + foca a seção (hub do
+  simulado em modo Revisão; `&disciplina=` pré-seleciona o filtro). O hub
+  ganha `REVISAO` nos dois selects de modo **como roteamento, não como
+  simulação**: o backend rejeita REVISAO em simulados (`400 INVALID_MODE`,
+  `SimulationService` MODES = ESTUDO/PROVA), então escolher Revisão abre a
+  fila — quantidade/dificuldade/origem não seguem (a revisão tem filtros
+  próprios).
+
+## 8. Verificação 17.2
+
+```bash
+for f in frontend/js/api/review.js frontend/js/views/revisao.js frontend/js/views/estudos.js frontend/js/views/simulado.js; do node --check "$f"; done
+python3 scripts/analysis/check_frontend.py
+timeout 20 python3 -m http.server 8899 --directory frontend
+# Fluxo ao vivo (backend local): sem sessão → guarda; conta nova → vazio
+# honesto; 3+ respostas (2 erros + 1 acerto) → fila ordenada (erros primeiro);
+# filtros disciplina/só-erros; Iniciar → 201 → ?review= com resumo; hub em
+# modo Revisão → ?aba=revisao; mobile 360px + console limpo.
+```

@@ -12,6 +12,10 @@
  * - Navegação: filtros sincronizados na URL, paginação e atalhos do
  *   navegador de conteúdo para a lista. Prática livre em modo ESTUDO (3.7)
  *   com correção imediata do servidor (AGENTS.md §9 Modo Estudo).
+ * - Revisão guiada (TASK 17.2, seção `#sec-revisao-t`): fila priorizada com
+ *   filtros disciplina/assunto/só-erros + "Iniciar revisão (N)". Dono é
+ *   `views/revisao.js` (este arquivo só chama `initReviewSection()` após
+ *   auth); atalho `?aba=revisao` rola até a seção.
  *
  * Sem innerHTML (só textContent via el()). Filtros inválidos (404 do
  * backend) viram erro visível com traceId, nunca página vazia silenciosa.
@@ -36,6 +40,7 @@ import {
 } from "../api/estudos.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, statusLabel, choiceLabel } from "../vocab.js";
+import { initReviewSection } from "./revisao.js";
 
 const PAGE_SIZE = 10;
 const SESSION_KEY = "voupassar.studySessionId";
@@ -246,6 +251,12 @@ async function loadAll() {
 
     loadingBox.hidden = true;
     content.hidden = false;
+    // Revisão guiada (TASK 17.2): seção própria com dono próprio. Só inicia
+    // após auth + conteúdo (a guarda acima já barrou sem-sessão; 401 aqui
+    // vira erro com retry dentro da seção, nunca guarda duplicada).
+    initReviewSection({ disciplines: state.disciplines }).catch((err) => {
+      console.error("[estudos] falha na seção de revisão:", err);
+    });
   } catch (err) {
     loadingBox.hidden = true;
     console.error("[estudos] falha na carga inicial:", err);

@@ -80,7 +80,25 @@
       </div>
 
       <div id="sim-content" hidden>
-        <!-- HUB: criar + histórico (sem ?id=) -->
+        <!-- REVISÃO (?review=): sessão criada pela fila.
+             Estado provisório honesto — responder + resultado chegam depois. -->
+        <div id="sim-review" hidden>
+          <nav aria-label="Voltar">
+            <a class="btn btn--ghost btn--sm" href="./estudos.html?aba=revisao">← Voltar à fila</a>
+          </nav>
+          <section aria-labelledby="sim-review-title" class="panel mt-4">
+            <div class="panel__head">
+              <div>
+                <h2 id="sim-review-title" tabindex="-1">Sessão de revisão</h2>
+                <p><span id="sim-review-meta" role="status">Carregando sessão…</span></p>
+              </div>
+              <span class="panel__icon" aria-hidden="true">↻</span>
+            </div>
+            <div id="sim-review-body"></div>
+          </section>
+        </div>
+
+        <!-- HUB: criar + histórico (sem ?id= nem ?review=) -->
         <div id="sim-hub" hidden>
           <!-- 1. HERO — convite à prova -->
           <section aria-labelledby="sec-hero-t" class="sim-sec">
@@ -142,6 +160,7 @@
                   <select class="select" id="s-disc-modo" name="modo" required>
                     <option value="ESTUDO">Estudo (feedback imediato por questão)</option>
                     <option value="PROVA" selected>Prova (resultado só ao final)</option>
+                    <option value="REVISAO">Revisão (abre a fila em Estudar)</option>
                   </select>
                 </div>
                 <div class="btn-group">
@@ -170,6 +189,7 @@
                   <select class="select" id="s-ed-modo" name="modo" required>
                     <option value="ESTUDO">Estudo (feedback imediato por questão)</option>
                     <option value="PROVA" selected>Prova (resultado só ao final)</option>
+                    <option value="REVISAO">Revisão (abre a fila em Estudar)</option>
                   </select>
                 </div>
                 <div class="btn-group">
