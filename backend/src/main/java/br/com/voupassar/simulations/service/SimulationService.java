@@ -121,6 +121,7 @@ public class SimulationService {
   private final ExamRepository exams;
   private final ExamEssayPromptRepository essayPrompts;
   private final Random random;
+  private final br.com.voupassar.admin.service.TechMetrics metrics;
 
   @Autowired
   public SimulationService(
@@ -133,9 +134,10 @@ public class SimulationService {
       QuestionAttemptRepository responses,
       QuestionClassificationRepository classifications,
       ExamRepository exams,
-      ExamEssayPromptRepository essayPrompts) {
+      ExamEssayPromptRepository essayPrompts,
+      br.com.voupassar.admin.service.TechMetrics metrics) {
     this(users, disciplines, questions, simulations, attempts, caderno, responses,
-        classifications, exams, essayPrompts, new SecureRandom());
+        classifications, exams, essayPrompts, new SecureRandom(), metrics);
   }
 
   SimulationService(
@@ -149,7 +151,8 @@ public class SimulationService {
       QuestionClassificationRepository classifications,
       ExamRepository exams,
       ExamEssayPromptRepository essayPrompts,
-      Random random) {
+      Random random,
+      br.com.voupassar.admin.service.TechMetrics metrics) {
     this.users = users;
     this.disciplines = disciplines;
     this.questions = questions;
@@ -161,6 +164,7 @@ public class SimulationService {
     this.exams = exams;
     this.essayPrompts = essayPrompts;
     this.random = random;
+    this.metrics = metrics;
   }
 
   /**
@@ -377,6 +381,7 @@ public class SimulationService {
 
     log.info("simulado concluído user_id={} attempt_id={} scored={} correct={}",
         userId, attemptId, board.scored, board.correct);
+    metrics.simulationsSubmitted();
     return toResultResponse(attempt, board, false);
   }
 

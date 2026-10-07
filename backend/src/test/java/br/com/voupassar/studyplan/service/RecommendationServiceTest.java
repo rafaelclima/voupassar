@@ -49,6 +49,7 @@ class RecommendationServiceTest {
   @Mock StudentTopicPerformanceRepository performanceRepo;
   @Mock QuestionClassificationRepository classifications;
   @Mock StudentProfileRepository profiles;
+  @Mock br.com.voupassar.admin.service.TechMetrics metrics;
 
   private RecommendationService service;
 
@@ -56,7 +57,7 @@ class RecommendationServiceTest {
   void setup() {
     service = new RecommendationService(
         users, studyPlans, studyPlanItems, topics, subtopics, attempts,
-        performanceRepo, classifications, profiles);
+        performanceRepo, classifications, profiles, metrics);
   }
 
   @Test

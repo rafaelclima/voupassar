@@ -54,12 +54,13 @@ class AttemptServiceTest {
   @Mock StudySessionRepository sessions;
   @Mock SimulationAttemptRefRepository simulations;
   @Mock PerformanceService performance;
+  @Mock br.com.voupassar.admin.service.TechMetrics metrics;
 
   private AttemptService service;
 
   @BeforeEach
   void setup() {
-    service = new AttemptService(users, questions, attempts, sessions, simulations, performance);
+    service = new AttemptService(users, questions, attempts, sessions, simulations, performance, metrics);
   }
 
   private static User user(long id, boolean active) {

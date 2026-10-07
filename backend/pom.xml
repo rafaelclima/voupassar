@@ -101,6 +101,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
+    <!-- Logs JSON no console (agregadores); sem arquivo no container. -->
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>8.1</version>
+    </dependency>
 
     <!-- Testes -->
     <dependency>

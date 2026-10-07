@@ -55,12 +55,13 @@ class ReviewSessionServiceTest {
   @Mock QuestionAttemptRepository responses;
   @Mock QuestionRepository questions;
   @Mock ReviewService review;
+  @Mock br.com.voupassar.admin.service.TechMetrics metrics;
 
   private ReviewSessionService service;
 
   @BeforeEach
   void setup() {
-    service = new ReviewSessionService(users, sessions, caderno, responses, questions, review);
+    service = new ReviewSessionService(users, sessions, caderno, responses, questions, review, metrics);
   }
 
   private static User user(long id, boolean active) {

@@ -59,6 +59,18 @@ public class AdminController {
     return service.metrics();
   }
 
+  @Operation(
+      summary = "Diagnóstico técnico da API.",
+      description =
+          "Serviço, versão, banco, última migration, uptime e contadores "
+              + "de eventos de negócio (sem PII). Health público segue mínimo.")
+  @GetMapping("/diagnostics")
+  public br.com.voupassar.admin.dto.DiagnosticsResponse diagnostics(
+      @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
+    requireAuth(principal);
+    return service.diagnostics();
+  }
+
   private static long requireAuth(UserPrincipal principal) {
     if (principal == null) {
       throw new UnauthorizedException("Autenticação necessária.");

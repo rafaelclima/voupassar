@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import br.com.voupassar.admin.dto.AdminMetricsResponse;
+import br.com.voupassar.admin.dto.DiagnosticsResponse;
 import br.com.voupassar.admin.service.AdminService;
 import br.com.voupassar.security.UserPrincipal;
 import java.util.List;
@@ -59,6 +60,10 @@ class AdminSecurityTest {
         .andExpect(header().exists("X-Trace-Id"))
         .andExpect(jsonPath("$.code").value("UNAUTHORIZED"))
         .andExpect(jsonPath("$.stackTrace").doesNotExist());
+
+    mvc.perform(get("/api/v1/admin/diagnostics"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
   }
 
   @Test
@@ -73,6 +78,9 @@ class AdminSecurityTest {
 
     mvc.perform(get("/api/v1/admin/inconsistencies"))
         .andExpect(status().isForbidden());
+
+    mvc.perform(get("/api/v1/admin/diagnostics"))
+        .andExpect(status().isForbidden());
   }
 
   @Test
@@ -80,11 +88,17 @@ class AdminSecurityTest {
     authenticate("CURATOR");
     when(service.metrics()).thenReturn(new AdminMetricsResponse(240, 5, 36, 240));
     when(service.inconsistencies()).thenReturn(List.of());
+    when(service.diagnostics()).thenReturn(new DiagnosticsResponse(
+        "voupassar-backend", "0.1.0", "UP", "V16", 123L, java.util.Map.of()));
 
     mvc.perform(get("/api/v1/admin/inconsistencies")).andExpect(status().isOk());
     mvc.perform(get("/api/v1/admin/metrics"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.questionsTotal").value(240));
+    mvc.perform(get("/api/v1/admin/diagnostics"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.dbStatus").value("UP"))
+        .andExpect(jsonPath("$.stackTrace").doesNotExist());
   }
 
   @Test

@@ -74,6 +74,7 @@ class SimulationServiceTest {
   @Mock QuestionClassificationRepository classifications;
   @Mock ExamRepository exams;
   @Mock ExamEssayPromptRepository essayPrompts;
+  @Mock br.com.voupassar.admin.service.TechMetrics metrics;
 
   private SimulationService service;
 
@@ -81,7 +82,7 @@ class SimulationServiceTest {
   void setup() {
     service = new SimulationService(
         users, disciplines, questions, simulations, attempts, caderno, responses,
-        classifications, exams, essayPrompts, new Random(42));
+        classifications, exams, essayPrompts, new Random(42), metrics);
   }
 
   private static User user(long id, boolean active) {

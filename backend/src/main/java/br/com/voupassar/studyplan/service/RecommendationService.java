@@ -1,5 +1,6 @@
 package br.com.voupassar.studyplan.service;
 
+import br.com.voupassar.admin.service.TechMetrics;
 import br.com.voupassar.auth.entity.StudentProfile;
 import br.com.voupassar.auth.entity.User;
 import br.com.voupassar.auth.repository.StudentProfileRepository;
@@ -84,6 +85,7 @@ public class RecommendationService {
   private final StudentTopicPerformanceRepository performanceRepo;
   private final QuestionClassificationRepository classifications;
   private final StudentProfileRepository profiles;
+  private final TechMetrics metrics;
 
   public RecommendationService(
       UserRepository users,
@@ -94,7 +96,8 @@ public class RecommendationService {
       QuestionAttemptRepository attempts,
       StudentTopicPerformanceRepository performanceRepo,
       QuestionClassificationRepository classifications,
-      StudentProfileRepository profiles) {
+      StudentProfileRepository profiles,
+      TechMetrics metrics) {
     this.users = users;
     this.studyPlans = studyPlans;
     this.studyPlanItems = studyPlanItems;
@@ -104,6 +107,7 @@ public class RecommendationService {
     this.performanceRepo = performanceRepo;
     this.classifications = classifications;
     this.profiles = profiles;
+    this.metrics = metrics;
   }
 
   /**
@@ -153,6 +157,7 @@ public class RecommendationService {
     studyPlanItems.saveAll(items);
 
     savedPlan.setItems(items);
+    metrics.plansGenerated();
     return toResponse(savedPlan, items);
   }
 

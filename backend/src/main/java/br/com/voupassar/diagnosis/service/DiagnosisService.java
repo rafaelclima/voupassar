@@ -1,5 +1,6 @@
 package br.com.voupassar.diagnosis.service;
 
+import br.com.voupassar.admin.service.TechMetrics;
 import br.com.voupassar.auth.entity.User;
 import br.com.voupassar.auth.repository.UserRepository;
 import br.com.voupassar.content.entity.QuestionClassification;
@@ -74,6 +75,7 @@ public class DiagnosisService {
   private final TopicRepository topics;
   private final DisciplineRepository disciplines;
   private final QuestionRepository questions;
+  private final TechMetrics metrics;
 
   public DiagnosisService(
       UserRepository users,
@@ -81,13 +83,15 @@ public class DiagnosisService {
       QuestionClassificationRepository classifications,
       TopicRepository topics,
       DisciplineRepository disciplines,
-      QuestionRepository questions) {
+      QuestionRepository questions,
+      TechMetrics metrics) {
     this.users = users;
     this.attempts = attempts;
     this.classifications = classifications;
     this.topics = topics;
     this.disciplines = disciplines;
     this.questions = questions;
+    this.metrics = metrics;
   }
 
   /** Monta o diagnóstico inicial do dono do token. */
@@ -233,6 +237,7 @@ public class DiagnosisService {
     notes.add("Frequências históricas sobre 6 edições (2020, 2022–2026; 2021 ausente no dataset, sem interpolação).");
     notes.add("Diagnóstico é estimativa inicial e explicável; o roteiro e a recomendação final entram nas TASKs 4.3–4.4.");
 
+    metrics.diagnosesGenerated();
     return new DiagnosisResponse(
         total, scored, correct, incorrect, annulled, overall, overallLevel, last,
         unclassified, List.copyOf(strengths), List.copyOf(weaknesses),

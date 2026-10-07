@@ -74,6 +74,7 @@ public class AttemptService {
   private final StudySessionRepository sessions;
   private final SimulationAttemptRefRepository simulations;
   private final PerformanceService performance;
+  private final br.com.voupassar.admin.service.TechMetrics metrics;
 
   public AttemptService(
       UserRepository users,
@@ -81,13 +82,15 @@ public class AttemptService {
       QuestionAttemptRepository attempts,
       StudySessionRepository sessions,
       SimulationAttemptRefRepository simulations,
-      PerformanceService performance) {
+      PerformanceService performance,
+      br.com.voupassar.admin.service.TechMetrics metrics) {
     this.users = users;
     this.questions = questions;
     this.attempts = attempts;
     this.sessions = sessions;
     this.simulations = simulations;
     this.performance = performance;
+    this.metrics = metrics;
   }
 
   /** Abre uma sessão de estudo ({@code IN_PROGRESS}). */
@@ -190,6 +193,7 @@ public class AttemptService {
     boolean hidden = "PROVA".equals(mode);
     log.info("tentativa user_id={} attempt_id={} question_id={} mode={} annulled={} hidden={}",
         userId, a.getId(), question.getId(), mode, annulled, hidden);
+    metrics.attemptsSubmitted();
     return toAttempt(a, hidden);
   }
 

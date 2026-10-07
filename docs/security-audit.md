@@ -83,13 +83,18 @@
 
 ### 2.9. Logs (`logs`)
 
-* **Status**: `OK` (com ressalva de conteúdo).
+* **Status**: `OK` (JSON na TASK 22.2, 2026-10-07; ressalva de produção mantida).
 * **Observação**:
-  - `application.yml`: `logging.level.root: INFO`, `br.com.voupassar: INFO` — nível razoável.
-  - `SecurityConfig.java`: nenhum `stacktrace` exposto ao cliente (`include-stacktrace: never`).
-  - Nenhum `System.out.println` com senha, token ou PII observado nos arquivos de `auth` lidos (`JwtAuthenticationFilter.java`, `AuthRateLimitFilter.java`).
-  - `frontend/js/state/session.js`: comentários confirmam `sem logs de token`.
-* **Ressalva**: o conteúdo real dos logs (`log/app/*.log` ou `log/sys/*.log`) não foi verificado; apenas a configuração de nível foi observada.
+  - `logback-spring.xml`: console em JSON (`LogstashEncoder` + `traceId` do
+    MDC); sem appender de arquivo no container — rotação no runtime
+    (`docker-compose.yml` `app.logging`: `json-file 10m × 3`).
+  - Auditoria de conteúdo: 19 `log.*` no backend, todos só com `user_id`
+    técnico — nenhum e-mail, senha, token ou SQL com dados;
+    `GlobalExceptionHandler.java:115` loga stack só no servidor (traceId).
+  - `application.yml`: `logging.level.root: INFO`, `br.com.voupassar: INFO`.
+  - `frontend/js/state/session.js`: `sem logs de token`.
+* **Ressalva**: o conteúdo real dos logs de produção confirma-se no deploy
+  (TASK 22.3); segredos seguem via env, nunca no Git.
 
 ### 2.10. Rate Limiting (`rate-limiting`)
 

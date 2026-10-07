@@ -32,6 +32,7 @@ O token em uso precisa ser reemitido (login/refresh) para carregar o novo papel.
 |---|---|---|---|
 | GET | `/admin/inconsistencies` | CURATOR+ | 4 checagens vivas (contagem + até 20 ids de amostra) |
 | GET | `/admin/metrics` | CURATOR+ | Totais de questões/classificações, anuladas, com-figura (sem PII, sem conteúdo) |
+| GET | `/admin/diagnostics` | CURATOR+ | Diagnóstico técnico (TASK 22.2): serviço, versão, `dbStatus`, última migration, uptime + contadores `voupassar.*` (sem PII) |
 
 `AdminMetricsResponse`: `questionsTotal`, `questionsAnnulled`,
 `questionsWithFigure`, `classificationsTotal` (sem mapas por status).
@@ -44,6 +45,9 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 curl -H "Authorization: Bearer $TOKEN" \
   "$BASE/api/v1/admin/inconsistencies"
+
+curl -H "Authorization: Bearer $TOKEN" \
+  "$BASE/api/v1/admin/diagnostics"
 ```
 
 ## 2. Inconsistências cobertas

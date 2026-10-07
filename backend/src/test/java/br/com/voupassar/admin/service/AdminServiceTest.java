@@ -25,6 +25,8 @@ class AdminServiceTest {
 
   @Mock QuestionRepository questions;
   @Mock QuestionClassificationRepository classifications;
+  @Mock org.springframework.jdbc.core.JdbcTemplate jdbc;
+  @Mock TechMetrics metrics;
 
   @InjectMocks AdminService service;
 
@@ -58,5 +60,38 @@ class AdminServiceTest {
     assertThat(metrics.questionsWithFigure()).isEqualTo(36L);
     assertThat(metrics.classificationsTotal()).isEqualTo(240L);
     verify(questions).countByHasFigureTrue();
+  }
+
+  @Test
+  void diagnosticsAssemblesSnapshotWithoutPii() {
+    when(jdbc.queryForObject("SELECT 1", Integer.class)).thenReturn(1);
+    when(jdbc.queryForObject(
+            "SELECT max(version) FROM flyway_schema_history", String.class))
+        .thenReturn("V16");
+    when(metrics.snapshot()).thenReturn(java.util.Map.of("voupassar.plans.generated", 2.0));
+
+    var diag = service.diagnostics();
+
+    assertThat(diag.service()).isEqualTo("voupassar-backend");
+    assertThat(diag.version()).isEqualTo("DESCONHECIDA"); // sem Spring no teste
+    assertThat(diag.dbStatus()).isEqualTo("UP");
+    assertThat(diag.lastMigration()).isEqualTo("V16");
+    assertThat(diag.uptimeMillis()).isGreaterThanOrEqualTo(0L);
+    assertThat(diag.metrics()).containsEntry("voupassar.plans.generated", 2.0);
+  }
+
+  @Test
+  void diagnosticsDegradesHonestlyWhenDbDown() {
+    when(jdbc.queryForObject("SELECT 1", Integer.class))
+        .thenThrow(new RuntimeException("boom"));
+    when(jdbc.queryForObject(
+            "SELECT max(version) FROM flyway_schema_history", String.class))
+        .thenThrow(new RuntimeException("boom"));
+    when(metrics.snapshot()).thenReturn(java.util.Map.of());
+
+    var diag = service.diagnostics();
+
+    assertThat(diag.dbStatus()).isEqualTo("DOWN");
+    assertThat(diag.lastMigration()).isEqualTo("DESCONHECIDA");
   }
 }

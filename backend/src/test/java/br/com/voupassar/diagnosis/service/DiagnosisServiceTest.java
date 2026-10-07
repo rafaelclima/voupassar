@@ -43,13 +43,14 @@ class DiagnosisServiceTest {
   @Mock TopicRepository topics;
   @Mock DisciplineRepository disciplines;
   @Mock QuestionRepository questions;
+  @Mock br.com.voupassar.admin.service.TechMetrics metrics;
 
   private DiagnosisService service;
 
   @BeforeEach
   void setup() {
     service = new DiagnosisService(
-        users, attempts, classifications, topics, disciplines, questions);
+        users, attempts, classifications, topics, disciplines, questions, metrics);
   }
 
   private static User user(long id, boolean active) {

@@ -68,6 +68,7 @@ public class ReviewSessionService {
   private final QuestionAttemptRepository responses;
   private final QuestionRepository questions;
   private final ReviewService review;
+  private final br.com.voupassar.admin.service.TechMetrics metrics;
 
   public ReviewSessionService(
       UserRepository users,
@@ -75,13 +76,15 @@ public class ReviewSessionService {
       ReviewSessionQuestionRepository caderno,
       QuestionAttemptRepository responses,
       QuestionRepository questions,
-      ReviewService review) {
+      ReviewService review,
+      br.com.voupassar.admin.service.TechMetrics metrics) {
     this.users = users;
     this.sessions = sessions;
     this.caderno = caderno;
     this.responses = responses;
     this.questions = questions;
     this.review = review;
+    this.metrics = metrics;
   }
 
   /**
@@ -128,6 +131,7 @@ public class ReviewSessionService {
     Map<Long, ReviewItem> meta = metaByQuestion(queue);
     log.info("sessao de revisao criada user_id={} session_id={} items={}",
         userId, session.getId(), rows.size());
+    metrics.reviewSessionsCreated();
     return toResponse(session, rows, byId, Map.of(), meta, true);
   }
 

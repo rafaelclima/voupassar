@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- TASK 3.1 — logging: console (container coleta/rotaciona), com traceId.
-     Produção usa JSON? Não no bootstrap: pattern legível + traceId atende
-     ao mínimo (TASK 10.3 evolui para JSON). -->
+<!-- VouPassar — logging (TASK 10.3, JSON na TASK 22.2).
+     Console em JSON (agregadores: Loki/ELK/CloudWatch) com traceId do MDC.
+     Sem appender de arquivo no container: coleta e rotação são do runtime
+     (docker json-file max-size/max-file no Compose local; daemon na VPS).
+     Sem PII/segredo: user_id técnico, nunca e-mail, senha ou token. -->
 <configuration>
-  <property name="PATTERN"
-            value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [traceId=%X{traceId:-}] [%thread] %logger{36} - %msg%n"/>
-
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>${PATTERN}</pattern>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <includeMdcKeyName>traceId</includeMdcKeyName>
+      <fieldNames>
+        <timestamp>@timestamp</timestamp>
+        <message>message</message>
+      </fieldNames>
       <charset>UTF-8</charset>
     </encoder>
   </appender>
