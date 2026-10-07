@@ -19,7 +19,7 @@
 
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
-import { injectFigureNotice } from "../components/figure.js";
+import { mountExpandableFigure, preloadManifest } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
 import {
@@ -105,6 +105,7 @@ async function main() {
     return;
   }
   state.user = user;
+  preloadManifest().catch(() => null);
   subtitle.textContent = `Olá, ${user.displayName || "estudante"} — escolha disciplina e assunto, pratique com correção imediata e veja seu progresso no recorte.`;
   showLogoutButtons();
   readUrlIntoFilters();
@@ -1136,12 +1137,9 @@ function renderQuestionCard(q) {
   card.appendChild(el("p", { className: "question-card__statement", text: q.statement || "(enunciado ainda não conferido)" }));
   // Textos-base (TASK 6.9): expansíveis logo após o enunciado, em todos os modos.
   renderPassages(q, card);
-  if (q.hasFigure) {
-    // Usa componente para aviso com referência ao caderno + página
-    const noticeP = el("p", { className: "question-card__figure" });
-    card.appendChild(noticeP);
-    // Deixa a mensagem inicial; o componente pode enriquecer se o manifest estiver disponível
-    injectFigureNotice(q, card);
+  if (q.hasFigure || (Array.isArray(q.figures) && q.figures.length > 0)) {
+    // Figura expansível: o recorte publicado aparece ao abrir "Mostrar figura".
+    card.appendChild(mountExpandableFigure(q, "question-card__figure"));
   }
   const topicLine = q.topic?.name
     ? `Assunto: ${q.topic.name}${q.subtopic?.name ? ` · ${q.subtopic.name}` : ""}`

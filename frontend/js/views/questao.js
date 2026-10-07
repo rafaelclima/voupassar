@@ -23,7 +23,7 @@ import { restoreSession, logout } from "../api/auth.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, confidenceLabel, choiceLabel } from "../vocab.js";
-import { renderFigure, injectFigureNotice } from "../components/figure.js";
+import { renderFigure } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
 

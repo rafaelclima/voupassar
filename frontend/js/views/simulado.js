@@ -19,7 +19,7 @@
 
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { restoreSession, logout } from "../api/auth.js";
-import { injectFigureNotice } from "../components/figure.js";
+import { mountExpandableFigure, preloadManifest } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
 import {
@@ -109,6 +109,7 @@ async function main() {
     return;
   }
   state.user = user;
+  preloadManifest().catch(() => null);
   subtitle.textContent = `Olá, ${user.displayName || "estudante"} — monte por disciplina ou reproduza uma edição real, responda como em prova e receba a correção ao final.`;
   showLogoutButtons();
   const id = readAttemptId();
@@ -628,10 +629,9 @@ function renderSimCard(item, detail) {
   card.appendChild(el("p", { className: "sim-card__statement", text: detail?.statement || "(enunciado ainda não conferido)" }));
   // Textos-base (TASK 6.9): parte do enunciado — visíveis também no Modo Prova.
   if (detail) renderPassages(detail, card);
-  if (detail?.hasFigure) {
-    const figP = el("p", { className: "sim-card__figure" });
-    card.appendChild(figP);
-    injectFigureNotice(detail, card);
+  if (detail?.hasFigure || (Array.isArray(detail?.figures) && detail.figures.length > 0)) {
+    // Figura expansível (também no Modo Prova: só o gabarito é oculto, AGENTS.md §9).
+    card.appendChild(mountExpandableFigure(detail, "sim-card__figure"));
   }
 
   const fieldset = el("fieldset", { className: "sim-options" });

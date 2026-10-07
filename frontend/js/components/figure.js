@@ -48,52 +48,86 @@ export function getFigureMeta(manifest, key) {
 }
 
 /* Cria o elemento <figure> para uma questão oficial com recorte publicado. */
+/* Figuras vindas da API (q.figures[]) têm prioridade sobre o manifest. */
+function apiFigures(q) {
+  const list = Array.isArray(q?.figures) ? q.figures : [];
+  return list.filter((f) => f && (f.filePath || f.path));
+}
+
+function apiFileToUrl(f) {
+  const raw = f.filePath || f.path || "";
+  const clean = String(raw).replace(/^\.\//, "").replace(/^frontend\//, "");
+  if (/^(assets\/figures\/|assets\/|https?:\/\/)/.test(clean)) return clean;
+  return "assets/figures/" + clean.replace(/^\/+/, "");
+}
+
+export function preloadManifest() {
+  return loadManifest();
+}
+
 export async function renderFigure(q, container) {
-  if (!q || !q.hasFigure) {
-    // Se não tem figura no banco: nada a exibir (mantém comportamento anterior)
+  if (!q || (!q.hasFigure && apiFigures(q).length === 0)) {
+    // Se não tem figura no banco nem na API: nada a exibir
     return null;
   }
 
+  const fromApi = apiFigures(q);
   const key = resolveKey(q);
-  const manifest = await loadManifest();
+  const manifest = fromApi.length > 0 ? await loadManifest().catch(() => null) : await loadManifest();
   const meta = getFigureMeta(manifest, key);
-  const url = buildFigureUrl(manifest, key, 0);
+  const manifestUrl = buildFigureUrl(manifest, key, 0);
+  const manifestFiles = Array.isArray(meta?.files) ? meta.files : [];
+  const url = fromApi.length > 0 ? null : manifestUrl;
 
-  // Sempre renderiza algum feedback visual quando hasFigure=true,
-  // mesmo que ainda não tenha arquivo publicado.
-  const figureEl = el("figure", { className: "qfigure" });
-
-  if (url) {
-    const img = el("img", {
-      className: "qfigure__img",
-      attrs: {
-        src: url,
-        alt: meta?.alt || `Figura da questão ${q.questionNumber || q.id} (ver caderno-fonte).`,
-        loading: "lazy",
-        "aria-describedby": `qfigure-caption-${q.id || ""}`,
-      },
+  // Monta a lista de imagens: API primeiro, depois todos os files do manifest.
+  const base = (manifest && manifest.base) || "./assets/figures";
+  const items = [];
+  for (const f of fromApi) {
+    items.push({
+      src: apiFileToUrl(f),
+      alt: f.altText || f.alt || meta?.alt || `Figura da questão ${q.questionNumber || q.id} (ver caderno-fonte).`,
+      page: f.page ?? meta?.page ?? q.pageStart ?? null,
     });
-    // Fallback se a imagem quebrar: volta para aviso, nunca deixa vazio
-    img.addEventListener("error", () => {
-      img.hidden = true;
-      const fallback = el("p", {
-        className: "muted",
-        text: "Esta questão possui figura no caderno original (consulte o PDF-fonte).",
+  }
+  if (items.length === 0) {
+    manifestFiles.forEach((file) => {
+      items.push({
+        src: base.replace("./assets/figures", "assets/figures") + "/" + file,
+        alt: meta?.alt || `Figura da questão ${q.questionNumber || q.id} (ver caderno-fonte).`,
+        page: meta?.page ?? q.pageStart ?? null,
       });
-      figureEl.appendChild(fallback);
-    }, { once: true });
+    });
+  }
 
-    figureEl.appendChild(img);
-  } else {
-    // Sem arquivo publicado: aviso explícito com referência de localização
+  const figureEl = el("figure", { className: "qfigure" });
+  if (items.length === 0) {
     const msg = meta
       ? `Figura indisponível neste recorte: ver caderno ${q.examYear}, página ${meta.page || "—"}.`
       : `Esta questão possui figura no caderno original (prova ${q.examYear || "desconhecida"}, página ${q.pageStart || "—"} — consulte o PDF-fonte).`;
-    const notice = el("p", { className: "qfigure__notice muted", text: msg });
-    figureEl.appendChild(notice);
+    figureEl.appendChild(el("p", { className: "qfigure__notice muted", text: msg }));
+  } else {
+    items.forEach((item, i) => {
+      const img = el("img", {
+        className: "qfigure__img",
+        attrs: {
+          src: item.src,
+          alt: item.alt,
+          loading: "lazy",
+          "aria-describedby": `qfigure-caption-${q.id || ""}`,
+        },
+      });
+      img.addEventListener("error", () => {
+        img.hidden = true;
+        figureEl.appendChild(el("p", {
+          className: "muted",
+          text: "Esta questão possui figura no caderno original (consulte o PDF-fonte).",
+        }));
+      }, { once: true });
+      figureEl.appendChild(img);
+      if (i < items.length - 1) figureEl.appendChild(el("br", {}));
+    });
   }
 
-  // Caption com proveniência e referência ao caderno (sempre presente)
   const captionText = meta?.credit || `Fonte: IFRN — Caderno ${q.examYear || "—"}, ` +
     `p. ${meta?.page || (q.pageStart ? String(q.pageStart) : "—")} (recorte para estudo).`;
   const caption = el("figcaption", {
@@ -105,6 +139,25 @@ export async function renderFigure(q, container) {
 
   container.appendChild(figureEl);
   return figureEl;
+}
+
+/* Figura expansível ("Mostrar figura") para Estudos/Simulado: economiza scroll no mobile. */
+export function mountExpandableFigure(q, className) {
+  const details = el("details", { className: className || "qfigure-details" });
+  const summary = document.createElement("summary");
+  summary.className = "qfigure-details__summary";
+  summary.textContent = "Mostrar figura";
+  details.appendChild(summary);
+  const body = el("div", { className: "qfigure-details__body" });
+  body.appendChild(el("p", { className: "muted", text: "Carregando figura…" }));
+  details.appendChild(body);
+  renderFigure(q, body).then(() => {
+    const loading = body.querySelector("p.muted");
+    if (loading && body.querySelector("figure")) loading.remove();
+  }).catch(() => {
+    body.textContent = "Não foi possível carregar a figura agora.";
+  });
+  return details;
 }
 
 /* Versão síncrona para telas que não querem await (ex.: estudos/simulado). */

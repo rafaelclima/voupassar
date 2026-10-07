@@ -9,15 +9,16 @@
 
 * **Hospedagem: assets no frontend** — recortes otimizados em
   `frontend/assets/figures/`, servidos pelo GitHub Pages (estático).
-  A API retorna apenas metadados (caminho relativo + `alt` + página +
-  `publicationStatus`); nunca o binário.
+  A API retorna apenas metadados (caminho relativo + `alt` + página);
+  nunca o binário.
 * **Curadoria manual:** o responsável recorta as figuras do caderno oficial e
   coloca os arquivos na pasta padronizada abaixo. O frontend casa
   arquivo ↔ questão por convenção + `manifest.json` (sem adivinhar conteúdo).
 * **Direitos (AGENTS.md §12):** cada figura carrega proveniência
-  (edição, páginas, documento-fonte). A exibição plena é liberada quando
-  `publicationStatus = PUBLICAVEL`; enquanto `PENDENTE_REVISAO`, a UI mostra
-  o aviso de curadoria + referência de página (nunca imagem inventada pela IA).
+  (edição, páginas, documento-fonte). Todo recorte presente no
+  `manifest.json` é exibido — sem gate de publicação (decisão 2026-10-07).
+  Sem arquivo publicado, a UI mostra o aviso + referência de página
+  (nunca imagem inventada pela IA).
 
 ## 2. Convenção de nomeação (NÃO quebrar sem migrar o validador)
 
@@ -59,8 +60,7 @@ frontend/assets/figures/
       "files": ["2026/Q18.webp"],
       "page": 7,
       "alt": "Charge em preto e branco com dois personagens dialogando (ver imagem).",
-      "credit": "Fonte: IFRN — Caderno 2026, p. 7 (recorte para estudo).",
-      "status": "PENDENTE_REVISAO"
+      "credit": "Fonte: IFRN — Caderno 2026, p. 7 (recorte para estudo)."
     }
   }
 }
@@ -74,9 +74,9 @@ frontend/assets/figures/
   sem transcrever valores não conferidos. Template neutro aceito até a
   revisão: `"Figura da questão <N> da prova <ano> (página <p> do caderno) — transcrição pendente de revisão."`
 * `credit`: fixo no formato acima (o frontend gera sozinho se ausente).
-* `status`: `PENDENTE_REVISAO` (default) → `PUBLICAVEL` após revisão visual
-  (confere figura × enunciado × alternativas) — espelha
-  `question_figures.publication_status` no banco (migração `V8`).
+* Sem campo de status: o que está no manifest é exibido. A revisão visual
+  (confere figura × enunciado × alternativas) acontece antes de adicionar
+  o arquivo, não via gate posterior.
 
 ## 4. Como adicionar uma figura (passo a passo)
 
@@ -87,18 +87,19 @@ frontend/assets/figures/
    `frontend/assets/figures/<ano>/Q<NN>.webp` (ou `Q<NN>-2.webp`, …).
 4. Preencha `alt` da entrada correspondente no `manifest.json`.
 5. Rode `python3 scripts/analysis/check_figures.py` — ele valida nome,
-   formato, dimensão, `alt`, página e lista as 36 pendências.
-6. Publique: quando a revisão visual estiver OK, marque `status` como
-   `PUBLICAVEL` no manifest e sincronize o banco com
-   `python3 scripts/db/sync_figures.py --publish` (cria `question_figures`
-   + espelha o status; idempotente).
+   formato, dimensão, `alt`, página e lista as pendências.
+6. Sincronize o banco com `python3 scripts/db/sync_figures.py`
+   (cria `question_figures`; idempotente). A partir daí a figura
+   aparece em todas as telas (questão abre direto; estudos/simulado
+   em "Mostrar figura").
 
 ## 5. Comportamento da UI (todas as telas de questão)
 
 Módulo único `frontend/js/components/figure.js`:
 
-* Prioridade: `API q.figures[] (PUBLICAVEL)` → `manifest.json` →
-  convenção direta `./assets/figures/<ano>/Q<NN>.webp` → aviso.
+* Prioridade: `API q.figures[]` → `manifest.json` → aviso com
+  referência ao caderno. `questao.html` exibe direto; `estudos.html`
+  e `simulado.html` usam `<details>` expansível ("Mostrar figura").
 * Com imagem: `<figure class="qfigure"><img loading="lazy" …><figcaption>…</figcaption></figure>`
   (`alt` sempre presente; `onerror` volta para o aviso — nunca img quebrada).
 * Sem imagem (ainda em curadoria): aviso textual atual preservado
@@ -114,10 +115,10 @@ Módulo único `frontend/js/components/figure.js`:
 ## 6. Backend (contrato, sem redistribuir binário)
 
 * Migração `V8__question_figures.sql` → tabela `question_figures`
-  (`question_id`, `position`, `file_path`, `alt_text`, `page`,
-  `publication_status`, …; UNIQUE `(question_id, position)`).
-* `QuestionResponse.figures[]` → `{path, alt, page, position, publicationStatus}`.
-  `path` é relativo a `frontend/assets/figures/` (ex.: `"2026/Q18.webp"`).
+  (`question_id`, `position`, `file_path`, `alt_text`, `page`, …;
+  UNIQUE `(question_id, position)`).
+* `QuestionResponse.figures[]` → `{filePath, altText, position, page}`.
+  `filePath` é relativo a `frontend/assets/figures/` (ex.: `"2026/Q18.webp"`).
 * `sync_figures.py` (idempotente, `ON CONFLICT DO NOTHING` + checagem de
   divergência como o importador TASK 2.3): lê o manifest, resolve
   `(ano, numero) → question_id` e insere/atualiza `question_figures`.
@@ -139,7 +140,7 @@ Módulo único `frontend/js/components/figure.js`:
 
 ## 8. Situação inicial
 
-As 36 entradas já estão esqueletadas no `manifest.json` com `status`
-`PENDENTE_REVISAO` e `alt` template — ou seja, a UI hoje mostra o aviso +
-caminho esperado. À medida que os recortes forem colocados na pasta e o
-`alt` for redigido, a imagem aparece automaticamente (sem mudar código).
+As entradas do `manifest.json` apontam para os recortes em
+`frontend/assets/figures/` — a imagem aparece automaticamente assim que
+arquivo + entrada existem (sem mudar código). Sem arquivo publicado,
+a UI mostra o aviso + referência ao caderno.
