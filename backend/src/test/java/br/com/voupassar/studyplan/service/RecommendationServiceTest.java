@@ -403,8 +403,7 @@ class RecommendationServiceTest {
   }
 
   @Test
-  void subtopicNullWithoutSignalOrIncoherent() {
-    // Sem linhas de subassunto → NULL; incoerente (outro tópico) → NULL.
+  void subtopicNullWithoutSignalOrIncoherent() {    // Sem linhas de subassunto → NULL; incoerente (outro tópico) → NULL.
     Discipline d = discipline("MAT");
     Topic t = topic(1L, "ALGEBRA", d);
     Topic other = topic(2L, "OUTRO", d);
@@ -420,5 +419,65 @@ class RecommendationServiceTest {
     StudyPlanResponse plan = service.generatePlan(1L);
 
     assertNull(plan.items().get(0).subtopicId());
+  }
+
+  // ---- TASK 20.1 (plano provisório só-frequência) ----
+
+  @Test
+  void newAccountGetsProvisorioOrderedByFrequency() {
+    // Zero pontuáveis → PROVISORIO em 1 clique, 100% oficial, ordem por frequência.
+    Discipline d = discipline("MAT");
+    Topic freq = topic(1L, "FREQUENTE", d);
+    Topic rare = topic(2L, "RARO", d);
+    stubUserWithPlan(1L);
+    when(attempts.countByUserIdAndAnnulledFalse(1L)).thenReturn(0L);
+    when(topics.findAllOrdered()).thenReturn(List.of(rare, freq));
+    when(performanceRepo.findProgressByUserId(1L)).thenReturn(List.of());
+    stubHistory(1L, 70L, List.of((short) 2024, (short) 2025, (short) 2026), List.of(101L));
+    when(classifications.countByTopic()).thenReturn(List.<Object[]>of(
+        new Object[] {1L, 70L}, new Object[] {2L, 5L}));
+    when(classifications.editionsByTopic(2L)).thenReturn(List.of((short) 2026));
+    when(classifications.officialQuestionIdsByTopic(2L)).thenReturn(List.of(102L));
+    when(classifications.difficultyByTopic()).thenReturn(List.of());
+
+    StudyPlanResponse plan = service.generatePlan(1L);
+
+    assertEquals("PROVISORIO", plan.status());
+    assertEquals(1L, plan.items().get(0).topicId());
+    assertTrue(plan.items().get(0).reason().contains("provisório"));
+  }
+
+  @Test
+  void threeScoredGetsPessoal() {
+    // ≥3 pontuáveis (limiar do diagnóstico) → PESSOAL.
+    stubUserWithPlan(1L);
+    when(attempts.countByUserIdAndAnnulledFalse(1L)).thenReturn(3L);
+    when(topics.findAllOrdered()).thenReturn(List.of());
+    when(performanceRepo.findProgressByUserId(1L)).thenReturn(List.of());
+
+    StudyPlanResponse plan = service.generatePlan(1L);
+
+    assertEquals("PESSOAL", plan.status());
+    assertTrue(plan.items().isEmpty());
+  }
+
+  @Test
+  void regenerationFlipsProvisorioToPessoal() {
+    // Regenerar após o diagnóstico vira pessoal (flag viaja no plano).
+    stubUserWithPlan(1L);
+    when(topics.findAllOrdered()).thenReturn(List.of());
+    when(performanceRepo.findProgressByUserId(1L)).thenReturn(List.of());
+
+    when(attempts.countByUserIdAndAnnulledFalse(1L)).thenReturn(0L);
+    assertEquals("PROVISORIO", service.generatePlan(1L).status());
+
+    StudyPlan old = new StudyPlan(1L, "v2-deterministico");
+    old.setStatus("PROVISORIO");
+    when(studyPlans.findByUserIdAndIsActiveTrue(1L)).thenReturn(Optional.of(old));
+    when(attempts.countByUserIdAndAnnulledFalse(1L)).thenReturn(5L);
+    StudyPlanResponse next = service.generatePlan(1L);
+
+    assertEquals("PESSOAL", next.status());
+    assertFalse(old.getIsActive());
   }
 }

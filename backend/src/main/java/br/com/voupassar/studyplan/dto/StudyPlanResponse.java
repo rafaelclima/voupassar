@@ -16,6 +16,7 @@ public record StudyPlanResponse(
     Long userId,
     Boolean isActive,
     String algorithmVersion,
+    String status,
     OffsetDateTime generatedAt,
     OffsetDateTime createdAt,
     OffsetDateTime updatedAt,

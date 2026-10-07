@@ -112,10 +112,12 @@ public class RecommendationService {
    * <p>Fluxo:
    * <ol>
    *   <li>Verifica se já existe um plano ativo para o usuário;</li>
- *   <li>Se existir, desativa o anterior e cria um novo (não apaga histórico);</li>
- *   <li>Calcula prioridades para todos os tópicos via algoritmo determinístico;</li>
- *   <li>Cria itens do roteiro com motivo explicável e evidência rastreável.</li>
- * </ol>
+  *   <li>Se existir, desativa o anterior e cria um novo (não apaga histórico);</li>
+  *   <li>Conta tentativas pontuáveis: &lt;3 → plano {@code PROVISORIO}
+  *       (só frequência histórica, TASK 20.1); ≥3 → {@code PESSOAL};</li>
+  *   <li>Calcula prioridades para todos os tópicos via algoritmo determinístico;</li>
+  *   <li>Cria itens do roteiro com motivo explicável e evidência rastreável.</li>
+   * </ol>
    */
   @Transactional
   public StudyPlanResponse generatePlan(long userId) {
@@ -132,14 +134,22 @@ public class RecommendationService {
           studyPlans.saveAndFlush(plan);
         });
 
+    // TASK 20.1: sem ≥3 pontuáveis (mesmo limiar do diagnóstico,
+    // DiagnosisService.MIN_SCORED_FOR_SIGNAL), o plano é PROVISORIO —
+    // ordenado só por frequência histórica. A regeneração após o
+    // diagnóstico marca PESSOAL (a flag viaja no plano, sem nova tabela).
+    long scored = attempts.countByUserIdAndAnnulledFalse(userId);
+    boolean provisorio = scored < br.com.voupassar.diagnosis.service.DiagnosisService.MIN_SCORED_FOR_SIGNAL;
+
     StudyPlan newPlan = new StudyPlan(userId, ALGORITHM_VERSION);
+    newPlan.setStatus(provisorio ? "PROVISORIO" : "PESSOAL");
     StudyPlan savedPlan = studyPlans.save(newPlan);
     if (savedPlan == null) {
       savedPlan = newPlan;
     }
 
     // Calcula prioridades determinísticas
-    List<StudyPlanItem> items = buildRecommendations(userId, savedPlan);
+    List<StudyPlanItem> items = buildRecommendations(userId, savedPlan, provisorio);
     studyPlanItems.saveAll(items);
 
     savedPlan.setItems(items);
@@ -149,7 +159,7 @@ public class RecommendationService {
   /**
    * Constrói a lista de recomendações para o usuário (score v2, TASK 18.1).
    */
-  private List<StudyPlanItem> buildRecommendations(long userId, StudyPlan plan) {
+  private List<StudyPlanItem> buildRecommendations(long userId, StudyPlan plan, boolean provisorio) {
     List<Topic> taxonomy = topics.findAllOrdered();
     List<StudyPlanItem> out = new ArrayList<>();
 
@@ -267,7 +277,7 @@ public class RecommendationService {
     for (int i = 0; i < scores.size(); i++) {
       TopicScore ts = scores.get(i);
       Topic t = ts.topic;
-      String reason = buildReason(t, ts, loadMultiplier);
+      String reason = buildReason(t, ts, loadMultiplier, provisorio);
       List<Integer> years = editionYearsByTopic.getOrDefault(t.getId(), List.of());
       List<Long> sampleIds = classifications.officialQuestionIdsByTopic(t.getId()).stream()
           .limit(EVIDENCE_SAMPLE_LIMIT).toList();
@@ -405,7 +415,7 @@ public class RecommendationService {
    * Gera o motivo textual explicável da recomendação, derivado dos mesmos
    * fatores que classificam o item (evidência antes de opinião).
    */
-  private String buildReason(Topic topic, TopicScore ts, double loadMultiplier) {
+  private String buildReason(Topic topic, TopicScore ts, double loadMultiplier, boolean provisorio) {
     StringBuilder sb = new StringBuilder();
     sb.append("Recomendação para ").append(topic.getCode()).append(" (");
     sb.append(topic.getName()).append(") — ");
@@ -437,6 +447,9 @@ public class RecommendationService {
     }
 
     sb.append(" Evidência derivada de classificações vigentes + desempenho registrado.");
+    if (provisorio) {
+      sb.append(" Plano provisório: comece pelo que mais cai — vira pessoal após o diagnóstico (3+ pontuáveis).");
+    }
     return sb.toString();
   }
 
@@ -554,6 +567,7 @@ public class RecommendationService {
         plan.getUserId(),
         plan.getIsActive(),
         plan.getAlgorithmVersion(),
+        plan.getStatus(),
         plan.getGeneratedAt(),
         plan.getCreatedAt(),
         plan.getUpdatedAt(),

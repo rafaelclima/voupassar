@@ -67,7 +67,7 @@ class RecommendationControllerTest {
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
         OffsetDateTime.parse("2026-10-01T10:00:00Z"));
     return new StudyPlanResponse(
-        3L, userId, true, "v2-deterministico",
+        3L, userId, true, "v2-deterministico", "PESSOAL",
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),
         OffsetDateTime.parse("2026-10-01T10:00:00Z"),

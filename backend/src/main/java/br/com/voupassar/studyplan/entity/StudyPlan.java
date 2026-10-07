@@ -29,6 +29,9 @@ public class StudyPlan {
   @Column(name = "algorithm_version", nullable = false)
   private String algorithmVersion;
 
+  @Column(name = "status", nullable = false)
+  private String status = "PESSOAL";
+
   @Column(name = "generated_at", nullable = false)
   private OffsetDateTime generatedAt;
 
@@ -61,6 +64,10 @@ public class StudyPlan {
   public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
   public String getAlgorithmVersion() { return algorithmVersion; }
+
+  public String getStatus() { return status; }
+
+  public void setStatus(String status) { this.status = status; }
 
   public OffsetDateTime getGeneratedAt() { return generatedAt; }
 

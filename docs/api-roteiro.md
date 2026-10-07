@@ -28,6 +28,7 @@
 | `user_id` | BIGINT FK (`users`) | `ON DELETE CASCADE` |
 | `is_active` | BOOLEAN DEFAULT TRUE | Único ativo por usuário (`UNIQUE` parcial) |
 | `algorithm_version` | TEXT NOT NULL | `v2-deterministico` desde a 18.1 (`v1-…` nos planos antigos; sem ML no MVP) |
+| `status` | TEXT NOT NULL | `PROVISORIO` (<3 pontuáveis) / `PESSOAL` (≥3) — TASK 20.1, `V16__study_plan_status.sql` |
 | `generated_at` | TIMESTAMPTZ | Quando o roteiro foi criado |
 
 ### `study_plan_items`
@@ -77,6 +78,17 @@ Regras:
 2. **Geração (TASK 4.3)** → `POST /api/v1/recommendations` cria `study_plan` + `study_plan_items` com prioridades determinísticas.
 3. **Acompanhamento (TASK 4.4)** → aluno atualiza `status` (`POST .../items/{id}/status`) para registrar progresso.
 4. **Revisão** → quando o desempenho muda (mais tentativas registradas), `POST /api/v1/recommendations` regenera o roteiro (desativa anterior, preserva histórico).
+
+### Plano provisório (TASK 20.1)
+
+Conta nova sem tentativas pontuáveis recebe plano em 1 clique (`POST
+/api/v1/recommendations`, só dono do token): `study_plans.status =
+PROVISORIO`, itens ordenados só por frequência histórica
+(`countByTopic/editionsByTopic` — top `60/60/25/…` do `content-map.md`),
+100% oficiais, com nota no `reason` ("comece pelo que mais cai — vira
+pessoal após o diagnóstico"). Com ≥3 pontuáveis (mesmo limiar
+`MIN_SCORED_FOR_SIGNAL` do diagnóstico), a (re)geração marca `PESSOAL`.
+Quem pula o wizard da 20.2 fica com o provisório até ter sinal.
 
 ## Critérios de aceitação
 
