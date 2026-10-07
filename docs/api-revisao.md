@@ -128,3 +128,28 @@ Contratos disponíveis em `GET /v3/api-docs` (público, sem PII) e
 - Classificações com revisão PENDENTE — a fila herda a mesma pendência do
   diagnóstico (TASK 12.2); itens sem classificação entram como `REFORCO`
   com nota `NECESSITA REVISÃO`, nunca omitidos.
+
+## Uso pelo frontend (TASK 17.1 — sem mudança de contrato)
+
+Cliente fino em `frontend/js/api/review.js` (espelho de `api/simulado.js`;
+nenhuma regra de negócio no frontend — filtros, ordenação e motivos vivem
+no backend). Erros chegam como `ApiError` com envelope preservado
+(`code`/`traceId`, via `api/client.js`).
+
+```js
+import { getQueue } from "./api/review.js";
+import { reviewCategoryLabel, reviewCategoryHint } from "../vocab.js";
+
+const queue = await getQueue({ limit: 20 });                       // fila cheia
+const erros = await getQueue({ onlyErrors: true, limit: 10 });     // só baldes 0–1
+const mat = await getQueue({ discipline: "MATEMATICA", topicId: 5 });
+```
+
+- Conta nova (sem tentativas): `200` com `items: []` — a view mostra o vazio
+  honesto ("responda 3+ questões para ativar", mesmo `MIN_SCORED` do
+  diagnóstico), nunca 500.
+- Categoria e motivo na tela: `reviewCategoryLabel(item.reviewCategory)` +
+  `reviewCategoryHint(item.reviewCategory)` (`frontend/js/vocab.js`) — nunca
+  o enum cru; os números auditáveis continuam vindo no `reason` da API.
+- `daysSinceLastAttempt` é informativo (desempate relativo no backend),
+  nunca limiar de dias na UI.

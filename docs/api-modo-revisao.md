@@ -146,3 +146,26 @@ documentação públicas — só schemas, sem PII). Tag `Modo Revisão`; escopo
 * `liveMeta` faz `catch (RuntimeException)` → caderno sem categoria
   (nunca 500 por causa do enriquecimento); o `log.warn` registra a causa
   no servidor.
+
+## Uso pelo frontend (TASK 17.1 — sem mudança de contrato)
+
+Mesmo cliente fino (`frontend/js/api/review.js`); as respostas continuam via
+`POST /attempts` com `mode=REVISAO` (cliente existente `api/questao.js` /
+`api/simulado.js`) e o encerramento via `POST /study-sessions/{id}/finish`
+(inalterados).
+
+```js
+import { createSession, getSession, getSessionResult } from "./api/review.js";
+
+const session = await createSession({ limit: 10, onlyErrors: true }); // 201, caderno congelado
+const caderno = await getSession(session.sessionId);                   // retomada + progresso
+const resultado = await getSessionResult(session.sessionId);           // só após encerrar (antes → 409)
+```
+
+- `createSession({ questionIds })` é reserva para a TASK 19.2 (raio-X): o
+  backend 17.1 só congela o top-N via filtros, então o cliente recusa ids com
+  erro explícito — nunca envia campo desconhecido nem ignora a seleção em
+  silêncio.
+- `REVISAO` nunca oculta: `selectedOption`/`isCorrect` sempre revelados no
+  `GET` (ao contrário da `PROVA`); a UI da execução/resultado chega nas
+  TASKs 17.2–17.3 reutilizando o caderno do simulado.

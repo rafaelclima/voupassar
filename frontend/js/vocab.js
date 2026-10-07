@@ -108,6 +108,39 @@ export function masteryLabel(level) {
   return MASTERY[level] || "Ainda sem dados";
 }
 
+/** Fila de revisão: categorias 0–5 (menor = mais urgente). Espelha os baldes
+ *  do backend (ReviewService.java — categorize/weight), sem exibir o enum
+ *  cru ao aluno. Valor desconhecido → "Categoria desconhecida" (AGENTS §4). */
+const REVIEW_CATEGORIES = {
+  ERRO_SEM_ACERTO: "Erro sem acerto",
+  ERRO_RECENTE: "Erro recente",
+  TOPICO_FRAGIL: "Assunto frágil",
+  REFORCO: "Reforço",
+  MANUTENCAO: "Manutenção",
+  CONSOLIDADO: "Consolidado",
+};
+
+export function reviewCategoryLabel(category) {
+  return REVIEW_CATEGORIES[category] || "Categoria desconhecida";
+}
+
+/** Motivo curto por categoria: paráfrase da dica que o próprio backend
+ *  anexa ao `reason` de cada item (ReviewService.java — itemReason). O
+ *  `reason` completo continua vindo da API com os números auditáveis; aqui
+ *  mora só o texto fixo em português, sem código interno. */
+const REVIEW_CATEGORY_HINTS = {
+  ERRO_SEM_ACERTO: "Prioridade máxima: você ainda não acertou esta questão.",
+  ERRO_RECENTE: "Regressão: você já acertou antes — reveja antes que o erro se fixe.",
+  TOPICO_FRAGIL: "Você acertou a questão, mas o assunto segue frágil.",
+  REFORCO: "Reforço para consolidar o assunto.",
+  MANUTENCAO: "Manutenção: exposição única, risco de baixa retenção.",
+  CONSOLIDADO: "Manutenção do consolidado.",
+};
+
+export function reviewCategoryHint(category) {
+  return REVIEW_CATEGORY_HINTS[category] || "";
+}
+
 /** Assuntos do acervo, conferidos na tabela `topics` do banco.
  *  Serve para traduzir o código que vem dentro das frases do backend
  *  (ex.: "tema GRAMATICA_NORMA") sem precisar exibir o código cru. */
