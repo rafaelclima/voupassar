@@ -21,6 +21,11 @@
  * fila em estudos.html?aba=revisao. ?review=<sessionId> executa a sessão
  * (TASK 17.3, dono js/views/review-exec.js): caderno congelado com resposta
  * imediata em modo REVISAO + resultado ao encerrar + volta à fila.
+ *
+ * TASK 19.1 (raio-X pós-atividade): ao final (`renderFinishedState`) o
+ * bloco "O que fazer agora" (`js/components/result-next.js`) resume os
+ * piores assuntos com o caderno em cache + até 3 CTAs (revisar via
+ * `POST /review/sessions`, praticar com recorte, atualizar o plano).
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
@@ -44,7 +49,10 @@ import {
   submitAttempt,
 } from "../api/simulado.js";
 import { loadReviewExecution } from "./review-exec.js";
+import { createSession } from "../api/review.js";
+import { generatePlan } from "../api/dashboard.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { summarizeResult, renderResultNext } from "../components/result-next.js";
 import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, sourceTypeLabel } from "../vocab.js";
 
 const PAGE_SIZE = 20;
@@ -990,6 +998,7 @@ async function renderFinishedState() {
     resultBox.textContent = "";
     renderScoreGrid(res);
     renderResultItems(res);
+    renderNextSteps(res);
     resultSection.scrollIntoView({ block: "start" });
     document.getElementById("sim-result-t")?.focus?.({ preventScroll: true });
   } catch (err) {
@@ -1071,6 +1080,84 @@ function renderResultItems(res) {
     row.appendChild(el("span", { className: badgeClass, text: badgeText }));
     row.appendChild(el("span", { text: verdict }));
     resultBox.appendChild(row);
+  }
+}
+
+/* ---------- raio-X pós-atividade (TASK 19.1) ---------- */
+
+// Bloco "O que fazer agora" após a correção por posição: piores assuntos
+// da atividade + erros + até 3 CTAs (revisar, praticar, atualizar plano).
+// O assunto vem do caderno em cache (`state.details`); sem detalhe, o
+// componente agrupa por disciplina — nunca inventa assunto.
+function renderNextSteps(res) {
+  let summary = null;
+  try {
+    summary = summarizeResult(res, state.details);
+  } catch {
+    return;
+  }
+  if (!summary) return;
+  const mount = el("div", { className: "mt-4" });
+  resultBox.appendChild(mount);
+  try {
+    renderResultNext(mount, summary, { onReview: startReviewFromNext, onPlan: refreshPlanFromNext });
+  } catch {
+    mount.remove();
+  }
+}
+
+// "Revisar estes N agora": congela o topo da fila no assunto que mais
+// pesou (topicId quando o caderno classificou, senão disciplina) com
+// `onlyErrors` e abre a sessão em `?review=`. 401 → guard (o interceptor
+// do client.js já tentou 1 refresh silencioso).
+async function startReviewFromNext(summary, button) {
+  const n = summary?.errorCount ?? 0;
+  if (!n) {
+    toast("Nenhum erro nesta atividade para revisar.", "info");
+    return;
+  }
+  const top = summary.topGroup;
+  setButtonLoading(button, true, "Criando revisão…");
+  try {
+    const session = await createSession({
+      limit: Math.min(Math.max(n, 1), 100),
+      ...(top?.topicId ? { topicId: top.topicId } : {}),
+      ...(top?.disciplineCode ? { discipline: top.disciplineCode } : {}),
+      onlyErrors: true,
+    });
+    const id = session?.id ?? session?.sessionId;
+    if (!id) {
+      toast("Revisão criada, mas sem identificador — abra a fila em Estudar.", "info");
+      return;
+    }
+    window.location.href = `./simulado.html?review=${encodeURIComponent(String(id))}`;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    toast(friendlyMessage(err), "info");
+  } finally {
+    setButtonLoading(button, false);
+  }
+}
+
+// "Atualizar meu plano": regenera o roteiro (`POST /recommendations`) com
+// os erros frescos e leva ao painel, onde o motivo atualizado aparece.
+async function refreshPlanFromNext(_summary, button) {
+  setButtonLoading(button, true, "Atualizando plano…");
+  try {
+    await generatePlan();
+    toast("Plano atualizado com esta atividade. Abrindo seu painel.", "success");
+    window.location.href = "./dashboard.html";
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    toast(friendlyMessage(err), "info");
+  } finally {
+    setButtonLoading(button, false);
   }
 }
 

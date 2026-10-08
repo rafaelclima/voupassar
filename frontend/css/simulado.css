@@ -303,6 +303,36 @@
 .sim-result-item--pending { border-left-color: var(--color-line-300); border-left-style: dashed; }
 .sim-result-item .badge { justify-self: start; white-space: normal; text-align: left; }
 
+/* ---------- raio-X pós-atividade (TASK 19.1) ---------- */
+.result-next {
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+  background: var(--color-bg-50);
+}
+.result-next h3 {
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+.result-next__lead { max-width: var(--measure); margin: 0; }
+.result-next__topics {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.result-next__topics li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+.result-next .muted { max-width: var(--measure); }
+
 /* ---------- confirmação ---------- */
 #sim-confirm {
   border: 1px solid var(--color-line-200);

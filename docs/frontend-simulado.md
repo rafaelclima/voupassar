@@ -39,8 +39,22 @@
   `<dialog>` (pendentes explícitos na pergunta); após encerrar, o caderno
   desabilita, o cabeçalho atualiza o status e `#sim-result` mostra totais
   (`correct/scored`, aproveitamento, respondidas/total, anuladas) +
-  correção por posição (acertou/errou/pendente/anulada). `409
+  correção por posição (acertou/errou/pendente/anulada) + raio-X
+  "O que fazer agora" (TASK 19.1, abaixo). `409
   SIMULATION_CLOSED` (encerrou em outra aba) atualiza para o estado final.
+* **Raio-X "O que fazer agora" (TASK 19.1):** `js/components/result-next.js`
+  (puro + render, reutilizável; lógica coberta por
+  `scripts/analysis/test_result_next.mjs`) recebe o `result` do servidor e o
+  caderno em cache (`state.details`, com `topic` do `GET /questions/{id}`):
+  (a) assunto que mais pesou + até 2 outros com erros, (b) refs dos erros
+  (`Posição N · ano Qn`, sem duplicar enunciado), (c) no máximo 3 CTAs —
+  `Revisar estes N agora` (`POST /review/sessions` com `topicId`/disciplina
+  do grupo + `onlyErrors`, abre `?review=`), `Praticar <assunto>`
+  (link `./estudos.html?disciplina=&topico=`), `Atualizar meu plano`
+  (`POST /recommendations` → dashboard). Sem assunto no caderno, agrupa por
+  disciplina; sem nem isso, "Sem classificação" honesto. Zero erro vira
+  mensagem de consolidação + só o CTA do plano. Microtexto sob os botões
+  avisa que a revisão congela o topo da fila (nem sempre as mesmas posições).
 * **Retomada:** `GET` com `IN_PROGRESS` mostra só progresso; posições já
   respondidas saem marcadas (`answered`) e aceitam alteração. Enunciado que
   falha carrega cartão de erro com `traceId` + `Tentar de novo` (nunca
@@ -87,7 +101,8 @@
 ```bash
 for f in frontend/js/api/simulado.js frontend/js/views/simulado.js \
   frontend/js/api/review.js frontend/js/views/review-exec.js \
-  frontend/js/views/review-logic.js; do node --check "$f"; done
+  frontend/js/views/review-logic.js frontend/js/components/result-next.js; do node --check "$f"; done
+node scripts/analysis/test_result_next.mjs
 python3 scripts/analysis/check_frontend.py
 ```
 

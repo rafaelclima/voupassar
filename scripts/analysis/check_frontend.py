@@ -68,6 +68,7 @@ REQUIRED_FILES = [
     "js/state/session.js",
     "js/components/ui.js",
     "js/components/plan-evidence.js",
+    "js/components/result-next.js",
     "js/components/figure.js",
     "js/components/passage.js",
     "js/main.js",
@@ -396,9 +397,20 @@ def main() -> int:
                       "fetchFeedback", "simulationAttemptId", "2021",
                       "s-disc-origem", "OFFICIAL",
                       # TASK 17.2/17.3 — REVISAO roteia à fila; ?review= delega à execução
-                      "REVISAO", "aba=revisao", "readReviewId", "loadReviewExecution", "review-exec.js"]:
+                      "REVISAO", "aba=revisao", "readReviewId", "loadReviewExecution", "review-exec.js",
+                      # TASK 19.1 — raio-X pós-atividade após a correção
+                      "result-next.js", "summarizeResult", "renderResultNext",
+                      "renderNextSteps", "Revisar estes", "Atualizar meu plano",
+                      "createSession", "generatePlan"]:
             if token not in sim_js:
-                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4/17.2)")
+                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4/17.2/19.1)")
+        nxt = (FRONT / "js" / "components" / "result-next.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "result-next.js").exists() else ""
+        for token in ["summarizeResult", "buildNextActions", "renderResultNext",
+                      "MAX_NEXT_ACTIONS", "errorItemsOf", "groupDisplayName",
+                      "O que fazer agora", "Revisar estes", "Atualizar meu plano",
+                      "Praticar ", "estudosHref", "congela o topo da sua fila"]:
+            if token not in nxt:
+                fail(f"js/components/result-next.js sem {token!r} (TASK 19.1)")
         sim_api = (FRONT / "js" / "api" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "simulado.js").exists() else ""
         for token in ["/api/v1/simulations/by-discipline", "/api/v1/simulations/by-edition",
                       "/api/v1/simulations/attempts", "/feedback/", "/api/v1/attempts",
