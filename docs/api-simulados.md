@@ -75,6 +75,25 @@ traceId, timestamp, path}`, sem stack trace; `traceId` também no header
 * **Enunciados** não são duplicados no caderno: cada posição referencia
   `questionId` (resolve-se via `GET /api/v1/questions/{id}`, TASK 3.4).
 
+## Ritmo em simulado — só exibição (TASK 21.1, decisão 2026-10-07)
+
+> `time_spent_seconds` (por tentativa, `POST /attempts`) e `answeredAt`
+> continuam sendo só fato de auditoria. Nenhum score, ranking, desempenho,
+> diagnóstico, recomendação, roteiro ou revisão usa tempo — `rg timeSpent
+> backend/.../performance backend/.../diagnosis backend/.../studyplan
+> backend/.../review` permanece vazio. O ritmo é cronômetro informativo
+> 100% no frontend (`frontend/js/components/pace.js` + `#sim-pace` em
+> `simulado.html`), idêntico em ESTUDO e PROVA.
+
+* Referência por edição = duração oficial da capa naquela edição
+  (`docs/provas-inventario.md §1`: 2020, 2022, 2023, 2024, 2025 e 2026
+  declaram 4h) ÷ total de objetivas do caderno. Ano fora desse mapa ou
+  simulado por disciplina (recorte sem tempo oficial) = `DESCONHECIDO` com
+  o aviso "ritmo informativo, sem tempo oficial confirmado" — nunca inventar.
+* Exibição: "Questão i/N · HH:MM:SS decorridos · sua média X min/questão ·
+  referência da edição YYYY: Y min/questão" (ou o aviso honesto). Encerrada
+  congela no `submittedAt`.
+
 ## OpenAPI
 
 Contrato em `GET /v3/api-docs` e UI em `GET /swagger-ui.html` (rotas de

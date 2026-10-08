@@ -26,6 +26,12 @@
  * bloco "O que fazer agora" (`js/components/result-next.js`) resume os
  * piores assuntos com o caderno em cache + até 3 CTAs (revisar via
  * `POST /review/sessions`, praticar com recorte, atualizar o plano).
+ *
+ * TASK 21.1 (ritmo em simulado, só exibição): durante a execução o
+ * `#sim-pace` mostra "questão i/N · tempo decorrido total · média por
+ * questão vs. referência da edição" (`js/components/pace.js`, puro +
+ * testado em `scripts/analysis/test_pace.mjs`). É cronômetro informativo —
+ * idêntico em ESTUDO e PROVA, sem entrar em placar, ranking ou roteiro.
  */
 
 import { ApiError, friendlyMessage } from "../api/client.js";
@@ -53,6 +59,7 @@ import { createSession } from "../api/review.js";
 import { generatePlan } from "../api/dashboard.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { summarizeResult, renderResultNext } from "../components/result-next.js";
+import { summarizePace, executionElapsedSeconds } from "../components/pace.js";
 import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, sourceTypeLabel } from "../vocab.js";
 
 const PAGE_SIZE = 20;
@@ -91,6 +98,7 @@ const execBadges = document.getElementById("sim-exec-badges");
 const progressText = document.getElementById("sim-progress-text");
 const progressBar = document.getElementById("sim-progress-bar");
 const progressFill = document.getElementById("sim-progress-fill");
+const paceEl = document.getElementById("sim-pace");
 const hiddenNote = document.getElementById("sim-hidden-note");
 const questionsBox = document.getElementById("sim-questions");
 const btnSubmit = document.getElementById("sim-submit");
@@ -114,6 +122,7 @@ const state = {
   historyLast: true,
   historyItems: [],
   confirmAction: null,
+  paceTimer: null,
 };
 
 wireLogoutButtons();
@@ -573,8 +582,57 @@ function renderExecHeader(a) {
   }
   updateProgress();
   bindFinishButtons();
+  startPaceClock();
   const finishCard = btnSubmit.closest(".panel");
   if (finishCard) finishCard.hidden = !isOpen();
+}
+
+/* ---------- ritmo em simulado (TASK 21.1, só exibição) ----------
+ * Cronômetro informativo: questão i/N · tempo decorrido total · média por
+ * questão vs. referência da edição (4h nas capas do dataset, ver
+ * `js/components/pace.js`). Idêntico em ESTUDO e PROVA — sem ramificação
+ * por modo, sem entrar em placar/ranking/roteiro. Sem `role=status`: o
+ * cronômetro atualiza a cada segundo e o leitor de tela não deve anunciar
+ * cada tick (o progresso de respondidas continua em `role=status`).
+ * Encerrada congela no `submittedAt` (placar final). */
+function stopPaceClock() {
+  if (state.paceTimer !== null && state.paceTimer !== undefined) {
+    clearInterval(state.paceTimer);
+    state.paceTimer = null;
+  }
+}
+
+function currentElapsedSeconds() {
+  try {
+    return executionElapsedSeconds(state.attempt, Date.now());
+  } catch {
+    return 0;
+  }
+}
+
+function updatePace() {
+  if (!paceEl) return;
+  const total = state.attempt?.questionCount ?? state.attempt?.questions?.length ?? 0;
+  const done = answeredCount();
+  try {
+    const summary = summarizePace({
+      attempt: state.attempt,
+      answered: done,
+      total,
+      elapsedSeconds: currentElapsedSeconds(),
+    });
+    paceEl.textContent = `Ritmo: ${summary.line}`;
+  } catch {
+    paceEl.textContent = "Ritmo: informativo — tempo decorrido indisponível no momento.";
+  }
+}
+
+function startPaceClock() {
+  stopPaceClock();
+  updatePace();
+  // Só tica em andamento; encerrada fica congelada no tempo final.
+  if (!isOpen()) return;
+  state.paceTimer = setInterval(updatePace, 1000);
 }
 
 function answeredCount() {
@@ -595,6 +653,7 @@ function updateProgress() {
   progressBar.setAttribute("aria-valuenow", String(pct));
   const pctEl = document.getElementById("sim-progress-pct");
   if (pctEl) pctEl.textContent = `${pct}%`;
+  updatePace();
 }
 
 async function loadCaderno(attempt) {

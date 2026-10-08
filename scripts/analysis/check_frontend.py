@@ -70,6 +70,7 @@ REQUIRED_FILES = [
     "js/components/ui.js",
     "js/components/plan-evidence.js",
     "js/components/result-next.js",
+    "js/components/pace.js",
     "js/components/figure.js",
     "js/components/passage.js",
     "js/main.js",
@@ -404,7 +405,7 @@ def main() -> int:
                     "sim-history-count", "sim-more",                     "sim-exec", "sim-back",
                     "sim-mode-badge", "sim-exec-title", "sim-exec-meta",
                     "sim-exec-badges", "sim-progress-text", "sim-progress-bar",
-                    "sim-progress-fill", "sim-hidden-note", "sim-questions",
+                    "sim-progress-fill", "sim-pace", "sim-hidden-note", "sim-questions",
                     "sim-submit", "sim-abandon", "sim-result-section",
                     "sim-result", "sim-confirm", "sim-confirm-text",
                     "sim-confirm-yes", "sim-confirm-no",
@@ -432,9 +433,20 @@ def main() -> int:
                       # TASK 19.1 — raio-X pós-atividade após a correção
                       "result-next.js", "summarizeResult", "renderResultNext",
                       "renderNextSteps", "Revisar estes", "Atualizar meu plano",
-                      "createSession", "generatePlan"]:
+                      "createSession", "generatePlan",
+                      # TASK 21.1 — ritmo em simulado (só exibição, mesmo em ESTUDO e PROVA)
+                      "pace.js", "summarizePace", "executionElapsedSeconds",
+                      "startPaceClock", "updatePace", "sim-pace", "Ritmo:"]:
             if token not in sim_js:
-                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4/17.2/19.1)")
+                fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4/17.2/19.1/21.1)")
+        pace = (FRONT / "js" / "components" / "pace.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "pace.js").exists() else ""
+        for token in ["OFFICIAL_DURATION_MINUTES_BY_YEAR", "resolveEditionYear",
+                      "referenceSecondsPerQuestion", "formatElapsed",
+                      "formatMinutesPerQuestion", "summarizePace",
+                      "ritmo informativo, sem tempo oficial confirmado",
+                      "referência da edição", "executionElapsedSeconds"]:
+            if token not in pace:
+                fail(f"js/components/pace.js sem {token!r} (TASK 21.1)")
         nxt = (FRONT / "js" / "components" / "result-next.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "result-next.js").exists() else ""
         for token in ["summarizeResult", "buildNextActions", "renderResultNext",
                       "MAX_NEXT_ACTIONS", "errorItemsOf", "groupDisplayName",

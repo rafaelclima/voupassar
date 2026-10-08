@@ -59,6 +59,17 @@
   respondidas saem marcadas (`answered`) e aceitam alteração. Enunciado que
   falha carrega cartão de erro com `traceId` + `Tentar de novo` (nunca
   caderno parcial silencioso).
+* **Ritmo em simulado — só exibição (TASK 21.1):** `#sim-pace`
+  (`js/components/pace.js`, puro + `scripts/analysis/test_pace.mjs`) mostra
+  durante a execução "questão i/N · tempo decorrido total · média por
+  questão vs. referência da edição". Referência = duração oficial daquela
+  edição quando conhecida (4h nas capas de 2020/2022/2023/2024/2025/2026 —
+  `docs/provas-inventario.md §1`), senão `DESCONHECIDA` ("ritmo
+  informativo, sem tempo oficial confirmado"). Usa `startedAt`/`submittedAt`
+  + respondidas (o `time_spent_seconds` por questão já coletado segue só
+  como auditoria do fato); idêntico em ESTUDO e PROVA (é cronômetro, não
+  gabarito); tica a cada 1s sem `role=status` (não poluir leitor de tela) e
+  congela ao encerrar. Nenhum score, ranking ou roteiro usa tempo.
 * **Revisão (`?review=<sessionId>`, TASK 17.3):** o `simulado.js` só roteia —
   a execução mora em `js/views/review-exec.js` (caderno congelado da sessão,
   `POST /attempts {mode: REVISAO, studySessionId}` com feedback imediato
@@ -101,8 +112,10 @@
 ```bash
 for f in frontend/js/api/simulado.js frontend/js/views/simulado.js \
   frontend/js/api/review.js frontend/js/views/review-exec.js \
-  frontend/js/views/review-logic.js frontend/js/components/result-next.js; do node --check "$f"; done
+  frontend/js/views/review-logic.js frontend/js/components/result-next.js \
+  frontend/js/components/pace.js; do node --check "$f"; done
 node scripts/analysis/test_result_next.mjs
+node scripts/analysis/test_pace.mjs
 python3 scripts/analysis/check_frontend.py
 ```
 

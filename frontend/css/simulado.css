@@ -96,6 +96,12 @@
 .sim-progress-shell { gap: var(--space-4); }
 .sim-progress-shell .muted { max-width: var(--measure); }
 
+/* ---------- ritmo em simulado (TASK 21.1, só exibição) ---------- */
+.sim-pace-line {
+  font-variant-numeric: tabular-nums;
+}
+.sim-pace-line small { max-width: var(--measure); display: inline-block; }
+
 /* ---------- caderno: experiência de prova ---------- */
 .sim-caderno {
   display: grid;
