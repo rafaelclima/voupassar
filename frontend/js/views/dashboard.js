@@ -829,6 +829,7 @@ function renderPriorities(diagnosis) {
     );
     box.appendChild(inner);
     prioBox.appendChild(box);
+    prioBox.appendChild(reviewQueueCta());
     return;
   }
   const list = el("ol", { className: "priority-list" });
@@ -872,6 +873,22 @@ function renderPriorities(diagnosis) {
       }),
     );
   }
+  // TASK 17.3: atalho para a fila de revisão junto às prioridades — o aluno
+  // sai do "o que treinar" direto para os erros a consolidar.
+  prioBox.appendChild(reviewQueueCta());
+}
+
+/* CTA único para a fila de revisão (TASK 17.3). */
+function reviewQueueCta() {
+  const actions = el("div", { className: "btn-group mt-4" });
+  actions.appendChild(
+    el("a", {
+      className: "btn btn--secondary btn--sm",
+      text: "Revisar erros",
+      attrs: { href: "./estudos.html?aba=revisao" },
+    }),
+  );
+  return actions;
 }
 
 /* ---------- 5. roteiro + passo agora ---------- */

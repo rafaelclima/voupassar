@@ -41,6 +41,10 @@ aparece como `Assunto #id` com nota `DESCONHECIDO — NECESSITA REVISÃO`
 * **Roteiro:** `Gerar roteiro` / `Gerar novamente` (`POST`, preserva histórico
   no servidor); `Começar agora` (`TODO→DOING`) e `Concluir` (`→DONE`,
   `POST ...?status=`) atualizam o próximo estudo sem recarregar.
+* **Prioridades → revisão (TASK 17.3):** `Revisar erros`
+  (`estudos.html?aba=revisao`) junto à lista de prioridades (e no vazio
+  `Nada pendente`) leva à fila de revisão — o aluno sai do "o que treinar"
+  direto para os erros a consolidar.
 * **Evolução:** troca de granularidade recarrega só a seção, com loading
   inline e `role=status`.
 * **Vazio honesto:** conta nova (`0` tentativas) mostra `—` + notas

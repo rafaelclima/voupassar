@@ -174,8 +174,9 @@ no backend; o frontend nunca reordena.
   refresh).
 * **Iniciar revisão (N):** congela exatamente o top-N exibido
   (`createSession({limit: N, …filtros})`, mesma ordem da fila) e navega para
-  `simulado.html?review=<sessionId>` (resumo provisório em 17.2; responder +
-  resultado chegam na 17.3). Fila esvaziada na corrida (`400
+  `simulado.html?review=<sessionId>` (execução completa na 17.3: caderno com
+  feedback imediato + resultado + volta à fila — ver
+  `docs/frontend-revisao.md`). Fila esvaziada na corrida (`400
   NO_REVIEW_ITEMS`) recarrega em vez de travar.
 * **Atalhos:** `estudos.html?aba=revisao` rola + foca a seção (hub do
   simulado em modo Revisão; `&disciplina=` pré-seleciona o filtro). O hub

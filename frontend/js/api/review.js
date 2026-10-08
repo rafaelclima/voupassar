@@ -49,3 +49,38 @@ export function getSession(id) {
 export function getSessionResult(id) {
   return request(`/api/v1/review/sessions/${encodeURIComponent(String(id))}/result`);
 }
+
+/* Enunciado de uma posição do caderno (TASK 3.4). O gabarito (`answerKey`)
+ * vem cheio em REVISAO — a máscara da TASK 5.3 vale só para PROVA em
+ * andamento — mas a tela só usa a letra *após* responder a posição
+ * (feedback imediato, nunca cola antes da resposta). */
+export function fetchQuestion(id) {
+  return request(`/api/v1/questions/${encodeURIComponent(String(id))}`);
+}
+
+/* Resposta de uma posição do caderno (TASK 17.3): fato REVISAO vinculado à
+ * sessão (`studySessionId`), nunca a simulado. `BLANK` conta como erro
+ * quando a questão não é anulada (regra do backend, igual ao Estudo).
+ * REVISAO nunca oculta: o POST devolve `isCorrect` revelado. */
+export function submitReviewAttempt({ questionId, selectedOption, studySessionId, timeSpentSeconds }) {
+  return request("/api/v1/attempts", {
+    method: "POST",
+    body: {
+      questionId,
+      selectedOption,
+      mode: "REVISAO",
+      ...(timeSpentSeconds !== undefined && timeSpentSeconds !== null
+        ? { timeSpentSeconds }
+        : {}),
+      ...(studySessionId ? { studySessionId } : {}),
+    },
+  });
+}
+
+/* Encerra a sessão (IN_PROGRESS → FINISHED) para liberar o resultado
+ * (`GET …/result`; antes disso o backend responde 409 REVIEW_NOT_FINISHED). */
+export function finishSession(id) {
+  return request(`/api/v1/study-sessions/${encodeURIComponent(String(id))}/finish`, {
+    method: "POST",
+  });
+}

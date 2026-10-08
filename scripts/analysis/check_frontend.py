@@ -78,6 +78,8 @@ REQUIRED_FILES = [
     "js/views/dashboard.js",
     "js/views/estudos.js",
     "js/views/revisao.js",
+    "js/views/review-exec.js",
+    "js/views/review-logic.js",
     "js/views/questao.js",
     "js/views/simulado.js",
     "js/views/perfil.js",
@@ -304,9 +306,28 @@ def main() -> int:
             if token not in revisao_js:
                 fail(f"js/views/revisao.js sem {token!r} (TASK 17.2)")
         revisao_api = (FRONT / "js" / "api" / "review.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "review.js").exists() else ""
-        for token in ["/api/v1/review/queue", "/api/v1/review/sessions"]:
+        for token in ["/api/v1/review/queue", "/api/v1/review/sessions",
+                      # TASK 17.3 — execução: responder (REVISAO+studySessionId),
+                      # encerrar (study-sessions/{id}/finish) e enunciados
+                      "/api/v1/attempts", "REVISAO", "studySessionId",
+                      "/study-sessions", "/finish", "/api/v1/questions"]:
             if token not in revisao_api:
-                fail(f"js/api/review.js sem endpoint {token!r} (TASK 17.1/17.2)")
+                fail(f"js/api/review.js sem {token!r} (TASK 17.1/17.2/17.3)")
+        # TASK 17.3 — execução da sessão: dono é views/review-exec.js (o
+        # simulado.js só delega o ?review=); lógica pura em review-logic.js
+        # com teste `node scripts/analysis/test_review_logic.mjs`
+        review_exec = (FRONT / "js" / "views" / "review-exec.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "review-exec.js").exists() else ""
+        for token in ["loadReviewExecution", "submitReviewAttempt", "finishSession",
+                      "getSessionResult", "Concluir revisão", "Voltar à fila",
+                      "Tentar novamente", "REVIEW_NOT_FINISHED", "SESSION_CLOSED",
+                      "review-logic.js", "simulado.html?review="]:
+            if token not in review_exec:
+                fail(f"js/views/review-exec.js sem {token!r} (TASK 17.3)")
+        review_logic = (FRONT / "js" / "views" / "review-logic.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "review-logic.js").exists() else ""
+        for token in ["attemptVerdict", "resultItemVerdict", "formatReviewAccuracy",
+                      "reviewProgressLabel", "canFinishReview"]:
+            if token not in review_logic:
+                fail(f"js/views/review-logic.js sem {token!r} (TASK 17.3)")
         if "estudos.html" not in dash:
             fail("dashboard.html sem link para estudos.html (TASK 6.5)")
 
@@ -373,8 +394,8 @@ def main() -> int:
                       "submitSimulation", "abandonSimulation", "fetchResult",
                       "fetchFeedback", "simulationAttemptId", "2021",
                       "s-disc-origem", "OFFICIAL",
-                      # TASK 17.2 — REVISAO roteia à fila; ?review= é o destino da sessão
-                      "REVISAO", "aba=revisao", "readReviewId", "getReviewSession", "sim-review-body"]:
+                      # TASK 17.2/17.3 — REVISAO roteia à fila; ?review= delega à execução
+                      "REVISAO", "aba=revisao", "readReviewId", "loadReviewExecution", "review-exec.js"]:
             if token not in sim_js:
                 fail(f"js/views/simulado.js sem {token!r} (TASK 6.7/15.4/17.2)")
         sim_api = (FRONT / "js" / "api" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "api" / "simulado.js").exists() else ""
@@ -390,6 +411,10 @@ def main() -> int:
         dash_js = (FRONT / "js" / "views" / "dashboard.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "dashboard.js").exists() else ""
         if "As telas de prova chegam" in dash_js:
             fail("js/views/dashboard.js com placeholder vencido da TASK 6.7")
+        # TASK 17.3 — atalho "Revisar erros" junto às prioridades
+        for token in ["Revisar erros", "estudos.html?aba=revisao"]:
+            if token not in dash_js:
+                fail(f"js/views/dashboard.js sem {token!r} (TASK 17.3)")
 
     # TASK 6.8 — perfil: dados + estatísticas + evolução + histórico +
     # dominados + atenção + metas + conquistas (Fase 7 pendente honesto)
@@ -502,6 +527,7 @@ def main() -> int:
                 fail(f"{name} expõe detalhe interno {token!r} ao aluno")
 
     ALUNO_JS = ["dashboard.js", "estudos.js", "revisao.js",
+                "review-exec.js", "review-logic.js",
                 "questao.js", "simulado.js", "perfil.js"]
     # Bug real que já ocorreu: interpolar direto no texto um campo enum da
     # API, fazendo "FACIL", "PROVA" ou "LP" aparecerem na tela. A tradução

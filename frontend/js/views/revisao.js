@@ -102,13 +102,27 @@ function bindEvents() {
   btnIniciar.addEventListener("click", startReview);
 }
 
-/* ?aba=revisao (atalho do hub do simulado em modo Revisão): rola até a
- * seção na primeira carga. ?disciplina= pré-seleciona o filtro da fila
- * (validado contra o catálogo; inválido volta para Todas). */
+/* Busca original da carga, capturada antes de qualquer `replaceState`: o
+ * estudos.js reescreve a URL com o recorte do navegador de questões
+ * (`syncUrl`) antes de esta seção iniciar — ler o `location` ao vivo
+ * perderia o `?aba=revisao` do "Voltar à fila" e herdaria a disciplina
+ * padrão do navegador como se fosse pré-filtro escolhido. */
+const INITIAL_SEARCH = (() => {
+  try {
+    return window.location.search || "";
+  } catch {
+    return "";
+  }
+})();
+
+/* ?aba=revisao (atalho do hub do simulado em modo Revisão e "Voltar à fila"
+ * da execução): rola até a seção na primeira carga. ?disciplina= (só quando
+ * veio na URL original, ex. hub com disciplina) pré-seleciona o filtro da
+ * fila (validado contra o catálogo; inválido volta para Todas). */
 function readUrlIntoReview() {
   let q;
   try {
-    q = new URLSearchParams(window.location.search);
+    q = new URLSearchParams(INITIAL_SEARCH);
   } catch {
     return;
   }

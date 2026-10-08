@@ -167,5 +167,6 @@ const resultado = await getSessionResult(session.sessionId);           // só ap
   erro explícito — nunca envia campo desconhecido nem ignora a seleção em
   silêncio.
 - `REVISAO` nunca oculta: `selectedOption`/`isCorrect` sempre revelados no
-  `GET` (ao contrário da `PROVA`); a UI da execução/resultado chega nas
-  TASKs 17.2–17.3 reutilizando o caderno do simulado.
+  `GET` (ao contrário da `PROVA`); a UI da execução/resultado vive na 17.3
+  (`simulado.html?review=`, `js/views/review-exec.js` — ver
+  `docs/frontend-revisao.md`), reutilizando o caderno do simulado.

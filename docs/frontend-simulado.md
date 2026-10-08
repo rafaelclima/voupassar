@@ -45,6 +45,12 @@
   respondidas saem marcadas (`answered`) e aceitam alteração. Enunciado que
   falha carrega cartão de erro com `traceId` + `Tentar de novo` (nunca
   caderno parcial silencioso).
+* **Revisão (`?review=<sessionId>`, TASK 17.3):** o `simulado.js` só roteia —
+  a execução mora em `js/views/review-exec.js` (caderno congelado da sessão,
+  `POST /attempts {mode: REVISAO, studySessionId}` com feedback imediato
+  pois REVISAO nunca oculta, `POST /study-sessions/{id}/finish` +
+  `GET …/result` com placar e correção por posição, `Voltar à fila` ao
+  final). Detalhe em `docs/frontend-revisao.md`.
 * **Erros:** `404` na execução (inexistente ou de outro aluno) vira erro
   visível + saídas (nunca conteúdo alheio). `INSUFFICIENT_QUESTIONS`,
   `INCOMPLETE_EDITION`, `EDITION_NOT_FOUND` viram toast + resumo com
@@ -79,7 +85,9 @@
 ## 5. Verificação
 
 ```bash
-for f in frontend/js/api/simulado.js frontend/js/views/simulado.js frontend/js/views/dashboard.js; do node --check "$f"; done
+for f in frontend/js/api/simulado.js frontend/js/views/simulado.js \
+  frontend/js/api/review.js frontend/js/views/review-exec.js \
+  frontend/js/views/review-logic.js; do node --check "$f"; done
 python3 scripts/analysis/check_frontend.py
 ```
 
