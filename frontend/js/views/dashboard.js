@@ -26,7 +26,15 @@ import {
 } from "../api/dashboard.js";
 import { el, renderEmpty, renderErrorSummary, renderErrorWithRetry, setButtonLoading, toast } from "../components/ui.js";
 import { renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
-import { disciplineLabel, modeLabel, statusLabel, masteryLabel, topicLabel, plural, simulationTitle } from "../vocab.js";
+import { disciplineLabel, modeLabel, statusLabel, masteryLabel, topicLabel, plural, simulationTitle, translateTopicCodes } from "../vocab.js";
+import {
+  parseEvidence,
+  evidenceLine,
+  estudosHref as buildEstudosHref,
+  revisaoHref,
+  sampleHref,
+  practiceTarget,
+} from "../components/plan-evidence.js";
 
 const guard = document.getElementById("dash-guard");
 const errorBox = document.getElementById("dash-error");
@@ -140,15 +148,25 @@ function formatBucketDate(isoDate) {
  * O painel sempre informa a origem (`origem=painel`) para que o hero de
  * estudos priorize o assunto escolhido em vez do item genérico do roteiro
  * (ver js/views/estudos.js renderHero). A disciplina acompanha o assunto
- * quando conhecida, para o hero não precisar adivinhar.
+ * quando conhecida, para o hero não precisar adivinhar. Monta pelo
+ * construtor compartilhado (`js/components/plan-evidence.js`), usado também
+ * por estudos e perfil.
  */
-function estudosHref({ disciplineCode = "", topicId = "" } = {}) {
-  const q = new URLSearchParams();
-  if (disciplineCode) q.set("disciplina", disciplineCode);
-  if (topicId) q.set("topico", String(topicId));
-  q.set("origem", "painel");
-  const qs = q.toString();
-  return qs ? `./estudos.html?${qs}` : "./estudos.html";
+function estudosHref({ disciplineCode = "", topicId = "", subtopicId = "" } = {}) {
+  return buildEstudosHref({ disciplineCode, topicId, subtopicId, origin: "painel" });
+}
+
+/** Motivo de um item do roteiro na linguagem do aluno.
+ *
+ * A frase canônica vem da evidência (`evidenceJson` rico da TASK 18.2) pelo
+ * formatador compartilhado — a mesma usada no hero de estudos e nas metas
+ * do perfil. Sem evidência aproveitável, cai para o `reason` da API
+ * traduzido (sem código cru) em vez de omitir o motivo.
+ */
+function planMotive(item) {
+  const line = evidenceLine(parseEvidence(item));
+  if (line) return line;
+  return translateTopicCodes(item?.reason) || "Ordem definida pelo seu desempenho e pelo peso do assunto na prova.";
 }
 
 /** Classe de badge conforme o status (apresentação, não vocabulário). */
@@ -987,12 +1005,25 @@ function renderPlan(plan, loadError) {
     for (const item of items.slice(0, 8)) {
       const { name, meta: m } = topicNameOf(item);
       const isDone = item.status === "DONE";
+      // TASK 18.3: cada item mostra o motivo ("por que estudar isso") com a
+      // evidência + CTAs "Praticar agora" (recorte em estudos) e "Revisar
+      // erros" (fila filtrada por assunto — TASK 17.2).
+      const ev = parseEvidence(item);
+      const target = practiceTarget(item, topicById);
       const row = el("li", {
         className: isDone ? "plan-items__row plan-items__row--done" : "plan-items__row",
       });
       const left = el("div");
       left.appendChild(el("span", { className: "plan-items__name", text: name }));
-      if (m) left.appendChild(el("p", { className: "plan-items__meta", text: m }));
+      const metaBits = [];
+      if (m) metaBits.push(m);
+      if (item.priority !== undefined && item.priority !== null) {
+        metaBits.push(`${item.priority}º no roteiro`);
+      }
+      if (metaBits.length) {
+        left.appendChild(el("p", { className: "plan-items__meta", text: metaBits.join(" · ") }));
+      }
+      left.appendChild(el("p", { className: "plan-items__meta", text: planMotive(item) }));
       const right = el("div", { className: "cluster" });
       if (statusLabel(item.status)) {
         right.appendChild(
@@ -1000,6 +1031,38 @@ function renderPlan(plan, loadError) {
         );
       }
       if (!isDone) {
+        right.appendChild(
+          el("a", {
+            className: "btn btn--ghost btn--sm",
+            text: "Praticar agora",
+            attrs: {
+              href: buildEstudosHref({ ...target, origin: "painel" }),
+              "aria-label": `Praticar agora ${name}`,
+            },
+          }),
+        );
+        right.appendChild(
+          el("a", {
+            className: "btn btn--ghost btn--sm",
+            text: "Revisar erros",
+            attrs: {
+              href: revisaoHref({ disciplineCode: target.disciplineCode, topicId: item.topicId ?? "" }),
+              "aria-label": `Revisar erros de ${name}`,
+            },
+          }),
+        );
+        if (ev && ev.sampleQuestionIds.length > 0) {
+          right.appendChild(
+            el("a", {
+              className: "btn btn--ghost btn--sm",
+              text: "Ver exemplo oficial",
+              attrs: {
+                href: sampleHref(ev.sampleQuestionIds[0]),
+                "aria-label": `Ver questão oficial de exemplo de ${name}`,
+              },
+            }),
+          );
+        }
         const doneBtn = el("button", {
           className: "btn btn--ghost btn--sm",
           text: "Concluir",
@@ -1033,10 +1096,12 @@ function renderNextStepOf(plan) {
     return;
   }
   const { name, meta: m } = topicNameOf(next);
+  // TASK 18.3: o hero mostra o mesmo motivo do item na lista (evidência),
+  // com o retrato do diagnóstico como reserva para item sem evidência.
   const card = nextStepShell({
     eyebrow: "Estude agora",
     title: name,
-    why: studentNextReason(next.topicId),
+    why: planMotive(next) || studentNextReason(next.topicId),
   });
 
   const chips = el("div", { className: "next-step__meta" });

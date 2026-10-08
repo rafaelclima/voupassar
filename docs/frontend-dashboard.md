@@ -41,6 +41,20 @@ aparece como `Assunto #id` com nota `DESCONHECIDO — NECESSITA REVISÃO`
 * **Roteiro:** `Gerar roteiro` / `Gerar novamente` (`POST`, preserva histórico
   no servidor); `Começar agora` (`TODO→DOING`) e `Concluir` (`→DONE`,
   `POST ...?status=`) atualizam o próximo estudo sem recarregar.
+* **Evidência por item (TASK 18.3):** cada linha do roteiro mostra o motivo
+  em linguagem de estudante — `Nº no roteiro · você X% (N tentativas) ·
+  caiu em H questões de E edições (anos) · última tentativa há N dias` —
+  montado do `evidenceJson` rico (TASK 18.2) pelo formatador compartilhado
+  `js/components/plan-evidence.js` (`parseEvidence` + `evidenceLine`, com
+  teste `node scripts/analysis/test_plan_evidence.mjs`). Sem evidência
+  aproveitável, cai para o `reason` traduzido (nunca código cru, nunca zero
+  inventado). O hero "Estude agora" exibe o mesmo motivo do item (não um
+  texto paralelo). CTAs por item: `Praticar agora` (recorte em estudos com
+  `?disciplina=&topico=&subtopico=&origem=painel`), `Revisar erros` (fila
+  filtrada por assunto — `estudos.html?aba=revisao&disciplina=&topico=`,
+  TASK 17.2 + `?topico=` da 18.3) e `Ver exemplo oficial` (primeiro
+  `sampleQuestionIds[]`, só quando existir — assunto sem questão oficial não
+  ganha link inventado). `Concluir` mantido.
 * **Prioridades → revisão (TASK 17.3):** `Revisar erros`
   (`estudos.html?aba=revisao`) junto à lista de prioridades (e no vazio
   `Nada pendente`) leva à fila de revisão — o aluno sai do "o que treinar"
@@ -81,8 +95,10 @@ aparece como `Assunto #id` com nota `DESCONHECIDO — NECESSITA REVISÃO`
 
 ```bash
 for f in frontend/js/api/dashboard.js frontend/js/views/dashboard.js \
+  frontend/js/components/plan-evidence.js \
   frontend/js/views/login.js frontend/js/views/cadastro.js \
   frontend/js/views/auth-shared.js; do node --check "$f"; done
+node scripts/analysis/test_plan_evidence.mjs
 python3 scripts/analysis/check_frontend.py
 timeout 20 python3 -m http.server 8899 --directory frontend
 # Fluxo ao vivo (backend local): sem sessão → painel de acesso; login →

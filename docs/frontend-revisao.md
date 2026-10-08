@@ -36,6 +36,12 @@
   auditoria na tela.
 * **Atalho no dashboard:** `Revisar erros` junto às prioridades
   (`js/views/dashboard.js`) leva à fila (`estudos.html?aba=revisao`).
+* **Fila filtrada pelo roteiro (TASK 18.3):** os CTAs `Revisar erros` dos
+  itens do roteiro (dashboard, estudos, perfil) chegam com
+  `?aba=revisao&disciplina=&topico=`; a seção pré-seleciona os dois filtros
+  (`readUrlIntoReview`) e deriva a disciplina do catálogo quando só o
+  assunto veio (`resolveDisciplineForTopic`). Filtro inválido volta para
+  Todas/Todos, nunca erro.
 
 ## 3. Honestidade (§4 — nada inventado)
 
@@ -49,8 +55,11 @@
 ```bash
 for f in frontend/js/api/review.js frontend/js/views/review-exec.js \
   frontend/js/views/review-logic.js frontend/js/views/simulado.js \
-  frontend/js/views/dashboard.js; do node --check "$f"; done
+  frontend/js/views/revisao.js frontend/js/components/plan-evidence.js \
+  frontend/js/views/dashboard.js frontend/js/views/estudos.js \
+  frontend/js/views/perfil.js; do node --check "$f"; done
 node scripts/analysis/test_review_logic.mjs
+node scripts/analysis/test_plan_evidence.mjs
 python3 scripts/analysis/check_frontend.py
 ```
 

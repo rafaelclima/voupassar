@@ -67,6 +67,7 @@ REQUIRED_FILES = [
     "js/state/store.js",
     "js/state/session.js",
     "js/components/ui.js",
+    "js/components/plan-evidence.js",
     "js/components/figure.js",
     "js/components/passage.js",
     "js/main.js",
@@ -619,6 +620,30 @@ def main() -> int:
             fail(f"js/api/client.js sem {token!r} (interceptor 401 central — TASK 16.3)")
     if 'import("./auth.js")' not in client_js and "import('./auth.js')" not in client_js:
         fail("js/api/client.js sem import dinâmico de auth.js (evitar ciclo — TASK 16.3)")
+
+    # TASK 18.3 — UI da evidência + "Praticar / Revisar agora": frase do
+    # motivo centralizada em js/components/plan-evidence.js e reutilizada
+    # pelas três telas (dashboard, estudos, perfil), sem duplicar lógica.
+    pev = (FRONT / "js" / "components" / "plan-evidence.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "plan-evidence.js").exists() else ""
+    for token in ["parseEvidence", "evidenceLine", "daysSince",
+                  "estudosHref", "revisaoHref", "sampleHref",
+                  "practiceTarget", "nextStudyOf", "sampleQuestionIds"]:
+        if token not in pev:
+            fail(f"js/components/plan-evidence.js sem {token!r} (TASK 18.3)")
+    for name in ["dashboard.js", "estudos.js", "perfil.js"]:
+        v = (FRONT / "js" / "views" / name).read_text(encoding="utf-8") if (FRONT / "js" / "views" / name).exists() else ""
+        if "plan-evidence.js" not in v or "evidenceLine" not in v:
+            fail(f"js/views/{name} sem motivo compartilhado (plan-evidence.js + evidenceLine) (TASK 18.3 — reuso, sem duplicar lógica)")
+        if "Revisar erros" not in v:
+            fail(f"js/views/{name} sem CTA 'Revisar erros' (TASK 18.3)")
+    dash183 = (FRONT / "js" / "views" / "dashboard.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "dashboard.js").exists() else ""
+    for token in ["Praticar agora", "parseEvidence", "revisaoHref", "Ver exemplo oficial"]:
+        if token not in dash183:
+            fail(f"js/views/dashboard.js sem {token!r} (TASK 18.3 — evidência por item + CTAs)")
+    rev183 = (FRONT / "js" / "views" / "revisao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "revisao.js").exists() else ""
+    for token in ['"topico"', "resolveDisciplineForTopic"]:
+        if token not in rev183:
+            fail(f"js/views/revisao.js sem {token!r} (TASK 18.3 — fila filtrada por assunto via ?topico=)")
 
     if errors:
         print(f"check_frontend: {len(errors)} falha(s):")

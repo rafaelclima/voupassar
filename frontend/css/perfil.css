@@ -99,6 +99,14 @@
   font-size: var(--text-lg); font-weight: 700; letter-spacing: var(--tracking-tight);
   color: var(--color-ink-900); overflow-wrap: anywhere;
 }
+/* TASK 18.3 — próximo do roteiro nas metas: mesmo motivo do painel. */
+.meta-next {
+  border: 1px solid var(--color-line-200); border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5); background: var(--color-bg-50);
+  display: grid; gap: var(--space-2);
+}
+.meta-next__label { font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-ink-500); }
+.meta-next__name { font-weight: 700; letter-spacing: var(--tracking-tight); color: var(--color-ink-900); overflow-wrap: anywhere; }
 
 /* ---------- 6. histórico ---------- */
 .history-list {

@@ -66,6 +66,8 @@ export async function initReviewSection({ disciplines = [] } = {}) {
   fillDisciplineSelect();
   readUrlIntoReview();
   applyFiltersToForm();
+  await resolveDisciplineForTopic();
+  applyFiltersToForm();
   await refreshTopicSelect();
   await loadQueue({ scroll: state.filters.fromHub });
 }
@@ -115,10 +117,11 @@ const INITIAL_SEARCH = (() => {
   }
 })();
 
-/* ?aba=revisao (atalho do hub do simulado em modo Revisão e "Voltar à fila"
- * da execução): rola até a seção na primeira carga. ?disciplina= (só quando
- * veio na URL original, ex. hub com disciplina) pré-seleciona o filtro da
- * fila (validado contra o catálogo; inválido volta para Todas). */
+/* ?aba=revisao (atalho do hub do simulado em modo Revisão, "Voltar à fila"
+ * da execução e CTAs "Revisar erros" do roteiro — TASK 18.3): rola até a
+ * seção na primeira carga. ?disciplina= e ?topico= (só quando vieram na URL
+ * original) pré-selecionam os filtros da fila (validados contra o catálogo;
+ * inválido volta para Todas/Todos, nunca erro). */
 function readUrlIntoReview() {
   let q;
   try {
@@ -131,6 +134,30 @@ function readUrlIntoReview() {
   const disc = (q.get("disciplina") || "").trim().toUpperCase();
   if (disc && state.disciplines.some((d) => d.code === disc)) {
     state.filters.discipline = disc;
+  }
+  const topicRaw = (q.get("topico") || "").trim();
+  if (/^[1-9]\d*$/.test(topicRaw)) {
+    state.filters.topicId = topicRaw;
+  }
+}
+
+/* TASK 18.3: o CTA "Revisar erros" do roteiro pode chegar só com ?topico=
+ * (sem disciplina). Deriva a disciplina do catálogo para o select
+ * dependente conseguir listar os assuntos; assunto inexistente limpa o
+ * filtro em vez de quebrar a fila. Só UI — sem novo conceito. */
+async function resolveDisciplineForTopic() {
+  if (!state.filters.topicId || state.filters.discipline) return;
+  try {
+    const data = await fetchTopics();
+    const all = Array.isArray(data) ? data : (data?.content ?? []);
+    const hit = all.find((t) => String(t.id) === String(state.filters.topicId));
+    if (hit?.disciplineCode && state.disciplines.some((d) => d.code === hit.disciplineCode)) {
+      state.filters.discipline = hit.disciplineCode;
+    } else {
+      state.filters.topicId = "";
+    }
+  } catch {
+    state.filters.topicId = "";
   }
 }
 

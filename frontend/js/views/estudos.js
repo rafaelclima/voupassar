@@ -40,6 +40,7 @@ import {
 } from "../api/estudos.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, statusLabel, choiceLabel } from "../vocab.js";
+import { parseEvidence, evidenceLine, revisaoHref, sampleHref } from "../components/plan-evidence.js";
 import { initReviewSection } from "./revisao.js";
 
 const PAGE_SIZE = 10;
@@ -699,8 +700,8 @@ function renderRecorte() {
 }
 
 function planDoingItem() {
-  const items = state.plan?.items ?? state.plan?.planItems ?? state.plan?.recommendations ?? [];
-  if (!Array.isArray(items) || items.length === 0) return null;
+  const items = planItems();
+  if (items.length === 0) return null;
   return items.find((it) => it.status === "DOING") || items.find((it) => it.status === "TODO") || items[0] || null;
 }
 
@@ -708,6 +709,25 @@ function planTopicName(topicId) {
   return state.allTopics.find((t) => String(t.id) === String(topicId))?.name
     || state.topicsOfDisc.find((t) => String(t.id) === String(topicId))?.name
     || "Assunto do seu roteiro";
+}
+
+function planItems() {
+  const items = state.plan?.items ?? state.plan?.planItems ?? state.plan?.recommendations ?? [];
+  return Array.isArray(items) ? items : [];
+}
+
+/* TASK 18.3: o mesmo motivo do painel (`evidenceLine` compartilhado, a
+ * partir do `evidenceJson` rico da TASK 18.2). Sem evidência aproveitável,
+ * devolve "" e o chamador mantém o texto que já exibia (nunca vazio
+ * inventado, nunca código cru do `reason` da API). */
+function planMotive(item) {
+  return evidenceLine(parseEvidence(item)) || "";
+}
+
+function disciplineOfTopic(topicId) {
+  return state.allTopics.find((t) => String(t.id) === String(topicId))?.disciplineCode
+    || state.topicsOfDisc.find((t) => String(t.id) === String(topicId))?.disciplineCode
+    || "";
 }
 
 function renderHero() {
@@ -745,10 +765,18 @@ function renderHero() {
     eyebrow = fromPanel ? "Praticando agora — escolhido no painel" : "Praticando agora";
     if (topicName) {
       title = topicName;
-      const ta = topicAccuracy(state.filters.topicId);
-      why = ta && ta.scored > 0
-        ? `Você acertou ${ta.correct} de ${ta.scored} neste assunto (${formatPercent(ta.accuracy)}). Continue praticando as questões abaixo.`
-        : `Você ainda não respondeu nada deste assunto. As questões abaixo são o melhor ponto de partida.`;
+      // TASK 18.3: mesmo motivo do painel para o mesmo assunto (evidência
+      // do roteiro); sem item de roteiro, mantém o retrato ao vivo.
+      const match = planItems().find((it) => String(it.topicId) === String(state.filters.topicId));
+      const motive = match ? planMotive(match) : "";
+      if (motive) {
+        why = `${motive} Continue praticando as questões abaixo.`;
+      } else {
+        const ta = topicAccuracy(state.filters.topicId);
+        why = ta && ta.scored > 0
+          ? `Você acertou ${ta.correct} de ${ta.scored} neste assunto (${formatPercent(ta.accuracy)}). Continue praticando as questões abaixo.`
+          : `Você ainda não respondeu nada deste assunto. As questões abaixo são o melhor ponto de partida.`;
+      }
     } else {
       title = "Assunto escolhido";
       why = "Mostrando abaixo as questões deste filtro, com correção na hora.";
@@ -767,12 +795,21 @@ function renderHero() {
   } else if (doing) {
     const name = planTopicName(doing.topicId);
     title = name;
+    // TASK 18.3: o motivo do item do roteiro acompanha o hero (mesma frase
+    // do painel); sem evidência, mantém o texto genérico que já existia.
+    const motive = planMotive(doing);
     if (idle) {
-      why = "Este é o próximo item do seu roteiro. Toque em “Abrir assunto do roteiro” para ver as questões dele.";
+      why = motive
+        ? `Este é o próximo item do seu roteiro. ${motive}`
+        : "Este é o próximo item do seu roteiro. Toque em “Abrir assunto do roteiro” para ver as questões dele.";
     } else if (acc !== null && acc !== undefined) {
-      why = `Este é o próximo item do seu roteiro e seu aproveitamento geral é ${formatPercent(acc)}. Pratique as questões deste assunto abaixo.`;
+      why = motive
+        ? `Este é o próximo item do seu roteiro. ${motive}`
+        : `Este é o próximo item do seu roteiro e seu aproveitamento geral é ${formatPercent(acc)}. Pratique as questões deste assunto abaixo.`;
     } else {
-      why = "Este é o próximo item do seu roteiro. Pratique as questões deste assunto abaixo.";
+      why = motive
+        ? `Este é o próximo item do seu roteiro. ${motive}`
+        : "Este é o próximo item do seu roteiro. Pratique as questões deste assunto abaixo.";
     }
   } else if (state.planMissing || !state.plan) {
     title = "Monte seu roteiro para estudar com ordem";
@@ -1520,6 +1557,20 @@ function renderPlan() {
       text: "Ver roteiro completo",
       attrs: { href: "./dashboard.html" },
     }));
+    // TASK 18.3: mesmo fora do roteiro, o assunto atual tem fila de
+    // revisão própria (TASK 17.2) — o filtro vai por assunto, não por plano.
+    if (f.topicId) {
+      actions.appendChild(el("a", {
+        className: "btn btn--ghost btn--sm",
+        text: "Revisar erros deste assunto",
+        attrs: {
+          href: revisaoHref({
+            disciplineCode: state.filters.disciplineCode || disciplineOfTopic(f.topicId),
+            topicId: f.topicId,
+          }),
+        },
+      }));
+    }
     const doing = items.find((it) => it.status === "DOING") || items.find((it) => it.status === "TODO");
     if (doing?.topicId) {
       const doingTopic = state.allTopics.find((t) => String(t.id) === String(doing.topicId));
@@ -1564,13 +1615,39 @@ function renderPlan() {
   if (statusLabel(match.status)) {
     left.appendChild(el("p", { className: "plan-items__meta", text: statusLabel(match.status) }));
   }
+  // TASK 18.3: o mesmo motivo do painel para este item (evidência), mais o
+  // atalho para a fila de revisão filtrada por este assunto.
+  const motive = planMotive(match);
+  if (motive) {
+    left.appendChild(el("p", { className: "plan-items__meta", text: motive }));
+  }
   row.appendChild(left);
   list.appendChild(row);
   planBox.appendChild(list);
-  planBox.appendChild(el("a", {
-    className: "btn btn--ghost btn--sm mt-4",
+  const actions = el("div", { className: "btn-group mt-4" });
+  actions.appendChild(el("a", {
+    className: "btn btn--secondary btn--sm",
+    text: "Revisar erros deste assunto",
+    attrs: {
+      href: revisaoHref({
+        disciplineCode: state.filters.disciplineCode || disciplineOfTopic(match.topicId),
+        topicId: match.topicId ?? "",
+      }),
+    },
+  }));
+  const matchEv = parseEvidence(match);
+  if (matchEv && matchEv.sampleQuestionIds.length > 0) {
+    actions.appendChild(el("a", {
+      className: "btn btn--ghost btn--sm",
+      text: "Ver exemplo oficial",
+      attrs: { href: sampleHref(matchEv.sampleQuestionIds[0]) },
+    }));
+  }
+  actions.appendChild(el("a", {
+    className: "btn btn--ghost btn--sm",
     text: "Ver roteiro completo",
     attrs: { href: "./dashboard.html" },
   }));
+  planBox.appendChild(actions);
 }
 

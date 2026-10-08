@@ -15,7 +15,7 @@
 | Evolução | `#sec-evo-t` (seletor `DAY`/`WEEK`/`MONTH` + barras CSS) | `GET /performance/evolution?granularity=` (TASK 4.1; UTC, sem interpolar lacunas) |
 | Histórico | `#sec-hist-t → #perfil-history` (+ `#perfil-more`, paginado 20) | `GET /api/v1/profile/history?page=&size=` (TASK 3.6; `answeredAt DESC`, proveniência mínima, link para `questao.html?id=`) |
 | Conquistas | `#sec-conq-t → #perfil-achievements` | **Fase 7 PENDENTE** — vazio honesto (nenhum ponto/selo inventado; link para o dashboard) |
-| Metas | `#sec-metas-t → #perfil-metas` | Declaradas do perfil (`studyGoal/targetYear/schoolYear`) + progresso do plano vigente (`GET /recommendations/plan`, `404 NO_ACTIVE_PLAN` vira vazio); metas quantitativas marcadas PENDENTES (Fase 7) |
+| Metas | `#sec-metas-t → #perfil-metas` | Declaradas do perfil (`studyGoal/targetYear/schoolYear`) + progresso do plano vigente (`GET /recommendations/plan`, `404 NO_ACTIVE_PLAN` vira vazio) + próximo item com motivo e CTAs (TASK 18.3); metas quantitativas marcadas PENDENTES (Fase 7) |
 | Conteúdos dominados | `#sec-dom-t → #perfil-strengths` | `GET /api/v1/diagnosis` → `strengths` (TASK 4.2; `DOMINADO` ≥ 70% com sinal ≥ 3) |
 | Pontos de atenção | `#sec-ate-t → #perfil-weaknesses` | `GET /api/v1/diagnosis` → `weaknesses` (`FRAGIL`) + top 5 `priorities` com `reason` auditável |
 
@@ -48,6 +48,15 @@
 * **Vazio honesto:** conta nova (`0` tentativas) mostra `—` + notas
   (`DESCONHECIDO, nunca zero inventado`); nenhuma rota futura é linkada
   (conquistas apontam só para dashboard/estudos existentes).
+* **Próximo do roteiro (TASK 18.3):** abaixo do progresso, as metas mostram
+  o próximo item aberto (`nextStudyOf` compartilhado) com o mesmo motivo
+  do painel (`evidenceLine` de `js/components/plan-evidence.js` — reuso,
+  sem duplicar lógica) + `Praticar agora` (`?disciplina=&topico=
+  &subtopico=&origem=perfil`), `Revisar erros` (fila filtrada por assunto)
+  e `Ver exemplo oficial` (quando houver `sampleQuestionIds[]`). O nome do
+  assunto vem do catálogo (`GET /api/v1/topics`, falha tolerada — sem ele,
+  `Assunto do seu roteiro`, nunca nome inventado). Salvar os dados não
+  apaga o bloco (o plano vigente fica em cache na view).
 
 ## 3. Honestidade (§4 — nada inventado)
 

@@ -39,3 +39,7 @@ export function fetchDiagnosis() {
 export function fetchPlan() {
   return request("/api/v1/recommendations/plan");
 }
+
+export function fetchTopics() {
+  return request("/api/v1/topics");
+}

@@ -19,7 +19,17 @@ import {
   fetchEvolution,
   fetchDiagnosis,
   fetchPlan,
+  fetchTopics,
 } from "../api/perfil.js";
+import {
+  parseEvidence,
+  evidenceLine,
+  estudosHref,
+  revisaoHref,
+  sampleHref,
+  practiceTarget,
+  nextStudyOf,
+} from "../components/plan-evidence.js";
 import {
   el,
   renderEmpty,
@@ -69,6 +79,8 @@ const achievementsBox = document.getElementById("perfil-achievements");
 let overviewCache = null;
 let diagnosisCache = null;
 let statsCache = null;
+let planCache = null;
+let topicById = new Map();
 let lastSectionErrors = {};
 let historyPage = 0;
 const HISTORY_SIZE = 20;
@@ -235,7 +247,7 @@ async function loadAll() {
   loadingBox.hidden = false;
   content.hidden = true;
 
-  const [profile, stats, overview, diagnosis, plan, evolution, history] =
+  const [profile, stats, overview, diagnosis, plan, evolution, history, topics] =
     await Promise.allSettled([
       fetchProfile(),
       fetchProfileStats(),
@@ -247,6 +259,9 @@ async function loadAll() {
       }),
       fetchEvolution(evoSelect?.value || "WEEK"),
       fetchHistory(0, HISTORY_SIZE),
+      // TASK 18.3: catálogo para nomear o próximo item do roteiro nas
+      // metas (mesmo padrão do dashboard). Falha aqui não derruba a página.
+      fetchTopics().catch(() => []),
     ]);
 
   // Sessão expirada no meio do caminho: volta para o painel de acesso.
@@ -280,6 +295,11 @@ async function loadAll() {
   overviewCache = overview.status === "fulfilled" ? overview.value : null;
   diagnosisCache = diagnosis.status === "fulfilled" ? diagnosis.value : null;
   const planData = plan.status === "fulfilled" ? plan.value : null;
+  planCache = planData;
+  if (topics.status === "fulfilled") {
+    const list = Array.isArray(topics.value) ? topics.value : (topics.value?.content ?? []);
+    topicById = new Map(list.map((t) => [Number(t.id), t]));
+  }
   lastSectionErrors.profile = profile.status === "rejected" ? profile.reason : null;
   lastSectionErrors.stats = stats.status === "rejected" ? stats.reason : null;
   lastSectionErrors.overview = overview.status === "rejected" ? overview.reason : null;
@@ -549,7 +569,9 @@ form?.addEventListener("submit", async (event) => {
     const updated = await updateProfile({ displayName, schoolYear, targetYear, studyGoal });
     renderHero(updated, null);
     renderDados(updated, null);
-    renderMetas(updated, null, null);
+    // O PUT não toca no roteiro: mantém o plano em cache para o bloco
+    // "Próximo do roteiro" não sumir após salvar os dados.
+    renderMetas(updated, planCache, null);
     const firstName = (updated?.displayName || "").split(" ")[0];
     if (subtitle && firstName) {
       subtitle.textContent = `Olá, ${firstName} — este é o seu retrato como estudante: dados, desempenho, evolução e histórico.`;
@@ -920,9 +942,9 @@ function renderMetas(profile, plan, planError) {
       className: "progress",
       attrs: {
         role: "progressbar",
-        "aria-valuenow": String(done),
         "aria-valuemin": "0",
         "aria-valuemax": String(items.length),
+        "aria-valuenow": String(done),
         "aria-label": "Progresso do roteiro",
       },
     });
@@ -934,6 +956,9 @@ function renderMetas(profile, plan, planError) {
       el("p", { className: "stat-label", text: `Roteiro: ${done} de ${items.length} concluídos` }),
     );
     metasBox.appendChild(progress);
+    // TASK 18.3: o próximo item do roteiro com o mesmo motivo do painel
+    // (evidência) + "Praticar agora" e "Revisar erros".
+    renderMetasNext(metasBox, plan);
   } else {
     metasBox.appendChild(
       el("p", { className: "stat-label", text: "Nenhum roteiro vigente. Monte o seu no dashboard." }),
@@ -957,6 +982,61 @@ function renderMetas(profile, plan, planError) {
   metasBox.appendChild(
     el("a", { className: "btn btn--secondary btn--sm mt-4", text: "Ver roteiro no dashboard", attrs: { href: "./dashboard.html" } }),
   );
+}
+
+// TASK 18.3: próximo item do roteiro com o mesmo motivo do painel
+// (`evidenceLine` compartilhado, a partir do `evidenceJson` rico).
+function renderMetasNext(container, plan) {
+  const next = nextStudyOf(plan);
+  if (!next) {
+    container.appendChild(
+      el("p", { className: "stat-label", text: "Roteiro concluído — atualize no dashboard para continuar." }),
+    );
+    return;
+  }
+  const topic = topicById.get(Number(next.topicId));
+  const name = topic?.name || "Assunto do seu roteiro";
+  const motive = evidenceLine(parseEvidence(next));
+  const box = el("div", { className: "meta-next" });
+  box.appendChild(el("p", { className: "meta-next__label", text: "Próximo do roteiro" }));
+  box.appendChild(el("p", { className: "meta-next__name", text: `${next.priority}º · ${name}` }));
+  if (motive) {
+    box.appendChild(el("p", { className: "stat-label", text: motive }));
+  }
+  const target = practiceTarget(next, topicById);
+  const actions = el("div", { className: "btn-group mt-2" });
+  actions.appendChild(
+    el("a", {
+      className: "btn btn--secondary btn--sm",
+      text: "Praticar agora",
+      attrs: {
+        href: estudosHref({ ...target, origin: "perfil" }),
+        "aria-label": `Praticar agora ${name}`,
+      },
+    }),
+  );
+  actions.appendChild(
+    el("a", {
+      className: "btn btn--ghost btn--sm",
+      text: "Revisar erros",
+      attrs: {
+        href: revisaoHref({ disciplineCode: target.disciplineCode, topicId: next.topicId ?? "" }),
+        "aria-label": `Revisar erros de ${name}`,
+      },
+    }),
+  );
+  const ev = parseEvidence(next);
+  if (ev && ev.sampleQuestionIds.length > 0) {
+    actions.appendChild(
+      el("a", {
+        className: "btn btn--ghost btn--sm",
+        text: "Ver exemplo oficial",
+        attrs: { href: sampleHref(ev.sampleQuestionIds[0]) },
+      }),
+    );
+  }
+  box.appendChild(actions);
+  container.appendChild(box);
 }
 
 /* ---------- 5. dominados + atenção ---------- */

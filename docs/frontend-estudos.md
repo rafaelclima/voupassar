@@ -186,7 +186,26 @@ no backend; o frontend nunca reordena.
   fila — quantidade/dificuldade/origem não seguem (a revisão tem filtros
   próprios).
 
-## 8. Verificação 17.2
+## 8. Motivo do roteiro + fila filtrada por assunto (TASK 18.3)
+
+* **Mesmo motivo do painel:** o hero (`renderHero`) e o bloco `No seu
+  roteiro` (`renderPlan`) usam `evidenceLine(parseEvidence(item))` de
+  `js/components/plan-evidence.js` — a mesma frase do dashboard para o
+  mesmo item (reuso, sem duplicar formatação). Sem evidência aproveitável,
+  o hero mantém o retrato ao vivo que já exibia (overview por
+  assunto/disciplina); o `reason` cru da API nunca vai para a tela.
+* **CTAs:** o bloco do roteiro ganha `Revisar erros deste assunto`
+  (`revisaoHref`: `estudos.html?aba=revisao&disciplina=&topico=`) e `Ver
+  exemplo oficial` (primeiro `sampleQuestionIds[]`, quando existir). Fora
+  do roteiro, o assunto atual também oferece a revisão (a fila filtra por
+  assunto, não por plano).
+* **`?topico=` na fila:** `js/views/revisao.js` (`readUrlIntoReview` +
+  `resolveDisciplineForTopic`) pré-seleciona disciplina + assunto vindos
+  dos CTAs do roteiro; sem disciplina na URL, ela é derivada do catálogo
+  (`GET /topics`); assunto inválido/inexistente limpa o filtro em vez de
+  quebrar a fila. `?aba=revisao` continua rolando até a seção.
+
+## 9. Verificação 17.2
 
 ```bash
 for f in frontend/js/api/review.js frontend/js/views/revisao.js frontend/js/views/estudos.js frontend/js/views/simulado.js; do node --check "$f"; done
