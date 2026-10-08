@@ -41,6 +41,9 @@ import {
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
 import { sourceTypeLabel, difficultyLabel, statusLabel, choiceLabel } from "../vocab.js";
 import { parseEvidence, evidenceLine, revisaoHref, sampleHref } from "../components/plan-evidence.js";
+import { summarizeResult, renderResultNext } from "../components/result-next.js";
+import { createSession } from "../api/review.js";
+import { generatePlan } from "../api/dashboard.js";
 import { initReviewSection } from "./revisao.js";
 
 const PAGE_SIZE = 10;
@@ -100,6 +103,10 @@ const state = {
   origin: "",
   pageData: null,
   studySessionId: null,
+  // Raio-X da sessão (TASK 19.2): respostas desta página/sessão de estudo,
+  // sem inventar histórico. Por questão: última correção + se já acertou
+  // antes nesta sessão ("sem acerto prévio" = nunca acertou aqui).
+  raiox: new Map(),
 };
 
 wireLogoutButtons();
@@ -1069,6 +1076,8 @@ function questionQuery() {
 }
 
 async function loadQuestions() {
+  state.raiox.clear();
+  document.getElementById("study-raiox")?.replaceChildren();
   listBox.textContent = "";
   pagerBox.textContent = "";
   if (pagerTop) pagerTop.textContent = "";
@@ -1274,6 +1283,7 @@ function renderQuestionCard(q) {
         }
       }
       showFeedback(feedback, q, attempt, choice);
+      recordRaioxAnswer(q, attempt);
       for (const r of radios) r.disabled = true;
       btnAnswer.disabled = true;
       btnBlank.disabled = true;
@@ -1340,6 +1350,130 @@ function showFeedback(box, question, attempt, choice) {
     : "Conteúdo: assunto ainda sem classificação.";
   box.appendChild(el("p", { text: topicLine }));
   // attempt.notes é trilha de auditoria do servidor — ver comentário acima.
+}
+
+/* ---------- raio-X da sessão (TASK 19.2) ----------
+ * Fim do caderno: "nesta sessão você errou N (M sem acerto prévio nesta
+ * sessão)" + mesmos CTAs do 19.1 via `renderResultNext` (máx. 3). O assunto
+ * vem da questão listada (`q.topic`/`q.discipline`); sem classificação, o
+ * componente agrupa por disciplina — nunca inventa assunto. A revisão
+ * congela o topo da fila no assunto que mais pesou (filtro por tópico, como
+ * no simulado): NÃO estende `POST /review/sessions` com `{questionIds[]}`
+ * (opcional da task, dispensado — o recorte por tópico já cobre os erros da
+ * sessão sem mexer no backend). */
+function recordRaioxAnswer(q, attempt) {
+  if (!q || attempt?.wasAnnulled || q.annulled) return;
+  const id = q.id;
+  const prev = state.raiox.get(id) || { everCorrect: false, detail: null };
+  const correct = attempt?.isCorrect === true;
+  state.raiox.set(id, {
+    everCorrect: prev.everCorrect || correct,
+    lastCorrect: correct,
+    detail: {
+      topic: q.topic ? { id: q.topic.id ?? null, code: q.topic.code ?? null, name: q.topic.name ?? null } : null,
+      discipline: q.discipline ? { code: q.discipline.code ?? null } : null,
+    },
+    sourceYear: q.examYear ?? null,
+    sourceQuestionNumber: q.questionNumber ?? null,
+    disciplineCode: q.discipline?.code ?? null,
+  });
+  renderRaiox();
+}
+
+function renderRaiox() {
+  const mount = document.getElementById("study-raiox");
+  if (!mount) return;
+  mount.textContent = "";
+  if (state.raiox.size === 0) return;
+  const items = [];
+  const detailsMap = new Map();
+  let pos = 0;
+  let freshErrors = 0;
+  for (const [qid, rec] of state.raiox) {
+    pos += 1;
+    detailsMap.set(qid, rec.detail);
+    detailsMap.set(String(qid), rec.detail);
+    const isErr = rec.lastCorrect === false;
+    if (isErr && !rec.everCorrect) freshErrors += 1;
+    items.push({
+      position: pos,
+      questionId: qid,
+      disciplineCode: rec.disciplineCode,
+      sourceYear: rec.sourceYear,
+      sourceQuestionNumber: rec.sourceQuestionNumber,
+      isCorrect: rec.lastCorrect,
+      wasAnnulled: false,
+      unanswered: false,
+    });
+  }
+  let summary = null;
+  try {
+    summary = summarizeResult({ items, scored: items.length, correct: items.filter((i) => i.isCorrect).length }, detailsMap);
+  } catch {
+    return;
+  }
+  if (!summary) return;
+  const lead = el("p", {
+    className: "muted",
+    text: `Nesta sessão você errou ${summary.errorCount} (${freshErrors} sem acerto prévio nesta sessão).`,
+  });
+  mount.appendChild(lead);
+  const block = el("div");
+  mount.appendChild(block);
+  try {
+    renderResultNext(block, summary, { onReview: startReviewFromRaiox, onPlan: refreshPlanFromRaiox });
+  } catch {
+    block.remove();
+  }
+}
+
+async function startReviewFromRaiox(summary, button) {
+  const n = summary?.errorCount ?? 0;
+  if (!n) {
+    toast("Nenhum erro nesta sessão para revisar.", "info");
+    return;
+  }
+  const top = summary.topGroup;
+  setButtonLoading(button, true, "Criando revisão…");
+  try {
+    const session = await createSession({
+      limit: Math.min(Math.max(n, 1), 100),
+      ...(top?.topicId ? { topicId: top.topicId } : {}),
+      ...(top?.disciplineCode ? { discipline: top.disciplineCode } : {}),
+      onlyErrors: true,
+    });
+    const id = session?.id ?? session?.sessionId;
+    if (!id) {
+      toast("Revisão criada, mas sem identificador — abra a fila em Estudar.", "info");
+      return;
+    }
+    window.location.href = `./simulado.html?review=${encodeURIComponent(String(id))}`;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    toast(friendlyMessage(err), "info");
+  } finally {
+    setButtonLoading(button, false);
+  }
+}
+
+async function refreshPlanFromRaiox(_summary, button) {
+  setButtonLoading(button, true, "Atualizando plano…");
+  try {
+    await generatePlan();
+    toast("Plano atualizado com esta sessão. Abrindo seu painel.", "success");
+    window.location.href = "./dashboard.html";
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      showGuard();
+      return;
+    }
+    toast(friendlyMessage(err), "info");
+  } finally {
+    setButtonLoading(button, false);
+  }
 }
 
 // U3 — paginação espelhada topo/base: o caderno tem 10 cartões longos e

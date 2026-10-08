@@ -301,6 +301,13 @@ def main() -> int:
         for token in ["revisao.js", "initReviewSection"]:
             if token not in study_js:
                 fail(f"js/views/estudos.js sem {token!r} (TASK 17.2 — fiação da revisão)")
+        # TASK 19.2 — raio-X no fim do caderno de estudos (reuso do 19.1, sem questionIds)
+        for token in ["study-raiox", "renderResultNext", "summarizeResult",
+                      "Nesta sessão você errou", "sem acerto prévio nesta sessão",
+                      "startReviewFromRaiox", "refreshPlanFromRaiox",
+                      "recordRaioxAnswer", "createSession", "generatePlan"]:
+            if token not in study_js:
+                fail(f"js/views/estudos.js sem {token!r} (TASK 19.2 — raio-X em Estudos)")
         revisao_js = (FRONT / "js" / "views" / "revisao.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "revisao.js").exists() else ""
         for token in ["getQueue", "createSession", "reviewCategoryLabel", "reviewCategoryHint",
                       "Buscando fila…", "Iniciar revisão (", "simulado.html?review=",

@@ -205,7 +205,23 @@ no backend; o frontend nunca reordena.
   (`GET /topics`); assunto inválido/inexistente limpa o filtro em vez de
   quebrar a fila. `?aba=revisao` continua rolando até a seção.
 
-## 9. Verificação 17.2
+## 9. Raio-X da sessão (TASK 19.2 — sem backend novo)
+
+* **Bloco `#study-raiox`** no fim do caderno: `Nesta sessão você errou N (M
+  sem acerto prévio nesta sessão)` + `renderResultNext` (mesmos 3 CTAs do
+  19.1: `Revisar estes N agora`, `Praticar <assunto>`, `Atualizar meu plano`).
+  Assunto via `q.topic`/`q.discipline` da lista; sem classificação, agrupa por
+  disciplina — nunca inventa. Anuladas fora; trocar de filtro/página limpa o
+  bloco (só vale para a sessão visível).
+* **`questionIds[]` dispensado (decisão 19.2):** a revisão congela o topo da
+  fila no assunto que mais pesou (`createSession({limit: N, topicId?,
+  discipline?, onlyErrors: true})`, igual ao simulado) — recorte por tópico
+  já cobre os erros sem estender `POST /review/sessions`. `api/review.js`
+  segue rejeitando `questionIds` no cliente com mensagem explícita.
+* **Handlers:** `startReviewFromRaiox` → `simulado.html?review=<id>` (401 →
+  guard); `refreshPlanFromRaiox` → `POST /recommendations` + dashboard.
+
+## 10. Verificação 17.2
 
 ```bash
 for f in frontend/js/api/review.js frontend/js/views/revisao.js frontend/js/views/estudos.js frontend/js/views/simulado.js; do node --check "$f"; done
