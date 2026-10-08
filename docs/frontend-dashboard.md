@@ -110,3 +110,32 @@ Critérios 6.4: 6 blocos presentes e alimentados pela API real; guarda de
 auth com `?next=` seguro; `Gerar roteiro` e `status` funcionais; `node
 --check` OK; 200 no serve; `check_frontend.py` OK estendido com cobertura
 dashboard.
+
+## 6. Diagnóstico inicial — wizard "Descubra seu nível" (TASK 20.2)
+
+* **Página:** `frontend/diagnostico.html` (+ `js/views/diagnostico.js`,
+  guarda de auth com `?next=diagnostico.html`). Oferta pós-cadastro
+  (`js/views/cadastro.js`: primário "Descobrir meu nível (12 questões)",
+  secundário "Ir para o dashboard").
+* **Sem endpoint novo:** etapa 1 cria `POST /simulations/by-discipline`
+  (6Q LP, Modo PROVA, `OFFICIAL` padrão) e redireciona para
+  `simulado.html?id=&diag=LP`. Códigos de disciplina resolvidos via
+  `GET /disciplines` (casa por "portugues"/"matemat", tolerante a `LP`/`MAT`
+  vs nomes longos) — nunca fixos no código.
+* **Encadeamento:** gancho do wizard em `renderNextSteps`
+  (`js/views/simulado.js`, `?diag=LP|MAT`) abre o bloco antes dos CTAs
+  genéricos: `LP` → "Continuar: Matemática (6 questões)";
+  `MAT` → "Ver meu ponto de partida" (`POST /recommendations` automático +
+  `dashboard.html?origem=diagnostico`). Fora do wizard nada é renderizado.
+* **Ponto de partida:** `?origem=diagnostico` exibe alerta "Seu ponto de
+  partida" no topo do próximo passo — estimativa inicial com poucas
+  questões (`EM_OBSERVACAO` sinalizado, sem fingir precisão). Quem pula o
+  wizard recebe o provisório da 20.1 (só-frequência, backend/VPS).
+* **Verificação:** `node --check` nos 4 arquivos + `check_frontend.py`
+  (bloco 20.2: página, reuso `by-discipline`, gancho `?diag=`, boas-vindas
+  `?origem=`). E2E real (2026-10-08, conta nova): cadastro → wizard →
+  6 LP (`id=15`) → "Continuar: Matemática" → 6 MAT (`id=16`) → "Ver meu
+  ponto de partida" (plano v1 automático) → `dashboard?origem=diagnostico`
+  com boas-vindas + roteiro; zero erros de console; desktop + 390px.
+  Achado do teste: `renderResultNext` limpa o container (`textContent=""`),
+  então o cartão do wizard usa mount próprio com prepend (antes do placar).

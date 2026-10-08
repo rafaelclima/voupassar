@@ -38,6 +38,7 @@ REQUIRED_FILES = [
     "recuperar-senha.html",
     "redefinir-senha.html",
     "dashboard.html",
+    "diagnostico.html",
     "estudos.html",
     "questao.html",
     "simulado.html",
@@ -78,6 +79,7 @@ REQUIRED_FILES = [
     "js/views/recuperar-senha.js",
     "js/views/redefinir-senha.js",
     "js/views/dashboard.js",
+    "js/views/diagnostico.js",
     "js/views/estudos.js",
     "js/views/revisao.js",
     "js/views/review-exec.js",
@@ -179,7 +181,7 @@ def main() -> int:
     if ":focus-visible" not in base:
         fail("base.css sem :focus-visible")
 
-    for page in ["index.html", "design-system.html", "dashboard.html", "questao.html", "simulado.html", "perfil.html", "admin.html", *REQUIRED_AUTH_FORMS]:
+    for page in ["index.html", "design-system.html", "dashboard.html", "diagnostico.html", "questao.html", "simulado.html", "perfil.html", "admin.html", *REQUIRED_AUTH_FORMS]:
         p = FRONT / page
         if not p.is_file():
             continue
@@ -270,6 +272,28 @@ def main() -> int:
         shared = (FRONT / "js" / "views" / "auth-shared.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "auth-shared.js").exists() else ""
         if shared and "dashboard.html" not in shared:
             fail("js/views/auth-shared.js sem link para o dashboard (TASK 6.4)")
+
+    # TASK 20.2 — wizard "Descubra seu nível": página + encadeamento no
+    # simulado + boas-vindas no painel. Sem endpoint novo (reuso
+    # by-discipline); códigos de disciplina via catálogo, nunca fixos.
+    diag_html = (FRONT / "diagnostico.html").read_text(encoding="utf-8") if (FRONT / "diagnostico.html").exists() else ""
+    if not diag_html:
+        fail("diagnostico.html ausente (TASK 20.2)")
+    else:
+        for sid in ["diag-guard", "diag-error", "diag-loading", "diag-content", "diag-start", "diag-skip"]:
+            if f'id="{sid}"' not in diag_html:
+                fail(f"diagnostico.html sem bloco #{sid} (TASK 20.2)")
+        if "js/views/diagnostico.js" not in diag_html:
+            fail("diagnostico.html sem js/views/diagnostico.js")
+    diag_js = (FRONT / "js" / "views" / "diagnostico.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "diagnostico.js").exists() else ""
+    if diag_js and ("by-discipline" not in diag_js and "createByDiscipline" not in diag_js):
+        fail("js/views/diagnostico.js sem reuso de by-discipline (TASK 20.2)")
+    sim_js = (FRONT / "js" / "views" / "simulado.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "simulado.js").exists() else ""
+    if sim_js and "diag" not in sim_js:
+        fail("js/views/simulado.js sem gancho do wizard ?diag= (TASK 20.2)")
+    dash_js = (FRONT / "js" / "views" / "dashboard.js").read_text(encoding="utf-8") if (FRONT / "js" / "views" / "dashboard.js").exists() else ""
+    if dash_js and "origem" not in dash_js:
+        fail("js/views/dashboard.js sem boas-vindas ?origem=diagnostico (TASK 20.2)")
 
     # TASK 6.5 — estudos: conteúdo + filtros + questões + progresso + navegação
     study = (FRONT / "estudos.html").read_text(encoding="utf-8") if (FRONT / "estudos.html").exists() else ""

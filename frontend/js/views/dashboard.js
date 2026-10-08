@@ -363,6 +363,37 @@ async function loadAll() {
 
   loadingBox.hidden = true;
   content.hidden = false;
+  maybeRenderDiagWelcome();
+}
+
+/* ---------- boas-vindas do diagnóstico (TASK 20.2) ----------
+ * `dashboard.html?origem=diagnostico`: "Seu ponto de partida" com a
+ * honestidade devida — 12 questões rendem estimativa inicial (sinal
+ * EM_OBSERVACAO do backend), nunca precisão fingida. Quem pulou o wizard
+ * cai aqui sem o parâmetro e recebe só o provisório da 20.1. */
+function maybeRenderDiagWelcome() {
+  let fromDiag = false;
+  try {
+    fromDiag = new URLSearchParams(window.location.search).get("origem") === "diagnostico";
+  } catch {
+    fromDiag = false;
+  }
+  if (!fromDiag || !nextBox) return;
+  const acc = overviewCache?.accuracy ?? diagnosisCache?.accuracy ?? null;
+  const scored = overviewCache?.scoredAttempts ?? diagnosisCache?.scoredAttempts ?? 0;
+  const card = el("div", { className: "alert alert--success" });
+  const inner = el("div");
+  inner.appendChild(el("strong", { text: "Seu ponto de partida" }));
+  const level = diagnosisCache?.overallLevel;
+  const line = acc !== null && acc !== undefined
+    ? `Você acertou ${formatPercent(acc)} das questões que valem nota até aqui (${scored} tentativas).`
+    : "Seu diagnóstico foi registrado.";
+  inner.appendChild(el("p", { text: `${line} Com poucas questões, este nível é uma estimativa inicial — ele fica mais preciso conforme você responde mais.` }));
+  if (level) {
+    inner.appendChild(el("p", { className: "stat-label", text: `Nível atual: ${masteryLabel(level)} (em observação).` }));
+  }
+  card.appendChild(inner);
+  nextBox.prepend(card);
 }
 
 /* ---------- retentativa por seção (TASK 16.3) ---------- */

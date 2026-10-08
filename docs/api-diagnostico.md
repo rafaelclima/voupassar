@@ -90,3 +90,14 @@ Contratos disponíveis em `GET /v3/api-docs` (público, sem PII) e `GET /swagger
 - `GET /api/v1/diagnosis` (autenticado) retorna `200` com envelope completo; sem token retorna `401`.
 - `GET /v3/api-docs` lista o path `/api/v1/diagnosis`.
 - Limiares auditáveis via `DiagnosisService.MasteryLevel()` (testado com 7 casos: NAO_AVALIADO, EM_OBSERVACAO, FRAGIL, DOMINADO, EM_DESENVOLVIMENTO).
+
+## Wizard "Descubra seu nível" (TASK 20.2 — sem endpoint novo)
+
+O diagnóstico de entrada reutiliza `POST /simulations/by-discipline` (2
+blocos de 6Q: LP + MAT, Modo PROVA) + `GET /diagnosis` (calculado) +
+`POST /recommendations` (plano v1). Fluxo no frontend: `diagnostico.html`
+→ `simulado.html?id=&diag=LP` → `&diag=MAT` → `dashboard.html?origem=diagnostico`.
+Com 12 questões o nível cai em `EM_OBSERVACAO` (1–2 pontuáveis por assunto)
+— o painel sinaliza a estimativa como inicial, sem fingir precisão. Quem
+pula o wizard cai no provisório da 20.1 (`POST /recommendations` sem
+tentativas, só-frequência).

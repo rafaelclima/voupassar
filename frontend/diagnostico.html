@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script>
+    // Aplica o tema antes da primeira pintura (mesmo padrão das demais telas).
+    try {
+      var t = localStorage.getItem("theme");
+      if (t !== "dark" && t !== "light") {
+        t = "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <meta name="description" content="Descubra seu nível no VouPassar: 12 questões oficiais (6 de Língua Portuguesa e 6 de Matemática) para montar seu ponto de partida." />
+  <meta name="voupassar-api" content="http://localhost:8080" />
+  <meta name="theme-color" content="#0d2b45" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="icon" type="image/x-icon" href="./assets/favicon_io/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon_io/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon_io/favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="./assets/favicon_io/apple-touch-icon.png" />
+  <link rel="manifest" href="./assets/favicon_io/site.webmanifest" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/utilities.css?v=6" />
+  <title>Descubra seu nível — VouPassar</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container container--wide site-header__inner">
+      <a class="brand" href="./index.html" aria-label="VouPassar — início">
+        <img class="brand__mark" src="./assets/logo-mark.png" alt="" width="34" height="34" /><img class="brand__mark brand__mark--inverse" src="./assets/logo-mark-light.png" alt="" width="34" height="34" />
+        <span>VouPassar</span>
+      </a>
+      <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">☰</button>
+      <nav class="site-nav" id="main-nav" data-nav aria-label="Navegação principal">
+        <div class="site-nav__links" id="nav-links">
+          <a href="./index.html">Início</a>
+          <a href="./dashboard.html">Meu painel</a>
+          <a href="./estudos.html">Estudar</a>
+          <a href="./simulado.html">Simulado</a>
+          <a href="./perfil.html">Perfil</a>
+          <button type="button" class="btn btn--ghost btn--sm" data-logout hidden>Sair</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <div class="container section" style="max-width:44rem">
+      <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Diagnóstico inicial</p>
+      <h1 id="diag-title" class="display">Descubra seu nível</h1>
+      <p class="lead" id="diag-subtitle">12 questões oficiais para situar seu ponto de partida: 6 de Língua Portuguesa e 6 de Matemática, no formato de prova (sem resposta na hora). No fim, montamos seu diagnóstico e seu roteiro automaticamente.</p>
+
+      <div id="diag-guard" hidden></div>
+      <div id="diag-error" class="mb-4"></div>
+
+      <div id="diag-loading" class="loading-block" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Preparando…</span>
+      </div>
+
+      <div id="diag-content" hidden>
+        <ol class="plan-items">
+          <li class="plan-items__row">
+            <div>
+              <span class="plan-items__name">Etapa 1 — Língua Portuguesa (6 questões)</span>
+              <p class="plan-items__meta">Prova curta, sem consulta. Vale nota para o diagnóstico.</p>
+            </div>
+          </li>
+          <li class="plan-items__row">
+            <div>
+              <span class="plan-items__name">Etapa 2 — Matemática (6 questões)</span>
+              <p class="plan-items__meta">Aparece sozinha depois que você concluir a etapa 1.</p>
+            </div>
+          </li>
+          <li class="plan-items__row">
+            <div>
+              <span class="plan-items__name">Ponto de partida + roteiro</span>
+              <p class="plan-items__meta">Gerados sozinhos ao concluir. Com poucas questões, o nível é uma estimativa inicial — ele fica mais preciso conforme você estuda.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="btn-group mt-4">
+          <button type="button" class="btn btn--primary" id="diag-start">Começar (12 questões)</button>
+          <a class="btn btn--ghost" href="./dashboard.html" id="diag-skip">Pular por agora</a>
+        </div>
+        <p class="stat-label mt-2">Quem pular recebe o roteiro provisório (ordem do que mais cai na prova) e pode fazer o diagnóstico depois.</p>
+      </div>
+
+      <noscript>
+        <div class="alert alert--warning mt-4" role="note">
+          <div>
+            <strong>JavaScript desligado</strong>
+            <p>Esta página precisa de JavaScript para montar seu diagnóstico. Ative para continuar.</p>
+          </div>
+        </div>
+      </noscript>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div style="text-align:center; width:100%; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+      <p><small>VouPassar - Preparação inteligente para o IFRN - <span data-current-year>2026</span></small></p>
+      <p><small>Desenvolvido por <a href="https://github.com/rafaelclima">Rafael Lima</a></small></p>
+      <p><small><a href="./index.html">Início</a></small></p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/views/diagnostico.js"></script>
+</body>
+</html>

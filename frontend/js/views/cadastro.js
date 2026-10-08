@@ -50,8 +50,16 @@ function showCreated() {
   note.textContent = "Sua conta já está ativa. Abra o dashboard para ver seu diagnóstico inicial e gerar o roteiro.";
   wrap.appendChild(note);
   const actions = el("div", { className: "btn-group" });
-  const dash = el("a", {
+  // TASK 20.2: oferta do diagnóstico logo após criar a conta — quem pular
+  // fica com o provisório da 20.1 no painel.
+  const diag = el("a", {
     className: "btn btn--primary",
+    text: "Descobrir meu nível (12 questões)",
+    attrs: { href: "./diagnostico.html" },
+  });
+  actions.appendChild(diag);
+  const dash = el("a", {
+    className: "btn btn--ghost",
     text: "Ir para o dashboard",
     attrs: { href: "./dashboard.html" },
   });

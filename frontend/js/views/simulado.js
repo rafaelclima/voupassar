@@ -1097,6 +1097,12 @@ function renderNextSteps(res) {
     return;
   }
   if (!summary) return;
+  // TASK 20.2 (wizard "Descubra seu nível"): quando a execução faz parte do
+  // diagnóstico (`?diag=LP|MAT`), o cartão do wizard abre o bloco — em mount
+  // próprio ANTES dos CTAs genéricos (renderResultNext limpa o container que
+  // recebe, então dividir o mount é obrigatório), para o aluno não se perder
+  // no meio do caminho.
+  renderDiagWizardStep(resultBox, res);
   const mount = el("div", { className: "mt-4" });
   resultBox.appendChild(mount);
   try {
@@ -1104,6 +1110,106 @@ function renderNextSteps(res) {
   } catch {
     mount.remove();
   }
+}
+
+/* ---------- wizard "Descubra seu nível" (TASK 20.2) ----------
+ * Encadeia os 2 blocos do diagnóstico (6 LP + 6 MAT, Modo PROVA) e, ao fim,
+ * gera o plano v1 automaticamente levando ao painel (`?origem=diagnostico`).
+ * Códigos de disciplina resolvidos pelo catálogo; nada de código fixo.
+ * Fora do wizard (`?diag=` ausente) esta função não renderiza nada. */
+function readDiagStep() {
+  let raw = "";
+  try {
+    raw = new URLSearchParams(window.location.search).get("diag") || "";
+  } catch {
+    raw = "";
+  }
+  const step = String(raw).trim().toUpperCase();
+  return step === "LP" || step === "MAT" ? step : null;
+}
+
+async function resolveDiagCode(want) {
+  const raw = await fetchDisciplines();
+  const list = Array.isArray(raw) ? raw : (raw?.content || raw?.items || []);
+  const norm = (s) => String(s || "").toLowerCase();
+  for (const d of list) {
+    const code = d.code || d.disciplineCode || "";
+    const name = d.name || d.disciplineName || "";
+    const hay = `${norm(code)} ${norm(name)}`;
+    if (want === "LP" && (hay.includes("portugues") || /(^|[\s_-])lp($|[\s_-])/.test(hay))) return code;
+    if (want === "MAT" && (hay.includes("matemat") || /(^|[\s_-])mat($|[\s_-])/.test(hay))) return code;
+  }
+  return null;
+}
+
+function renderDiagWizardStep(mount, res) {
+  const step = readDiagStep();
+  if (!step) return;
+  const scored = Number(res?.scored ?? 0);
+  const correct = Number(res?.correct ?? 0);
+  const card = el("div", { className: "alert alert--success" });
+  const inner = el("div");
+  if (step === "LP") {
+    inner.appendChild(el("strong", { text: `Etapa 1 concluída: ${correct} de ${scored} em Língua Portuguesa.` }));
+    inner.appendChild(el("p", { text: "Falta só a etapa 2 (Matemática, 6 questões) para montarmos seu ponto de partida." }));
+    const actions = el("div", { className: "btn-group mt-4" });
+    const next = el("button", { className: "btn btn--primary", text: "Continuar: Matemática (6 questões)", attrs: { type: "button" } });
+    next.addEventListener("click", async () => {
+      setButtonLoading(next, true, "Montando Matemática…");
+      try {
+        const code = await resolveDiagCode("MAT");
+        if (!code) {
+          toast("Não encontrei Matemática no catálogo — tente de novo.", "info");
+          return;
+        }
+        const created = await createByDiscipline({ disciplineCode: code, questionCount: 6, mode: "PROVA" });
+        const id = created?.attemptId ?? created?.id;
+        if (!id) {
+          toast("Bloco criado, mas sem identificador — volte ao diagnóstico.", "info");
+          return;
+        }
+        window.location.href = `./simulado.html?id=${encodeURIComponent(String(id))}&diag=MAT`;
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          showGuard();
+          return;
+        }
+        toast(friendlyMessage(err), "info");
+      } finally {
+        setButtonLoading(next, false);
+      }
+    });
+    actions.appendChild(next);
+    inner.appendChild(actions);
+  } else {
+    inner.appendChild(el("strong", { text: `Diagnóstico concluído: ${correct} de ${scored} em Matemática.` }));
+    inner.appendChild(el("p", { text: "Vamos juntar as 12 questões e montar seu ponto de partida com o roteiro. É uma estimativa inicial — fica mais precisa conforme você estuda." }));
+    const actions = el("div", { className: "btn-group mt-4" });
+    const finish = el("button", { className: "btn btn--primary", text: "Ver meu ponto de partida", attrs: { type: "button" } });
+    finish.addEventListener("click", async () => {
+      setButtonLoading(finish, true, "Montando seu roteiro…");
+      try {
+        await generatePlan();
+        window.location.href = "./dashboard.html?origem=diagnostico";
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          showGuard();
+          return;
+        }
+        toast(friendlyMessage(err), "info");
+      } finally {
+        setButtonLoading(finish, false);
+      }
+    });
+    actions.appendChild(finish);
+    inner.appendChild(actions);
+  }
+  card.appendChild(inner);
+  // Mount próprio com prepend: o cartão abre o bloco de resultado (antes do
+  // placar), em vez de disputar o container que o result-next limpa.
+  const wrap = el("div", { className: "mt-4" });
+  wrap.appendChild(card);
+  mount.prepend(wrap);
 }
 
 // "Revisar estes N agora": congela o topo da fila no assunto que mais
