@@ -320,6 +320,536 @@
       "page": 13,
       "alt": "Figura da questão 40 da prova 2025 (página 13 do caderno).",
       "credit": "Fonte: IFRN — Caderno 2025, p. 13 (recorte para estudo)."
+    },
+    "EAJ-2021-11": {
+      "files": [
+        "eaj/2021/Q11.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de Calvin e Haroldo (4 quadrinhos) — Texto 02 da prova EAJ-2021, base das questões 11 a 13.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q11_Q12_Q13_tirinha.png"
+    },
+    "EAJ-2021-12": {
+      "files": [
+        "eaj/2021/Q12.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de Calvin e Haroldo (4 quadrinhos) — Texto 02 da prova EAJ-2021, base das questões 11 a 13.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q11_Q12_Q13_tirinha.png"
+    },
+    "EAJ-2021-13": {
+      "files": [
+        "eaj/2021/Q13.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de Calvin e Haroldo (4 quadrinhos) — Texto 02 da prova EAJ-2021, base das questões 11 a 13.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q11_Q12_Q13_tirinha.png"
+    },
+    "EAJ-2021-14": {
+      "files": [
+        "eaj/2021/Q14.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Infográfico do IBGE (Censo Agro 2017 — Rio Grande do Norte) — Texto 03 da prova EAJ-2021, base das questões 14 e 15.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q14_Q15_censo.png"
+    },
+    "EAJ-2021-15": {
+      "files": [
+        "eaj/2021/Q15.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Infográfico do IBGE (Censo Agro 2017 — Rio Grande do Norte) — Texto 03 da prova EAJ-2021, base das questões 14 e 15.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q14_Q15_censo.png"
+    },
+    "EAJ-2021-18": {
+      "files": [
+        "eaj/2021/Q18.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tabela de tipos de banana e calorias por 100 g (questão 18 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q18_tipobanana.png"
+    },
+    "EAJ-2021-21": {
+      "files": [
+        "eaj/2021/Q21.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tabela da dieta semanal de raízes em gramas (questão 21 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q21_nutricaoatleta.png"
+    },
+    "EAJ-2021-22": {
+      "files": [
+        "eaj/2021/Q22.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Gráfico de câmbio mensal (jun–dez/2020) em R$ (questão 22 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q22_grafico.png"
+    },
+    "EAJ-2021-27": {
+      "files": [
+        "eaj/2021/Q27.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Quadro de parâmetro × consumo mensal de alimentos em kg (questão 27 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q27_consumoalimento.png"
+    },
+    "EAJ-2021-28": {
+      "files": [
+        "eaj/2021/Q28.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Triângulo retângulo ABC com altura h e projeções m = 2 cm e n = 8 cm (questão 28 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q28_triangulo.png"
+    },
+    "EAJ-2021-34": {
+      "files": [
+        "eaj/2021/Q34.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Afirmativas sobre o Texto 01 para análise (questão 34 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q34_afirmativas.png"
+    },
+    "EAJ-2021-40": {
+      "files": [
+        "eaj/2021/Q40.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Esquema de transporte de caixas (plano horizontal + rampa até a altura h) da questão 40 da prova EAJ-2021.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q40_esquematransporte.png"
+    },
+    "EAJ-2021-43": {
+      "files": [
+        "eaj/2021/Q43.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Reprodução do quadro Retirantes (1944), de Candido Portinari (questão 43 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q43_figura.png"
+    },
+    "EAJ-2021-44": {
+      "files": [
+        "eaj/2021/Q44.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Fragmento textual para leitura (questão 44 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q44_fragmentotextual.png"
+    },
+    "EAJ-2021-46": {
+      "files": [
+        "eaj/2021/Q46.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Gravura de Theodor de Bry (1593) sobre o Brasil (questão 46 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q46_imagem.png"
+    },
+    "EAJ-2021-47": {
+      "files": [
+        "eaj/2021/Q47.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Mapa 1 — principais regiões com rebanho bovino no Brasil em 2016 (questões 47 e 48 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q47_Q48_mapa.png"
+    },
+    "EAJ-2021-48": {
+      "files": [
+        "eaj/2021/Q48.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Mapa 1 — principais regiões com rebanho bovino no Brasil em 2016 (questões 47 e 48 da prova EAJ-2021).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2021, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2021/Q47_Q48_mapa.png"
+    },
+    "EAJ-2022-8": {
+      "files": [
+        "eaj/2022/Q08.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Fragmento textual sobre os gêneros musicais preferidos (questões 8 e 9 da prova EAJ-2022).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q08_Q09.png"
+    },
+    "EAJ-2022-9": {
+      "files": [
+        "eaj/2022/Q09.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Fragmento textual sobre os gêneros musicais preferidos (questões 8 e 9 da prova EAJ-2022).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q08_Q09.png"
+    },
+    "EAJ-2022-10": {
+      "files": [
+        "eaj/2022/Q10.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png"
+    },
+    "EAJ-2022-11": {
+      "files": [
+        "eaj/2022/Q11.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png"
+    },
+    "EAJ-2022-12": {
+      "files": [
+        "eaj/2022/Q12.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png"
+    },
+    "EAJ-2022-13": {
+      "files": [
+        "eaj/2022/Q13.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png"
+    },
+    "EAJ-2022-14": {
+      "files": [
+        "eaj/2022/Q14.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png"
+    },
+    "EAJ-2022-15": {
+      "files": [
+        "eaj/2022/Q15.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2022-16": {
+      "files": [
+        "eaj/2022/Q16.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2022-17": {
+      "files": [
+        "eaj/2022/Q17.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2022-18": {
+      "files": [
+        "eaj/2022/Q18.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2022-19": {
+      "files": [
+        "eaj/2022/Q19.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2022-20": {
+      "files": [
+        "eaj/2022/Q20.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2022-21": {
+      "files": [
+        "eaj/2022/Q21.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Esquema da dança do pau de fitas (mastro m, fita f, distância d) da questão 21 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q21.png"
+    },
+    "EAJ-2022-23": {
+      "files": [
+        "eaj/2022/Q23.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Trapézio retângulo (área do espaço do evento) da questão 23 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q23.png"
+    },
+    "EAJ-2022-24": {
+      "files": [
+        "eaj/2022/Q24.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Triângulo retângulo ABC com regiões BAD/BCD (questão 24 da prova EAJ-2022).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q24.png"
+    },
+    "EAJ-2022-27": {
+      "files": [
+        "eaj/2022/Q27.webp",
+        "eaj/2022/Q27-2.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Obra 'A Árvore', do artista potiguar Novenil Barros (questão 27 da prova EAJ-2022). | Losango com ângulos x/2 e x + 30 (questão 27 da prova EAJ-2022).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": [
+        "data/provas/EAJ/2022/Q27.png",
+        "data/provas/EAJ/2022/Q27_02.png"
+      ]
+    },
+    "EAJ-2022-28": {
+      "files": [
+        "eaj/2022/Q28.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Mosaico do piso do salão (triângulos, quadrados e losangos) da questão 28 da prova EAJ-2022.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q28.png"
+    },
+    "EAJ-2022-33": {
+      "files": [
+        "eaj/2022/Q33.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Preços de ingressos por setor do teatro (questão 33 da prova EAJ-2022).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q33.png"
+    },
+    "EAJ-2022-34": {
+      "files": [
+        "eaj/2022/Q34.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Planta da Plateia A em formato de 'T' (questão 34 da prova EAJ-2022).",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q34.png"
+    },
+    "EAJ-2022-38": {
+      "files": [
+        "eaj/2022/Q38.webp",
+        "eaj/2022/Q38-2.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Retângulo do estacionamento sombreado (lados x e y) da questão 38 da prova EAJ-2022. | Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022, contexto da questão 38.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": [
+        "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png",
+        "data/provas/EAJ/2022/Q38.png"
+      ]
+    },
+    "EAJ-2022-39": {
+      "files": [
+        "eaj/2022/Q39.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge-diálogo sobre falar outros idiomas ('Aí varêia') — Texto 02 da prova EAJ-2022, base da questão 39.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png"
+    },
+    "EAJ-2022-40": {
+      "files": [
+        "eaj/2022/Q40.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Tirinha de 4 quadrinhos ('Bom dia, galera') — Texto 03 da prova EAJ-2022, base da questão 40.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2022, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png"
+    },
+    "EAJ-2025-9": {
+      "files": [
+        "eaj/2025/Q09.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Trecho do Texto 1 sobre IA (custo de processamento e memória) — questões 9 e 10 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q09_Q10.png"
+    },
+    "EAJ-2025-10": {
+      "files": [
+        "eaj/2025/Q10.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Trecho do Texto 1 sobre IA (custo de processamento e memória) — questões 9 e 10 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q09_Q10.png"
+    },
+    "EAJ-2025-14": {
+      "files": [
+        "eaj/2025/Q14.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-15": {
+      "files": [
+        "eaj/2025/Q15.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-16": {
+      "files": [
+        "eaj/2025/Q16.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-17": {
+      "files": [
+        "eaj/2025/Q17.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-18": {
+      "files": [
+        "eaj/2025/Q18.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-19": {
+      "files": [
+        "eaj/2025/Q19.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-20": {
+      "files": [
+        "eaj/2025/Q20.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Charge sobre IA ('avanço da inteligência artificial' × 'retrocesso da inteligência natural') — Texto 2 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q14_Q15_Q16_Q17_Q18_Q19_Q20.png"
+    },
+    "EAJ-2025-21": {
+      "files": [
+        "eaj/2025/Q21.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Texto 3 — 'Queimadas no Brasil' (MapBiomas 1985–2020) — questões 21 a 23 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q21_Q22_Q23.png"
+    },
+    "EAJ-2025-22": {
+      "files": [
+        "eaj/2025/Q22.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Texto 3 — 'Queimadas no Brasil' (MapBiomas 1985–2020) — questões 21 a 23 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q21_Q22_Q23.png"
+    },
+    "EAJ-2025-23": {
+      "files": [
+        "eaj/2025/Q23.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Texto 3 — 'Queimadas no Brasil' (MapBiomas 1985–2020) — questões 21 a 23 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q21_Q22_Q23.png"
+    },
+    "EAJ-2025-30": {
+      "files": [
+        "eaj/2025/Q30.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Fragmento sobre desmatamento (+22,3% / 2,05 Mha, MapBiomas RAD2022) — questões 30 e 31 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q30_Q31.png"
+    },
+    "EAJ-2025-31": {
+      "files": [
+        "eaj/2025/Q31.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Fragmento sobre desmatamento (+22,3% / 2,05 Mha, MapBiomas RAD2022) — questões 30 e 31 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q30_Q31.png"
+    },
+    "EAJ-2025-34": {
+      "files": [
+        "eaj/2025/Q34.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Gráfico de barras de classificados OBM 2019–2022 (meninas × meninos) da questão 34 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q34.png"
+    },
+    "EAJ-2025-36": {
+      "files": [
+        "eaj/2025/Q36.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Barra de doce de leite (paralelepípedo 20 × 8 × 5 cm) da questão 36 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q36.png"
+    },
+    "EAJ-2025-37": {
+      "files": [
+        "eaj/2025/Q37.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Caixa d'água cilíndrica (40 cm de diâmetro × 50 cm de altura) da questão 37 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q37.png"
+    },
+    "EAJ-2025-38": {
+      "files": [
+        "eaj/2025/Q38.webp"
+      ],
+      "page": "DESCONHECIDA",
+      "alt": "Três quadrados adjacentes da questão 38 da prova EAJ-2025.",
+      "credit": "Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-2025, página DESCONHECIDA (recorte para estudo).",
+      "source_png": "data/provas/EAJ/2025/Q38.png"
     }
   }
 }

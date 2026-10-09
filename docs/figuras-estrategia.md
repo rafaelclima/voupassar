@@ -144,3 +144,31 @@ As entradas do `manifest.json` apontam para os recortes em
 `frontend/assets/figures/` — a imagem aparece automaticamente assim que
 arquivo + entrada existem (sem mudar código). Sem arquivo publicado,
 a UI mostra o aviso + referência ao caderno.
+
+## 9. Extensão EAJ — namespace `eaj/` (TASK B.3, 2026-10-09)
+
+EAJ tem edições 2022 e 2025 — os mesmos anos do IFRN. Ano sozinho nunca
+decide a edição (TASKS.md regra 3):
+
+* **Chave:** `"EAJ-<ano>-<n>"` (ex.: `"EAJ-2022-8"`). Nunca `"2022-8"`
+  para o EAJ — as chaves IFRN `2022-*`/`2025-*` permanecem intactas.
+* **Arquivo:** `frontend/assets/figures/eaj/<ano>/Q<NN>.webp`
+  (`Q<NN>-2.webp` se >1 figura na questão — ex.: EAJ-2022 Q27 tem a obra
+  `Q27.webp` + o losango `Q27-2.webp`). PNG agrupado multi-questão é UM
+  texto-base compartilhado e desmembra-se por questão via duplicação
+  (mesmo padrão do IFRN §2; 33 PNGs → 58 chaves, 60 arquivos).
+* **`page`:** número > 0 quando identificável, senão `"DESCONHECIDA"`
+  (extração B.1 marca `pageStatus: DESCONHECIDO`; nunca inventar página —
+  o validador emite aviso por chave até a confirmação no caderno).
+* **`alt`:** obrigatório (tipo do visual + vínculo, sem transcrever
+  valores além do já transcrito nos `questoes.md`).
+* **`credit`:** `Fonte: EAJ/UFRN (Comperve) — Caderno EAJ-<ano>, página
+  DESCONHECIDA (recorte para estudo).`
+* **Rastreabilidade:** cada entrada carrega `source_png`
+  (`data/provas/EAJ/<ano>/*.png`, nome livre da curadoria).
+* **Sem recorte:** aviso do validador + referência ao caderno
+  (`data/provas/EAJ/<ano>/eaj_<ano>.pdf`) — nunca imagem inventada.
+* **Construção:** `python3 scripts/analysis/build_eaj_figures.py`
+  (idempotente; `magick` para `.webp` ≤1600 px / <300 KB).
+  Validação: `python3 scripts/analysis/check_figures.py` → exit 0
+  (37 IFRN + 58 EAJ; avisos `page DESCONHECIDA` até auditoria no caderno).

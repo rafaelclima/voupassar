@@ -190,7 +190,7 @@ Critérios:
   documento-fonte registrado como `data/provas/EAJ/<ano>/questoes.md` + SHA
   (rastreabilidade honesta: transcrição, não PDF oficial).
 
-## TASK B.3 — Figuras: PNGs livres → convenção namespaced + WebP
+## TASK B.3 — Figuras: PNGs livres → convenção namespaced + WebP [DONE 2026-10-09]
 
 Entregas:
 
