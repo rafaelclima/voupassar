@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Apoio à curadoria de textos-base — TASK 6.9 / docs/passagens-estrategia.md.
+"""Apoio à curadoria de textos-base — TASK 6.9 / docs/passagens-estrategia.md
+(+ Programa EAJ, TASK B.4: namespace `eaj`).
 
 NÃO extrai nada sozinho para o banco: a fonte de verdade é o JSON curado
-`data/passages/<ano>.json` (transcrição literal conferida visualmente contra
-o caderno oficial). Este script só:
+`data/passages/<ano>.json` (IFRN; transcrição literal conferida
+visualmente contra o caderno oficial) e `data/passages/eaj/<ano>.json`
+(EAJ; blocos transcritos literalmente da seção `## Textos-base` dos
+`questoes.md` — fonte da Fase B — mais descrições visuais curadas onde o
+`.md` não traz bloco, ver curadoria de cada arquivo). Este script só:
 
-  --suggest ANO   lista candidatos a passagem no caderno (cabeçalhos
+  --suggest ANO   lista candidatos a passagem no caderno IFRN (cabeçalhos
                   "Texto N" e blocos "Considere o trecho...") com a página
                   impressa e o início do bloco, para orientar a curadoria;
-  --check         valida os JSONs curados: esquema, páginas dentro do caderno,
-                  questões vinculadas existem em data/extracted/<ano>.json e o
-                  enunciado cita o rótulo da passagem (regra de vínculo).
+  --check         valida os JSONs curados (IFRN + EAJ): esquema, páginas,
+                  questões vinculadas existem no `extracted` do namespace
+                  e o enunciado cita o rótulo da passagem (regra de vínculo).
 
 Uso:
     python3 scripts/db/extract_passages.py --suggest 2020
@@ -28,6 +32,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PASSAGES_DIR = REPO_ROOT / "data" / "passages"
 EXTRACTED_DIR = REPO_ROOT / "data" / "extracted"
+# Namespace EAJ (TASK B.4): EAJ-2022 ≠ IFRN-2022, EAJ-2025 ≠ IFRN-2025 —
+# ano sozinho nunca identifica a edição (TASKS.md regra 3).
+PASSAGES_EAJ_DIR = REPO_ROOT / "data" / "passages" / "eaj"
+EXTRACTED_EAJ_DIR = REPO_ROOT / "data" / "extracted" / "eaj"
+EAJ_EDITIONS = (2021, 2022, 2025)  # estrutura de cada edição vale só para ela
 
 KINDS = {"TEXTO", "TRECHO", "TABELA", "GRAFICO", "IMAGEM", "CHARGE", "TIRINHA"}
 
@@ -143,58 +152,109 @@ def load_extracted_numbers(year: int) -> dict[int, str]:
     return {q["number"]: (q.get("statement") or "") for q in d.get("questions", [])}
 
 
+def load_extracted_numbers_eaj(year: int) -> dict[int, str]:
+    """Enunciados EAJ (namespace `eaj`: fonte = `.md`, TASK B.1)."""
+    f = EXTRACTED_EAJ_DIR / f"{year}.json"
+    if not f.exists():
+        return {}
+    d = json.loads(f.read_text(encoding="utf-8"))
+    return {q["number"]: (q.get("statement") or "") for q in d.get("questions", [])}
+
+
+def check_file(f: Path, statements: dict[int, str], namespace: str) -> list[str]:
+    """Valida um JSON de passagens. Retorna a lista de erros.
+
+    `namespace` = "IFRN" (arquivos em `data/passages/*.json`, páginas
+    impressas do caderno) ou "EAJ" (arquivos em `data/passages/eaj/`,
+    páginas DESCONHECIDAS salvo auditoria futura — nunca inventar).
+    A regra de vínculo é idêntica nos dois (TASKS.md B.4): TEXTO — o
+    enunciado cita o rótulo com número; TRECHO — a questão está no
+    intervalo declarado no `intro`. Sem evidência = sem vínculo.
+    """
+    errors: list[str] = []
+    try:
+        d = json.loads(f.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return [f"{f.name}: JSON inválido ({exc})"]
+    year = d.get("edition")
+    if namespace == "EAJ":
+        if d.get("institution") != "EAJ":
+            errors.append(f"{f.name}: sem namespace EAJ "
+                          f"(institution={d.get('institution')!r})")
+        if year not in EAJ_EDITIONS:
+            errors.append(f"{f.name}: edition={year!r} fora de {list(EAJ_EDITIONS)}")
+    for p in d.get("passages", []):
+        key = p.get("key", "?")
+        tag = f"{f.name}:{key}"
+        if p.get("kind") not in KINDS:
+            errors.append(f"{tag}: kind inválido ({p.get('kind')})")
+        if not p.get("label"):
+            errors.append(f"{tag}: label ausente")
+        ps, pe = p.get("page_start"), p.get("page_end")
+        if namespace == "EAJ" and ps is None and pe is None:
+            # `.md` não traz página (TASK B.1): exigir o carimbo honesto.
+            if p.get("page_status") != "DESCONHECIDO":
+                errors.append(f"{tag}: páginas NULL sem "
+                              f"page_status=DESCONHECIDO")
+        elif not isinstance(ps, int) or not isinstance(pe, int) or ps < 1 or pe < ps:
+            errors.append(f"{tag}: páginas inválidas ({ps}–{pe})")
+        has_text = bool((p.get("content") or "").strip())
+        if not has_text and not (p.get("visual_description") or "").strip():
+            errors.append(f"{tag}: sem content nem visual_description")
+        for qn in p.get("questions", []):
+            st = statements.get(qn)
+            if st is None:
+                errors.append(f"{tag}: questão {qn} inexistente em "
+                              f"extracted/{namespace.lower() + '/' if namespace == 'EAJ' else ''}{year}.json")
+                continue
+            # Regra de vínculo (auditável, duas formas de evidência):
+            # TEXTO/TABELA/...: o enunciado cita o rótulo ("Texto 1",
+            #   inclusive no plural "Textos 1 e 2");
+            # TRECHO: o número da questão está no intervalo declarado no
+            #   cabeçalho do bloco ("...questões de X a Y").
+            label = (p.get("label") or "")
+            if (p.get("kind") or "") == "TRECHO":
+                covered = trecho_questions(p.get("intro") or "")
+                ok = qn in covered
+                hint = "fora do intervalo do intro" if not ok else ""
+            else:
+                m = re.search(r"(\d+)", label)
+                ok = bool(m) and int(m.group(1)) in cited_text_numbers(st)
+                hint = f"enunciado não cita o rótulo ({(st or '')[:60]}…)"
+            if not ok:
+                errors.append(f"{tag}: Q{qn} sem evidência de vínculo ({hint})")
+    return errors
+
+
 def cmd_check() -> int:
     errors: list[str] = []
-    files = sorted(PASSAGES_DIR.glob("*.json"))
+    files = sorted(p for p in PASSAGES_DIR.glob("*.json") if p.is_file())
     if not files:
         errors.append("nenhum data/passages/*.json")
     for f in files:
+        d = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+        statements = load_extracted_numbers(d.get("edition")) if d.get("edition") else {}
+        errors.extend(check_file(f, statements, "IFRN"))
+    eaj_files = sorted(PASSAGES_EAJ_DIR.glob("*.json")) if PASSAGES_EAJ_DIR.is_dir() else []
+    for ano in EAJ_EDITIONS:
+        if PASSAGES_EAJ_DIR / f"{ano}.json" not in eaj_files:
+            errors.append(f"eaj/{ano}.json ausente (TASK B.4)")
+    for f in eaj_files:
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
         except Exception as exc:
-            errors.append(f"{f.name}: JSON inválido ({exc})")
+            errors.append(f"eaj/{f.name}: JSON inválido ({exc})")
             continue
-        year = d.get("edition")
-        statements = load_extracted_numbers(year) if year else {}
-        for p in d.get("passages", []):
-            key = p.get("key", "?")
-            tag = f"{f.name}:{key}"
-            if p.get("kind") not in KINDS:
-                errors.append(f"{tag}: kind inválido ({p.get('kind')})")
-            if not p.get("label"):
-                errors.append(f"{tag}: label ausente")
-            ps, pe = p.get("page_start"), p.get("page_end")
-            if not isinstance(ps, int) or not isinstance(pe, int) or ps < 1 or pe < ps:
-                errors.append(f"{tag}: páginas inválidas ({ps}–{pe})")
-            has_text = bool((p.get("content") or "").strip())
-            if not has_text and not (p.get("visual_description") or "").strip():
-                errors.append(f"{tag}: sem content nem visual_description")
-            for qn in p.get("questions", []):
-                st = statements.get(qn)
-                if st is None:
-                    errors.append(f"{tag}: questão {qn} inexistente em extracted/{year}.json")
-                    continue
-                # Regra de vínculo (auditável, duas formas de evidência):
-                # TEXTO/TABELA/...: o enunciado cita o rótulo ("Texto 1",
-                #   inclusive no plural "Textos 1 e 2");
-                # TRECHO: o número da questão está no intervalo declarado no
-                #   cabeçalho do bloco ("...questões de X a Y").
-                label = (p.get("label") or "")
-                if (p.get("kind") or "") == "TRECHO":
-                    covered = trecho_questions(p.get("intro") or "")
-                    ok = qn in covered
-                    hint = "fora do intervalo do intro" if not ok else ""
-                else:
-                    m = re.search(r"(\d+)", label)
-                    ok = bool(m) and int(m.group(1)) in cited_text_numbers(st)
-                    hint = f"enunciado não cita o rótulo ({(st or '')[:60]}…)"
-                if not ok:
-                    errors.append(f"{tag}: Q{qn} sem evidência de vínculo ({hint})")
+        statements = load_extracted_numbers_eaj(d.get("edition"))
+        if not statements and d.get("edition") in EAJ_EDITIONS:
+            errors.append(f"eaj/{f.name}: data/extracted/eaj/{d.get('edition')}.json "
+                          f"ausente ou sem questões (dependência B.1)")
+        errors.extend(check_file(f, statements, "EAJ"))
     for e in errors:
         print("ERRO:", e)
     if errors:
         return 1
-    print(f"OK: {len(files)} arquivo(s) de passagens válidos")
+    print(f"OK: {len(files)} arquivo(s) IFRN + {len(eaj_files)} arquivo(s) EAJ válidos")
     return 0
 
 

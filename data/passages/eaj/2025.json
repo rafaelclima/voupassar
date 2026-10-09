@@ -1,0 +1,63 @@
+{
+  "institution": "EAJ",
+  "edition": 2025,
+  "curadoria": {
+    "curador": "curadoria-manual",
+    "data_utc": "2026-10-09",
+    "conferencia": "Blocos transcritos literalmente da seção ## Textos-base de data/provas/EAJ/2025/questoes.md (fonte; PDFs só auditoria): Texto 1 (título + byline + 6 parágrafos + nota do artigo citado), Texto 2 (cena + 2 balões), Texto 3 - Queimadas no Brasil (2 parágrafos; o próprio `.md` registra que o texto segue sem transcrever a continuação) + fragmento para as questões 30 e 31. TEXTO-1/TEXTO-2 SEM nenhum vínculo: nenhum enunciado extraído cita o rótulo com número (Q19/Q20 citam “os textos” de forma genérica; Q01–Q18 dizem “esse texto”/“o texto”/“o trecho” sem número) — passagens preservadas como texto-base, vínculos só com evidência (ver docs/blockers.md). Páginas DESCONHECIDAS.",
+    "regra_vinculo": "Vínculo SOMENTE com evidência no enunciado (data/extracted/eaj/2025.json): TEXTO-3 ← Q22 (“Segundo o texto 3”); TRECHO-Q30-31 ← Q30, Q31 (intervalo declarado no cabeçalho do fragmento). TEXTO-1 e TEXTO-2 com `questions: []` (nenhum enunciado cita “Texto 1”/“Texto 2” com número — mesma regra IFRN que deixa 2022 Q20 sem vínculo por citação genérica). Sem vínculo também: Q21 (“no texto”, sem número), Q23 NULA, Q24–Q29 e Q32–Q40 (auto-contidas ou com gráfico/figura da própria questão — fase de figuras; Q22/Q39 com NEEDS_VISUAL_CHECK na B.1)."
+  },
+  "passages": [
+    {
+      "key": "TEXTO-1",
+      "label": "Texto 1",
+      "kind": "TEXTO",
+      "title": "Quais as vantagens e desvantagens da Inteligência Artificial na sociedade?",
+      "byline": "Margareth Artur/Revistas da USP",
+      "content": "Pode parecer surpreendente, mas, já na década de 1950, logo após a Segunda Guerra Mundial, alguns cientistas começaram a desenvolver estudos sobre um ramo da ciência da computação, hoje assunto dos mais discutidos, a Inteligência Artificial (IA). Em 1956, no evento Darthmouth College Conference, pesquisadores reconhecidos como \"pais da área, como John MacCarthy, Marvin Minsky, Alan Newell e Herbert Simon\", determinaram pontos de referência que deram início a estudos e pesquisas \"nesse fascinante domínio da Computação\", afirma Jaime Sichman, autor de um artigo sobre o tema, publicado na revista Estudos Avançados¹. O artigo tem como intuito esclarecer as características da IA, as diferenças desta com a computação tradicional e as possibilidades de inserção nas sociedades, ressaltando, por um lado, os benefícios e, por outro lado, os riscos e danos possíveis que essa tecnologia pode ocasionar.\n\nPara evitar as consequências negativas da IA, é preciso que se ponha em pauta a discussão apropriada sobre \"produção, utilização e regulação\" dessa tecnologia, salientando-se que, assim, se podem evitar errôneas definições e explicações que as mídias sociais divulgam normalmente sobre o assunto, o que gera oscilações entre grandes expectativas com grandes investimentos e grandes frustrações com quase nenhum investimento. Porém, atualmente, as grandes expectativas são justificadas pelo barateamento do custo de processamento e de memória, pela presença \"de novos paradigmas, como as redes neurais profundas\", e pela existência de poderosos instrumentos de captação e divulgação de dados cujo montante na internet é assombroso. Ao invés de definir a IA, o artigo busca estabelecer quais as finalidades e os propósitos dessa área intrigante.\n\nEstudiosos definiram que \"o objetivo da IA é desenvolver sistemas para realizar tarefas que, no momento, são mais bem realizadas por seres humanos que por máquinas\" ou tarefas para as quais não há solução pela computação convencional que utiliza algoritmos, os quais são passos definidos e exatos para a execução de uma tarefa, como seguirmos uma receita de bolo, por exemplo. Porém, quando os passos a serem seguidos não são exatos, como na escolha de um pacote de turismo, quem garante a melhor opção: \"Deve-se escolher primeiro o voo ou o hotel? Quais datas teriam um custo menor?\", aí o indivíduo, e não a máquina, funciona melhor, pois nós, os humanos, somos quem observa e escolhe os critérios para as soluções e o efeito dessas escolhas. Com base nessa constatação, a Inteligência Artificial se mune cada vez mais de técnicas avançadas da tecnologia para resolver questões complexas.\n\nQuando se refere à \"interação humano-agente\", o autor explica a relação entre a pessoa humana e os recursos da IA, na qual são gerados efeitos positivos, diferentemente dos métodos convencionais em que as pessoas se adaptam e se ajustam aos elementos técnicos. Hoje, as sociedades se beneficiam dos recursos possibilitados pela IA, como os serviços bancários, que auxiliam a pessoa em tomada de decisões, e os sistemas centrais de atendimento, que estabelecem uma conexão entre empresas e consumidores, tomados como exemplos. Ao mesmo tempo, não se pode esquecer de como se deve proceder e aplicar esses recursos da IA com responsabilidade e ética, prevendo benefícios e danos de âmbito social. \"Assim, um grande desafio é incorporar tais normas e valores em sistemas de IA\", alerta o autor.\n\nA respeito dos riscos da IA propagados, o autor cita estudos que incluem o medo das pessoas com relação à criação de robôs destruidores da raça humana, o que não tem fundamento, pois a tecnologia de hoje não comportaria essa ideia, pela incapacidade de igualar-se à rapidez de processamento do cérebro humano, além do absurdo da quantidade de energia que esse robô precisaria, entre outras razões.\n\nAtualmente, não se pode prescindir da IA, porém é fundamental que a ética permeie essa prática tecnológica e que se possa interferir quando houver perigo para os humanos. Pesquisas expressam o impacto da IA no trabalho, nas interações sociais (incluindo cuidados de saúde), na privacidade, na justiça e na segurança (incluindo iniciativas de paz e guerra), e isso requer o uso seguro, benéfico e justo dessa tecnologia pela sociedade civil e, sobretudo, pelos governos.\n\n*(Artigo citado: SICHMAN, J. S. Inteligência Artificial e sociedade: avanços e riscos. [...])*",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": []
+    },
+    {
+      "key": "TEXTO-2",
+      "label": "Texto 2",
+      "kind": "CHARGE",
+      "content": "Balão 1: VOCÊ SE PREOCUPA COM O AVANÇO DA INTELIGÊNCIA ARTIFICIAL?\n\nBalão 2: NÃO, EU ME PREOCUPO MAIS COM O RETROCESSO DA INTELIGÊNCIA NATURAL.",
+      "visual_description": "Charge com dois personagens sentados conversando (conforme a cena transcrita no `.md`); falas dos balões transcritas no `content`.",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": []
+    },
+    {
+      "key": "TEXTO-3",
+      "label": "Texto 3",
+      "kind": "TEXTO",
+      "title": "Queimadas no Brasil",
+      "content": "No Brasil, há uma grande quantidade de queimadas, principalmente nos biomas Amazônia e Cerrado. Alguns fatores têm agravado esse cenário, como o aquecimento global e o desmatamento.\n\nUm estudo feito pela ONG MapBiomas observou mais de 150 mil imagens de satélites com dados de queimadas entre 1985 e 2020. O estudo traz resultados preocupantes: somada, a área queimada no Brasil corresponde a quase 20% de todo o território nacional. O cerrado e a floresta amazônica concentram a maior parte da área atingida pelo fogo, sendo 65% em vegetação nativa.",
+      "format_note": "O `.md` registra após o bloco: “*(O texto segue explicando as causas antrópicas, naturais e regras de proibição de distâncias).*” — continuação NÃO transcrita no `.md`; `content` = parte transcrita.",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        22
+      ]
+    },
+    {
+      "key": "TRECHO-Q30-31",
+      "label": "Trecho — questões 30 e 31",
+      "kind": "TRECHO",
+      "intro": "Fragmento textual para as questões 30 e 31",
+      "content": "No ano passado, a área desmatada no Brasil aumentou 22,3% em relação a 2021, o que corresponde a 2,05 milhões de hectares. A Amazônia e o Cerrado responderam, juntos, por 90,1% dos biomas atingidos. [...]",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        30,
+        31
+      ]
+    }
+  ]
+}

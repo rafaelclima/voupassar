@@ -357,6 +357,56 @@ reativo (AGENTS.md §12), sem gate de publicação.
 existirem e revalidar `data/linked/eaj/*.json`). NÃO bloqueia as Fases
 A–F (pipeline EAJ segue com `answerProvenance: TRANSCRIBED_FROM_MD`).
 
+---
+
+## Programa EAJ — passagens (TASK B.4, 2026-10-09)
+
+**Entregas:** `data/passages/eaj/{2021,2022,2025}.json` (11 passagens,
+34 vínculos) + `scripts/db/extract_passages.py` estendido ao namespace
+`eaj/` (`--check` OK: 6 arquivos IFRN + 3 EAJ). Regra de vínculo idêntica
+à IFRN (TEXTO = enunciado cita o rótulo com número; TRECHO = questão no
+intervalo do `intro`); páginas EAJ = NULL + `page_status: DESCONHECIDO`
+(o `.md` não traz página — nunca inventar). Importação posterior
+reutiliza `import_passages.py` (Fase D.4).
+
+**Decisão figura-vs-passagem (ponto de atenção da B.4):** os Textos 02/03
+de 2022 NÃO têm bloco transcrito no `.md` (conteúdo só visual nos PNGs
+agrupados da B.3), mas são textos-base compartilhados — 6 e 7 questões
+os citam com rótulo —, logo viraram **PASSAGEM** (`content: null` +
+`visual_description` curada por inspeção visual direta dos recortes
+`Q10_Q11_Q12_Q13_Q14_Q38_Q39.png` e
+`Q15_Q16_Q17_Q18_Q19_Q20_Q40.png`, falas literais, mesmo padrão das
+charges IFRN), **não** figura-apenas. Os recortes por questão da B.3
+(`EAJ-2022-Q10…Q40`) coexistem como apoio visual, como no IFRN. Únicos
+pontos NÃO CONFIRMADOS nesses dois: handle da assinatura da tirinha
+(ilegível no recorte) e linha de fonte do Texto 02 (ausente no visual e
+no `.md`) — ambos registrados nos próprios JSONs, nunca preenchidos por
+inferência.
+
+### Questões EAJ SEM vínculo com passagem (decisão consciente)
+
+| Edição | Q | Motivo | Destino |
+|---|---|--------|---------|
+| 2021 | 4–10 | Frases/fragmentos do Texto 01 transcritos no próprio enunciado, sem citar o rótulo `Texto 01`. | Nada a fazer (regra §2 IFRN). |
+| 2021 | 11–13 | Sobre a tirinha, mas nenhuma cita `Texto 02` (`"Na tirinha em questão"`, `"A fala do pai de Calvin"`, `"tóxica… no contexto"`). | Nada a fazer. |
+| 2021 | 15, 17 | Usam o infográfico (slogan final; 214 mil ocupados) sem citar `Texto 03`. | Nada a fazer. |
+| 2021 | 36, 38 | Tema ultraprocessados sem citar `Texto 01`. | Nada a fazer. |
+| 2021 | 18–30 (exceto 16), 31–32, 40–42, 43–50 | Auto-contidas ou com tabela/gráfico/figura/quadro/documento da própria questão. | Fase de figuras (B.3: Q11–Q15, Q18, Q21–Q22, Q27–Q28, Q34, Q40, Q43–Q44, Q46–Q48 com recorte). |
+| 2022 | 1–3, 6–7 | `"o texto"` genérico / fragmentos sem número. | Nada a fazer. |
+| 2022 | 14 | Fragmento do Texto 02 (`"Falo fluentemente…"`) sem citar o rótulo. | Nada a fazer. |
+| 2022 | 8–9 | Vinculadas SÓ ao TRECHO-Q08-09 (fragmento de 1 frase, auto-contido no enunciado da Q08). | Nada a fazer. |
+| 2022 | 22–23, 25, 27–29, 31–37 | Matemática auto-contida ou com figura da própria questão. | Fase de figuras (B.3). |
+| 2025 | — (TEXTO-1/TEXTO-2) | Nenhum enunciado cita `Texto 1`/`Texto 2` com número (Q19/Q20: `"Os textos"`/`"Ambos os textos"`, genérico — mesmo padrão do IFRN 2022 Q20). Passagens preservadas com `questions: []`. | Reavaliar somente se a regra passar a aceitar referência coletiva. |
+| 2025 | 21 | `"no texto"`, sem número (usa os 20% do Texto 3). | Nada a fazer. |
+| 2025 | 23–29, 32–40 (exceto 22/30/31) | Auto-contidas ou com gráfico/figura da própria questão. | Fase de figuras (B.3; Q22/Q39 com `NEEDS_VISUAL_CHECK` na B.1). |
+| 2025 | 30–31 | Vinculadas SÓ ao TRECHO-Q30-31 (fragmento do desmatamento; enunciados não citam rótulo, vínculo pelo intervalo declarado no cabeçalho — padrão IFRN de trecho). | Nada a fazer. |
+
+Vínculos criados (todos com evidência, `--check` OK): EAJ-2021 TEXTO-1 ←
+Q01–Q03, Q33–Q34, Q37 · TEXTO-2 ← Q39 · TEXTO-3 ← Q14, Q16, Q35 (10);
+EAJ-2022 TEXTO-1 ← Q04–Q05, Q21, Q24, Q26, Q30 · TEXTO-2 ← Q10–Q13, Q38–Q39 ·
+TEXTO-3 ← Q15–Q20, Q40 · TRECHO-Q08-09 ← Q08–Q09 (21);
+EAJ-2025 TEXTO-3 ← Q22 · TRECHO-Q30-31 ← Q30–Q31 (3).
+
 **Achado 2026-10-09 (TASK A.3, NÃO CONFIRMADO):** o `.md` de 2022
 transcreve as 40 respostas como `A` (40/40 `**Resposta:** A` no arquivo
 original; preservado como 40/40 `**Gabarito: A**` na normalização —

@@ -1,0 +1,86 @@
+{
+  "institution": "EAJ",
+  "edition": 2022,
+  "curadoria": {
+    "curador": "curadoria-manual",
+    "data_utc": "2026-10-09",
+    "conferencia": "Fonte: data/provas/EAJ/2022/questoes.md (PDFs só auditoria). TEXTO 01 transcrito literalmente da seção ## Textos-base (título + byline + 4 parágrafos + linha de fonte). Textos 02/03 SEM bloco transcrito no `.md` (conteúdo só visual nos PNGs da B.3): `content: null` + `visual_description` curada por inspeção visual direta dos recortes data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png (cartum da entrevista) e Q15_Q16_Q17_Q18_Q19_Q20_Q40.png (tirinha dos passarinhos), falas literais, mesmo padrão das charges IFRN — decisão figura-vs-passagem: PASSAGEM (textos-base compartilhados, citados por 6–7 questões cada) + recortes por questão na fase de figuras (ver docs/blockers.md). TRECHO-Q08-09: fragmento declarado no enunciado da Q08 para as questões 8 e 9, transcrito verbatim. Páginas DESCONHECIDAS.",
+    "regra_vinculo": "Vínculo SOMENTE com evidência no enunciado (data/extracted/eaj/2022.json): TEXTO-1 ← Q04, Q05, Q21, Q24, Q26, Q30; TEXTO-2 ← Q10, Q11, Q12, Q13, Q38, Q39; TEXTO-3 ← Q15, Q16, Q17, Q18, Q19, Q20, Q40; TRECHO-Q08-09 ← Q08, Q09 (intervalo declarado no cabeçalho). Sem citação do rótulo = sem vínculo (ver docs/blockers.md): Q01–Q03, Q06, Q07 (texto/fragmentos genéricos sem número), Q08–Q09 vinculadas só ao trecho (fragmento de 1 frase, auto-contido no enunciado da Q08), Q14 (fragmento do Texto 02 sem citar o rótulo), matemática auto-contida ou com figura da própria questão (fase de figuras)."
+  },
+  "passages": [
+    {
+      "key": "TEXTO-1",
+      "label": "Texto 01",
+      "kind": "TEXTO",
+      "title": "Pesquisa identifica quais as preferências musicais em cada região do Brasil",
+      "byline": "Vítor Paiva 16/10/2019",
+      "content": "Ainda que a cultura brasileira tenha o hábito de importar, no bom e no mau sentido, tudo que pode de países estrangeiros em especial dos EUA e de alguns países da Europa na hora de ouvir música, essa realidade se altera: o Brasil é um dos poucos países que consome majoritariamente a música nacional, feita por artistas do próprio país. A maneira pela qual consumimos e escutamos essa música brasileira, porém, mudou muito ao longo do tempo - e os gêneros e estilos de preferência do público também mudaram. Uma pesquisa recente separou o gosto musical nacional por região, para mostrar como a população brasileira de cada parte do país ouve música.\n\nA pesquisa foi realizada pela agência de pesquisa, mercado e inteligência Hello Research, como parte do projeto Hello Monitor Brasil, e confirmou, como ponto crucial, o que já era fácil de perceber: o sertanejo é atualmente o gênero musical preferido para a maioria dos brasileiros. Seis de cada dez entrevistados afirmam preferir esse estilo, enquanto 29% dividem o sertanejo como preferência com outros estilos. A lista se completa com 46% das pessoas escolhendo a MPB e 43% escolhendo o gospel esses três gêneros seriam, portanto, os preferidos dos ouvidos nacionais.\n\nQuando a pesquisa se desdobra por regiões, o resultado se revela um pouco mais detalhado e complexo: na região Norte, o sertanejo perde para o gospel (52%), mas, no Sul, é a preferência de 64% dos entrevistados, assim como para 55% do Sudeste. No Nordeste, a MPB impera como preferência para 68%. Estilos historicamente populares ficaram de fora das principais escolhas gerais brasileiras, mas surgem nas regiões o pop é o preferido para 36% dos entrevistados do Sul; o rock para 33% do Centro-Oeste; o samba para 24% do Sudeste; da mesma forma, o forró é massivo no Nordeste; e o eletrônico aparece na preferência do Centro-Oeste.\n\nO resultado não surpreende, mas a ausência do funk e do hip-hop, dois gêneros que parecem cada vez mais populares, salta aos ouvidos. A Hello Research realizou 1.230 entrevistas pessoais e domiciliares em 75 municípios nas cinco regiões do país, com um resultado variável em 3% para cima ou para baixo como margem de erro.",
+      "source_note": "Disponível em: [https://www.hypeness.com.br/2019/10/pesquisa-identifica-quais-as-preferencias-musicais-em-cada-regiao-do-brasil/](https://www.google.com/search?q=https://www.hypeness.com.br/2019/10/pesquisa-identifica-quais-as-preferencias-musicais-em-cada-regiao-do-brasil/). Acesso em: 22 nov. 2021. [Adaptado]",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        4,
+        5,
+        21,
+        24,
+        26,
+        30
+      ]
+    },
+    {
+      "key": "TEXTO-2",
+      "label": "Texto 02",
+      "kind": "CHARGE",
+      "content": null,
+      "visual_description": "Cartum de painel único: à esquerda, um homem de terno e gravata sentado atrás de uma mesa de escritório (sobre a mesa, papéis e um porta-canetas) pergunta “E O PORTUGUÊS?”; à direita, uma candidata sentada responde em dois balões de fala: “FALO FLUENTEMENTE INGLÊS, ESPANHOL, FRANCÊS, RUSSO, ITALIANO E ALEMÃO!” e “AÍ VARÊIA!!!”. Falas transcritas literalmente do recorte visual em data/provas/EAJ/2022/Q10_Q11_Q12_Q13_Q14_Q38_Q39.png (o `.md` não traz bloco transcrito deste texto); recortes por questão em frontend/assets/figures/eaj/2022/ (fase B.3).",
+      "format_note": "Texto-base visual compartilhado (6 questões o citam); o `.md` não traz linha de fonte para este texto.",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        10,
+        11,
+        12,
+        13,
+        38,
+        39
+      ]
+    },
+    {
+      "key": "TEXTO-3",
+      "label": "Texto 03",
+      "kind": "TIRINHA",
+      "content": null,
+      "visual_description": "Tirinha de 4 quadrinhos com passarinhos sobre fios: (1) um passarinho canta “BOM DIA, GALERA.”; (2) outro responde “SÉRIO? QUE PREGUIÇA DESSE TIPO DE ATITUDE, MUITO DESNECESSÁRIO ISSO DE ‘BOM DIA’... VOCÊ DEVERIA PENSAR ANTES DE FALAR...”; (3) “…E QUEM JÁ NÃO ESTÁ TENDO UM ‘BOM DIA’, HÃ? EU NÃO ESTOU TENDO ESSA OPÇÃO, TE FALTOU SENSIBILIDADE... APAGA ESSE ‘BOMDIA’.” (destaques em negrito do caderno); (4) “EI, PERAÍ BARTOLOMEU, FOI SÓ UM ‘BOM DIA’... WOOOW... ENTÃO VOCÊ VAI PASSAR PANO PRA ISSO? BARTOLOMEU, TU VOLTOU A USAR O TWITTER NÉ?”. Assinatura do autor no canto inferior esquerdo (handle ilegível no recorte — NÃO CONFIRMADO). Falas transcritas literalmente do recorte visual em data/provas/EAJ/2022/Q15_Q16_Q17_Q18_Q19_Q20_Q40.png (o `.md` não traz bloco transcrito deste texto); recortes por questão em frontend/assets/figures/eaj/2022/ (fase B.3).",
+      "source_note": "Disponível em: https://pt-br-facebook.com/quebrandodotabu/photos/antigamente-a-cultura-do-cancelamento-era-usada-para-pessoas-que-cometessem-um-c/31967179551236/. Acesso em: 23 nov. 2021. (linha de fonte impressa no rodapé do recorte visual; o `.md` não a transcreve).",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        40
+      ]
+    },
+    {
+      "key": "TRECHO-Q08-09",
+      "label": "Trecho — questões 8 e 9",
+      "kind": "TRECHO",
+      "intro": "Para responder às questões 8 e 9, leia o fragmento textual abaixo.",
+      "content": "[...] esses três gêneros seriam, portanto, os preferidos dos ouvidos nacionais.",
+      "format_note": "Fragmento de 1 frase do Texto 01, declarado no enunciado da Q08 para as questões 8 e 9; transcrito verbatim do `.md`.",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        8,
+        9
+      ]
+    }
+  ]
+}

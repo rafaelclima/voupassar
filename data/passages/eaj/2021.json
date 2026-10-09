@@ -1,0 +1,61 @@
+{
+  "institution": "EAJ",
+  "edition": 2021,
+  "curadoria": {
+    "curador": "curadoria-manual",
+    "data_utc": "2026-10-09",
+    "conferencia": "Blocos transcritos literalmente da seção ## Textos-base de data/provas/EAJ/2021/questoes.md (fonte; PDFs só auditoria): TEXTO 01 (título + subtítulo + byline + 5 parágrafos), TEXTO 02 (tirinha: 4 quadrinhos), TEXTO 03 (headline + 7 itens do infográfico). Nenhum `Análise:` do `.md` alimenta o banco. Páginas DESCONHECIDAS (o `.md` não traz página; nunca inventar).",
+    "regra_vinculo": "Vínculo questão↔passagem SOMENTE com evidência no enunciado (data/extracted/eaj/2021.json), validada por extract_passages.py --check: enunciado cita o rótulo com número (intenção: mesma regra IFRN). TEXTO-1 ← Q01, Q02, Q03, Q33, Q34, Q37; TEXTO-2 ← Q39; TEXTO-3 ← Q14, Q16, Q35. Sem citação do rótulo = sem vínculo (ver docs/blockers.md): Q04–Q10 (frases/fragmentos do Texto 01 sem rótulo), Q11–Q13 e Q15 (tirinha/infográfico sem “Texto 02/03”), Q17 (usa dado do Texto 03 sem citar), Q36/Q38 (tema ultraprocessados sem citar “Texto 01”), matemática/CN/CH auto-contidas ou com tabela/gráfico/figura/quadro da própria questão (fase de figuras)."
+  },
+  "passages": [
+    {
+      "key": "TEXTO-1",
+      "label": "Texto 01",
+      "kind": "TEXTO",
+      "title": "Por que você deve evitar o consumo de alimentos ultraprocessados",
+      "subtitle": "Há cerca de dez anos, a ciência vem mostrando que a ingestão de produtos com excesso de processamento aumenta o risco de várias doenças crônicas.",
+      "byline": "Por Carlos Monteiro, médico, e Patrícia Jaime, nutricionista.",
+      "content": "Apesar de ter se tornado tema recorrente na mídia, com diversas polêmicas e modas passageiras, a alimentação saudável é algo simples. Tornar acessível o conhecimento sobre o assunto é um dos objetivos do Guia Alimentar para a População Brasileira, publicado pelo Ministério da Saúde em 2014 e produzido com o apoio técnico do Núcleo de Pesquisas Epidemiológicas em Nutrição e Saúde da Universidade de São Paulo (Nupens/USP). Destinado a absolutamente qualquer pessoa, o documento traz uma mensagem que pode ser resumida pela máxima \"desembale menos e descasque (e cozinhe!) mais\".\n\nA ideia de descascar e cozinhar mais remete ao consumo de alimentos in natura, como frutas e legumes, e minimamente processados, a exemplo de feijão e arroz. Escolher esses itens significa ingerir, de forma equilibrada, nutrientes e outros compostos bioativos necessários à manutenção de nossa saúde.\n\nJá o ato de desembalar está, em geral, relacionado a produtos alimentícios preparados pela indústria e, infelizmente, cada vez mais ultraprocessados. Essas versões aumentam o risco da ingestão de quantidades excessivas de açúcar e gorduras não saudáveis, além de alimentos com teores insuficientes de proteína, fibra, vitaminas e minerais. Implicam, ainda, o consumo de uma grande porção de aditivos e de outras substâncias que, embora de uso legal, têm efeito incerto sobre nossa saúde na melhor das hipóteses. Há mais uma série de outros impactos: o desestímulo à agricultura familiar e à biodiversidade, a ameaça aos recursos naturais, o aumento da produção de resíduos sólidos e a extinção de culturas alimentares genuínas.\n\nÉ importante lembrar, no entanto, que nem todo alimento produzido pela indústria é, necessariamente, ultraprocessado. Itens industrializados podem ser minimamente processados (como arroz e feijão), ingredientes culinários processados (como óleos, azeites e manteiga) e processados (como pães e queijos). Segundo o Guia Alimentar para a População Brasileira, alimentos minimamente processados junto aos alimentos in natura são a base da alimentação saudável.\n\nO Guia Alimentar recomenda evitar apenas os ultraprocessados, que contêm pouco ou nenhum alimento inteiro. Afinal, eles não são propriamente alimentos, mas formulações de vários ingredientes, a maioria de uso exclusivamente industrial. Há uma forma prática de reconhecer um ultraprocessado: consultando a lista de ingredientes, que, por lei, deve constar de todos os produtos embalados que têm mais de um ingrediente. Como diz o trecho do Guia: \"Um número elevado de ingredientes (frequentemente cinco ou mais) e, sobretudo, a presença de ingredientes com nomes pouco familiares e não usados em preparações culinárias (gordura vegetal hidrogenada, óleos interesterificados, xarope de frutose, isolados proteicos, agentes de massa, espessantes, emulsificantes, corantes, aromatizantes, realçadores de sabor e vários outros tipos de aditivos) indicam que o produto pertence à categoria de alimentos ultraprocessados\". Em apenas um aspecto os alimentos ultraprocessados são comprovadamente benéficos: na saúde financeira da indústria, que tem lucros astronômicos com a comercialização desses produtos.",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        1,
+        2,
+        3,
+        33,
+        34,
+        37
+      ]
+    },
+    {
+      "key": "TEXTO-2",
+      "label": "Texto 02",
+      "kind": "TIRINHA",
+      "title": "Tirinha de Calvin e Haroldo",
+      "content": "* **Quadrinho 1:** Calvin olha para o prato e diz: \"EU NÃO VOU COMER ESSA COISA VERDE, YECCHH!\". O pai o observa.\n\n* **Quadrinho 2:** O pai sorri e diz: \"BOA IDEIA, CALVIN. ISSO É UMA PASTA TÓXICA QUE IRÁ TE TRANSFORMAR EM UM MUTANTE SE VOCÊ COMER.\"\n\n* **Quadrinho 3:** Calvin devora a comida rapidamente, fazendo sons como \"RRGHHMPHFFG MMMM SCRAPE URF GLUNK SMACK URF YUM\".\n\n* **Quadrinho 4:** O pai e a mãe olham surpresos. A mãe diz: \"TEM QUE HAVER UM JEITO MELHOR DE FAZER ELE COMER!\". O pai responde: \"AHHHH... EU SINTO, ESTÁ DANDO CERTO\".",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        39
+      ]
+    },
+    {
+      "key": "TEXTO-3",
+      "label": "Texto 03",
+      "kind": "GRAFICO",
+      "title": "Resultados definitivos | Rio Grande do Norte",
+      "content": "Resultados definitivos | Rio Grande do Norte. O Censo Agro 2017 nos permite conhecer os estabelecimentos agropecuários e os trabalhadores rurais, bem como quantificar o que é produzido na lavoura, na pecuária e também na agroindústria.\n\n* **Área:** 2,7 milhões de ha. É a área total dos 63,4 mil estabelecimentos agropecuários do estado.\n\n* **Lavoura temporária:** 513 Estabelecimentos agropecuários que produziram a cana-de-açúcar. A produção estadual foi de 2,0 milhões de toneladas. / 175 mil toneladas: Melão produzido em 538 estabelecimentos agropecuários.\n\n* **Lavoura permanente:** 54,7 mil toneladas: Produção de mamão em 376 estabelecimentos. / 74 mil toneladas: Produção de banana em 2 mil estabelecimentos.\n\n* **Pecuária:** 758 mil: Efetivo de bovinos. / 228 milhões de litros: Produção de leite de vaca. / 5,6 milhões: Cabeças de aves (galinhas, galos, frangas e frangos). A produção de ovos atingiu 47 milhões de dúzias.\n\n* **Utilização das terras (%):** Matas Naturais 46,0; Pastagens Naturais 28,4; Temporárias 9,6; Pastagens Plantadas 6,3; Lavouras Permanentes 3,2.\n\n* **Pessoal ocupado:** 214 mil. Número de pessoas ocupadas em atividades agropecuárias.\n\n* \"Se o assunto é Brasil, procure o IBGE.\"",
+      "format_note": "No `.md`, o bloco é apresentado como “**TEXTO 03** (Infográfico do IBGE)”.",
+      "page_start": null,
+      "page_end": null,
+      "page_status": "DESCONHECIDO",
+      "questions": [
+        14,
+        16,
+        35
+      ]
+    }
+  ]
+}
