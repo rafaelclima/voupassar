@@ -309,7 +309,40 @@ Critérios:
   por regra de aplicação se assim decidido, ou aceita pelo CHECK com
   documentação); suíte backend verde.
 
-## TASK C.3 — Seed edições e documentos EAJ
+## TASK C.3 — Seed edições e documentos EAJ [DONE 2026-10-09]
+
+Execução 2026-10-09: `database/migrations/V19__seed_eaj.sql`
+(V18 já ocupado pela C.2; o rótulo `V18__seed_eaj.sql` do plano virou V19
+sem mudança de conteúdo) — `exams` (EAJ 2021/2022/2025: edital
+`DESCONHECIDO`, duration 180, has_essay FALSE, contagens 2021: 15/15/12/8 e
+2022/2025: 20/20/0/0, scoring_rule NULL = DESCONHECIDA) + `exam_versions`
+(uma `UNICA` por edição — só há um caderno no repo; `UNICA` ≠
+`FINAL`/`DEFINITIVO`) + `exam_documents` (6: cadernos `eaj_*.pdf` com SHA +
+`questoes.md` como documento-fonte da transcrição, kind `CADERNO`/`OUTRO` +
+nota separando AUDITORIA × EXTRAÇÃO; `pages=1` placeholder no `.md`
+documentado na note com as linhas reais 504/412/507; edital=`DESCONHECIDO`
+porque banca Comperve ≠ número de edital — inventário A.2 §2; sem questão
+inserida — D.3; forward-only, padrão do projeto) + fail-high de tupla exata
+(3 EAJ / 3 versões / 6 documentos) e §9 documentando a ambiguidade das
+consultas legadas por ano até a E.1.
+Provas em PG16 scratch: cadeia fiel V1–V5,V8–V18 via psql (V6/V7 puladas —
+só DML de curadoria sobre questões, exigem checksums v1.0.0 que o extrator
+vigente 1.1.0 não reproduz; mesma trava do zero documentada na C.1/C.2) +
+`baseline-18` + `migrate` V19 (padrão C.2); 9 exams (6× IFRN intactos +
+3× EAJ exatos), 0 (IFRN,2021), 6 documentos EAJ com SHAs iguais aos arquivos
+e ao `source_sha256` de `data/linked/eaj/*.json`; sondas dup `(EAJ,2022)` →
+`uq_exams_institution_year`, `'XXX'` → `exams_institution_check`, reexecução
+V19 = no-op (INSERT 0 0, 9/3/6 estáveis); `mvn -f backend/pom.xml test`
+257/257; boot real com `ddl-auto: validate` verde (Flyway 20 validadas,
+schema v19, `Started VoupassarApplication`) + smoke autenticado
+(`GET /editions` 200: 9 edições, EAJ com `institution`/contagens/180/`FALSE`
+e IFRN inalterado; `(EAJ,2022)`/`(EAJ,2025)` coexistem com IFRN sem colisão).
+Fases A–B revalidadas e intactas (`check_eaj_md` 0, `extract_eaj --check` 0,
+`link_eaj_keys --check` 0, `check_figures` 0, `extract_passages --check` 0).
+Observação fora de escopo (pré-existente, idem C.1/C.2, não gate da C.3):
+migração do zero via Flyway tropeça na V6 (exige questões importadas com
+checksums v1.0.0) antes de chegar à V19 — cadeia incremental (caso da prod:
+V16→V17→V18→V19) íntegra; nunca editar V1–V19 (checksums Flyway).
 
 Entregas:
 
