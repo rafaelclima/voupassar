@@ -334,3 +334,34 @@ Pendências (não bloqueiam o backend; donas: trilha local / ambiente):
 3. **Deploy da imagem nova — RESOLVIDO 2026-10-07:**
    `voupassar-backend:prod-20261007` no ar, Flyway V16, smoke verde
    (detalhes em `docs/deploy-vps.md` §3b).
+
+---
+
+## Programa EAJ — gabaritos oficiais ausentes (TASK A.2, 2026-10-09)
+
+**Bloqueio:** nenhum PDF de gabarito oficial EAJ/UFRN (Comperve) no repo.
+Só existem os cadernos `data/provas/EAJ/{2021,2022,2025}/eaj_*.pdf`
+(SHAs em `docs/provas-inventario-eaj.md` §2).
+
+**Fonte vigente das respostas:** transcrição da curadoria nos 3
+`data/provas/EAJ/*/questoes.md` (decisão do responsável 2026-10-09).
+Proveniência a registrar no pipeline: `TRANSCRIBED_FROM_MD`
+(`CONFIRMED_TRANSCRIBED` / `ANNULLED_TRANSCRIBED` na Fase B.2).
+
+**Regra:** nunca apresentar a transcrição como "gabarito oficial confirmado
+por PDF" (TASKS.md regra 2; `docs/provas-inventario-eaj.md` cabeçalho).
+Todo conteúdo EAJ servido carrega crédito + fonte; proteção por takedown
+reativo (AGENTS.md §12), sem gate de publicação.
+
+**Destino:** pendência para a Fase G (anexar os gabaritos oficiais quando
+existirem e revalidar `data/linked/eaj/*.json`). NÃO bloqueia as Fases
+A–F (pipeline EAJ segue com `answerProvenance: TRANSCRIBED_FROM_MD`).
+
+**Achado 2026-10-09 (TASK A.3, NÃO CONFIRMADO):** o `.md` de 2022
+transcreve as 40 respostas como `A` (40/40 `**Resposta:** A` no arquivo
+original; preservado como 40/40 `**Gabarito: A**` na normalização —
+nenhum enunciado/resposta alterado). Distribuição degenerada é implausível
+para uma prova real e sugere erro de transcrição ou placeholder da
+curadoria. `scripts/analysis/check_eaj_md.py` emite aviso (não falha) e a
+conferência fica pendente do gabarito oficial (Fase G). Nunca "corrigir"
+as respostas por inferência.

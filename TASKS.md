@@ -104,7 +104,7 @@ Casos especiais já sinalizados na curadoria (viram regras nas tasks):
   `docs/archive/TASKS-fase16-22-concluido.md` com cabeçalho histórico.
 * Este arquivo (Programa EAJ) é o roadmap ativo.
 
-## TASK A.2 — Inventário das edições EAJ
+## TASK A.2 — Inventário das edições EAJ [DONE 2026-10-09]
 
 Entregas:
 
@@ -123,7 +123,7 @@ Critérios:
   apresentada como regra geral; 2021 (50Q/4 áreas) descrita sem forçar o
   molde 40Q/2 áreas.
 
-## TASK A.3 — Normalização dos 3 `questoes.md` para schema único
+## TASK A.3 — Normalização dos 3 `questoes.md` para schema único [DONE 2026-10-09]
 
 Entregas:
 
