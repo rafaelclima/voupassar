@@ -365,7 +365,29 @@ Critérios:
 > Depende de B (evidência) + C (modelo). Q22/Q39-2025 só entram após
 > conferência visual no PDF (trava explícita da D.3).
 
-## TASK D.1 — Classificação pedagógica EAJ
+## TASK D.1 — Classificação pedagógica EAJ [DONE 2026-10-09]
+
+Execução 2026-10-09: `docs/content-analysis/per-edition/eaj-{2021,2022,2025}.json`
+(130 classificações: 50/40/40; disciplina pela faixa DA edição, conferida
+contra `data/extracted/eaj/`; LP/MAT na taxonomia v1.1 com `ACENTUACAO_GRAFICA`
+do seed V2; CN/CH com 11 códigos novos SÓ para o observado nas 20 questões
+— ECOLOGIA/NUTRICAO_SAUDE/AGROPECUARIA/BIOLOGIA_CELULAR/QUIMICA_GERAL/
+FISICA_GERAL + HISTORIA_BRASIL/CULTURA_SOCIEDADE/CARTOGRAFIA/GEOGRAFIA_BRASIL/
+GEOPOLITICA, cada um com 1+ evidência; dificuldade_confianca BAIXA global;
+0 assunto OUTRO; 1 sub OUTRO justificado — 2025 Q40 ângulos s/ subcódigo v1.1;
+Q22/Q39-2025 NECESSITA_REVISAO com trava D.3 explícita na observação —
+classificadas aqui, só entram no banco após conferência visual; Q23-2025
+anulada classificada como conteúdo que apareceu; respostas transcritas NÃO
+CONFIRMADAS nunca "corrigidas" — ex. 2022 40×A preservado) +
+`validate_classification.py` estendido (arquivos `eaj-*` → fontes
+`data/{linked,extracted}/eaj/<ano>.json`, `edition=EAJ-<ano>`, totais 50/40/40,
+vocabulários CN/CH + lista de subassuntos D.1, BAIXA global, faixa+seção=ALTA,
+`needs_visual_check`→NECESSITA_REVISAO, OUTRO/NR/anulada exigem observação).
+Provas: validador 370/370 (240 IFRN intactas + 130 EAJ, nota_visual só
+2025 Q22/Q39); 4 negativos sob tamper (trava D.3, lista CN, namespace,
+OUTRO-justificativa) mordem; Fases A–B revalidadas e intactas
+(`check_eaj_md`, `extract_eaj --check`, `link_eaj_keys --check`,
+`check_figures`, `extract_passages --check` verdes).
 
 Entregas:
 
