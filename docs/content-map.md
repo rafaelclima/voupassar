@@ -108,3 +108,13 @@ JUROS_SIMPLES é o único conteúdo de matemática financeira observado.
 * Este mapa alimenta a TASK 2.3 (importação) e a Fase 4 (recomendação):
   usar sempre com os filtros de confiança (`assunto_confianca`,
   `status`), nunca como verdade absoluta.
+
+## 5. Mapa EAJ (processo separado — Programa EAJ, TASK D.2)
+
+O conteúdo do processo EAJ/UFRN (130 questões, 2021/2022/2025) vive em
+mapa próprio: `docs/content-map-eaj.md` (agregados em
+`docs/content-analysis/content-map-eaj.json`, gerador
+`scripts/analysis/build_content_map.py --institution EAJ`). Este arquivo
+acima permanece 100% IFRN (240 questões) — nada aqui foi recalculado ou
+reescrito; a comparabilidade IFRN×EAJ (só descritiva, só LP/MAT) está na §4
+do mapa EAJ.

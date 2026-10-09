@@ -405,7 +405,26 @@ Critérios:
 * 130 classificações, 0 `OUTRO` sem justificativa; confiança BAIXA onde a
   fonte não sustenta; nenhuma inferência apresentada como fato.
 
-## TASK D.2 — Mapa de conteúdo EAJ (separado do IFRN)
+## TASK D.2 — Mapa de conteúdo EAJ (separado do IFRN) [DONE 2026-10-09]
+
+Execução 2026-10-09: `scripts/analysis/build_content_map.py` estendido com
+`--institution EAJ` (default IFRN preservado: stdout + `content-map.json`
+IFRN byte-idênticos, provado por diff contra o original) — agregação
+determinística das 130 classificações D.1 (`eaj-*.json`, `edition=EAJ-<ano>`,
+sem `V11_OVERRIDES`: LP/MAT já v1.1, CN/CH nos 11 códigos D.1, sub OUTRO de
+2025 Q40 mantido justificado; séries SÓ 2021–2022–2025, nunca 2023/2024/2026;
+Q23-2025 anulada conta como conteúdo, coluna "Anul."; Q22/Q39-2025 em "Nota
+visual" com trava D.3) + `docs/content-map-eaj.md` (§§ por assunto/área/
+subassuntos com tabelas coladas 74/74 do stdout + §4 comparabilidade IFRN×EAJ
+só descritiva LP/MAT + §5 limites) + `docs/content-analysis/content-map-eaj.json`
+(`total` 130, `institution` EAJ — chave extra só no JSON EAJ) + ponteiro §5 em
+`docs/content-map.md` (aditivo, IFRN intacto).
+Provas: totais 130 = 50+40+40 (LP 55, MAT 55, CN 12, CH 8; ALTA 97/MEDIA 32/
+BAIXA 1); reexecução idempotente (stdout + JSON idênticos); `validate_classification`
+370/370; Fases A–B revalidadas e intactas (`check_eaj_md`, `extract_eaj --check`,
+`link_eaj_keys --check`, `check_figures`, `extract_passages --check` verdes —
+só WARNs já conhecidos: 2022 40×A NÃO CONFIRMADO, Q22/Q39 NEEDS_VISUAL_CHECK,
+pages DESCONHECIDAS).
 
 Entregas:
 

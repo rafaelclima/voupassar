@@ -1,0 +1,527 @@
+{
+  "total": 130,
+  "institution": "EAJ",
+  "editions": [
+    "EAJ-2021",
+    "EAJ-2022",
+    "EAJ-2025"
+  ],
+  "v11_overrides": [],
+  "assuntos": {
+    "AGROPECUARIA": {
+      "n": 1,
+      "pct_total": 0.8,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_NATUREZA"
+      ],
+      "confianca": {
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "PRODUCAO_ALIMENTOS": 1
+      }
+    },
+    "ALGEBRA": {
+      "n": 7,
+      "pct_total": 5.4,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 4,
+        "EAJ-2025": 2
+      },
+      "trend": "BAIXA_RECORRENCIA",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 6,
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "EQUACOES": 5,
+        "SISTEMAS": 1,
+        "FUNCAO_AFIM": 1
+      }
+    },
+    "ARITMETICA": {
+      "n": 11,
+      "pct_total": 8.5,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 3,
+        "EAJ-2022": 3,
+        "EAJ-2025": 5
+      },
+      "trend": "BAIXA_RECORRENCIA",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 9,
+        "MEDIA": 2
+      },
+      "n_anuladas": 1,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "OPERACOES": 6,
+        "FRACOES": 4,
+        "NOTACAO_CIENTIFICA": 1
+      }
+    },
+    "BIOLOGIA_CELULAR": {
+      "n": 1,
+      "pct_total": 0.8,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_NATUREZA"
+      ],
+      "confianca": {
+        "ALTA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "RESPIRACAO_CELULAR": 1
+      }
+    },
+    "CARTOGRAFIA": {
+      "n": 1,
+      "pct_total": 0.8,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_HUMANAS"
+      ],
+      "confianca": {
+        "ALTA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "ELEMENTOS_MAPA": 1
+      }
+    },
+    "CULTURA_SOCIEDADE": {
+      "n": 1,
+      "pct_total": 0.8,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_HUMANAS"
+      ],
+      "confianca": {
+        "ALTA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "CULTURA_AFRO_BRASILEIRA": 1
+      }
+    },
+    "ECOLOGIA": {
+      "n": 2,
+      "pct_total": 1.5,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 2,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_NATUREZA"
+      ],
+      "confianca": {
+        "ALTA": 2
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "NIVEL_TROFICO": 1,
+        "NUTRICAO_SERES_VIVOS": 1
+      }
+    },
+    "ESTATISTICA_DADOS": {
+      "n": 4,
+      "pct_total": 3.1,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 1,
+        "EAJ-2025": 2
+      },
+      "trend": "BAIXA_RECORRENCIA",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 2,
+        "MEDIA": 2
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "MEDIA": 4
+      }
+    },
+    "FISICA_GERAL": {
+      "n": 3,
+      "pct_total": 2.3,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 3,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_NATUREZA"
+      ],
+      "confianca": {
+        "ALTA": 3
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "ENERGIA_CONSERVACAO": 1,
+        "ESCALAS_TERMOMETRICAS": 1,
+        "LEIS_NEWTON": 1
+      }
+    },
+    "GEOGRAFIA_BRASIL": {
+      "n": 1,
+      "pct_total": 0.8,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 1,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_HUMANAS"
+      ],
+      "confianca": {
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "BIOMAS_IMPACTOS": 1
+      }
+    },
+    "GEOMETRIA": {
+      "n": 15,
+      "pct_total": 11.5,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 3,
+        "EAJ-2022": 9,
+        "EAJ-2025": 3
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 10,
+        "MEDIA": 5
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "PITAGORAS_DISTANCIA": 3,
+        "AREA_PLANA": 6,
+        "VOLUME": 3,
+        "POLIGONOS": 1,
+        "PERIMETRO_COMPRIMENTO": 1,
+        "OUTRO": 1
+      }
+    },
+    "GEOPOLITICA": {
+      "n": 2,
+      "pct_total": 1.5,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 2,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_HUMANAS"
+      ],
+      "confianca": {
+        "ALTA": 2
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "BLOCOS_ECONOMICOS": 1,
+        "ORDEM_MUNDIAL": 1
+      }
+    },
+    "GRAMATICA_NORMA": {
+      "n": 27,
+      "pct_total": 20.8,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 7,
+        "EAJ-2022": 9,
+        "EAJ-2025": 11
+      },
+      "trend": "CRESCENTE",
+      "disciplinas": [
+        "LINGUA_PORTUGUESA"
+      ],
+      "confianca": {
+        "ALTA": 23,
+        "MEDIA": 4
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "SEMANTICA_VOCABULARIO": 8,
+        "MORFOLOGIA": 5,
+        "ACENTUACAO_GRAFICA": 3,
+        "SINTAXE_FUNCAO": 3,
+        "NORMA_PADRAO": 1,
+        "PONTUACAO": 2,
+        "COESAO_REFERENCIA": 4,
+        "SINTAXE_PERIODO": 1
+      }
+    },
+    "HISTORIA_BRASIL": {
+      "n": 3,
+      "pct_total": 2.3,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 3,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_HUMANAS"
+      ],
+      "confianca": {
+        "ALTA": 2,
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "MIGRACOES_REPUBLICA": 1,
+        "ECONOMIA_COLONIAL": 1,
+        "COLONIZACAO_CONTATO": 1
+      }
+    },
+    "INTERPRETACAO_TEXTUAL": {
+      "n": 28,
+      "pct_total": 21.5,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 8,
+        "EAJ-2022": 11,
+        "EAJ-2025": 9
+      },
+      "trend": "RECORRENTE_OSCILANTE",
+      "disciplinas": [
+        "LINGUA_PORTUGUESA"
+      ],
+      "confianca": {
+        "MEDIA": 12,
+        "ALTA": 16
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "INFERENCIA": 12,
+        "TIPO_TEXTUAL": 3,
+        "GENERO_TEXTUAL": 5,
+        "INTENCAO_COMUNICATIVA": 6,
+        "INFORMACAO_EXPLICITA": 2
+      }
+    },
+    "NUTRICAO_SAUDE": {
+      "n": 2,
+      "pct_total": 1.5,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 2,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_NATUREZA"
+      ],
+      "confianca": {
+        "ALTA": 1,
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "ALIMENTOS_PROCESSADOS": 2
+      }
+    },
+    "PORCENTAGEM": {
+      "n": 8,
+      "pct_total": 6.2,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 3,
+        "EAJ-2022": 1,
+        "EAJ-2025": 4
+      },
+      "trend": "BAIXA_RECORRENCIA",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 8
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 1,
+      "subassuntos": {
+        "CALCULO_DIRETO": 5,
+        "REPRESENTACAO_FRACAO": 2,
+        "VARIACAO": 1
+      }
+    },
+    "QUIMICA_GERAL": {
+      "n": 3,
+      "pct_total": 2.3,
+      "editions_present": [
+        "EAJ-2021"
+      ],
+      "series": {
+        "EAJ-2021": 3,
+        "EAJ-2022": 0,
+        "EAJ-2025": 0
+      },
+      "trend": "ESPORADICO",
+      "disciplinas": [
+        "CIENCIAS_NATUREZA"
+      ],
+      "confianca": {
+        "ALTA": 2,
+        "MEDIA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 0,
+      "subassuntos": {
+        "FENOMENOS_QUIMICOS": 1,
+        "POLARIDADE_MISTURAS": 1,
+        "RADIOATIVIDADE": 1
+      }
+    },
+    "RAZAO_PROPORCAO": {
+      "n": 10,
+      "pct_total": 7.7,
+      "editions_present": [
+        "EAJ-2021",
+        "EAJ-2022",
+        "EAJ-2025"
+      ],
+      "series": {
+        "EAJ-2021": 4,
+        "EAJ-2022": 2,
+        "EAJ-2025": 4
+      },
+      "trend": "BAIXA_RECORRENCIA",
+      "disciplinas": [
+        "MATEMATICA"
+      ],
+      "confianca": {
+        "ALTA": 8,
+        "MEDIA": 1,
+        "BAIXA": 1
+      },
+      "n_anuladas": 0,
+      "n_nota_visual": 1,
+      "subassuntos": {
+        "PROPORCIONALIDADE": 5,
+        "REGRA_DE_TRES": 3,
+        "RAZAO": 2
+      }
+    }
+  }
+}
