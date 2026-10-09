@@ -5,11 +5,13 @@ import br.com.voupassar.auth.entity.StudentProfile;
 import br.com.voupassar.auth.entity.User;
 import br.com.voupassar.auth.repository.StudentProfileRepository;
 import br.com.voupassar.auth.repository.UserRepository;
+import br.com.voupassar.content.entity.QuestionClassification;
 import br.com.voupassar.content.entity.Topic;
 import br.com.voupassar.content.repository.QuestionClassificationRepository;
 import br.com.voupassar.content.repository.TopicRepository;
 import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exception.ResourceNotFoundException;
+import br.com.voupassar.profile.entity.QuestionAttempt;
 import br.com.voupassar.content.repository.SubtopicRepository;
 import br.com.voupassar.profile.entity.StudentTopicPerformance;
 import br.com.voupassar.profile.repository.QuestionAttemptRepository;
@@ -57,6 +59,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecommendationService {
 
   static final String ALGORITHM_VERSION = "v2-deterministico";
+
+  /**
+   * Roteiro escopado por processo (TASK E.2): mesma fórmula v2 (frequência ×
+   * desempenho × recência × dificuldade, lacuna com piso, carga só no
+   * banding), mas frequência, desempenho e recência calculados só na trilha
+   * ({@code institution}). Desempenho/recência vêm do fato
+   * {@code question_attempts} filtrado (não do agregado materializado global);
+   * valores idênticos ao materializado quando o rebuild está em dia e só há
+   * dados daquele processo. Evidência cita edições/questões do processo
+   * (ex. {@code "EAJ 2022 Q12"}).
+   */
+  static final String ALGORITHM_VERSION_INSTITUTION = "v2.1-institution";
 
   /** Peso da contagem histórica dentro do fator frequência (resto = amplitude em edições). */
   static final double WEIGHT_HIST_COUNT = 0.7;
@@ -123,6 +137,74 @@ public class RecommendationService {
   *   <li>Cria itens do roteiro com motivo explicável e evidência rastreável.</li>
    * </ol>
    */
+  /**
+   * Gera (ou regenera) o roteiro da trilha de um processo (TASK E.2).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     roteiro global legado (ambos os processos, comportamento pré-E.2,
+   *     um vigente por usuário). Informado = trilha isolada (um vigente por
+   *     {@code (usuário, processo)} — gerar EAJ não desativa o IFRN).
+   */
+  @Transactional
+  public StudyPlanResponse generatePlan(long userId, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
+    if (instNorm == null) {
+      return generatePlan(userId);
+    }
+    return generatePlanForInstitution(userId, instNorm);
+  }
+
+  /**
+   * Normaliza o filtro {@code ?institution=} (TASK E.2, mesmo vocabulário da
+   * E.1): {@code null}/em-branco = sem filtro (global legado); senão
+   * {@code IFRN} ou {@code EAJ}, senão 400.
+   */
+  static String normalizeInstitutionFilter(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
+  /**
+   * Geração escopada por processo (TASK E.2): histórico D.2 do processo +
+   * desempenho do fato filtrado + evidência citando edições/questões do
+   * processo existentes no banco.
+   */
+  private StudyPlanResponse generatePlanForInstitution(long userId, String institution) {
+    User user = users.findById(userId)
+        .orElseThrow(() -> new ResourceNotFoundException("USER_NOT_FOUND", "Conta não encontrada."));
+
+    studyPlans.findByUserIdAndInstitutionAndIsActiveTrue(userId, institution)
+        .ifPresent(plan -> {
+          plan.setIsActive(false);
+          studyPlans.saveAndFlush(plan);
+        });
+
+    long scored = attempts.countScoredByUserIdAndInstitution(userId, institution);
+    boolean provisorio = scored < br.com.voupassar.diagnosis.service.DiagnosisService.MIN_SCORED_FOR_SIGNAL;
+
+    StudyPlan newPlan = new StudyPlan(userId, ALGORITHM_VERSION_INSTITUTION, institution);
+    newPlan.setStatus(provisorio ? "PROVISORIO" : "PESSOAL");
+    StudyPlan savedPlan = studyPlans.save(newPlan);
+    if (savedPlan == null) {
+      savedPlan = newPlan;
+    }
+
+    List<StudyPlanItem> items = buildRecommendationsForInstitution(
+        userId, savedPlan, provisorio, institution);
+    studyPlanItems.saveAll(items);
+
+    savedPlan.setItems(items);
+    metrics.plansGenerated();
+    return toResponse(savedPlan, items);
+  }
+
   @Transactional
   public StudyPlanResponse generatePlan(long userId) {
     User user = users.findById(userId)
@@ -302,6 +384,375 @@ public class RecommendationService {
     }
 
     return out;
+  }
+
+  /**
+   * Recomendações escopadas por processo (TASK E.2): mesma fórmula v2, mas
+   * frequência (D.2 do processo), desempenho e recência calculados só na
+   * trilha. Desempenho/recência vêm do fato {@code question_attempts}
+   * filtrado (autorais sem edição contam em ambas); evidência cita edições
+   * e questões OFICIAIS do processo existentes no banco.
+   */
+  private List<StudyPlanItem> buildRecommendationsForInstitution(
+      long userId, StudyPlan plan, boolean provisorio, String institution) {
+    List<Topic> taxonomy = topics.findAllOrdered();
+    List<StudyPlanItem> out = new ArrayList<>();
+
+    // Vigente por questão (mesmo critério das TASKs 4.1–4.2).
+    List<QuestionAttempt> fetched = attempts.findAllByUserIdWithQuestionAndExam(userId);
+    List<QuestionAttempt> scoped = new ArrayList<>(fetched.size());
+    for (QuestionAttempt a : fetched) {
+      String examInstitution = a.getQuestion() != null && a.getQuestion().getExam() != null
+          ? a.getQuestion().getExam().getInstitution()
+          : null;
+      if (examInstitution == null || institution.equals(examInstitution)) {
+        scoped.add(a);
+      }
+    }
+    Map<Long, QuestionClassification> vigente = vigenteByQuestionForInstitution(scoped);
+
+    // Desempenho da trilha a partir do fato (só pontuáveis com tópico).
+    Map<Long, TrackAcc> perfByTopic = new HashMap<>();
+    Map<Long, List<SubAcc>> subPerfByTopic = new HashMap<>();
+    for (QuestionAttempt a : scoped) {
+      if (a.isAnnulled()) {
+        continue;
+      }
+      QuestionClassification c = vigente.get(a.getQuestion().getId());
+      if (c == null || c.getTopic() == null) {
+        continue;
+      }
+      boolean hit = Boolean.TRUE.equals(a.getCorrect());
+      perfByTopic.computeIfAbsent(c.getTopic().getId(), k -> new TrackAcc())
+          .add(hit, a.getAnsweredAt());
+      if (c.getSubtopic() != null) {
+        subPerfByTopic.computeIfAbsent(c.getTopic().getId(), k -> new ArrayList<>());
+        List<SubAcc> bucket = subPerfByTopic.get(c.getTopic().getId());
+        SubAcc existing = null;
+        for (SubAcc s : bucket) {
+          if (s.subtopicId.equals(c.getSubtopic().getId())) {
+            existing = s;
+            break;
+          }
+        }
+        if (existing == null) {
+          existing = new SubAcc(c.getSubtopic().getId(), c.getSubtopic().getCode());
+          bucket.add(existing);
+        }
+        existing.add(hit);
+      }
+    }
+
+    // Frequência histórica do processo (D.2).
+    Map<Long, Long> histByTopic = new HashMap<>();
+    for (Object[] row : classifications.countByTopicForInstitution(institution)) {
+      histByTopic.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+    }
+    Map<Long, Integer> editionsByTopic = new HashMap<>();
+    Map<Long, List<Integer>> editionYearsByTopic = new HashMap<>();
+    long maxHist = 0;
+    int maxEditions = 0;
+    for (Topic t : taxonomy) {
+      long hist = histByTopic.getOrDefault(t.getId(), 0L);
+      List<Integer> years = classifications
+          .editionsByTopicForInstitution(t.getId(), institution).stream()
+          .map(Short::intValue).sorted().toList();
+      editionYearsByTopic.put(t.getId(), years);
+      editionsByTopic.put(t.getId(), years.size());
+      if (hist > maxHist) {
+        maxHist = hist;
+      }
+      if (years.size() > maxEditions) {
+        maxEditions = years.size();
+      }
+    }
+
+    Map<Long, long[]> difficultyMixByTopic = new HashMap<>();
+    for (Object[] row : classifications.difficultyByTopicForInstitution(institution)) {
+      Long topicId = ((Number) row[0]).longValue();
+      String difficulty = row[1] == null ? null : row[1].toString();
+      long total = ((Number) row[2]).longValue();
+      long[] mix = difficultyMixByTopic.computeIfAbsent(topicId, k -> new long[3]);
+      if ("FACIL".equals(difficulty)) {
+        mix[0] += total;
+      } else if ("MEDIA".equals(difficulty)) {
+        mix[1] += total;
+      } else if ("DIFICIL".equals(difficulty)) {
+        mix[2] += total;
+      }
+    }
+
+    StudentProfile profile = profiles.findById(userId).orElse(null);
+    int currentYear = OffsetDateTime.now().getYear();
+    double loadMultiplier = loadMultiplier(
+        profile == null ? null : profile.getTargetYear(),
+        profile == null ? null : profile.getStudyGoal(),
+        currentYear);
+
+    List<TopicScore> scores = new ArrayList<>();
+    OffsetDateTime now = OffsetDateTime.now();
+    for (Topic t : taxonomy) {
+      TrackAcc p = perfByTopic.get(t.getId());
+      int topicAttempts = p == null ? 0 : p.attempts;
+      double accuracy = p == null ? 0.0 : p.accuracy();
+      OffsetDateTime lastAttemptAt = p == null ? null : p.last;
+
+      long hist = histByTopic.getOrDefault(t.getId(), 0L);
+      int editions = editionsByTopic.getOrDefault(t.getId(), 0);
+      double frequencyFactor = frequencyFactor(hist, maxHist, editions, maxEditions);
+      double performanceFactor = 1.0 - accuracy;
+      double recencyFactor = recencyFactor(lastAttemptAt, now);
+      double difficultyFactor = difficultyFactor(difficultyMixByTopic.get(t.getId()));
+
+      double score = frequencyFactor * performanceFactor * difficultyFactor * recencyFactor;
+      if (topicAttempts == 0) {
+        score = GAP_FLOOR + 0.1 * frequencyFactor;
+      }
+
+      scores.add(new TopicScore(t, score, accuracy, topicAttempts,
+          hist, editions, frequencyFactor, performanceFactor, recencyFactor,
+          difficultyFactor, lastAttemptAt));
+    }
+
+    scores.sort((a, b) -> {
+      int cmp = Double.compare(b.score, a.score);
+      if (cmp != 0) return cmp;
+      return a.topic.getCode().compareTo(b.topic.getCode());
+    });
+
+    int bandSize = priorityBandSize(scores.size(), loadMultiplier);
+    for (int i = 0; i < scores.size(); i++) {
+      TopicScore ts = scores.get(i);
+      Topic t = ts.topic;
+      String reason = buildReasonForInstitution(t, ts, loadMultiplier, provisorio, institution,
+          editionYearsByTopic.getOrDefault(t.getId(), List.of()));
+      List<Object[]> evidenceRows = classifications
+          .officialQuestionEvidenceByTopicForInstitution(t.getId(), institution);
+      List<Long> sampleIds = new ArrayList<>();
+      List<String> sampleLabels = new ArrayList<>();
+      for (Object[] row : evidenceRows) {
+        if (sampleIds.size() >= EVIDENCE_SAMPLE_LIMIT) {
+          break;
+        }
+        Long qid = ((Number) row[0]).longValue();
+        String inst = row[1] == null ? institution : String.valueOf(row[1]);
+        Object yearObj = row[2];
+        Object numObj = row[3];
+        String year = yearObj == null ? "?" : String.valueOf(((Number) yearObj).intValue());
+        String num = numObj == null ? "?" : String.valueOf(((Number) numObj).intValue());
+        sampleIds.add(qid);
+        sampleLabels.add(inst + " " + year + " Q" + num);
+      }
+      List<Integer> years = editionYearsByTopic.getOrDefault(t.getId(), List.of());
+      String evidence = buildEvidenceForInstitution(
+          t.getId(), ts, years, sampleIds, sampleLabels, institution);
+      int priority = Math.min(5, 1 + i / bandSize);
+      Long subtopicId = weakestSubtopicIdForInstitution(
+          t.getId(), subPerfByTopic.get(t.getId()));
+
+      StudyPlanItem item = new StudyPlanItem(
+          plan,
+          t.getId(),
+          subtopicId,
+          (short) priority,
+          reason,
+          evidence
+      );
+      out.add(item);
+    }
+
+    return out;
+  }
+
+  /**
+   * Vigente por questão no recorte da trilha (mesmo critério das TASKs
+   * 4.1–4.2: maior id por questão).
+   */
+  private Map<Long, QuestionClassification> vigenteByQuestionForInstitution(
+      List<QuestionAttempt> scoped) {
+    Map<Long, QuestionClassification> out = new HashMap<>();
+    if (scoped.isEmpty()) {
+      return out;
+    }
+    java.util.Set<Long> ids = new java.util.HashSet<>();
+    for (QuestionAttempt a : scoped) {
+      ids.add(a.getQuestion().getId());
+    }
+    for (QuestionClassification c
+        : classifications.findActiveByQuestionIds(new ArrayList<>(ids))) {
+      out.putIfAbsent(c.getQuestion().getId(), c);
+    }
+    return out;
+  }
+
+  /**
+   * Subassunto mais fraco na trilha (TASK E.2): menor aproveitamento no fato
+   * filtrado, desempate por mais tentativas, depois código. Coerência checada
+   * no {@code SubtopicRepository}; sem sinal ou incoerente → NULL.
+   */
+  private Long weakestSubtopicIdForInstitution(Long topicId, List<SubAcc> candidates) {
+    if (candidates == null || candidates.isEmpty()) {
+      return null;
+    }
+    List<SubAcc> ordered = new ArrayList<>(candidates);
+    ordered.sort((a, b) -> {
+      int cmp = Double.compare(a.accuracy(), b.accuracy());
+      if (cmp != 0) return cmp;
+      cmp = Integer.compare(b.attempts, a.attempts);
+      if (cmp != 0) return cmp;
+      return String.valueOf(a.code).compareTo(String.valueOf(b.code));
+    });
+    for (SubAcc s : ordered) {
+      boolean coherent = subtopics.findByIdWithTopic(s.subtopicId)
+          .map(t -> t.getTopic() != null && topicId.equals(t.getTopic().getId()))
+          .orElse(false);
+      if (coherent) {
+        return s.subtopicId;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Motivo textual na trilha (mesmos fatores do score + rótulo do processo e
+   * anos da trilha — ex. EAJ 2021/2022/2025).
+   */
+  private String buildReasonForInstitution(
+      Topic topic, TopicScore ts, double loadMultiplier, boolean provisorio,
+      String institution, List<Integer> years) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Recomendação [trilha ").append(institution).append("] para ")
+        .append(topic.getCode()).append(" (").append(topic.getName()).append(") — ");
+
+    if (ts.attempts == 0) {
+      sb.append("nenhuma tentativa pontuável registrada nesta trilha (lacuna); ");
+    } else {
+      sb.append(ts.attempts).append(" tentativa(s) pontuáveis nesta trilha; aproveitamento ")
+          .append(Math.round(ts.accuracy * 100)).append("%; ");
+      if (ts.accuracy < 0.5) {
+        sb.append("abaixo do limiar FRÁGIL (< 50%). ");
+      } else if (ts.accuracy < 0.7) {
+        sb.append("faixa intermediária (50–70%). ");
+      } else {
+        sb.append("consolidado (>= 70%) — revisão para manutenção. ");
+      }
+      if (ts.lastAttemptAt != null) {
+        long days = Math.max(0, ChronoUnit.DAYS.between(ts.lastAttemptAt, OffsetDateTime.now()));
+        sb.append("Última tentativa nesta trilha há ").append(days).append(" dia(s). ");
+      }
+    }
+
+    sb.append("Caiu em ").append(ts.hist).append(" questão(ões) de ")
+        .append(ts.editions).append(" edição(ões) do ").append(institution);
+    if (years != null && !years.isEmpty()) {
+      sb.append(" (");
+      for (int i = 0; i < years.size(); i++) {
+        if (i > 0) sb.append(", ");
+        sb.append(years.get(i));
+      }
+      sb.append(")");
+    }
+    sb.append(" (freq ").append(Math.round(ts.frequencyFactor * 100)).append("). ");
+    sb.append("Score v2.1 determinístico ").append(Math.round(ts.score * 100)).append(".");
+    if (loadMultiplier > 1.0) {
+      sb.append(" Carga ajustada pela sua meta/ano-alvo (só concentra o topo, sem filtrar assunto).");
+    }
+
+    sb.append(" Evidência derivada de classificações vigentes da trilha + desempenho registrado nela.");
+    if (provisorio) {
+      sb.append(" Plano provisório: comece pelo que mais cai — vira pessoal após o diagnóstico (3+ pontuáveis na trilha).");
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Evidência rastreável da trilha (TASK E.2): edições e questões OFICIAIS do
+   * processo existentes no banco (ex. {@code "EAJ 2022 Q12"} em
+   * {@code sampleLabels}). Sem questão oficial na trilha =
+   * {@code sampleQuestionIds: []} honesto, nunca id inventado.
+   */
+  private String buildEvidenceForInstitution(
+      Long topicId, TopicScore ts, List<Integer> years, List<Long> sampleIds,
+      List<String> sampleLabels, String institution) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{\"topic_id\":").append(topicId);
+    sb.append(",\"institution\":\"").append(institution).append("\"");
+    sb.append(",\"historicalQuestions\":").append(ts.hist);
+    sb.append(",\"editionsCount\":").append(years == null ? 0 : years.size());
+    sb.append(",\"editions\":[");
+    if (years != null) {
+      for (int i = 0; i < years.size(); i++) {
+        if (i > 0) sb.append(",");
+        sb.append(years.get(i));
+      }
+    }
+    sb.append("],\"sampleQuestionIds\":[");
+    if (sampleIds != null) {
+      for (int i = 0; i < sampleIds.size(); i++) {
+        if (i > 0) sb.append(",");
+        sb.append(sampleIds.get(i));
+      }
+    }
+    sb.append("],\"sampleLabels\":[");
+    if (sampleLabels != null) {
+      for (int i = 0; i < sampleLabels.size(); i++) {
+        if (i > 0) sb.append(",");
+        sb.append("\"").append(sampleLabels.get(i).replace("\"", "")).append("\"");
+      }
+    }
+    sb.append("],\"accuracy\":").append(ts.accuracy);
+    sb.append(",\"attempts\":").append(ts.attempts);
+    sb.append(",\"lastAttemptAt\":");
+    if (ts.lastAttemptAt == null) {
+      sb.append("null");
+    } else {
+      sb.append("\"").append(ts.lastAttemptAt).append("\"");
+    }
+    sb.append(",\"algorithmVersion\":\"").append(ALGORITHM_VERSION_INSTITUTION).append("\"}");
+    return sb.toString();
+  }
+
+  private static final class TrackAcc {
+    int attempts;
+    int hits;
+    OffsetDateTime last;
+
+    void add(boolean hit, OffsetDateTime answeredAt) {
+      attempts++;
+      if (hit) {
+        hits++;
+      }
+      if (answeredAt != null && (last == null || answeredAt.isAfter(last))) {
+        last = answeredAt;
+      }
+    }
+
+    double accuracy() {
+      return attempts == 0 ? 0.0 : hits / (double) attempts;
+    }
+  }
+
+  private static final class SubAcc {
+    final Long subtopicId;
+    final String code;
+    int attempts;
+    int hits;
+
+    SubAcc(Long subtopicId, String code) {
+      this.subtopicId = subtopicId;
+      this.code = code;
+    }
+
+    void add(boolean hit) {
+      attempts++;
+      if (hit) {
+        hits++;
+      }
+    }
+
+    double accuracy() {
+      return attempts == 0 ? 1.0 : hits / (double) attempts;
+    }
   }
 
   /**
@@ -492,6 +943,27 @@ public class RecommendationService {
     }
     sb.append(",\"algorithmVersion\":\"").append(ALGORITHM_VERSION).append("\"}");
     return sb.toString();
+  }
+
+  /**
+   * Recupera o roteiro vigente da trilha (TASK E.2).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     roteiro global legado (comportamento pré-E.2). Informado = trilha
+   *     isolada (sem plano na trilha → {@code 404 NO_ACTIVE_PLAN}, nunca
+   *     plano de outro processo disfarçado).
+   */
+  @Transactional(readOnly = true)
+  public StudyPlanResponse getPlan(long userId, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
+    if (instNorm == null) {
+      return getPlan(userId);
+    }
+    StudyPlan plan = studyPlans.findByUserIdAndInstitutionAndIsActiveTrue(userId, instNorm)
+        .orElseThrow(() -> new ResourceNotFoundException("NO_ACTIVE_PLAN",
+            "Nenhum roteiro vigente na trilha " + instNorm + ". Gere um roteiro primeiro."));
+    List<StudyPlanItem> items = studyPlanItems.findByStudyPlanIdOrderByPriorityAsc(plan.getId());
+    return toResponse(plan, items);
   }
 
   /**

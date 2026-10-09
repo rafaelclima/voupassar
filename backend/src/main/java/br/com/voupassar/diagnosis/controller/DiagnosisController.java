@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -31,11 +32,15 @@ public class DiagnosisController {
   @Operation(summary = "Diagnóstico inicial do aluno (determinístico e explicável).",
       description = "Fonte única: question_attempts (fato imutável) + classificações vigentes não-rejeitadas (derivada, revisão PENDENTE — TASK 12.2). "
           + "Limiares explícitos: DOMINADO ≥ 70%, FRÁGIL < 50%, sinal mínimo 3 pontuáveis por assunto; lacuna = 0 pontuáveis. "
-          + "Fila de prioridades: assunto não-dominado mais urgente primeiro (determinístico, auditável).")
+          + "Fila de prioridades: assunto não-dominado mais urgente primeiro (determinístico, auditável). "
+          + "TASK E.2: ?institution=IFRN|EAJ recorta a trilha (tentativas + frequência histórica daquele processo); "
+          + "ausente = panorama global legado (ambos, comportamento pré-E.2).")
   @GetMapping
   public DiagnosisResponse diagnose(
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution,
       @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
-    return service.getDiagnosis(requireAuth(principal));
+    return service.getDiagnosis(requireAuth(principal), institution);
   }
 
   private static long requireAuth(UserPrincipal principal) {

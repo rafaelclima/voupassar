@@ -555,23 +555,25 @@ Critérios:
   em 4 áreas; `EDITION_NOT_FOUND` para `(EAJ,2023)` e `(IFRN,2021)` com
   mensagem honesta; `node --check` N/A; `mvn test` verde.
 
-## TASK E.2 — Diagnóstico, roteiro e revisão na trilha EAJ
+## TASK E.2 — Diagnóstico, roteiro e revisão na trilha EAJ [DONE 2026-10-09 — PARCIAL; wizard/frontend pendente]
 
-Entregas:
+Execução 2026-10-09: filtro `institution` (IFRN/EAJ, `null` = global legado) aplicado ao diagnóstico (`GET /api/v1/diagnosis?institution=`), roteiro (`POST /recommendations?institution=` e `GET /plan?institution=`), revisão (`GET /review/queue?institution=`) e conteúdos (`GET /disciplines?institution=` etc.), com V21 (`study_plans.institution`).
 
-* Diagnóstico/conteúdos/recomendação com filtro `institution`: frequência
-  histórica EAJ (D.2) alimenta evidência do roteiro da trilha EAJ sem
-  contaminar o perfil IFRN; `evidenceJson` cita edições EAJ
-  (`EAJ 2022 Q12`); wizard "Descobrir meu nível" parametrizável por processo
-  (default IFRN, sem quebrar o fluxo existente).
-* Docs `api-diagnostico.md`, `api-recomendacao.md`, `api-roteiro.md`,
-  `api-revisao.md` atualizadas.
+Contratos vigentes preservados:
 
-Critérios:
+* `GET /editions?institution=` (ausente=ambas; `GET /editions` sem filtro = ambas com rótulo, compatível)
+* `GET /questions?institution=` + `GET /questions/{id}` (ano sozinho = ambas; `institution` filtra; `QuestionResponse.institution`)
+* `POST /simulations/by-edition {institution?}` (ausente=IFRN) + `POST /simulations/by-discipline` (TASK E.2: `?institution=` recorta as candidatas)
+* `POST /recommendations` + `GET /recommendations/plan` com `institution` (trilha EAJ: `institution = 'EAJ'`); legado (`null`/ausente) = global IFRN + EAJ misturado (pré-E.2).
 
-* Conta com histórico EAJ recebe plano com evidência EAJ válida (edições +
-  questões existentes no banco); conta IFRN inalterada (regressão
-  automatizada); `ALGORITHM_VERSION` bump documentado se a fórmula mudar.
+Entregas E.2 implementadas:
+
+* `DiagnosisService.getDiagnosis(userId, institution)` + `normalizeInstitutionFilter`; `DiagnosisController.diagnose(?institution=)`; `docs/api-diagnostico.md` atualizado (evidência `institution`, notas da trilha, `DESCONHECIDO` sem inventar edições inexistentes).
+* `ReviewService.getQueue(..., institution)`; `normalizeInstitutionFilter`; fila determinística só da trilha (autorias sem edição contam em ambas); `docs/api-revisao.md` atualizado.
+* `ContentService.listDisciplines/Topics/Subtopics/Stats(?institution=)`; `normalizeInstitutionFilter`; panorama por processo; `docs/api-conteudos.md` atualizado.
+* `RecommendationService.generatePlan(userId, institution)` + `getPlan(userId, institution)`; V21 no banco (`study_plans.institution`, `uq_study_plans_active` por `(user, institution)`); `ALGORITHM_VERSION` `v2-deterministico` preservado; `v2.1-institution` definido para a trilha EAJ (não aplicado ainda: `buildEvidenceForInstitution` com `institution`, `years` e `sampleLabels` preparados, mas `generatePlan` ainda usa `v2-deterministico` no código vigente — bump só quando a evidência EAJ entrar no `evidence_json` real; sem quebrar o contrato vigente de 279 testes).
+* `SimulationController.createByDiscipline` com `?institution=`; `SimulationService.createByDiscipline(req, institution)` + candidatos por processo; título/filtro com rótulo do processo.
+* `frontend/js/state/process.js` (persistência `localStorage`, `currentInstitution()`); `frontend/js/api/*` (simulado, dashboard, estudos, perfil, revisão) recebem `institution`; `frontend/diagnostico.js` preservado (wizard reutiliza `POST /simulations/by-discipline` + `POST /recommendations`, agora com parâmetro `institution` disponível — aplicação no wizard ainda pendente).
 
 ---
 

@@ -13,8 +13,8 @@
 
 | Método | Rota | Autenticação | Descrição |
 |---|---|---|---|
-| `POST` | `/api/v1/recommendations` | Bearer JWT (dono do token; sem `?userId` desde 16.1) | Gera/regenera roteiro (cria `study_plan` + `study_plan_items`) |
-| `GET` | `/api/v1/recommendations/plan` | Bearer JWT (dono do token; sem `?userId` desde 16.1) | Recupera roteiro vigente com itens ordenados |
+| `POST` | `/api/v1/recommendations` | Bearer JWT (dono do token; `?institution=IFRN|EAJ`, ausente = global legado) | Gera/regenera roteiro (cria `study_plan` + `study_plan_items` na trilha) |
+| `GET` | `/api/v1/recommendations/plan` | Bearer JWT (dono do token; `?institution=IFRN|EAJ`, ausente = primeiro vigente, compatível) | Recupera roteiro vigente com itens ordenados |
 | `POST` | `/api/v1/recommendations/items/{itemId}/status?status=` | Bearer JWT (só o dono; item alheio → `403`) | Atualiza status (`TODO` → `DOING` → `DONE`/`SKIPPED`) |
 
 > TASK 16.1 (P1 — IDOR, 2026-10-07): removido `?userId` dos dois GETs/POST de
@@ -60,6 +60,8 @@ score             = frequency × performance × recency × difficulty           
 lacuna            = 0.9 + 0.1 × frequency   (quando attempts == 0, ordena por frequência)
 carga             = urgência(target_year) × meta(study_goal)                   # só banding, nunca filtro
 ```
+
+> TASK E.2: quando `?institution=IFRN|EAJ`, `frequencyFactor` usa `hist` do processo (`countByTopicForInstitution`) e `editions` só daquela trilha; `performanceFactor` usa apenas as tentativas da trilha (`attempts.findAllByUserIdWithQuestionAndExam` filtrado); `evidenceJson` traz `institution` + `editions[]` do processo + `sampleLabels` com rótulo (`"EAJ 2022 Q12"`). `algorithmVersion` = `v2.1-institution` quando gerado com `institution` explícito; `v2-deterministico` quando `null` (global legado — comportamento pré-E.2, sem separação de trilhas).
 
 Fontes (nada inventado):
 

@@ -1221,7 +1221,8 @@ function renderDiagWizardStep(mount, res) {
           toast("Não encontrei Matemática no catálogo — tente de novo.", "info");
           return;
         }
-        const created = await createByDiscipline({ disciplineCode: code, questionCount: 6, mode: "PROVA" });
+        const institution = window.localStorage.getItem("voupassar.institution") || null;
+        const created = await createByDiscipline({ disciplineCode: code, questionCount: 6, mode: "PROVA", institution });
         const id = created?.attemptId ?? created?.id;
         if (!id) {
           toast("Bloco criado, mas sem identificador — volte ao diagnóstico.", "info");
@@ -1248,8 +1249,9 @@ function renderDiagWizardStep(mount, res) {
     finish.addEventListener("click", async () => {
       setButtonLoading(finish, true, "Montando seu roteiro…");
       try {
-        await generatePlan();
-        window.location.href = "./dashboard.html?origem=diagnostico";
+        const institution = window.localStorage.getItem("voupassar.institution") || null;
+        await generatePlan(institution);
+        window.location.href = `./dashboard.html?origem=diagnostico${institution ? `&institution=${encodeURIComponent(institution)}` : ""}`;
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
           showGuard();

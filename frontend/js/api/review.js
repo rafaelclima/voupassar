@@ -10,9 +10,9 @@
 
 import { request } from "./client.js";
 
-export function getQueue({ limit, discipline, topicId, onlyErrors } = {}) {
+export function getQueue({ limit, discipline, topicId, onlyErrors, institution } = {}) {
   return request("/api/v1/review/queue", {
-    query: { limit, discipline, topicId, onlyErrors },
+    query: { limit, discipline, topicId, onlyErrors, institution },
   });
 }
 

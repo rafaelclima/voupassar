@@ -70,8 +70,10 @@ public class SimulationController {
   @ResponseStatus(HttpStatus.CREATED)
   public SimulationAttemptResponse createByDiscipline(
       @Valid @RequestBody CreateDisciplineSimulationRequest req,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return service.createByDiscipline(requireAuth(principal), req);
+    return service.createByDiscipline(requireAuth(principal), req, institution);
   }
 
   @Operation(summary = "Criar e iniciar simulado real por edição (caderno integral em ordem original, IN_PROGRESS).",

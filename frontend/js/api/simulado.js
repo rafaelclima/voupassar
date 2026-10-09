@@ -17,9 +17,10 @@ export function fetchEditions() {
   return request("/api/v1/editions");
 }
 
-export function createByDiscipline({ disciplineCode, questionCount, difficulty, sourceType, mode }) {
+export function createByDiscipline({ disciplineCode, questionCount, difficulty, sourceType, mode, institution }) {
   return request("/api/v1/simulations/by-discipline", {
     method: "POST",
+    query: institution ? { institution } : {},
     body: {
       disciplineCode,
       questionCount,
@@ -30,10 +31,14 @@ export function createByDiscipline({ disciplineCode, questionCount, difficulty, 
   });
 }
 
-export function createByEdition({ editionYear, mode }) {
+export function createByEdition({ editionYear, mode, institution }) {
   return request("/api/v1/simulations/by-edition", {
     method: "POST",
-    body: { editionYear, mode },
+    body: {
+      editionYear,
+      mode,
+      ...(institution ? { institution } : {}),
+    },
   });
 }
 

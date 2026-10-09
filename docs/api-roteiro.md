@@ -20,15 +20,16 @@
 
 ## Modelo de dados
 
-### `study_plans`
+### `study_plans` (TASK E.2 — trilha por processo)
 
 | Coluna | Tipo | Regra |
 |---|---|---|
 | `id` | BIGINT PK | Identidade |
 | `user_id` | BIGINT FK (`users`) | `ON DELETE CASCADE` |
-| `is_active` | BOOLEAN DEFAULT TRUE | Único ativo por usuário (`UNIQUE` parcial) |
-| `algorithm_version` | TEXT NOT NULL | `v2-deterministico` desde a 18.1 (`v1-…` nos planos antigos; sem ML no MVP) |
-| `status` | TEXT NOT NULL | `PROVISORIO` (<3 pontuáveis) / `PESSOAL` (≥3) — TASK 20.1, `V16__study_plan_status.sql` |
+| `institution` | TEXT NOT NULL DEFAULT 'IFRN' | Trilha do processo (`IFRN`/`EAJ`) — V21 |
+| `is_active` | BOOLEAN DEFAULT TRUE | Único ativo por `(user_id, institution)` (`UNIQUE` parcial V21) — um roteiro vigente por trilha, sem desativar a outra |
+| `algorithm_version` | TEXT NOT NULL | `v2-deterministico` (global legado, `null`/ausente); `v2.1-institution` (trilha informada — EAJ) |
+| `status` | TEXT NOT NULL | `PROVISORIO` (<3 pontuáveis na trilha) / `PESSOAL` (≥3) — TASK 20.1, `V16__study_plan_status.sql` |
 | `generated_at` | TIMESTAMPTZ | Quando o roteiro foi criado |
 
 ### `study_plan_items`
@@ -44,33 +45,32 @@
 | `evidence_json` | JSONB NOT NULL | Schema rico TASK 18.2 (abaixo) — rastreabilidade |
 | `status` | TEXT DEFAULT 'TODO' | `TODO` / `DOING` / `DONE` / `SKIPPED` |
 
-### Schema do `evidence_json` (TASK 18.2)
+### Schema do `evidence_json` (TASK 18.2 — trilha E.2)
 
 ```json
 {
   "topic_id": 5,
-  "historicalQuestions": 70,
-  "editionsCount": 6,
-  "editions": [2020, 2022, 2023, 2024, 2025, 2026],
+  "institution": "EAJ",
+  "historicalQuestions": 55,
+  "editionsCount": 3,
+  "editions": [2021, 2022, 2025],
   "sampleQuestionIds": [101, 102, 103],
+  "sampleLabels": ["EAJ 2022 Q12", "EAJ 2025 Q05", "EAJ 2021 Q08"],
   "accuracy": 0.2,
   "attempts": 5,
   "lastAttemptAt": "2026-09-27T10:00:00Z",
-  "algorithmVersion": "v2-deterministico"
+  "algorithmVersion": "v2.1-institution"
 }
 ```
 
-Regras:
+Regras (TASK E.2 — evidência da trilha, sem contaminar o IFRN):
 
-- `editions[]` vem de `classifications.editionsByTopic` (anos crescentes);
-  `sampleQuestionIds[]` (máx 5) só com `source_type = 'OFFICIAL'`
-  (`classifications.officialQuestionIdsByTopic`, ordem ano/número/id) —
-  autorais/adaptadas nunca produzem evidência (regra Fase 15, AGENTS.md §11).
-- `accuracy`/`attempts`/`lastAttemptAt` espelham o agregado do aluno no
-  momento da geração (`lastAttemptAt = null` sem tentativas).
-- Todo item de plano gerado com histórico cita ≥1 edição e ≥1 questão oficial
-  existentes (coberto por `RecommendationServiceTest`); assunto sem questão
-  oficial carrega `sampleQuestionIds: []` honesto, nunca id inventado.
+- `institution`: `IFRN` ou `EAJ` quando `?institution=` informado; ausente quando global (legado).
+- `historicalQuestions`/`editions[]`: só do processo (`countByTopicForInstitution` / `editionsByTopicForInstitution`). Na trilha EAJ = 3 edições (2021/2022/2025, D.2); na IFRN = 6 edições (2020, 2022–2026; 2021 ausente).
+- `sampleQuestionIds[]`: só `source_type = 'OFFICIAL'` do processo (`officialQuestionIdsByTopicForInstitution`). Autorais/adaptadas nunca entram (AGENTS.md §11).
+- `sampleLabels[]`: rótulo de citação (`"EAJ 2022 Q12"`) — nunca id inventado; cada rótulo aponta para questão e edição existentes no banco (auditável por `GET /questions/{id}`). Vazio quando sem oficiais na trilha (`[]`, nunca `null`).
+- `algorithmVersion`: `v2.1-institution` (trilha informada); `v2-deterministico` (global, comportamento pré-E.2).
+- Nenhuma recomendação como verdade absoluta: `reason` inclui `institution` quando aplicável (ex. `"[trilha EAJ] ..."`), `PROVISORIO` quando `<3` pontuáveis, nota `DERIVADO_EVIDENCIA` com `PENDING`.
 
 ## Fluxo do roteiro
 

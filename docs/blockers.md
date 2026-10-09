@@ -268,6 +268,24 @@ de página, mesmo padrão das edições anteriores).
 
 ---
 
+## Pendências da trilha EAJ — TASK E.2 (2026-10-09, após V21)
+
+* **Q22/Q39-2025 (E.1/D.3):** `NEEDS_VISUAL_CHECK` MANTIDA (trava D.3: B/C da Q22 divergem do PDF; Q39 soma + razão divergentes). Nenhum `import --allow-needs-visual-check` sem retranscrição do `.md` + revalidação B.1/B.2/D.1. A flag segue proibida até a Fase G (anexação do gabarito oficial + revalidação).
+* **Q23-2025:** `ANNULLED_TRANSCRIBED` importado (`X`, sem pontuação). Ordem das frações `NÃO CONFIRMADA`: `.md` ordena `6/54, 15/45, 10/18`; PDF sugere `15/45, 10/18, 6/54` (A casaria). Nenhuma inferência aplicada — nunca "corrigir" por palpite.
+* **2022 40/40 A:** transcrição preservada (`TRANSCRIBED_FROM_MD`), nunca corrigida. Aviso no banco (`notes` da resposta); conferência visual no PDF (Fase G) pendente.
+* **Passagens 2022 Texto 02/03 (B.4):** assinatura e fonte `NÃO CONFIRMADO` (visual curada; página = `NULL` + `DESCONHECIDO`). Nenhum valor inventado no `visual_description`.
+* **Páginas EAJ:** `page_start/end` = `NULL` (`DESCONHECIDO`) — `.md` não traz página; nunca preencher por inferência.
+* **Vínculo Q22←TEXTO-3:** pulo documentado (`Passage.java`: `questions:[22]` na fonte, sem vínculo no banco até Q22 existir; `Data/Passages` preservada). A imagem (`eaj/2025/Q22.webp`) é figura, não passagem vinculada.
+* **Edição 2021 (E.1):** só existe com `institution = 'EAJ'` (`EAJ-2021`, 50Q 15/15/12/8). `IFRN-2021` segue ausente (`EDITION_NOT_FOUND` honesto). Nenhum `exams` inventado.
+
+## Programa EAJ — passagens (TASK B.4, 2026-10-09)
+
+* **Entregas:** `data/passages/eaj/{2021,2022,2025}.json` (11 passagens, 34 vínculos) + `scripts/db/extract_passages.py` estendido ao namespace `eaj/`. Regra de vínculo idêntica à IFRN: `Texto N` = rótulo com número; `Trecho` = intervalo `intro`; páginas `NULL` + `DESCONHECIDO`. Importação reutiliza `import_passages.py` (D.4).
+* **Vínculo Q22:** pulado (questão sem linha no banco, D.3). Passagem `TEXTO-3` preservada com `questions:[22]` na fonte; sem vínculo no banco. A imagem (`eaj/2025/Q22.webp`) resolve como figura quando Q22 existir.
+* **Textos 02/03 de 2022:** viraram `PASSAGEM` (sem bloco transcrito no `.md`, só visual nos PNGs agrupados B.3). `visual_description` curada (assinatura + fonte do Texto 02 = `NÃO CONFIRMADO`). Nenhum conteúdo inventado.
+
+---
+
 ## Remoção do contrato de curadoria humana — riscos assumidos (decisão de produto 2026-10-06)
 
 Plano: `docs/plano-remocao-curadoria.md`. Confiança = veredito do pipeline

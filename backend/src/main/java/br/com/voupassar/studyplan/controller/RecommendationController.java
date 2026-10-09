@@ -53,8 +53,10 @@ public class RecommendationController {
   })
   @PostMapping
   public StudyPlanResponse generate(
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution,
       @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
-    return service.generatePlan(requireAuth(principal));
+    return service.generatePlan(requireAuth(principal), institution);
   }
 
   @Operation(summary = "Recupera o roteiro vigente",
@@ -68,8 +70,10 @@ public class RecommendationController {
   })
   @GetMapping("/plan")
   public StudyPlanResponse getPlan(
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution,
       @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
-    return service.getPlan(requireAuth(principal));
+    return service.getPlan(requireAuth(principal), institution);
   }
 
   @Operation(summary = "Atualiza status de um item do roteiro",

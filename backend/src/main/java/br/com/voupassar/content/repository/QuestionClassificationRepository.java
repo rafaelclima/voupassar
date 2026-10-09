@@ -25,6 +25,20 @@ public interface QuestionClassificationRepository
       """)
   long countClassified();
 
+  /**
+   * Total de questões classificadas de um processo (TASK E.2).
+   *
+   * <p>Escopo por {@code (institution)}: só classificações cuja questão
+   * pertence a exame daquele processo ({@code q.exam.institution}).
+   * Autorais (sem exame) ficam fora do histórico por processo — nunca geram
+   * evidência (regra Fase 15, AGENTS.md §11).
+   */
+  @Query("""
+      SELECT COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic IS NOT NULL AND q.exam.institution = :institution
+      """)
+  long countClassifiedForInstitution(@Param("institution") String institution);
+
   /** Versões de taxonomia presentes no banco (ex. {@code ["v1.1"]}). */
   @Query("SELECT DISTINCT c.taxonomyVersion FROM QuestionClassification c ORDER BY c.taxonomyVersion")
   List<String> distinctTaxonomyVersions();
@@ -37,6 +51,20 @@ public interface QuestionClassificationRepository
       """)
   List<Object[]> countByTopic();
 
+  /**
+   * Frequência por assunto de um processo (TASK E.2 — base do roteiro EAJ,
+   * sem contaminar o IFRN).
+   *
+   * <p>Retorna linhas {@code [topicId(Long), total(Long)]} só com questões
+   * daquele {@code institution} (D.2-EAJ alimenta a trilha EAJ).
+   */
+  @Query("""
+      SELECT c.topic.id, COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic IS NOT NULL AND q.exam.institution = :institution
+      GROUP BY c.topic.id
+      """)
+  List<Object[]> countByTopicForInstitution(@Param("institution") String institution);
+
   /** Retorna linhas {@code [subtopicId(Long), total(Long)]}. */
   @Query("""
       SELECT c.subtopic.id, COUNT(c) FROM QuestionClassification c
@@ -44,6 +72,65 @@ public interface QuestionClassificationRepository
       GROUP BY c.subtopic.id
       """)
   List<Object[]> countBySubtopic();
+
+  /**
+   * Frequência por subassunto dentro de um processo (TASK E.2).
+   * Retorna linhas {@code [subtopicId(Long), total(Long)]}.
+   */
+  @Query("""
+      SELECT c.subtopic.id, COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.subtopic IS NOT NULL AND q.exam.institution = :institution
+      GROUP BY c.subtopic.id
+      """)
+  List<Object[]> countBySubtopicForInstitution(@Param("institution") String institution);
+
+  /**
+   * Contagem de um subassunto dentro de um processo (TASK E.2).
+   */
+  @Query("""
+      SELECT COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.subtopic.id = :subtopicId AND q.exam.institution = :institution
+      """)
+  long countBySubtopicIdForInstitution(
+      @Param("subtopicId") Long subtopicId, @Param("institution") String institution);
+
+  /**
+   * Anos de um subassunto dentro de um processo (TASK E.2).
+   */
+  @Query("""
+      SELECT DISTINCT q.exam.year FROM QuestionClassification c JOIN c.question q
+      WHERE c.subtopic.id = :subtopicId AND q.exam.institution = :institution
+      ORDER BY q.exam.year ASC
+      """)
+  List<Short> editionsBySubtopicForInstitution(
+      @Param("subtopicId") Long subtopicId, @Param("institution") String institution);
+
+  /**
+   * Série por edição de um subassunto dentro de um processo (TASK E.2).
+   * Retorna linhas {@code [year(Short), total(Long), annulled(Long)]}.
+   */
+  @Query("""
+      SELECT q.exam.year, COUNT(c),
+             SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
+      FROM QuestionClassification c JOIN c.question q
+      WHERE c.subtopic.id = :subtopicId AND q.exam.institution = :institution
+      GROUP BY q.exam.year
+      ORDER BY q.exam.year ASC
+      """)
+  List<Object[]> countSubtopicByYearForInstitution(
+      @Param("subtopicId") Long subtopicId, @Param("institution") String institution);
+
+  /**
+   * Confiança por subassunto dentro de um processo (TASK E.2).
+   * Retorna linhas {@code [confidence(String), total(Long)]}.
+   */
+  @Query("""
+      SELECT c.confidence, COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.subtopic.id = :subtopicId AND q.exam.institution = :institution
+      GROUP BY c.confidence
+      """)
+  List<Object[]> confidenceBySubtopicForInstitution(
+      @Param("subtopicId") Long subtopicId, @Param("institution") String institution);
 
   @Query("""
       SELECT COUNT(c) FROM QuestionClassification c
@@ -70,6 +157,43 @@ public interface QuestionClassificationRepository
       ORDER BY q.exam.year ASC
       """)
   List<Object[]> countTopicByYear(@Param("topicId") Long topicId);
+
+  /**
+   * Série por edição de um assunto dentro de um processo (TASK E.2).
+   * Retorna linhas {@code [year(Short), total(Long), annulled(Long)]}.
+   */
+  @Query("""
+      SELECT q.exam.year, COUNT(c),
+             SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
+      FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.exam.institution = :institution
+      GROUP BY q.exam.year
+      ORDER BY q.exam.year ASC
+      """)
+  List<Object[]> countTopicByYearForInstitution(
+      @Param("topicId") Long topicId, @Param("institution") String institution);
+
+  /**
+   * Contagem de um assunto dentro de um processo (TASK E.2).
+   */
+  @Query("""
+      SELECT COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.exam.institution = :institution
+      """)
+  long countByTopicIdForInstitution(
+      @Param("topicId") Long topicId, @Param("institution") String institution);
+
+  /**
+   * Confiança por assunto dentro de um processo (TASK E.2).
+   * Retorna linhas {@code [confidence(String), total(Long)]}.
+   */
+  @Query("""
+      SELECT c.confidence, COUNT(c) FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.exam.institution = :institution
+      GROUP BY c.confidence
+      """)
+  List<Object[]> confidenceByTopicForInstitution(
+      @Param("topicId") Long topicId, @Param("institution") String institution);
 
   /**
    * Distribuição por edição de um subassunto.
@@ -119,6 +243,19 @@ public interface QuestionClassificationRepository
   List<Object[]> statsByTopic();
 
   /**
+   * Agregado por assunto dentro de um processo (TASK E.2).
+   * Retorna {@code [topicId, total, annulled]}.
+   */
+  @Query("""
+      SELECT c.topic.id, COUNT(c),
+             SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
+      FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic IS NOT NULL AND q.exam.institution = :institution
+      GROUP BY c.topic.id
+      """)
+  List<Object[]> statsByTopicForInstitution(@Param("institution") String institution);
+
+  /**
    * Edições em que um assunto aparece (anos distintos, crescente).
    */
   @Query("""
@@ -127,6 +264,22 @@ public interface QuestionClassificationRepository
       ORDER BY q.exam.year ASC
       """)
   List<Short> editionsByTopic(@Param("topicId") Long topicId);
+
+  /**
+   * Anos do assunto dentro de um processo (TASK E.2).
+   *
+   * <p>Anos sozinhos colidem entre processos (2022/2025 existem em IFRN e
+   * EAJ): o chamador já conhece o {@code institution} do recorte, então a
+   * lista (ex. EAJ {@code [2021, 2022, 2025]}) é inequívoca naquele contexto
+   * + {@code evidenceJson.institution}.
+   */
+  @Query("""
+      SELECT DISTINCT q.exam.year FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.exam.institution = :institution
+      ORDER BY q.exam.year ASC
+      """)
+  List<Short> editionsByTopicForInstitution(
+      @Param("topicId") Long topicId, @Param("institution") String institution);
 
   /**
    * Edições em que um subassunto aparece (anos distintos, crescente).
@@ -155,6 +308,18 @@ public interface QuestionClassificationRepository
   List<Object[]> difficultyByTopic();
 
   /**
+   * Mix de dificuldade por assunto dentro de um processo (TASK E.2).
+   * Retorna linhas {@code [topicId(Long), difficultyEstimate(String, NULLável), total(Long)]}.
+   */
+  @Query("""
+      SELECT c.topic.id, q.difficultyEstimate, COUNT(c)
+      FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic IS NOT NULL AND q.exam.institution = :institution
+      GROUP BY c.topic.id, q.difficultyEstimate
+      """)
+  List<Object[]> difficultyByTopicForInstitution(@Param("institution") String institution);
+
+  /**
    * IDs de questões OFICIAIS de um assunto, ordem determinística
    * (ano, número na edição, id) — fonte da evidência do roteiro (TASK 18.2).
    *
@@ -167,6 +332,40 @@ public interface QuestionClassificationRepository
       ORDER BY q.sourceYear ASC NULLS LAST, q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
       """)
   List<Long> officialQuestionIdsByTopic(@Param("topicId") Long topicId);
+
+  /**
+   * IDs oficiais de um assunto dentro de um processo (TASK E.2 — evidência EAJ válida).
+   *
+   * <p>Só {@code source_type = 'OFFICIAL'} daquele {@code institution},
+   * ordem determinística (ano, número, id). Todo id devolvido existe no banco
+   * (nunca inventado).
+   */
+  @Query("""
+      SELECT q.id FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.sourceType = 'OFFICIAL'
+        AND q.exam.institution = :institution
+      ORDER BY q.sourceYear ASC NULLS LAST, q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
+      """)
+  List<Long> officialQuestionIdsByTopicForInstitution(
+      @Param("topicId") Long topicId, @Param("institution") String institution);
+
+  /**
+   * Evidência legível por questão oficial de um assunto/processo (TASK E.2).
+   *
+   * <p>Retorna linhas {@code [questionId(Long), institution(String),
+   * year(Short), number(Short)]} na mesma ordem determinística da evidência.
+   * O serviço formata {@code "EAJ 2022 Q12"} — rótulo de citação, nunca id
+   * inventado (cada linha existe no banco).
+   */
+  @Query("""
+      SELECT q.id, q.exam.institution, q.exam.year, q.sourceQuestionNumber
+      FROM QuestionClassification c JOIN c.question q
+      WHERE c.topic.id = :topicId AND q.sourceType = 'OFFICIAL'
+        AND q.exam.institution = :institution
+      ORDER BY q.sourceYear ASC NULLS LAST, q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
+      """)
+  List<Object[]> officialQuestionEvidenceByTopicForInstitution(
+      @Param("topicId") Long topicId, @Param("institution") String institution);
 
   /**
    * Classificações vigentes de um lote de questões (TASK 3.4).

@@ -23,6 +23,16 @@ public class StudyPlan {
   @Column(name = "user_id", nullable = false)
   private Long userId;
 
+  /**
+   * Processo seletivo da trilha do roteiro (TASK E.2, V21).
+   *
+   * <p>Um ativo por {@code (user_id, institution)}: as trilhas IFRN e EAJ
+   * evoluem separadas (frequência D.2-EAJ nunca contamina o plano IFRN).
+   * Linhas pré-V21 recebem {@code 'IFRN'} (backfill da migração).
+   */
+  @Column(name = "institution", nullable = false)
+  private String institution = "IFRN";
+
   @Column(name = "is_active", nullable = false)
   private Boolean isActive = true;
 
@@ -47,8 +57,13 @@ public class StudyPlan {
   public StudyPlan() {}
 
   public StudyPlan(Long userId, String algorithmVersion) {
+    this(userId, algorithmVersion, "IFRN");
+  }
+
+  public StudyPlan(Long userId, String algorithmVersion, String institution) {
     this.userId = userId;
     this.algorithmVersion = algorithmVersion;
+    this.institution = institution == null ? "IFRN" : institution;
     this.isActive = true;
     this.generatedAt = OffsetDateTime.now();
     this.createdAt = OffsetDateTime.now();
@@ -58,6 +73,10 @@ public class StudyPlan {
   public Long getId() { return id; }
 
   public Long getUserId() { return userId; }
+
+  public String getInstitution() { return institution; }
+
+  public void setInstitution(String institution) { this.institution = institution; }
 
   public Boolean getIsActive() { return isActive; }
 

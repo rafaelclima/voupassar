@@ -11,6 +11,7 @@
  * texto exibido): casa por nome contendo "portugues" ou "matemat".
  */
 
+import { currentInstitution } from "../state/process.js";
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { logout } from "../api/auth.js";
 import { createByDiscipline, fetchDisciplines } from "../api/simulado.js";
@@ -68,7 +69,8 @@ function showGuard() {
 
 /** Resolve os códigos de LP e MAT pelo catálogo (tolerante a LP/MAT vs nomes longos). */
 export async function resolveDiagDisciplines() {
-  const raw = await fetchDisciplines();
+  const institution = currentInstitution();
+  const raw = await fetchDisciplines(institution);
   const list = Array.isArray(raw) ? raw : (raw?.content || raw?.items || []);
   const norm = (s) => String(s || "").toLowerCase();
   let lp = null;
@@ -95,10 +97,12 @@ startBtn?.addEventListener("click", async () => {
       });
       return;
     }
+    const institution = currentInstitution();
     const created = await createByDiscipline({
       disciplineCode: lp,
       questionCount: DIAG_QUESTION_COUNT,
       mode: "PROVA",
+      institution,
     });
     const id = created?.attemptId ?? created?.id;
     if (!id) {

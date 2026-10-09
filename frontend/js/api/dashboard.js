@@ -15,16 +15,23 @@ export function fetchEvolution(granularity = "WEEK") {
   return request("/api/v1/performance/evolution", { query: { granularity } });
 }
 
-export function fetchDiagnosis() {
-  return request("/api/v1/diagnosis");
+export function fetchDiagnosis(institution) {
+  return request("/api/v1/diagnosis", {
+    query: institution ? { institution } : {},
+  });
 }
 
-export function fetchPlan() {
-  return request("/api/v1/recommendations/plan");
+export function fetchPlan(institution) {
+  return request("/api/v1/recommendations/plan", {
+    query: institution ? { institution } : {},
+  });
 }
 
-export function generatePlan() {
-  return request("/api/v1/recommendations", { method: "POST" });
+export function generatePlan(institution) {
+  return request("/api/v1/recommendations", {
+    method: "POST",
+    query: institution ? { institution } : {},
+  });
 }
 
 export function updatePlanItemStatus(itemId, status) {

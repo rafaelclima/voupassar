@@ -173,6 +173,21 @@ public class SimulationService {
    */
   @Transactional
   public SimulationAttemptResponse createByDiscipline(long userId, CreateDisciplineSimulationRequest req) {
+    return createByDiscipline(userId, req, null);
+  }
+
+  /**
+   * Simulado por disciplina na trilha de um processo (TASK E.2 — wizard
+   * "Descobrir meu nível" parametrizável).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     panorama global legado (ambos os processos, comportamento pré-E.2).
+   *     Informado = só questões não-anuladas daquele processo.
+   */
+  @Transactional
+  public SimulationAttemptResponse createByDiscipline(
+      long userId, CreateDisciplineSimulationRequest req, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     User user = requireActiveUser(userId);
     Discipline discipline = requireDiscipline(req.disciplineCode());
     int count = requireCount(req.questionCount());
@@ -180,13 +195,16 @@ public class SimulationService {
     String mode = normalizeMode(req.mode());
     String sourceType = normalizeSimulationSourceType(req.sourceType());
 
-    List<Long> candidates =
-        questions.findCandidateIdsByDiscipline(discipline.getCode(), difficulty, sourceType);
+    List<Long> candidates = instNorm == null
+        ? questions.findCandidateIdsByDiscipline(discipline.getCode(), difficulty, sourceType)
+        : questions.findCandidateIdsByDisciplineForInstitution(
+            discipline.getCode(), difficulty, sourceType, instNorm);
     if (candidates.size() < count) {
       throw new BadRequestException(
           "INSUFFICIENT_QUESTIONS",
           "Disponíveis " + candidates.size() + " questões"
               + describeFilter(discipline.getCode(), difficulty, sourceType)
+              + (instNorm == null ? "" : " na trilha " + instNorm)
               + " (solicitadas " + count + "). Reduza a quantidade ou remova o filtro de dificuldade.");
     }
 
@@ -199,8 +217,13 @@ public class SimulationService {
     simulation.setOwner(user);
     simulation.setType("BY_DISCIPLINE");
     simulation.setExamId(null);
-    simulation.setFilterJson(filterJson(discipline.getCode(), count, difficulty, mode, sourceType));
-    simulation.setTitle(title(discipline.getName(), count, difficulty, mode));
+    simulation.setFilterJson(instNorm == null
+        ? filterJson(discipline.getCode(), count, difficulty, mode, sourceType)
+        : filterJsonForInstitution(
+            discipline.getCode(), count, difficulty, mode, sourceType, instNorm));
+    simulation.setTitle(instNorm == null
+        ? title(discipline.getName(), count, difficulty, mode)
+        : titleForInstitution(discipline.getName(), count, difficulty, mode, instNorm));
     simulations.save(simulation);
 
     SimulationAttempt attempt = new SimulationAttempt();
@@ -223,8 +246,9 @@ public class SimulationService {
     }
     caderno.saveAll(rows);
 
-    log.info("simulado criado user_id={} attempt_id={} discipline={} count={} difficulty={} mode={} sourceType={}",
-        userId, attempt.getId(), discipline.getCode(), count, difficulty, mode, sourceType);
+    log.info("simulado criado user_id={} attempt_id={} discipline={} count={} difficulty={} mode={} sourceType={} institution={}",
+        userId, attempt.getId(), discipline.getCode(), count, difficulty, mode, sourceType,
+        instNorm == null ? "AMBAS" : instNorm);
     return toAttemptResponse(attempt, simulation, rows, byId, Map.of(), false);
   }
 
@@ -795,6 +819,39 @@ public class SimulationService {
   private static String title(String disciplineName, int count, String difficulty, String mode) {
     return "Simulado " + disciplineName + " — " + count + (count == 1 ? " questão" : " questões")
         + (difficulty == null ? "" : " " + difficulty) + " [" + mode + "]";
+  }
+
+  /**
+   * Filtro {@code institution} do simulado por disciplina (TASK E.2):
+   * {@code null}/em-branco = global legado (ambos); senão IFRN|EAJ, senão 400.
+   */
+  static String normalizeInstitutionFilter(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "INVALID_INSTITUTION",
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
+  private static String titleForInstitution(
+      String disciplineName, int count, String difficulty, String mode, String institution) {
+    return title(disciplineName, count, difficulty, mode) + " · " + institution;
+  }
+
+  private static String filterJsonForInstitution(
+      String disciplineCode, int count, String difficulty, String mode,
+      String sourceType, String institution) {
+    return "{\"type\":\"BY_DISCIPLINE\",\"institution\":\"" + institution
+        + "\",\"discipline\":\"" + disciplineCode
+        + "\",\"questionCount\":" + count
+        + ",\"difficulty\":" + (difficulty == null ? "null" : "\"" + difficulty + "\"")
+        + ",\"sourceType\":" + (sourceType == null ? "\"ALL\"" : "\"" + sourceType + "\"")
+        + ",\"mode\":\"" + mode + "\"}";
   }
 
   private static String titleEdition(String institution, int year, int count, String mode) {

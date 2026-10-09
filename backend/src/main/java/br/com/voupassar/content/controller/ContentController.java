@@ -53,8 +53,10 @@ public class ContentController {
         content = @Content(schema = @Schema(implementation = ApiError.class)))
   })
   @GetMapping("/disciplines")
-  public List<DisciplineSummaryResponse> listDisciplines() {
-    return service.listDisciplines();
+  public List<DisciplineSummaryResponse> listDisciplines(
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.listDisciplines(institution);
   }
 
   @Operation(summary = "Consultar uma disciplina com seus assuntos.")
@@ -68,8 +70,10 @@ public class ContentController {
   @GetMapping("/disciplines/{code}")
   public DisciplineDetailResponse getDiscipline(
       @Parameter(description = "Código da disciplina.", example = "MATEMATICA")
-          @PathVariable String code) {
-    return service.getDiscipline(code);
+          @PathVariable String code,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.getDiscipline(code, institution);
   }
 
   @Operation(
@@ -85,8 +89,10 @@ public class ContentController {
   @GetMapping("/topics")
   public List<TopicSummaryResponse> listTopics(
       @Parameter(description = "Filtro por disciplina.", example = "MATEMATICA")
-          @RequestParam(required = false) String disciplineCode) {
-    return service.listTopics(disciplineCode);
+          @RequestParam(required = false) String disciplineCode,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.listTopics(disciplineCode, institution);
   }
 
   @Operation(summary = "Consultar um assunto com série histórica por edição.")
@@ -99,8 +105,10 @@ public class ContentController {
   })
   @GetMapping("/topics/{id}")
   public TopicDetailResponse getTopic(
-      @Parameter(description = "ID do assunto.", example = "5") @PathVariable long id) {
-    return service.getTopic(id);
+      @Parameter(description = "ID do assunto.", example = "5") @PathVariable long id,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.getTopic(id, institution);
   }
 
   @Operation(
@@ -116,8 +124,10 @@ public class ContentController {
   @GetMapping("/subtopics")
   public List<SubtopicSummaryResponse> listSubtopics(
       @Parameter(description = "Filtro por assunto.", example = "5")
-          @RequestParam(required = false) Long topicId) {
-    return service.listSubtopics(topicId);
+          @RequestParam(required = false) Long topicId,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.listSubtopics(topicId, institution);
   }
 
   @Operation(summary = "Consultar um subassunto com série histórica por edição.")
@@ -130,8 +140,10 @@ public class ContentController {
   })
   @GetMapping("/subtopics/{id}")
   public SubtopicDetailResponse getSubtopic(
-      @Parameter(description = "ID do subassunto.", example = "25") @PathVariable long id) {
-    return service.getSubtopic(id);
+      @Parameter(description = "ID do subassunto.", example = "25") @PathVariable long id,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.getSubtopic(id, institution);
   }
 
   @Operation(
@@ -147,7 +159,9 @@ public class ContentController {
         content = @Content(schema = @Schema(implementation = ApiError.class)))
   })
   @GetMapping("/content/stats")
-  public ContentStatsResponse contentStats() {
-    return service.getContentStats();
+  public ContentStatsResponse contentStats(
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution) {
+    return service.getContentStats(institution);
   }
 }

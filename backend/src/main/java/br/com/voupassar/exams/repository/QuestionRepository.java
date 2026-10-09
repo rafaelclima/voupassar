@@ -33,6 +33,24 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
   long countByExamInstitutionAndExamYearAndAnnulledTrue(String institution, Short year);
 
   /**
+   * Total de questões de um processo (TASK E.2 — panorama por trilha).
+   */
+  long countByExamInstitution(String institution);
+
+  /**
+   * Questões de uma disciplina dentro de um processo (TASK E.2).
+   *
+   * <p>Factual via {@code questions.discipline_id} + {@code exams.institution}.
+   * Autorais sem exame ficam fora do recorte por processo (só no global).
+   */
+  @Query("""
+      SELECT COUNT(q) FROM Question q
+      WHERE q.exam.institution = :institution AND q.discipline.code = :disciplineCode
+      """)
+  long countByInstitutionAndDisciplineCode(
+      @Param("institution") String institution, @Param("disciplineCode") String disciplineCode);
+
+  /**
    * Retorna linhas {@code [code(String), name(String), total(Long), annulled(Long)]}.
    */
   @Query("""
@@ -141,6 +159,32 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       @Param("disciplineCode") String disciplineCode,
       @Param("difficulty") String difficulty,
       @Param("sourceType") String sourceType);
+
+  /**
+   * Candidatas ao simulado por disciplina dentro de um processo (TASK E.2 —
+   * wizard "Descobrir meu nível" parametrizável).
+   *
+   * <p>Mesmas regras da seleção global (só não-anuladas, ordem por id —
+   * sorteio no serviço), mas restritas a {@code exams.institution}.
+   * {@code null} aqui nunca significa global: o serviço chama o método
+   * legado quando sem filtro (compatibilidade).
+   */
+  @Query("""
+      SELECT q.id FROM Question q
+      JOIN q.discipline d
+      JOIN q.exam e
+      WHERE d.code = :disciplineCode
+        AND e.institution = :institution
+        AND q.annulled = false
+        AND (:difficulty IS NULL OR q.difficultyEstimate = :difficulty)
+        AND (:sourceType IS NULL OR q.sourceType = :sourceType)
+      ORDER BY q.id ASC
+      """)
+  List<Long> findCandidateIdsByDisciplineForInstitution(
+      @Param("disciplineCode") String disciplineCode,
+      @Param("difficulty") String difficulty,
+      @Param("sourceType") String sourceType,
+      @Param("institution") String institution);
 
   /**
    * Caderno integral de uma edição real (TASK 5.5).

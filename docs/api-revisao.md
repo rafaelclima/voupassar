@@ -24,6 +24,7 @@
 | `discipline` | string | — | Filtro por disciplina (ex. `MATEMATICA`); inexistente → `404 DISCIPLINE_NOT_FOUND` |
 | `topicId` | long | — | Filtro por assunto; inexistente → `404 TOPIC_NOT_FOUND`, `<= 0` → `400` |
 | `onlyErrors` | boolean | false | Quando `true`, só `ERRO_SEM_ACERTO` e `ERRO_RECENTE` |
+| `institution` | string | — | Trilha do processo (`IFRN`/`EAJ`); ausente = global legado (ambos), comportado como antes de E.2 |
 
 ## Contrato de resposta
 
@@ -73,6 +74,10 @@ diagnóstico e revisão desacoplados.
 - **Derivada (assunto):** `question_classifications` vigente (`status <>
   'REJECTED'`, mais recente por questão) — revisão humana PENDENTE (TASK
   12.2), nunca verdade oficial do IFRN.
+- **Trilha (`institution`):** quando informado (`IFRN`/`EAJ`), só tentativas
+  de questões daquele processo entram na fila; autorias sem edição contam
+  em ambas; domínio do assunto (`FRAGIL`/`DOMINADO` etc.) é calculado só
+  sobre a trilha (sem contaminar o outro processo).
 - **Anuladas:** ficam fora da fila; contam no resumo, sem pontuar (regra de
   pontuação DESCONHECIDA, TASK 1.3 §4).
 - **Nunca tentadas:** ficam fora da fila — pertencem ao diagnóstico

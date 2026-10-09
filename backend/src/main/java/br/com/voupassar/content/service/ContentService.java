@@ -70,31 +70,77 @@ public class ContentService {
 
   /** Lista as disciplinas observadas nas provas, em ordem de código. */
   public List<DisciplineSummaryResponse> listDisciplines() {
+    return listDisciplines(null);
+  }
+
+  /**
+   * Disciplinas com contagem de questões do processo (TASK E.2).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     panorama global legado (ambos). Nº de assuntos é da taxonomia
+   *     compartilhada; nº de questões é factual daquele processo.
+   */
+  public List<DisciplineSummaryResponse> listDisciplines(String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     List<DisciplineSummaryResponse> out = new ArrayList<>();
     for (Discipline d : disciplines.findAllByOrderByCodeAsc()) {
+      long questionCount = instNorm == null
+          ? questions.countByDisciplineCode(d.getCode())
+          : questions.countByInstitutionAndDisciplineCode(instNorm, d.getCode());
       out.add(
           new DisciplineSummaryResponse(
               d.getCode(),
               d.getName(),
               topics.countByDisciplineCode(d.getCode()),
-              questions.countByDisciplineCode(d.getCode())));
+              questionCount));
     }
     return out;
   }
 
+  /**
+   * Normaliza o filtro {@code ?institution=} (TASK E.2, mesmo vocabulário da
+   * E.1): {@code null}/em-branco = sem filtro (global legado); senão
+   * {@code IFRN} ou {@code EAJ}, senão 400.
+   */
+  static String normalizeInstitutionFilter(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
   /** Detalhe de uma disciplina com seus assuntos. */
   public DisciplineDetailResponse getDiscipline(String code) {
+    return getDiscipline(code, null);
+  }
+
+  /**
+   * Detalhe da disciplina na trilha do processo (TASK E.2): contagens de
+   * assuntos/questões daquele {@code institution} (global legado quando
+   * ausente).
+   */
+  public DisciplineDetailResponse getDiscipline(String code, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     Discipline d = requireDiscipline(code);
-    Map<Long, Long> topicCounts = topicCountMap();
+    Map<Long, Long> topicCounts = instNorm == null ? topicCountMap()
+        : topicCountMapForInstitution(instNorm);
     List<TopicSummaryResponse> topicDtos = new ArrayList<>();
     for (Topic t : topics.findByDisciplineCodeOrdered(d.getCode())) {
       topicDtos.add(toTopicSummary(t, topicCounts));
     }
+    long questionCount = instNorm == null
+        ? questions.countByDisciplineCode(d.getCode())
+        : questions.countByInstitutionAndDisciplineCode(instNorm, d.getCode());
     return new DisciplineDetailResponse(
         d.getCode(),
         d.getName(),
         topicDtos.size(),
-        questions.countByDisciplineCode(d.getCode()),
+        questionCount,
         List.copyOf(topicDtos));
   }
 
@@ -104,6 +150,16 @@ public class ContentService {
    * @param disciplineCode opcional (ex. {@code MATEMATICA}); inexistente → 404
    */
   public List<TopicSummaryResponse> listTopics(String disciplineCode) {
+    return listTopics(disciplineCode, null);
+  }
+
+  /**
+   * Assuntos com frequência do processo (TASK E.2): {@code institution}
+   * ausente = global legado; informado = só aquele processo (D.2-EAJ na
+   * trilha EAJ, sem contaminar o IFRN).
+   */
+  public List<TopicSummaryResponse> listTopics(String disciplineCode, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     List<Topic> all;
     if (disciplineCode == null || disciplineCode.isBlank()) {
       all = topics.findAllOrdered();
@@ -111,7 +167,8 @@ public class ContentService {
       Discipline d = requireDiscipline(disciplineCode);
       all = topics.findByDisciplineCodeOrdered(d.getCode());
     }
-    Map<Long, Long> counts = topicCountMap();
+    Map<Long, Long> counts = instNorm == null ? topicCountMap()
+        : topicCountMapForInstitution(instNorm);
     List<TopicSummaryResponse> out = new ArrayList<>(all.size());
     for (Topic t : all) {
       out.add(toTopicSummary(t, counts));
@@ -121,19 +178,37 @@ public class ContentService {
 
   /** Detalhe de um assunto com série histórica por edição. */
   public TopicDetailResponse getTopic(long id) {
+    return getTopic(id, null);
+  }
+
+  /**
+   * Detalhe do assunto na trilha do processo (TASK E.2): série e confiança
+   * daquele {@code institution} (anos da trilha; global legado quando
+   * ausente).
+   */
+  public TopicDetailResponse getTopic(long id, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     Topic t = requireTopic(id);
-    long questionCount = classifications.countByTopicId(t.getId());
-    List<Short> editionYears = classifications.editionsByTopic(t.getId());
+    long questionCount = instNorm == null
+        ? classifications.countByTopicId(t.getId())
+        : classifications.countByTopicIdForInstitution(t.getId(), instNorm);
+    List<Short> editionYears = instNorm == null
+        ? classifications.editionsByTopic(t.getId())
+        : classifications.editionsByTopicForInstitution(t.getId(), instNorm);
     List<Integer> editions = editionYears.stream().map(Short::intValue).toList();
 
     List<EditionCountResponse> perEdition = new ArrayList<>();
-    for (Object[] row : classifications.countTopicByYear(t.getId())) {
+    List<Object[]> rows = instNorm == null
+        ? classifications.countTopicByYear(t.getId())
+        : classifications.countTopicByYearForInstitution(t.getId(), instNorm);
+    for (Object[] row : rows) {
       perEdition.add(
           new EditionCountResponse(
               ((Number) row[0]).intValue(), toLong(row[1]), toLong(row[2])));
     }
 
-    Map<Long, Long> subCounts = subtopicCountMap();
+    Map<Long, Long> subCounts = instNorm == null ? subtopicCountMap()
+        : subtopicCountMapForInstitution(instNorm);
     List<SubtopicSummaryResponse> subDtos = new ArrayList<>();
     for (Subtopic s : subtopics.findByTopicIdOrdered(t.getId())) {
       subDtos.add(toSubtopicSummary(s, subCounts));
@@ -149,7 +224,8 @@ public class ContentService {
         questionCount,
         editions,
         List.copyOf(perEdition),
-        toConfidence(classifications.confidenceByTopic(t.getId())),
+        instNorm == null ? toConfidence(classifications.confidenceByTopic(t.getId()))
+            : toConfidence(classifications.confidenceByTopicForInstitution(t.getId(), instNorm)),
         List.copyOf(subDtos));
   }
 
@@ -159,6 +235,15 @@ public class ContentService {
    * @param topicId opcional; inexistente → 404
    */
   public List<SubtopicSummaryResponse> listSubtopics(Long topicId) {
+    return listSubtopics(topicId, null);
+  }
+
+  /**
+   * Subassuntos com frequência do processo (TASK E.2): {@code institution}
+   * ausente = global legado; informado = só aquele processo.
+   */
+  public List<SubtopicSummaryResponse> listSubtopics(Long topicId, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     List<Subtopic> all;
     if (topicId == null) {
       all = subtopics.findAllOrdered();
@@ -166,7 +251,8 @@ public class ContentService {
       requireTopic(topicId);
       all = subtopics.findByTopicIdOrdered(topicId);
     }
-    Map<Long, Long> counts = subtopicCountMap();
+    Map<Long, Long> counts = instNorm == null ? subtopicCountMap()
+        : subtopicCountMapForInstitution(instNorm);
     List<SubtopicSummaryResponse> out = new ArrayList<>(all.size());
     for (Subtopic s : all) {
       out.add(toSubtopicSummary(s, counts));
@@ -176,13 +262,28 @@ public class ContentService {
 
   /** Detalhe de um subassunto com série histórica por edição. */
   public SubtopicDetailResponse getSubtopic(long id) {
+    return getSubtopic(id, null);
+  }
+
+  /**
+   * Detalhe do subassunto na trilha do processo (TASK E.2).
+   */
+  public SubtopicDetailResponse getSubtopic(long id, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
     Subtopic s = requireSubtopic(id);
-    long questionCount = classifications.countBySubtopicId(s.getId());
-    List<Integer> editions =
-        classifications.editionsBySubtopic(s.getId()).stream().map(Short::intValue).toList();
+    long questionCount = instNorm == null
+        ? classifications.countBySubtopicId(s.getId())
+        : classifications.countBySubtopicIdForInstitution(s.getId(), instNorm);
+    List<Integer> editions = (instNorm == null
+        ? classifications.editionsBySubtopic(s.getId())
+        : classifications.editionsBySubtopicForInstitution(s.getId(), instNorm))
+        .stream().map(Short::intValue).toList();
 
     List<EditionCountResponse> perEdition = new ArrayList<>();
-    for (Object[] row : classifications.countSubtopicByYear(s.getId())) {
+    List<Object[]> rows = instNorm == null
+        ? classifications.countSubtopicByYear(s.getId())
+        : classifications.countSubtopicByYearForInstitution(s.getId(), instNorm);
+    for (Object[] row : rows) {
       perEdition.add(
           new EditionCountResponse(
               ((Number) row[0]).intValue(), toLong(row[1]), toLong(row[2])));
@@ -201,28 +302,48 @@ public class ContentService {
         questionCount,
         editions,
         List.copyOf(perEdition),
-        toConfidence(classifications.confidenceBySubtopic(s.getId())));
+        instNorm == null ? toConfidence(classifications.confidenceBySubtopic(s.getId()))
+            : toConfidence(classifications.confidenceBySubtopicForInstitution(s.getId(), instNorm)));
   }
 
   /** Panorama histórico global (frequências derivadas do banco). */
   public ContentStatsResponse getContentStats() {
-    long totalQuestions = questions.count();
-    long totalClassified = classifications.countClassified();
+    return getContentStats(null);
+  }
+
+  /**
+   * Panorama histórico da trilha do processo (TASK E.2).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     panorama global legado (ambos). Na trilha EAJ, totais e frequências
+   *     vêm de D.1/D.2-EAJ (130 classificações, 3 edições); na IFRN, do banco
+   *     IFRN (6 edições) — sem contaminação cruzada.
+   */
+  public ContentStatsResponse getContentStats(String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
+    long totalQuestions = instNorm == null ? questions.count()
+        : questions.countByExamInstitution(instNorm);
+    long totalClassified = instNorm == null ? classifications.countClassified()
+        : classifications.countClassifiedForInstitution(instNorm);
     List<String> versions = classifications.distinctTaxonomyVersions();
 
     Map<Long, long[]> topicStats = new HashMap<>();
-    for (Object[] row : classifications.statsByTopic()) {
+    List<Object[]> statRows = instNorm == null ? classifications.statsByTopic()
+        : classifications.statsByTopicForInstitution(instNorm);
+    for (Object[] row : statRows) {
       topicStats.put(((Number) row[0]).longValue(), new long[] {toLong(row[1]), toLong(row[2])});
     }
 
     List<ContentDisciplineStatsResponse> perDiscipline = new ArrayList<>();
     for (Discipline d : disciplines.findAllByOrderByCodeAsc()) {
+      long qCount = instNorm == null ? questions.countByDisciplineCode(d.getCode())
+          : questions.countByInstitutionAndDisciplineCode(instNorm, d.getCode());
       perDiscipline.add(
           new ContentDisciplineStatsResponse(
               d.getCode(),
               d.getName(),
               topics.countByDisciplineCode(d.getCode()),
-              questions.countByDisciplineCode(d.getCode())));
+              qCount));
     }
 
     List<ContentTopicStatsResponse> perTopic = new ArrayList<>();
@@ -230,7 +351,8 @@ public class ContentService {
       long[] st = topicStats.getOrDefault(t.getId(), new long[] {0L, 0L});
       double percent =
           totalClassified == 0 ? 0.0 : Math.round((st[0] * 1000.0 / totalClassified)) / 10.0;
-      int editionsCount = classifications.editionsByTopic(t.getId()).size();
+      int editionsCount = instNorm == null ? classifications.editionsByTopic(t.getId()).size()
+          : classifications.editionsByTopicForInstitution(t.getId(), instNorm).size();
       perTopic.add(
           new ContentTopicStatsResponse(
               t.getId(),
@@ -246,13 +368,21 @@ public class ContentService {
 
     List<String> notes = new ArrayList<>();
     if (totalQuestions == 0) {
-      notes.add("Nenhuma questão importada para este banco (TASK 2.3 ainda não executada).");
+      notes.add(instNorm == null
+          ? "Nenhuma questão importada para este banco (TASK 2.3 ainda não executada)."
+          : "Nenhuma questão importada para a trilha " + instNorm + " neste banco.");
     }
     if (totalClassified == 0) {
       notes.add("Nenhuma classificação no banco — estatísticas históricas indisponíveis.");
     }
     notes.add("Anuladas contam como conteúdo que apareceu na prova; regra de pontuação DESCONHECIDA.");
-    notes.add("Tendência não calculada (6 edições, sem teste estatístico; oscilações de 1–2 questões são ruído).");
+    if (instNorm == null) {
+      notes.add("Tendência não calculada (6 edições, sem teste estatístico; oscilações de 1–2 questões são ruído).");
+    } else if ("EAJ".equals(instNorm)) {
+      notes.add("Trilha EAJ: 3 edições (2021, 2022, 2025; D.2 — sem interpolar edições inexistentes); tendência marcada DESCRITIVA.");
+    } else {
+      notes.add("Trilha IFRN: 6 edições (2020, 2022–2026; 2021 ausente, sem interpolação); tendência não calculada.");
+    }
 
     return new ContentStatsResponse(
         totalQuestions,
@@ -306,6 +436,22 @@ public class ContentService {
   private Map<Long, Long> topicCountMap() {
     Map<Long, Long> out = new HashMap<>();
     for (Object[] row : classifications.countByTopic()) {
+      out.put(((Number) row[0]).longValue(), toLong(row[1]));
+    }
+    return out;
+  }
+
+  private Map<Long, Long> topicCountMapForInstitution(String institution) {
+    Map<Long, Long> out = new HashMap<>();
+    for (Object[] row : classifications.countByTopicForInstitution(institution)) {
+      out.put(((Number) row[0]).longValue(), toLong(row[1]));
+    }
+    return out;
+  }
+
+  private Map<Long, Long> subtopicCountMapForInstitution(String institution) {
+    Map<Long, Long> out = new HashMap<>();
+    for (Object[] row : classifications.countBySubtopicForInstitution(institution)) {
       out.put(((Number) row[0]).longValue(), toLong(row[1]));
     }
     return out;

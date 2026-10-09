@@ -108,6 +108,30 @@ public class ReviewService {
   @Transactional(readOnly = true)
   public ReviewQueueResponse getQueue(
       long userId, Integer limit, String disciplineCode, Long topicId, boolean onlyErrors) {
+    return getQueue(userId, limit, disciplineCode, topicId, onlyErrors, null);
+  }
+
+  /**
+   * Fila de revisão da trilha de um processo (TASK E.2).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     panorama global legado (ambos os processos, comportamento pré-E.2).
+   *     Na trilha, só questões tentadas daquele processo entram na fila
+   *     (autorias sem edição contam em ambas — sem classificação de trilha).
+   */
+  @Transactional(readOnly = true)
+  public ReviewQueueResponse getQueue(
+      long userId, Integer limit, String disciplineCode, Long topicId,
+      boolean onlyErrors, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
+    if (instNorm == null) {
+      return getQueueLegacy(userId, limit, disciplineCode, topicId, onlyErrors);
+    }
+    return getQueueForInstitution(userId, limit, disciplineCode, topicId, onlyErrors, instNorm);
+  }
+
+  private ReviewQueueResponse getQueueLegacy(
+      long userId, Integer limit, String disciplineCode, Long topicId, boolean onlyErrors) {
     requireActiveUser(userId);
     int lim = requireLimit(limit);
     String discNorm = requireDisciplineFilter(disciplineCode);
@@ -239,6 +263,179 @@ public class ReviewService {
     notes.add("Ordem determinística: erros persistentes e regressões primeiro; depois acertos em assuntos frágeis; por fim manutenção do consolidado.");
     notes.add("Questões nunca tentadas ficam fora da revisão (ver diagnóstico TASK 4.2 e roteiro TASK 4.4).");
     notes.add("Assuntos usam a classificação vigente não-rejeitada (derivada, revisão humana PENDENTE — TASK 12.2), nunca verdade oficial do IFRN.");
+    notes.add("Dificuldade estimada NÃO usada na revisão (palpite global BAIXA, sem calibração por desempenho).");
+
+    return new ReviewQueueResponse(
+        total, scored, correct, incorrect, annulled, overall, unclassified,
+        byQuestion.size(), items.size(), lim, onlyErrors, discNorm, topicNorm,
+        List.copyOf(items), List.copyOf(notes));
+  }
+
+  /**
+   * Normaliza o filtro {@code ?institution=} (TASK E.2, mesmo vocabulário da
+   * E.1): {@code null}/em-branco = sem filtro (global legado); senão
+   * {@code IFRN} ou {@code EAJ}, senão 400.
+   */
+  static String normalizeInstitutionFilter(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
+  /**
+   * Fila da trilha (TASK E.2): mesmos baldes/desempates do legado, mas só com
+   * tentativas de questões daquele processo (autorias sem edição contam em
+   * ambas). O domínio do assunto é calculado na trilha (não no global).
+   */
+  private ReviewQueueResponse getQueueForInstitution(
+      long userId, Integer limit, String disciplineCode, Long topicId,
+      boolean onlyErrors, String institution) {
+    requireActiveUser(userId);
+    int lim = requireLimit(limit);
+    String discNorm = requireDisciplineFilter(disciplineCode);
+    Long topicNorm = requireTopicFilter(topicId);
+
+    List<QuestionAttempt> fetched = attempts.findAllByUserIdWithQuestionAndExam(userId);
+    List<QuestionAttempt> all = new ArrayList<>(fetched.size());
+    for (QuestionAttempt a : fetched) {
+      String examInstitution = a.getQuestion() != null && a.getQuestion().getExam() != null
+          ? a.getQuestion().getExam().getInstitution()
+          : null;
+      if (examInstitution == null || institution.equals(examInstitution)) {
+        all.add(a);
+      }
+    }
+    Map<Long, QuestionClassification> vigente = vigenteByQuestion(all);
+
+    long total = all.size();
+    long scored = 0;
+    long correct = 0;
+    long annulled = 0;
+    long unclassified = 0;
+
+    Map<Long, TopicAcc> byTopic = new HashMap<>();
+    Map<Long, QuestionAcc> byQuestion = new LinkedHashMap<>();
+
+    for (QuestionAttempt a : all) {
+      boolean isAnnulled = a.isAnnulled();
+      boolean isScored = !isAnnulled;
+      boolean isCorrect = Boolean.TRUE.equals(a.getCorrect());
+      if (isScored) {
+        scored++;
+        if (isCorrect) {
+          correct++;
+        }
+      } else {
+        annulled++;
+      }
+
+      Question q = a.getQuestion();
+      QuestionClassification c = vigente.get(q.getId());
+      if (c == null || c.getTopic() == null) {
+        unclassified++;
+      } else if (isScored) {
+        byTopic.computeIfAbsent(c.getTopic().getId(), k -> new TopicAcc())
+            .add(isCorrect);
+      }
+
+      if (isScored) {
+        QuestionAcc acc = byQuestion.computeIfAbsent(q.getId(), k -> new QuestionAcc(q, c));
+        acc.add(isCorrect, a.getAnsweredAt());
+      }
+    }
+    long incorrect = Math.max(0L, scored - correct);
+    Double overall = scored == 0 ? null : correct / (double) scored;
+
+    List<ScoredItem> scoredItems = new ArrayList<>(byQuestion.size());
+    for (QuestionAcc acc : byQuestion.values()) {
+      Question q = acc.question;
+      if (discNorm != null && !discNorm.equals(q.getDiscipline().getCode())) {
+        continue;
+      }
+      QuestionClassification c = acc.classification;
+      Long cTopicId = (c != null && c.getTopic() != null) ? c.getTopic().getId() : null;
+      if (topicNorm != null && !topicNorm.equals(cTopicId)) {
+        continue;
+      }
+
+      String mastery;
+      Long topicScored = null;
+      Double topicAccuracy = null;
+      if (c != null && c.getTopic() != null) {
+        TopicAcc t = byTopic.get(c.getTopic().getId());
+        long ts = t == null ? 0L : t.scored;
+        long tc = t == null ? 0L : t.correct;
+        topicScored = ts;
+        topicAccuracy = ts == 0 ? null : tc / (double) ts;
+        mastery = masteryLevel(ts, topicAccuracy);
+      } else {
+        mastery = "NAO_CLASSIFICADO";
+      }
+
+      String category = categorize(acc.correct == 0, !acc.lastCorrect, mastery, acc.attempts);
+      if (onlyErrors && weight(category) > 1) {
+        continue;
+      }
+      scoredItems.add(new ScoredItem(acc, mastery, topicScored, topicAccuracy, category));
+    }
+
+    scoredItems.sort(reviewOrder());
+
+    List<ReviewItem> items = new ArrayList<>(Math.min(lim, scoredItems.size()));
+    for (int i = 0; i < scoredItems.size() && items.size() < lim; i++) {
+      ScoredItem s = scoredItems.get(i);
+      Question q = s.acc.question;
+      QuestionClassification c = s.acc.classification;
+      Long days = daysSince(s.acc.lastAttemptAt);
+      items.add(new ReviewItem(
+          items.size() + 1,
+          q.getId(),
+          q.getDiscipline().getCode(),
+          q.getDiscipline().getName(),
+          q.getSourceYear() == null ? null : q.getSourceYear().intValue(),
+          q.getSourceQuestionNumber() == null ? null : q.getSourceQuestionNumber().intValue(),
+          c != null && c.getTopic() != null ? c.getTopic().getId() : null,
+          c != null && c.getTopic() != null ? c.getTopic().getCode() : null,
+          c != null && c.getTopic() != null ? c.getTopic().getName() : null,
+          c != null && c.getSubtopic() != null ? c.getSubtopic().getId() : null,
+          c != null && c.getSubtopic() != null ? c.getSubtopic().getCode() : null,
+          c != null && c.getSubtopic() != null ? c.getSubtopic().getName() : null,
+          c == null ? null : c.getConfidence(),
+          c == null ? null : c.getTaxonomyVersion(),
+          s.acc.attempts,
+          s.acc.correct,
+          s.acc.attempts - s.acc.correct,
+          s.acc.lastCorrect,
+          s.acc.lastAttemptAt,
+          days,
+          s.mastery,
+          s.topicScored,
+          s.topicAccuracy,
+          s.category,
+          itemReason(s, overall, days)));
+    }
+
+    List<String> notes = new ArrayList<>();
+    if (total == 0) {
+      notes.add("Nenhuma tentativa registrada na trilha " + institution
+          + ": a fila de revisão começa após as primeiras respostas deste processo (modo estudo ou simulado).");
+    }
+    if (annulled > 0) {
+      notes.add("Anuladas (" + annulled + ") ficam fora da fila; contam no resumo, sem pontuar (regra de pontuação DESCONHECIDA, TASK 1.3 §4).");
+    }
+    if (unclassified > 0) {
+      notes.add(unclassified + " tentativa(s) sem classificação vigente: entram na fila sem assunto (NECESSITA REVISÃO, TASK 12.2).");
+    }
+    notes.add("Trilha " + institution + ": só questões tentadas deste processo (autorias sem edição contam em ambas);"
+        + " ordem determinística — erros persistentes e regressões primeiro; depois acertos em assuntos frágeis; por fim manutenção do consolidado.");
+    notes.add("Questões nunca tentadas ficam fora da revisão (ver diagnóstico TASK 4.2 e roteiro TASK 4.4 da trilha " + institution + ").");
+    notes.add("Assuntos usam a classificação vigente não-rejeitada (derivada, revisão humana PENDENTE — TASK 12.2), nunca verdade oficial do processo.");
     notes.add("Dificuldade estimada NÃO usada na revisão (palpite global BAIXA, sem calibração por desempenho).");
 
     return new ReviewQueueResponse(

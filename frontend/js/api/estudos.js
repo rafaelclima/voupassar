@@ -8,19 +8,27 @@
 
 import { request } from "./client.js";
 
-export function fetchDisciplines() {
-  return request("/api/v1/disciplines");
-}
-
-export function fetchTopics(disciplineCode) {
-  return request("/api/v1/topics", {
-    query: disciplineCode ? { disciplineCode } : {},
+export function fetchDisciplines(institution) {
+  return request("/api/v1/disciplines", {
+    query: institution ? { institution } : {},
   });
 }
 
-export function fetchSubtopics(topicId) {
+export function fetchTopics(disciplineCode, institution) {
+  return request("/api/v1/topics", {
+    query: {
+      ...(disciplineCode ? { disciplineCode } : {}),
+      ...(institution ? { institution } : {}),
+    },
+  });
+}
+
+export function fetchSubtopics(topicId, institution) {
   return request("/api/v1/subtopics", {
-    query: topicId ? { topicId } : {},
+    query: {
+      ...(topicId ? { topicId } : {}),
+      ...(institution ? { institution } : {}),
+    },
   });
 }
 
@@ -56,10 +64,14 @@ export function fetchOverview() {
   return request("/api/v1/performance/overview");
 }
 
-export function fetchDiagnosis() {
-  return request("/api/v1/diagnosis");
+export function fetchDiagnosis(institution) {
+  return request("/api/v1/diagnosis", {
+    query: institution ? { institution } : {},
+  });
 }
 
-export function fetchPlan() {
-  return request("/api/v1/recommendations/plan");
+export function fetchPlan(institution) {
+  return request("/api/v1/recommendations/plan", {
+    query: institution ? { institution } : {},
+  });
 }

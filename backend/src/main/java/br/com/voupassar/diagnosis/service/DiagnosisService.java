@@ -13,6 +13,7 @@ import br.com.voupassar.diagnosis.dto.DiagnosisResponse.PriorityItem;
 import br.com.voupassar.diagnosis.dto.DiagnosisResponse.TopicDiagnosisItem;
 import br.com.voupassar.exception.ResourceNotFoundException;
 import br.com.voupassar.exception.UnauthorizedException;
+import br.com.voupassar.exception.BadRequestException;
 import br.com.voupassar.exams.entity.Discipline;
 import br.com.voupassar.exams.repository.DisciplineRepository;
 import br.com.voupassar.exams.repository.QuestionRepository;
@@ -92,6 +93,214 @@ public class DiagnosisService {
     this.disciplines = disciplines;
     this.questions = questions;
     this.metrics = metrics;
+  }
+
+  /**
+   * Monta o diagnóstico da trilha de um processo (TASK E.2).
+   *
+   * @param institution {@code IFRN} ou {@code EAJ}; {@code null}/em-branco =
+   *     panorama global legado (ambos os processos, comportamento pré-E.2).
+   *     Clientes novos devem informar sempre: ano sozinho nunca decide, e
+   *     frequência global mistura 2022/2025 entre processos.
+   */
+  @Transactional(readOnly = true)
+  public DiagnosisResponse getDiagnosis(long userId, String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
+    if (instNorm == null) {
+      return getDiagnosis(userId);
+    }
+    return getDiagnosisForInstitution(userId, instNorm);
+  }
+
+  /**
+   * Normaliza o filtro {@code ?institution=} (TASK E.2, mesmo vocabulário da
+   * E.1): {@code null}/em-branco = sem filtro (global legado); senão
+   * {@code IFRN} ou {@code EAJ}, senão 400.
+   */
+  static String normalizeInstitutionFilter(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
+  /**
+   * Diagnóstico escopado por processo (TASK E.2): só tentativas de questões
+   * daquela {@code institution} (autorais sem edição contam em ambas as
+   * trilhas — não-oficiais, sem frequência histórica) + frequência histórica
+   * daquele processo (D.2-EAJ na trilha EAJ, sem contaminar o IFRN).
+   */
+  private DiagnosisResponse getDiagnosisForInstitution(long userId, String institution) {
+    requireActiveUser(userId);
+    List<QuestionAttempt> all = attempts.findAllByUserIdWithQuestionAndExam(userId);
+    List<QuestionAttempt> scoped = new ArrayList<>(all.size());
+    for (QuestionAttempt a : all) {
+      String examInstitution = a.getQuestion() != null && a.getQuestion().getExam() != null
+          ? a.getQuestion().getExam().getInstitution()
+          : null;
+      if (examInstitution == null || institution.equals(examInstitution)) {
+        scoped.add(a);
+      }
+    }
+    all = scoped;
+    Map<Long, QuestionClassification> vigente = vigenteByQuestion(all);
+
+    long total = all.size();
+    long scored = 0;
+    long correct = 0;
+    long annulled = 0;
+    long unclassified = 0;
+    OffsetDateTime last = null;
+
+    Map<Long, TopicAcc> byTopic = new HashMap<>();
+    Map<String, DiscAcc> byDiscipline = new HashMap<>();
+
+    for (QuestionAttempt a : all) {
+      boolean isAnnulled = a.isAnnulled();
+      boolean isScored = !isAnnulled;
+      boolean isCorrect = Boolean.TRUE.equals(a.getCorrect());
+      if (isScored) {
+        scored++;
+        if (isCorrect) {
+          correct++;
+        }
+      } else {
+        annulled++;
+      }
+      if (a.getAnsweredAt() != null && (last == null || a.getAnsweredAt().isAfter(last))) {
+        last = a.getAnsweredAt();
+      }
+
+      DiscAcc disc = byDiscipline.computeIfAbsent(
+          a.getQuestion().getDiscipline().getCode(),
+          k -> new DiscAcc(a.getQuestion().getDiscipline()));
+      disc.add(isScored, isCorrect);
+
+      QuestionClassification c = vigente.get(a.getQuestion().getId());
+      if (c == null || c.getTopic() == null) {
+        unclassified++;
+        continue;
+      }
+      byTopic.computeIfAbsent(c.getTopic().getId(), k -> new TopicAcc(c.getTopic()))
+          .add(isScored, isCorrect);
+    }
+
+    long incorrect = Math.max(0L, scored - correct);
+    Double overall = scored == 0 ? null : correct / (double) scored;
+    String overallLevel = overallLevel(overall);
+
+    // ---- histórico do processo (derivado, revisão pendente) ----
+    List<Topic> taxonomy = topics.findAllOrdered();
+    Map<Long, Long> histByTopic = new HashMap<>();
+    for (Object[] row : classifications.countByTopicForInstitution(institution)) {
+      histByTopic.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+    }
+    long totalClassified = classifications.countClassifiedForInstitution(institution);
+    Map<Long, Integer> editionsByTopic = new HashMap<>(taxonomy.size());
+    for (Topic t : taxonomy) {
+      editionsByTopic.put(
+          t.getId(), classifications.editionsByTopicForInstitution(t.getId(), institution).size());
+    }
+
+    List<TopicDiagnosisItem> allTopics = new ArrayList<>(taxonomy.size());
+    for (Topic t : taxonomy) {
+      TopicAcc acc = byTopic.get(t.getId());
+      long tAttempts = acc == null ? 0L : acc.total;
+      long tScored = acc == null ? 0L : acc.scored;
+      long tCorrect = acc == null ? 0L : acc.correct;
+      Double tAccuracy = tScored == 0 ? null : tCorrect / (double) tScored;
+      long hist = histByTopic.getOrDefault(t.getId(), 0L);
+      double percent = totalClassified == 0 ? 0.0
+          : Math.round(hist * 1000.0 / totalClassified) / 10.0;
+      int editions = editionsByTopic.getOrDefault(t.getId(), 0);
+      String mastery = masteryLevel(tScored, tAccuracy);
+      allTopics.add(new TopicDiagnosisItem(
+          t.getId(), t.getCode(), t.getName(),
+          t.getDiscipline().getCode(), t.getDiscipline().getName(),
+          tAttempts, tScored, tCorrect, tAccuracy,
+          hist, percent, editions, mastery,
+          topicReason(t.getCode(), tScored, tCorrect, tAccuracy, overall,
+              hist, percent, editions, mastery)));
+    }
+
+    List<TopicDiagnosisItem> strengths = filter(allTopics, "DOMINADO");
+    strengths.sort(Comparator.comparing(TopicDiagnosisItem::accuracy,
+        Comparator.nullsLast(Double::compareTo)).reversed()
+        .thenComparing(TopicDiagnosisItem::topicCode));
+    List<TopicDiagnosisItem> weaknesses = filter(allTopics, "FRAGIL");
+    weaknesses.sort(Comparator.comparing(TopicDiagnosisItem::accuracy,
+        Comparator.nullsLast(Double::compareTo))
+        .thenComparing(TopicDiagnosisItem::historicalQuestions, Comparator.reverseOrder())
+        .thenComparing(TopicDiagnosisItem::topicCode));
+    List<TopicDiagnosisItem> gaps = filter(allTopics, "NAO_AVALIADO");
+    gaps.sort(Comparator.comparing(TopicDiagnosisItem::historicalQuestions).reversed()
+        .thenComparing(TopicDiagnosisItem::topicCode));
+    List<TopicDiagnosisItem> lowSignal = filter(allTopics, "EM_OBSERVACAO");
+    lowSignal.sort(Comparator.comparing(TopicDiagnosisItem::historicalQuestions).reversed()
+        .thenComparing(TopicDiagnosisItem::topicCode));
+
+    List<TopicDiagnosisItem> byTopicSorted = new ArrayList<>(allTopics);
+    byTopicSorted.sort(Comparator.comparing(TopicDiagnosisItem::accuracy,
+        Comparator.nullsLast(Double::compareTo))
+        .thenComparing(TopicDiagnosisItem::topicCode));
+
+    List<PriorityItem> priorities = prioritize(allTopics, overall);
+
+    List<DisciplineDiagnosisItem> byDisciplineList = new ArrayList<>();
+    for (Discipline d : disciplines.findAllByOrderByCodeAsc()) {
+      DiscAcc discAcc = byDiscipline.get(d.getCode());
+      long dAttempts = discAcc == null ? 0L : discAcc.total;
+      long dScored = discAcc == null ? 0L : discAcc.scored;
+      long dCorrect = discAcc == null ? 0L : discAcc.correct;
+      Double dAccuracy = dScored == 0 ? null : dCorrect / (double) dScored;
+      long hist = questions.countByInstitutionAndDisciplineCode(institution, d.getCode());
+      String mastery = masteryLevel(dScored, dAccuracy);
+      byDisciplineList.add(new DisciplineDiagnosisItem(
+          d.getCode(), d.getName(), dAttempts, dScored, dCorrect, dAccuracy,
+          hist, mastery, disciplineReason(dScored, dCorrect, dAccuracy, overall, hist, mastery)));
+    }
+    byDisciplineList.sort(Comparator.comparing(DisciplineDiagnosisItem::disciplineCode));
+
+    List<String> notes = new ArrayList<>();
+    if (total == 0) {
+      notes.add("Nenhuma tentativa registrada na trilha " + institution
+          + ": diagnóstico ainda DESCONHECIDO (responda questões ou faça um simulado deste processo).");
+    } else if (scored > 0 && scored < 5) {
+      notes.add("Sinal inicial na trilha " + institution + ": apenas " + scored
+          + " tentativa(s) pontuável(is) — o diagnóstico estabiliza com mais respostas.");
+    }
+    if (annulled > 0) {
+      notes.add("Anuladas contam como conteúdo respondido e ficam fora do aproveitamento; regra de pontuação DESCONHECIDA.");
+    }
+    notes.add("Trilha " + institution + ": só tentativas de questões " + institution
+        + " (autorias sem edição contam em ambas — sem frequência histórica);"
+        + " assuntos usam a classificação vigente não-rejeitada (derivada, revisão humana PENDENTE — TASK 12.2),"
+        + " nunca verdade oficial do processo.");
+    if (unclassified > 0) {
+      notes.add(unclassified
+          + " tentativa(s) sem classificação vigente: contam no geral/por disciplina, fora de assunto (NECESSITA REVISÃO).");
+    }
+    notes.add("Limiares: DOMINADO ≥ 70%, FRÁGIL < 50% (intermediário 50–70%), sinal mínimo "
+        + MIN_SCORED_FOR_SIGNAL + " pontuáveis por assunto; lacuna = 0 pontuáveis.");
+    notes.add("Dificuldade estimada NÃO usada no diagnóstico (palpite global BAIXA, sem calibração por desempenho).");
+    if ("EAJ".equals(institution)) {
+      notes.add("Frequências históricas da trilha EAJ sobre 3 edições (2021, 2022, 2025; 130 classificações D.1/D.2 — sem interpolar edições inexistentes).");
+    } else {
+      notes.add("Frequências históricas da trilha IFRN sobre 6 edições (2020, 2022–2026; 2021 ausente no dataset, sem interpolação).");
+    }
+    notes.add("Diagnóstico é estimativa inicial e explicável; o roteiro e a recomendação final entram nas TASKs 4.3–4.4 (trilha " + institution + ").");
+
+    metrics.diagnosesGenerated();
+    return new DiagnosisResponse(
+        total, scored, correct, incorrect, annulled, overall, overallLevel, last,
+        unclassified, List.copyOf(strengths), List.copyOf(weaknesses),
+        List.copyOf(gaps), List.copyOf(lowSignal), List.copyOf(priorities),
+        List.copyOf(byTopicSorted), List.copyOf(byDisciplineList), List.copyOf(notes));
   }
 
   /** Monta o diagnóstico inicial do dono do token. */

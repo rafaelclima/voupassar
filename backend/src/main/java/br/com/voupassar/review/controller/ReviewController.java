@@ -47,8 +47,10 @@ public class ReviewController {
       @RequestParam(required = false) Long topicId,
       @Parameter(description = "Quando true, só erros (ERRO_SEM_ACERTO e ERRO_RECENTE).")
       @RequestParam(required = false, defaultValue = "false") boolean onlyErrors,
+      @Parameter(description = "Trilha do processo (IFRN ou EAJ; ausente = global legado).")
+      @RequestParam(required = false) String institution,
       @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
-    return service.getQueue(requireAuth(principal), limit, discipline, topicId, onlyErrors);
+    return service.getQueue(requireAuth(principal), limit, discipline, topicId, onlyErrors, institution);
   }
 
   private static long requireAuth(UserPrincipal principal) {

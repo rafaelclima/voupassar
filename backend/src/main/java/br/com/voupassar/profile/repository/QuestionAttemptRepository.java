@@ -91,6 +91,41 @@ public interface QuestionAttemptRepository extends JpaRepository<QuestionAttempt
   List<QuestionAttempt> findAllByUserIdWithQuestion(@Param("userId") Long userId);
 
   /**
+   * Todas as tentativas com questão + disciplina + edição em fetch (TASK E.2).
+   *
+   * <p>Base dos recortes por processo (diagnóstico/recomendação/revisão na
+   * trilha EAJ): o serviço filtra em memória por
+   * {@code question.exam.institution} (autorais sem exame contam em ambas as
+   * trilhas — não-oficiais, sem frequência histórica). Fetch de {@code exam}
+   * evita N+1 ao classificar a trilha.
+   */
+  @Query("""
+      SELECT a FROM QuestionAttempt a
+      LEFT JOIN FETCH a.question q
+      LEFT JOIN FETCH q.discipline d
+      LEFT JOIN FETCH q.exam e
+      WHERE a.user.id = :userId
+      ORDER BY a.answeredAt ASC, a.id ASC
+      """)
+  List<QuestionAttempt> findAllByUserIdWithQuestionAndExam(@Param("userId") Long userId);
+
+  /**
+   * Tentativas pontuáveis (não-anuladas) de um processo (TASK E.2 —
+   * limiar PROVISORIO/PESSOAL por trilha).
+   *
+   * <p>Autorais (sem exame) contam em ambas as trilhas (compatibilidade com
+   * o fato global legado).
+   */
+  @Query("""
+      SELECT COUNT(a) FROM QuestionAttempt a
+      JOIN a.question q LEFT JOIN q.exam e
+      WHERE a.user.id = :userId AND a.annulled = false
+        AND (e.institution = :institution OR e IS NULL)
+      """)
+  long countScoredByUserIdAndInstitution(
+      @Param("userId") Long userId, @Param("institution") String institution);
+
+  /**
    * Tentativas do aluno vinculadas a uma execução de simulado (TASK 5.1).
    *
    * <p>Base do placar do simulado: o resultado considera a <b>última</b>
