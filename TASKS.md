@@ -1,10 +1,14 @@
-# PORTAL IFRN — ROADMAP DE DESENVOLVIMENTO
+# VOUPASSAR — PROGRAMA EAJ (Escola Agrícola de Jundiaí/UFRN)
 
 ## OBJETIVO
 
-Construir uma plataforma web completa de preparação para o processo seletivo dos Cursos Técnicos Integrados do IFRN. Nomeei essa plataforma como "VouPassar".
+Adicionar ao VouPassar as questões do processo seletivo dos Cursos Técnicos
+Integrados da Escola Agrícola de Jundiaí (EAJ/UFRN, banca Comperve),
+transformando o produto de single-processo (IFRN) em multi-processo
+(IFRN + EAJ) com seletor de processo no frontend e dimensão `institution`
+no banco, API e pipeline de dados.
 
-Arquitetura alvo:
+Arquitetura alvo (inalterada):
 
 GitHub
 ↓
@@ -44,469 +48,462 @@ Registrar o bloqueio em `docs/blockers.md`.
 
 Nunca marcar uma task como concluída apenas porque o código foi criado.
 
----
+## Regras específicas deste programa
 
-# FASE 16 — PÓS-AUDITORIA 2026-10-07 (escopo desta entrega)
+1. **Fonte de extração = os 3 `questoes.md`** em `data/provas/EAJ/<ano>/`
+   (enunciados + alternativas + respostas). Os PDFs `eaj_*.pdf` servem
+   SOMENTE como referência/auditoria (conferência visual, SHAs no
+   inventário). Nenhum `pdftotext`/OCR no caminho crítico.
+2. **Proveniência do gabarito**: as respostas nos `.md` são gabarito
+   TRANSCRITO pela curadoria (decisão do responsável 2026-10-09), não
+   documento oficial — não há PDF de gabarito EAJ no repo. Marcar
+   `provenance: TRANSCRIBED_FROM_MD` em `data/linked/eaj/*.json` e nunca
+   apresentar como "gabarito oficial confirmado por PDF". A anexação futura
+   dos gabaritos oficiais é pendência registrada (Fase G), não bloqueio.
+3. **Namespace EAJ em tudo que é chaveado por ano**: EAJ tem edições 2022 e
+   2025 — os mesmos anos do IFRN. Chaves de figuras (`"EAJ-2022-8"`),
+   pastas (`data/extracted/eaj/`, `frontend/assets/figures/eaj/<ano>/`),
+   filtros de API/frontend e seeds levam `institution` junto ao ano.
+   Nunca assumir "ano = edição".
+4. **Estrutura de cada edição pertence àquela edição** (AGENTS.md §10):
+   2021 = 50Q em 4 áreas (LP 01–15, MAT 16–30, CN 31–42, CH 43–50),
+   2022/2025 = 40Q em 2 áreas (LP 01–20, MAT 21–40). Duração 3h e ausência
+   de discursiva valem para o EAJ observado — confirmar na Fase A, nunca
+   generalizar para o IFRN e vice-versa.
+5. **Análises nos `.md` não entram no banco** (decisão de produto vigente:
+   a plataforma testa conhecimento, não ensina passo a passo — sem
+   `explanation`). Textos-base viram passagens; figuras viram manifest.
+6. Histórico do roadmap anterior (Fases 16–22, declaradas concluídas):
+   `docs/archive/TASKS-fase16-22-concluido.md`. Não reabrir sem motivo
+   documentado; regressão IFRN é verificada na Fase G.
 
-> Origem: auditoria completa do produto de 2026-10-07 (ver resposta da
-> auditoria §§1–14). Esta fase transforma as recomendações em tasks
-> executáveis, uma a uma, na ordem de dependência.
->
-> Exclusões explícitas por decisão do responsável em 2026-10-07:
-> * P4 (figuras órfãs / `List.of()` vazio) — **FORA**: já resolvido na VPS.
-> * F5 (enunciado visual completo / pipeline de figuras) — **FORA**: figuras
->   já estão sendo mostradas aos usuários.
-> * P5 (tempo agregado em desempenho/diagnóstico/roteiro) — **ESCOPO REDUZIDO**:
->   só vale como noção de ritmo **dentro da sessão de simulado** vs. tempo de
->   prova real (TASK 21.1). Não agregar `time_spent_seconds` em performance,
->   diagnóstico, recomendação ou revisão.
->
-> Ordem de execução: 16 → 17 → 18 → 19 → 20 → 21 → 22. Não pular 16.1
-> (segurança) nem 17 (revisão) antes de 19 (raio-X depende de 17).
->
-> Tag `[VPS]` no título = executável direto na VPS (repo + backend + banco
-> + docs). Sem a tag = fazer local (frontend exige navegador real com
-> Chromium para validação E2E, que a VPS não tem — ver `docs/blockers.md`).
->
-> Trilha VPS (sequencial, mesmos arquivos — 1 LLM por vez):
-> `16.1 → 18.1 → 18.2 → 20.1 → 22.1 → 22.2 → 22.3`.
-> Paralelo seguro com a trilha local: `16.2` a qualquer momento; o frontend
-> (16.3, 17.x, 18.3, 19.x, 20.2, 21.1) roda local em paralelo, desde que
-> ninguém toque `studyplan/*` (VPS) nem `simulado.js` (19.1 × 21.1) ao mesmo
-> tempo. Sincronizar via git entre as trilhas antes de cada task.
+## Dataset de entrada (verificado 2026-10-09)
 
----
+| Edição | Caderno | `.md` (fonte) | Questões | Áreas | Figuras |
+|---|---|---|---|---|---|
+| 2021 | `eaj_2021.pdf` 19 p | `questoes.md` formato `**NN.** + Gabarito: X` + Textos Base | 50 | LP 01–15, MAT 16–30, CN 31–42, CH 43–50 | 13 PNGs nomes livres |
+| 2022 | `eaj_2022.pdf` 17 p | `questoes.md` formato `Questão NN/Enunciado/Alternativas/Resposta` + Texto 01 | 40 | LP 01–20, MAT 21–40 | 12 PNGs nomes livres/agrupados |
+| 2025 | `eaj_2025.pdf` 15 p | `questoes.md` formato `**NN.` + `Resposta Correta` + tabela compilada + Textos 1–3 | 40 | LP 01–20, MAT 21–40 | 8 PNGs agrupados |
+| **Total** | — | — | **130** | — | **~33 PNGs** |
 
-## TASK 16.1 — Correção de autorização no roteiro (P1 — Crítico) [PRIORIDADE MÁXIMA] [VPS]
+Casos especiais já sinalizados na curadoria (viram regras nas tasks):
 
-Problema (auditoria §6 P1):
-
-* `GET /recommendations` e `GET /recommendations/plan` aceitam `?userId`
-  opcional e usam no lugar do dono
-  (`studyplan/controller/RecommendationController.java:38,47` —
-  `long uid = (userId != null) ? userId : requireAuth(principal)`);
-* `POST /recommendations/items/{itemId}/status` não recebe `principal` nem
-  checa dono (`RecommendationController.java:57-62` vs.
-  `RecommendationService.java:250` sem `userId`).
-
-Entregas:
-
-* remover `?userId` dos dois GETs (usar só `principal`);
-* `updateItemStatus(itemId, status, principalUserId)`: buscar item → plano →
-  comparar `plan.userId` com o autenticado → `403` se divergir;
-* trocar retorno de entidade JPA `StudyPlan` por DTO (não vazar entidade);
-* teste de integração: A não gera/vê/atualiza plano de B (401 sem token,
-  403 com dono divergente, 200 no dono);
-* atualizar `docs/api-recomendacao.md` + `docs/api-roteiro.md` +
-  `docs/security-audit.md` (remover `?userId` do contrato).
-
-Critérios:
-
-* `rg userId backend/src/main/java/br/com/voupassar/studyplan` sem ocorrência;
-* suíte backend verde; tentativa IDOR coberta por teste automatizado;
-* `node --check`, `check_frontend.py` (frontend intocado, mas validar).
+* **2025 Q23 = NULA** (nenhuma alternativa reflete a ordem correta
+  Caatinga > Cerrado > Mata Atlântica) → anulada documentada.
+* **2025 Q22** — nota de OCR agrupado nas alternativas → `NEEDS_VISUAL_CHECK`.
+* **2025 Q39** — razão interpolada como `[1/2]` com nota de incerteza →
+  `NEEDS_VISUAL_CHECK` (conferir no PDF renderizado antes de importar).
 
 ---
 
-## TASK 16.2 — Sincronização de docs divergentes (P8 — quick win, sem código) [VPS]
+# FASE A — INVENTÁRIO E FUNDAÇÃO (pré-requisito de tudo)
 
-Problema (auditoria §6 P8): docs à frente/atrás do código.
+## TASK A.1 — Arquivamento do roadmap anterior [DONE 2026-10-09]
 
-Entregas (uma a uma):
+* TASKS.md (Fases 16–22) copiado para
+  `docs/archive/TASKS-fase16-22-concluido.md` com cabeçalho histórico.
+* Este arquivo (Programa EAJ) é o roadmap ativo.
 
-1. `docs/frontend-admin.md`: remover fila `review-queue` + 2× PATCH; documentar
-   somente-leitura real (2 GETs) + referência à decisão 2026-10-06;
-2. `docs/ux-review.md:19`: trocar `240/6 edições/120+120` pelos números reais
-   da landing (`index.html:83-96`, `docs/frontend-landing.md:46-49`) ou marcar
-   como exemplo histórico;
-3. `docs/security-audit.md:30`: corrigir "nenhum endpoint `/admin`" (hoje existe
-   `AdminController.java:30` com RBAC);
-4. `docs/database-erd.md:225-304`: remover `validation_status`,
-   `publication_status`, `status/reviewed_by/reviewed_at` (removidos em
-   `V12__drop_review_gates.sql:13-29`); documentar "vigente = maior `id`" +
-   `pipeline_version/pipeline_verified_at`;
-5. `docs/frontend-auth.md:11`: corrigir "Painel logado" (código faz redirect —
-   `views/login.js:29-34`).
+## TASK A.2 — Inventário das edições EAJ
+
+Entregas:
+
+* `docs/provas-inventario-eaj.md` (mesmo padrão de `docs/provas-inventario.md`,
+  sem classificação pedagógica): por edição — arquivos + SHAs + páginas,
+  edital Comperve na capa, duração (3h a confirmar), distribuição de
+  questões por área, presença/ausência de discursiva e de gabarito oficial,
+  textos-base identificados, diferenças entre edições (40 vs 50Q), tudo que
+  não for comprovável marcado `DESCONHECIDO`/`NÃO CONFIRMADO`.
+* Registrar em `docs/blockers.md`: ausência de PDFs de gabarito oficiais EAJ
+  (fonte = transcrição nos `.md`, decisão 2026-10-09).
 
 Critérios:
 
-* cada doc cita o arquivo:linha do código vigente;
-* nenhum doc promete endpoint, coluna ou fluxo que não existe;
-* sem alteração de código-fonte (só `docs/`).
+* Cada afirmação cita arquivo:linha ou SHA; nenhuma estrutura de edição
+  apresentada como regra geral; 2021 (50Q/4 áreas) descrita sem forçar o
+  molde 40Q/2 áreas.
+
+## TASK A.3 — Normalização dos 3 `questoes.md` para schema único
+
+Entregas:
+
+* Os 3 `.md` passam a seguir o MESMO schema (só estrutura, sem reescrever
+  conteúdo): bloco de textos-base → seções por área → por questão:
+  enunciado + alternativas A–D + resposta em campo único
+  (`**Gabarito: X**`); tabela compilada de gabarito ao final de cada edição
+  (2021/2022 ganham a tabela; 2025 já tem).
+* `Análise:` mantidas no `.md` como referência humana, com nota de que não
+  alimentam o banco (regra 5).
+* Validador `scripts/analysis/check_eaj_md.py` (só leitura): conta questões
+  por área (2021: 15/15/12/8; 2022/2025: 20/20), 4 alternativas A–D por
+  questão (exceto NULA declarada), resposta presente, consistência
+  resposta-inline × tabela compilada.
+
+Critérios:
+
+* `check_eaj_md.py` verde: 130 questões, 129 com A–D + 2025 Q23 NULA
+  declarada; alternativas completas (Q22-2025 e Q39-2025 com flag
+  `NEEDS_VISUAL_CHECK`, não falha); diff do git mostra só reestruturação,
+  nenhum enunciado/resposta alterado (conferência por amostragem + `git diff`
+  revisado).
 
 ---
 
-## TASK 16.3 — Higiene de frontend: retry por seção + auth global + next/voltar (P9/P10)
+# FASE B — EVIDÊNCIA MÁQUINA-LEGÍVEL (fonte = `.md`, PDF só auditoria)
 
-Problema (auditoria §6 P9/P10):
+> Espelha o pipeline IFRN (`extracted → linked → figures → passages`), com
+> namespace `eaj`. Depende da Fase A (A.3).
 
-* dashboard/perfil/simulado-hub mostram `friendlyMessage+traceId` sem botão
-  "Tentar de novo" por seção (só estudos-lista e caderno têm);
-* cada `views/*.js` repete `restoreSession+showGuard`; `api/client.js` não
-  renova refresh sozinho;
-* `safeNextParam` aceita `/...` (`auth-shared.js:117-128`) mas `sanitizeBack`
-  só `./` (`questao.js:161-169`).
+## TASK B.1 — Parser `.md` → `data/extracted/eaj/*.json`
 
 Entregas:
 
-1. botão "Tentar de novo" por seção em `dashboard.js` e `perfil.js`
-   (mesmo padrão de `renderMissingCard` do simulado);
-2. unificar `safeNextParam/sanitizeBack` em `auth-shared.js` (uma função,
-   usada por login, questao-voltar e simulado-guard);
-3. interceptor 401 central em `api/client.js` (tentar `refresh` 1× via
-   `api/auth.js:138-164`, senão `showGuard`); remover duplicação nas views
-   sem mudar comportamento visível;
-4. atualizar `docs/frontend-dashboard.md`, `docs/frontend-perfil.md`,
-   `docs/frontend-auth.md` + `scripts/analysis/check_frontend.py` se houver
-   nova convenção.
+* `scripts/analysis/extract_eaj.py`: lê os 3 `.md` normalizados e gera
+  `data/extracted/eaj/{2021,2022,2025}.json` + `manifest.json`
+  (mesmo contrato dos IFRN: enunciado, alternativas A–D, disciplina por
+  faixa de número daquela edição, `page_start/end` quando identificável
+  senão `NULL` + `pageStatus: DESCONHECIDO`, resposta transcrita com
+  `answerProvenance: TRANSCRIBED_FROM_MD`).
+* `--check` valida 130 questões, 4 alternativas (exceto NULA), resposta em
+  A–D/NULA, sem inventar página.
 
 Critérios:
 
-* `node --check` + `check_frontend.py` + serve 200;
-* navegador real: derrubar 1 seção simulada → retry funciona sem reload;
-  token expirado → 1 refresh silencioso, depois guard;
-* mobile 360px + console limpo.
+* Reexecução idempotente (mesmo JSON a menos de carimbo); contagens
+  50/40/40; Q23-2025 com `answer: NULA`; Q22/Q39-2025 com
+  `needsVisualCheck: true` e motivo.
+
+## TASK B.2 — Gabarito transcrito → `data/linked/eaj/*.json`
+
+Entregas:
+
+* `scripts/analysis/link_eaj_keys.py` (ou extensão do `link_answer_keys.py`):
+  consolida resposta-inline × tabela compilada de cada `.md` em
+  `data/linked/eaj/<ano>.json` com `status` por questão:
+  `CONFIRMED_TRANSCRIBED` (129) / `ANNULLED_TRANSCRIBED` (Q23-2025, motivo
+  transcrito) / `NEEDS_VISUAL_CHECK` (Q22/Q39-2025).
+* Divergência inline × tabela = erro (exit 2), nunca resolução silenciosa.
+
+Critérios:
+
+* 130/130 vinculadas; 0 divergências; Q23-2025 `annulled: true` com motivo;
+  documento-fonte registrado como `data/provas/EAJ/<ano>/questoes.md` + SHA
+  (rastreabilidade honesta: transcrição, não PDF oficial).
+
+## TASK B.3 — Figuras: PNGs livres → convenção namespaced + WebP
+
+Entregas:
+
+* Renomear/converter os ~33 PNGs para
+  `frontend/assets/figures/eaj/<ano>/Q<NN>.webp`
+  (multi-questão agrupada desmembra-se por questão; `Q<NN>-2.webp` se >1
+  figura na questão; lado maior ≤1600px, <300KB).
+* Entradas no `manifest.json` com chaves `"EAJ-<ano>-<n>"`
+  (`page` = página do caderno quando identificável senão `DESCONHECIDA`,
+  `alt` obrigatório, `credit` EAJ/Comperve).
+* `check_figures.py` estendido ao namespace `eaj/` (nomes, formato,
+  manifest íntegro, cobertura das questões com figura).
+
+Critérios:
+
+* `check_figures.py` verde; nenhuma colisão com chaves IFRN (`2022-*`,
+  `2025-*` intactas); questões EAJ sem recorte ainda = aviso + referência
+  ao caderno (nunca imagem inventada).
+
+## TASK B.4 — Passagens EAJ
+
+Entregas:
+
+* `data/passages/eaj/{2021,2022,2025}.json` via `extract_passages.py`
+  (estendido): Textos 1–3 + trechos compartilhados de cada edição, com
+  evidência de rótulo no enunciado (mesma regra IFRN: sem citação do rótulo
+  = sem vínculo; registrar os SEM vínculo em `docs/blockers.md` como nas
+  edições IFRN).
+* Importação posterior reutiliza `import_passages.py` (Fase D.4).
+
+Critérios:
+
+* `--check` OK nas 3 edições; questões EAJ sem vínculo com motivo
+  documentado; nenhum vínculo por inferência.
 
 ---
 
-# FASE 17 — REVISÃO GUIADA (F1 — backend pronto, UI zero; P2 Crítico)
+# FASE C — MODELO DE DADOS (migração; trava a Fase D)
 
-> Decisão: **evolução, não feature nova**. Não criar motor novo; expor
-> `GET /review/queue` + `POST /review/sessions` que já existem
-> (`ReviewService.java:109`, `ReviewSessionService.java:43-58`).
-
-## TASK 17.1 — API client + contrato de revisão no frontend
+## TASK C.1 — Dimensão `institution` em `exams` + contagens por área
 
 Entregas:
 
-* `frontend/js/api/review.js`: `getQueue({limit,discipline,topicId,onlyErrors})`,
-  `createSession({questionIds?,limit,...})`, `getSession(id)`,
-  `getSessionResult(id)` — espelho fino de `api/simulado.js`;
-* `frontend/js/vocab.js`: rótulos das categorias 0–5
-  (`ERRO_SEM_ACERTO → CONSOLIDADO`) + motivos, sem enum cru;
-* doc `docs/api-revisao.md` + `docs/api-modo-revisao.md` sem mudança de
-  contrato (só exemplos de uso pelo frontend).
+* `V17__eaj_institution.sql`: `exams.institution TEXT NOT NULL DEFAULT 'IFRN'
+  CHECK (institution IN ('IFRN','EAJ'))` (backfill IFRN nas 6 edições);
+  `UNIQUE(year)` → `UNIQUE(institution,year)`; CHECK de anos ampliado para
+  incluir 2021 (só faz sentido com `EAJ`; documentar que IFRN-2021 segue
+  ausente); novas colunas `cn_count/ch_count SMALLINT DEFAULT 0`;
+  `duration_minutes` e `has_essay` passam a variar por edição
+  (EAJ: 180, `FALSE` — confirmar na A.2).
+* Entidades/DTOs/repositórios `exams` atualizados; `ddl-auto: validate` verde.
 
 Critérios:
 
-* `node --check`; nenhum fetch fora de `api/`; erros com `traceId`.
+* Migration up+down (ou forward-only documentado, padrão do projeto);
+  seed IFRN intacto; `mvn -f backend/pom.xml test` verde.
 
-## TASK 17.2 — Aba Revisão em Estudos (fila priorizada)
+## TASK C.2 — Questões até 50 + disciplinas CN/CH
 
 Entregas:
 
-* nova aba/seção em `estudos.html` + `views/estudos.js` (ou `views/revisao.js`
-  dedicado): filtros disciplina/tópico/só-erros + lista da fila com
-  categoria + motivo + `daysSince` informativo + "Iniciar revisão (N)";
-* estados: loading (`Buscando fila…`), vazio honesto ("responda 3+ questões
-  para ativar" — mesmo `MIN_SCORED` do diagnóstico), erro com retry;
-* `REVISAO` nos selects de modo onde houver (`simulado.html:142-145,170-173`
-  hoje só `ESTUDO/PROVA`);
-* atualizar `docs/frontend-estudos.md` + `check_frontend.py`.
+* Migração: `questions.source_question_number` 1–40 → 1–50 + CHECK
+  condicional documentado (IFRN segue 40/edição por dados; EAJ-2021 usa
+  41–50); seed `disciplines` `CIENCIAS_NATUREZA`, `CIENCIAS_HUMANAS`.
+* Taxonomia CN/CH (tópicos/subtópicos) **derivada da classificação D.1**:
+  criar códigos SÓ para o observado nas 20 questões CN/CH (nada inventado
+  antes da evidência); LP/MAT reutilizam a taxonomia v1.1 existente.
 
 Critérios:
 
-* conta nova → vazio honesto, sem 500; conta com erros → fila ordenada
-  igual ao backend (pesos 0–5, desempates determinísticos);
-* guarda de auth + 401 → guard (padrão das demais telas);
-* navegador real: fila → iniciar → caderno → resultado, mobile + console limpo.
+* Constraints verificadas por teste (EAJ-2021 Q50 aceita; IFRN Q41 rejeitada
+  por regra de aplicação se assim decidido, ou aceita pelo CHECK com
+  documentação); suíte backend verde.
 
-## TASK 17.3 — Execução e resultado da sessão de revisão
+## TASK C.3 — Seed edições e documentos EAJ
 
 Entregas:
 
-* reutilizar caderno do simulado (modo `REVISAO`, nunca oculta — por doc);
-* `POST /review/sessions` congela top-N em `review_session_questions`;
-  responder via `POST /attempts {mode:REVISAO}`; `GET /result`;
-* ao final: "voltar à fila" (fila recomputada — item consolidado some);
-* doc `docs/frontend-revisao.md` (novo, curto) + link no dashboard
-  ("Revisar erros" junto às prioridades).
+* `V18__seed_eaj.sql` (ou extensão do seed): `exams`
+  (EAJ 2021/2022/2025, edital Comperve, durações, contagens por área,
+  `scoring_rule NULL` = DESCONHECIDA) + `exam_versions` + `exam_documents`
+  (cadernos `eaj_*.pdf` com SHA + `questoes.md` como documento-fonte da
+  transcrição, `kind`/nota explicitando o papel de cada um).
 
 Critérios:
 
-* E2E: errar 3 → fila contém 3 → sessão com 3 → acertar tudo → fila esvazia;
-* `BLANK`=erro, anulada fora (mesmas regras do backend);
-* testes frontend de lógica crítica (fila vazia, limite, só-erros).
+* 3 edições + documentos presentes após `migrate.sh`; SHAs conferem com os
+  arquivos; `(EAJ,2022)` e `(EAJ,2025)` coexistem com `(IFRN,2022)` e
+  `(IFRN,2025)` sem colisão.
 
 ---
 
-# FASE 18 — ROTEIRO EXPLICÁVEL V2 (F2 — P3 Crítico + P6)
+# FASE D — CLASSIFICAÇÃO E IMPORTAÇÃO (130 questões)
 
-> Decisão: **evoluir o roteiro, não criar feature nova**. Manter determinístico,
-> transparente e auditável (`ALGORITHM_VERSION=v2-deterministico`).
+> Depende de B (evidência) + C (modelo). Q22/Q39-2025 só entram após
+> conferência visual no PDF (trava explícita da D.3).
 
-## TASK 18.1 — Score v2 com frequência histórica real + recência + dificuldade [VPS]
-
-Entregas (backend, `RecommendationService.java:118-186`):
-
-* `frequencyFactor` = contagem histórica normalizada (`countByTopic` +
-  `editionsByTopic`, mesma fonte do diagnóstico `DiagnosisService.java:147-154`,
-  via `ContentService`), **não** `attempts/5`;
-* `recencyFactor` de `StudentTopicPerformance.lastAttemptAt` (já persistido;
-  hoje `1.0` em `:146`);
-* `difficultyFactor` da dificuldade classificada (`per-edition/*.json`,
-  hoje `1.0` em `:147`); documentar pesos e normalização em
-  `docs/api-recomendacao.md:42-50`;
-* `target_year` (urgência) e porte via `study_goal` entram como multiplicador
-  de carga, não como filtro (usa P6 sem nova migração);
-* `ALGORITHM_VERSION` bump + migração Flyway só para versionar
-  (sem novas tabelas de domínio).
-
-Critérios:
-
-* teste unitário: tópico frequente-e-fraco > raro-e-fraco, tudo o mais igual;
-  `attempts==0` segue lacuna mas ordenado por frequência;
-* `docs/api-recomendacao.md` com fórmula + exemplo numérico;
-* suíte backend verde.
-
-## TASK 18.2 — Evidência rica + subtópico (quando houver sinal) [VPS]
+## TASK D.1 — Classificação pedagógica EAJ
 
 Entregas:
 
-* `evidenceJson`: `{historicalQuestions, editionsCount, editions[],
-  sampleQuestionIds[], accuracy, attempts, lastAttemptAt, algorithmVersion}`
-  (hoje só `topic_id+attempts+nota` em `:219-226`); `content-map` e evidência
-  seguem 100% oficiais (autorais nunca produzem evidência — regra Fase 15);
-* `subtopicId` preenchido quando `bySubtopic` tiver sinal
-  (hoje `NULL` fixo em `:177`; `SubtopicRepository` injetado mas ocioso);
-* teste: cada item do plano cita ≥1 edição e ≥1 questão oficial existentes.
+* `docs/content-analysis/per-edition/eaj-{2021,2022,2025}.json`:
+  disciplina (pela faixa da edição), assunto/subassunto (LP/MAT na taxonomia
+  v1.1; CN/CH propõem tópicos novos com evidência), habilidade,
+  dificuldade estimada (confiança BAIXA global, sem dados de desempenho),
+  `confidence`, `observation`/`NECESSITA_REVISAO` onde houver figura/OCR
+  dúbio — mesmo contrato das classificações IFRN.
+* `validate_classification.py` estendido (códigos CN/CH entram na lista
+  válida somente após C.2).
 
 Critérios:
 
-* `GET /plan` de conta com histórico contém `editions[]` e
-  `sampleQuestionIds[]` válidos (checados contra banco);
-* docs `api-roteiro.md:15-36` atualizadas com novo schema do JSON.
+* 130 classificações, 0 `OUTRO` sem justificativa; confiança BAIXA onde a
+  fonte não sustenta; nenhuma inferência apresentada como fato.
 
-## TASK 18.3 — UI da evidência + "Praticar / Revisar agora"
+## TASK D.2 — Mapa de conteúdo EAJ (separado do IFRN)
 
-Entregas (frontend):
+Entregas:
 
-* `dashboard.js:818-925 renderPlan`: cada item mostra
-  "prioridade · você X% (N tentativas) · caiu em E edições (ex. 2024 Q12) ·
-  último erro há N dias" + CTAs "Praticar agora" (recorte em estudos) e
-  "Revisar erros" (fila filtrada por tópico — depende da 17.2);
-* `estudos.js:722-839 renderHero` e `perfil.js:803-866 renderMetas` exibem o
-  mesmo motivo (reuso, sem duplicar lógica);
-* atualizar `docs/frontend-dashboard.md` + `check_frontend.py`.
+* `docs/content-map-eaj.md` (+ `content-map-eaj.json`): agregação
+  determinística das 130 (mesmo gerador de `build_content_map.py`,
+  estendido): por assunto, por área, séries 2021–2022–2025 (sem interpolar
+  2023/2024/2026 EAJ — edições inexistentes, nunca zeros inventados);
+  seção de comparabilidade IFRN×EAJ só descritiva (LP/MAT).
+* O `content-map.md` IFRN NÃO é reescrito (adicionar ponteiro para o mapa EAJ).
 
 Critérios:
 
-* usuário entende "por que estudar isso" sem abrir doc;
-* CTA pratica abre recorte correto; CTA revisa abre fila filtrada;
-* navegador real desktop + mobile, console limpo.
+* Totais batem 130; anulada Q23-2025 conta como conteúdo que apareceu;
+  tendências marcadas DESCRITIVAS (3 edições); script reexecutável.
+
+## TASK D.3 — Importação das 130 questões (idempotente)
+
+Entregas:
+
+* `import_questions.py` estendido (namespace EAJ, 50Q, CN/CH, fonte
+  `TRANSCRIBED_FROM_MD`, `question_sources` PRIMARY=`questoes.md` +
+  GABARITO_TRANSCRITO): importa 129 + Q23-2025 como anulada (`X`);
+  **Q22/Q39-2025 BLOQUEADAS até conferência visual** (importador recusa com
+  exit 2 listando-as, salvo flag explícita de curadoria após a conferência).
+* `--check` + `--report` em `data/import/report-eaj.json`.
+
+Critérios:
+
+* Contagens: 130 `questions` (OFFICIAL, `institution=EAJ`), 518+ opções
+  (129×4 + Q23 sem efeito de pontuação — alternativas presentes),
+  classificações 130, checksums distintos 130; 2ª execução idempotente
+  (exit 0, 0 a inserir); suíte backend verde.
+
+## TASK D.4 — Sync figuras + passagens EAJ
+
+Entregas:
+
+* `sync_figures.py` + `import_passages.py` executados para o namespace EAJ
+  (extensões da B.3/B.4); `QuestionResponse.figures[]` resolve
+  `eaj/<ano>/Q<NN>.webp`.
+
+Critérios:
+
+* Questões EAJ com figura exibem recorte; sem recorte = aviso + referência
+  (mesmo comportamento IFRN); `--check` dos dois scripts verde.
 
 ---
 
-# FASE 19 — RAIO-X PÓS-ATIVIDADE (F3 — segunda ordem, depende da Fase 17)
+# FASE E — BACKEND MULTI-PROCESSO
 
-## TASK 19.1 — Componente `result-next` no simulado
+> Depende de C + D. Não mudar comportamento IFRN sem teste de regressão.
 
-Entregas:
-
-* `frontend/js/components/result-next.js` reutilizável: recebe `result`
-  (`scoreBoard` + `resultItems`) e renderiza (a) piores tópicos da atividade,
-  (b) erros sem acerto prévio, (c) 3 CTAs máximos: "Revisar estes N agora"
-  (`POST /review/sessions`), "Praticar tópico X" (estudos com recorte),
-  "Atualizar meu plano" (`POST /recommendations`);
-* ligado em `views/simulado.js:946-1003` (após `renderFinishedState`);
-* doc curto em `docs/frontend-simulado.md`.
-
-Critérios:
-
-* E2E simulado com 6 erros → bloco mostra 6 + top tópico + 3 CTAs funcionais;
-* sem CTA quebrado quando fila/plano vazios (fallbacks honestos);
-* máximo 3 CTAs (risco de sobrecarga mitigado).
-
-## TASK 19.2 — Raio-X em Estudos + criação de sessão por ids (opcional)
+## TASK E.1 — Edições e questões com `institution`
 
 Entregas:
 
-* fim de página/lista em `estudos.js`: "nesta sessão você errou N
-  (M sem acerto prévio)" + mesmos CTAs do 19.1;
-* **se** necessário: estender `POST /review/sessions` para aceitar
-  `{questionIds[]}` além do top-N (retrocompatível; hoje só top-N);
-  caso contrário, reutilizar filtro por tópico da 17.2 e não mexer no backend;
-* testes de integração do fluxo
-  simulado → revisar-N → fila menor → roteiro atualizado.
+* `GET /editions?institution=EAJ|IFRN` (sem filtro = ambas, com rótulo;
+  compatível com clientes antigos), detalhe/documents/stats por
+  `(institution,year)`; `GET /questions` e agregados com filtro `institution`
+  (colisão 2022/2025 resolvida: ano sozinho nunca decide a edição).
+* Simulado `REAL_EDITION` dirigido pelos dados da edição EAJ (40/50Q,
+  áreas da edição, duração 3h na referência de ritmo).
+* `docs/api-provas.md`, `api-questoes.md`, `api-simulados.md` atualizados
+  (contrato + exemplos EAJ).
 
 Critérios:
 
-* fluxo completo em 1 sessão de navegador real sem reload manual;
-* métricas de clique instrumentáveis (ver Fase 22).
+* Testes: EAJ-2022 ≠ IFRN-2022 em todos os endpoints; EAJ-2021 retorna 50Q
+  em 4 áreas; `EDITION_NOT_FOUND` para `(EAJ,2023)` e `(IFRN,2021)` com
+  mensagem honesta; `node --check` N/A; `mvn test` verde.
+
+## TASK E.2 — Diagnóstico, roteiro e revisão na trilha EAJ
+
+Entregas:
+
+* Diagnóstico/conteúdos/recomendação com filtro `institution`: frequência
+  histórica EAJ (D.2) alimenta evidência do roteiro da trilha EAJ sem
+  contaminar o perfil IFRN; `evidenceJson` cita edições EAJ
+  (`EAJ 2022 Q12`); wizard "Descobrir meu nível" parametrizável por processo
+  (default IFRN, sem quebrar o fluxo existente).
+* Docs `api-diagnostico.md`, `api-recomendacao.md`, `api-roteiro.md`,
+  `api-revisao.md` atualizadas.
+
+Critérios:
+
+* Conta com histórico EAJ recebe plano com evidência EAJ válida (edições +
+  questões existentes no banco); conta IFRN inalterada (regressão
+  automatizada); `ALGORITHM_VERSION` bump documentado se a fórmula mudar.
 
 ---
 
-# FASE 20 — DIAGNÓSTICO DE ENTRADA + PLANO INICIAL (F4 — P7 cold start)
+# FASE F — FRONTEND MULTI-PROCESSO
 
-## TASK 20.1 — Plano provisório só-frequência (sem tentativas) [VPS]
+> Depende de D + E. Seguir AGENTS.md §31 (navegador real quando disponível;
+> senão `node --check` + `check_frontend.py` + serve 200 e pendência em
+> `blockers.md`).
 
-Entregas:
-
-* `POST /recommendations` com zero tentativas gera plano `PROVISORIO`
-  ordenado só por `countByTopic/editionsByTopic` (`content-map.md:21-32`
-  top `60/60/25/...`), marcado como provisório na UI ("comece pelo que
-  mais cai — vira pessoal após o diagnóstico");
-* flag mínima (`study_plans.status` ou `score_json.provisorio`; 1 migração
-  Flyway pequena) + doc `api-roteiro.md`.
-
-Critérios:
-
-* conta nova sem tentativas recebe plano em 1 clique, 100% oficial;
-* após ≥3 pontuáveis o plano vira pessoal (regeneração cobre a flag).
-
-## TASK 20.2 — Wizard "Descobrir meu nível" (12Q) + geração automática
+## TASK F.1 — Seletor IFRN/EAJ + filtros estendidos
 
 Entregas:
 
-* pós-cadastro/primeiro login: oferta "Descobrir meu nível (12 questões:
-  6 LP + 6 MAT, as mais frequentes)" → simulado disciplina misto curto
-  (reuso `POST /simulations/by-discipline`, sem endpoint novo se possível;
-  **só se** indispensável: `POST /diagnosis/bootstrap` fino sobre
-  simulado+recomendação);
-* ao concluir: diagnóstico + plano v1 gerados automaticamente, dashboard
-  mostra "Seu ponto de partida: X, Y, Z" com `EM_OBSERVACAO` sinalizado
-  (sem fingir precisão);
-* quem pular fica com o provisório da 20.1;
-* docs `frontend-dashboard.md` + `api-diagnostico.md` atualizados.
+* Seletor de processo na landing, estudos, simulado-hub e diagnóstico
+  (persistido no estado; default IFRN para não deslocar usuários atuais);
+  filtro de ano inclui EAJ 2021/2022/2025 rotulados (`2022 · EAJ`);
+  filtro de disciplina inclui CN/CH quando EAJ; contadores da landing
+  somam as 130 (total + por processo, sem números inventados).
+* `docs/frontend-*.md` afetados + `check_frontend.py` (nova convenção
+  `institution`).
 
 Critérios:
 
-* E2E conta nova: wizard → 12 respostas → diagnóstico + plano sem clique extra;
-* pular wizard → provisório visível;
-* navegador real + mobile; taxa de conclusão instrumentável.
+* Trocar IFRN↔EAJ filtra tudo (lista, questão, simulado, diagnóstico) sem
+  misturar 2022/2025 entre processos; conta nova vê vazio honesto na trilha
+  EAJ; `node --check` + `check_frontend.py` + serve 200.
+
+## TASK F.2 — Figuras e passagens EAJ na UI
+
+Entregas:
+
+* `figure.js` resolve manifest namespaced (`EAJ-2022-8` → `eaj/2022/Q08.webp`,
+  com fallback e aviso); painéis de passagem EAJ (Textos 1–3/trechos) nos
+  cards e na questão; crédito EAJ/Comperve + página.
+
+Critérios:
+
+* Amostra por edição EAJ: figura expande, passagem expande, mobile 360px
+  sem overflow, console sem erros inesperados (navegador real; senão
+  pendência registrada).
 
 ---
 
-# FASE 21 — RITMO EM SIMULADO (P5 — escopo reduzido por decisão 2026-10-07)
+# FASE G — FECHAMENTO E PRÉ-LANÇAMENTO EAJ
 
-> Decisão: **não** agregar `time_spent_seconds` em performance, diagnóstico,
-> recomendação ou revisão. Só exibir ritmo **dentro da sessão de simulado**,
-> onde o aluno quer saber "estou no ritmo da prova real".
-
-## TASK 21.1 — Indicador de ritmo no simulado (só exibição)
+## TASK G.1 — Docs, direitos e pendências
 
 Entregas:
 
-* durante `views/simulado.js` execução: "questão i/N · tempo decorrido total ·
-  média por questão vs. referência da edição" (referência = duração oficial
-  daquela edição quando conhecida, senão `DESCONHECIDA` — nunca inventar);
-* usa `time_spent_seconds` já coletado + `answered_at`; **nenhum** uso em
-  score, ranking ou roteiro;
-* referência de duração por edição vem dos documentos oficiais quando
-  existir (`docs/provas-inventario.md`); se ausente, exibir "ritmo
-  informativo, sem tempo oficial confirmado";
-* doc `docs/frontend-simulado.md` + `docs/api-simulados.md` com a regra.
+* `docs/database-erd.md` (institution, 50Q, CN/CH), `README.md`
+  (multi-processo + contagens + limitações), `docs/blockers.md`
+  (gabaritos oficiais EAJ pendentes de anexação; Q22/Q39-2025 se ainda
+  abertas; navegador real se MCP indisponível).
+* Todo conteúdo EAJ servido carrega crédito + fonte (AGENTS.md §12);
+  takedown reativo documentado, sem gate de publicação.
 
 Critérios:
 
-* Modo Prova e Estudo mostram o mesmo ritmo (é cronômetro, não gabarito);
-* nenhum teste de desempenho muda por causa do tempo;
-* `rg timeSpent backend/.../performance backend/.../diagnosis
-  backend/.../studyplan backend/.../review` continua vazio.
+* Nenhum doc promete endpoint, coluna ou fluxo inexistente; cada doc cita
+  arquivo:linha do código vigente.
+
+## TASK G.2 — Checklist ponta a ponta (trilha EAJ + regressão IFRN)
+
+Entregas:
+
+* Fluxo EAJ: cadastro → diagnóstico → roteiro com evidência EAJ → questões
+  (4 áreas) → simulado edição real (2021: 50Q; 2022/2025: 40Q) → ritmo 3h →
+  resultado → revisão → perfil → novas recomendações.
+* Regressão IFRN: fluxo existente inalterado (anos 2020–2026, 240Q).
+* Responsividade (desktop/mobile), acessibilidade prática, segurança
+  (sem stacktrace, CORS, secrets via env), backup/restauração.
+
+Critérios:
+
+* Checklist todo verde com evidências (prints/logs/testes); sem DONE sem
+  evidência; pendências restantes em `blockers.md`, nunca silenciadas.
 
 ---
 
-# FASE 22 — OBSERVABILIDADE, SEGURANÇA RESTANTE E PRÉ-LANÇAMENTO
+# CRITÉRIO GLOBAL DE CONCLUSÃO
 
-## TASK 22.1 — Rate-limit global leve + `Retry-After` + proxy confiável (P11) [VPS]
+O programa EAJ só está concluído quando, ALÉM do fluxo IFRN vigente:
 
-Entregas:
-
-* estender `AuthRateLimitFilter.java:30-76` (hoje só `/auth/**`, em memória,
-  sem `Retry-After`) para rotas de escrita (`/attempts`, `/simulations`,
-  `/recommendations`) com limites documentados;
-* `X-Forwarded-For` (`AuthController.java:165-173`) só confiável atrás de
-  proxy configurado (`application.yml` + `docs/security-audit.md`);
-* header `Retry-After` em `429`.
-
-Critérios:
-
-* teste: rajada acima do limite → `429 + Retry-After`, sem travar uso normal;
-* doc de limites em `security-audit.md`.
-
-## TASK 22.2 — Observabilidade mínima (completa a 10.3) [VPS]
-
-Entregas (pendências de `docs/task-10.3.md:25-80`):
-
-* logs estruturados + rotação (sem PII/segredo; já há base em
-  `AuthService.java:130,148,172,245`);
-* métricas essenciais + endpoint de diagnóstico autenticado
-  (health segue público com `show-details: never`);
-* instrumentação das métricas da auditoria §13 (CTR revisão/roteiro/raio-X,
-  conclusão de wizard, D7 pós-simulado) — sem tracking invasivo
-  (respeitar AGENTS §16).
-
-Critérios:
-
-* `GET /health` público + diagnóstico autenticado restrito;
-* dashboard técnico (ou log consultável) responde as 5 métricas do §13.
-
-## TASK 22.3 — Pré-lançamento (checklist executável) [VPS]
-
-Entregas:
-
-* executar o fluxo completo contra o novo escopo:
-  auth (incl. IDOR regressão 16.1) → diagnóstico → roteiro v2 com evidência →
-  questões → simulado → ritmo (21.1) → resultado → raio-X → revisão →
-  perfil atualizado → novas recomendações;
-* validar responsividade (desktop/tablet/mobile), acessibilidade prática
-  (teclado, foco, contraste, labels), segurança (CORS prod, secrets via env,
-  sem stacktrace), backup/restauração validados;
-* registrar pendência de navegador real se MCP indisponível (padrão
-  `docs/blockers.md`), nunca marcar DONE sem evidência.
-
-Critérios:
-
-* checklist todo verde com evidências (prints/logs/testes);
-* `README.md` atualizado com roteiro v2 + revisão + wizard +
-  limitações conhecidas.
-
----
-
-# CRITÉRIO GLOBAL DE CONCLUSÃO (atualizado 2026-10-07)
-
-O projeto só pode ser considerado MVP quando o seguinte fluxo funcionar de ponta a ponta:
-
-USUÁRIO
+ESTUDANTE EAJ
 ↓
-CADASTRO
+SELETOR EAJ
 ↓
-LOGIN
+DIAGNÓSTICO (trilha EAJ)
 ↓
-DIAGNÓSTICO
+ROTEIRO COM EVIDÊNCIA EAJ (edições + questões citadas e existentes)
 ↓
-ANÁLISE DO DESEMPENHO
+QUESTÕES (LP/MAT/CN/CH conforme a edição)
 ↓
-RECOMENDAÇÃO
+SIMULADO EDIÇÃO REAL (40 ou 50Q, áreas e duração daquela edição)
 ↓
-ROTEIRO DE ESTUDOS
+RESULTADO (Q23-2025 fora da pontuação, com nota visível)
 ↓
-QUESTÕES
-↓
-SIMULADO
-↓
-RESULTADO
-↓
-ANÁLISE DE ERROS
-↓
-ATUALIZAÇÃO DO PERFIL
-↓
-NOVAS RECOMENDAÇÕES
-
-O produto deve estar funcional tanto no frontend quanto no backend e banco.
+REVISÃO → PERFIL → NOVAS RECOMENDAÇÕES
 
 ---
 
 # ORDEM DE PRIORIDADE
 
-Priorizar nesta ordem:
-
-1. segurança (autorização do roteiro);
-2. revisão guiada (expor motor existente);
-3. roteiro explicável v2 (frequência real + evidência);
-4. raio-X pós-atividade (fechar o loop);
-5. diagnóstico de entrada (cold start);
-6. ritmo em simulado (só exibição);
-7. observabilidade e pré-lançamento.
+1. fundação e evidência (A → B: sem fonte normalizada, nada anda);
+2. modelo de dados (C: trava D e E);
+3. classificação e importação (D: trava E e F);
+4. backend multi-processo (E);
+5. frontend multi-processo (F);
+6. fechamento e lançamento (G).
 
 Nunca sacrificar a confiabilidade do conteúdo para entregar interface mais rapidamente.
+Nunca apresentar transcrição como documento oficial; nunca interpolar edições inexistentes.
