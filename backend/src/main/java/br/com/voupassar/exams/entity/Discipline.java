@@ -9,7 +9,9 @@ import jakarta.persistence.Table;
 
 /**
  * Disciplina controlada (somente as observadas nas provas: Língua Portuguesa
- * e Matemática). Entidade mínima para as estatísticas da TASK 3.2.
+ * e Matemática no IFRN; Ciências da Natureza e Ciências Humanas semeadas na
+ * TASK C.2 para o EAJ-2021 — tópicos/subtópicos CN/CH nascem só da evidência
+ * D.1, nunca inventados). Entidade mínima para as estatísticas da TASK 3.2.
  */
 @Entity
 @Table(name = "disciplines")

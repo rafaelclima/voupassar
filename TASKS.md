@@ -270,7 +270,29 @@ Critérios:
 * Migration up+down (ou forward-only documentado, padrão do projeto);
   seed IFRN intacto; `mvn -f backend/pom.xml test` verde.
 
-## TASK C.2 — Questões até 50 + disciplinas CN/CH
+## TASK C.2 — Questões até 50 + disciplinas CN/CH [DONE 2026-10-09]
+
+Execução 2026-10-09: `database/migrations/V18__eaj_questions_50_and_cn_ch.sql`
+(CHECK `questions_check2` 1–40 → `chk_questions_official_number_range` 1–50
+com verificação fail-high de resíduo + `COMMENT` documentando a regra
+condicional; seed `disciplines` `CIENCIAS_NATUREZA`/`CIENCIAS_HUMANAS`;
+NENHUM tópico/subtópico CN/CH — nascem só da evidência D.1; LP/MAT
+reutilizam a taxonomia v1.1 intacta; forward-only, padrão do projeto)
++ javadoc `Discipline` atualizado (CN/CH semeadas, tópicos só pós-D.1).
+Provas em PG16 scratch: Flyway `baseline-17` + `migrate` V18; sondas
+(EAJ-2021 Q50/Q31 aceitas; Q51/Q0 rejeitadas; IFRN Q41 aceita no CHECK com
+o teto 40 como regra de aplicação no importador IFRN — guarda `load_sources`
+sondada em Python + 6 edições reais 1–40 exatas; AUTHORAL nula e IFRN Q40
+regressão OK); seed IFRN intacto (6× IFRN, 4 disciplinas, 10 tópicos /
+42 subtópicos); `mvn -f backend/pom.xml test` 257/257; boot real com
+`ddl-auto: validate` verde (Flyway 19 validadas, schema v18, health UP) +
+smoke autenticado (`GET /editions` 6× IFRN com `institution`/`cnCount`/`chCount`).
+Fases A–B revalidadas e intactas (`check_eaj_md` 0, `extract_eaj --check` 0,
+`link_eaj_keys --check` 0, `check_figures` 0, `extract_passages --check` 0).
+Observação fora de escopo (pré-existente, idem C.1, não gate da C.2):
+migração do zero via Flyway tropeça na V6 (exige questões importadas)
+antes de chegar à V18 — cadeia incremental (caso da prod) íntegra; nunca
+editar V1–V18 (checksums Flyway).
 
 Entregas:
 
