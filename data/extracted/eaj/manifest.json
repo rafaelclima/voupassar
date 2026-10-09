@@ -1,0 +1,68 @@
+{
+  "institution": "EAJ",
+  "extractor": "scripts/analysis/extract_eaj.py",
+  "extractor_version": "1.0.0",
+  "generated_at_utc": "2026-10-09T18:07:47.232311+00:00",
+  "editions": [
+    {
+      "institution": "EAJ",
+      "edition": "2021",
+      "source_document": "data/provas/EAJ/2021/questoes.md",
+      "source_sha256": "9d1a1e2ef717ad1ef914e542fe65b21611c2315da1dc250262941ca96ff5d785",
+      "n_objective": 50,
+      "n_complete_options": 50,
+      "n_nula_transcribed": 0,
+      "needs_visual_check": [],
+      "answer_distribution": {
+        "A": 12,
+        "B": 14,
+        "C": 13,
+        "D": 11
+      },
+      "n_warnings": 0
+    },
+    {
+      "institution": "EAJ",
+      "edition": "2022",
+      "source_document": "data/provas/EAJ/2022/questoes.md",
+      "source_sha256": "fe5dea2bb0277a4c4df9eafe122471167b822fb85c8eed52714d2abfd829ca0e",
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "n_nula_transcribed": 0,
+      "needs_visual_check": [],
+      "answer_distribution": {
+        "A": 40
+      },
+      "n_warnings": 1
+    },
+    {
+      "institution": "EAJ",
+      "edition": "2025",
+      "source_document": "data/provas/EAJ/2025/questoes.md",
+      "source_sha256": "abbcf1015285a3f7fd33b6357220fea4315497cc753b39d67891c47f9cff9527",
+      "n_objective": 40,
+      "n_complete_options": 40,
+      "n_nula_transcribed": 1,
+      "needs_visual_check": [
+        22,
+        39
+      ],
+      "answer_distribution": {
+        "A": 8,
+        "B": 10,
+        "C": 11,
+        "D": 10,
+        "NULA": 1
+      },
+      "n_warnings": 0
+    }
+  ],
+  "totals": {
+    "editions": 3,
+    "objective_questions": 130
+  },
+  "warnings": [
+    "EAJ-2022: EAJ-2022: distribuição degenerada — 40/40 respostas = A (transcrição preservada; NÃO CONFIRMADO até o gabarito oficial; ver docs/blockers.md)"
+  ],
+  "note": "Namespace EAJ (EAJ-2022 ≠ IFRN-2022, EAJ-2025 ≠ IFRN-2025). Respostas TRANSCRITAS do `.md`, nunca documento oficial."
+}
