@@ -13,6 +13,8 @@ import java.util.List;
 @Schema(description = "Estatísticas da edição: esperado (capa) × importado (banco).")
 public record EditionStatsResponse(
     int year,
+    @Schema(description = "Processo seletivo: IFRN ou EAJ (TASK C.1).", example = "IFRN")
+        String institution,
     String edital,
     @Schema(example = "40") int objectiveExpected,
     @Schema(example = "40") long questionsImported,

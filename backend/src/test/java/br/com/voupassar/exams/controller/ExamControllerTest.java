@@ -47,8 +47,10 @@ class ExamControllerTest {
     when(service.listEditions())
         .thenReturn(
             List.of(
-                new EditionSummaryResponse(2025, "23/2024", 240, 40, 20, 20, true, null, 1, 2),
-                new EditionSummaryResponse(2026, "48/2025", 240, 40, 20, 20, true, null, 1, 2)));
+                new EditionSummaryResponse(
+                    2025, "IFRN", "23/2024", 240, 40, 20, 20, 0, 0, true, null, 1, 2),
+                new EditionSummaryResponse(
+                    2026, "IFRN", "48/2025", 240, 40, 20, 20, 0, 0, true, null, 1, 2)));
 
     mvc().perform(get("/api/v1/editions"))
         .andExpect(status().isOk())
@@ -63,7 +65,8 @@ class ExamControllerTest {
   void getReturnsDetail() throws Exception {
     when(service.getEdition(2026))
         .thenReturn(
-            new EditionDetailResponse(2026, "48/2025", 240, 40, 20, 20, true, null, List.of(), null));
+            new EditionDetailResponse(
+                2026, "IFRN", "48/2025", 240, 40, 20, 20, 0, 0, true, null, List.of(), null));
 
     mvc().perform(get("/api/v1/editions/2026"))
         .andExpect(status().isOk())
@@ -115,6 +118,7 @@ class ExamControllerTest {
         .thenReturn(
             new EditionStatsResponse(
                 2026,
+                "IFRN",
                 "48/2025",
                 40,
                 40L,

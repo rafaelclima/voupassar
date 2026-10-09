@@ -230,7 +230,29 @@ Critérios:
 
 # FASE C — MODELO DE DADOS (migração; trava a Fase D)
 
-## TASK C.1 — Dimensão `institution` em `exams` + contagens por área
+## TASK C.1 — Dimensão `institution` em `exams` + contagens por área [DONE 2026-10-09]
+
+Execução 2026-10-09: `database/migrations/V17__eaj_institution.sql`
+(`institution` NOT NULL DEFAULT 'IFRN' + backfill IFRN nas 6 edições,
+`UNIQUE(year)` → `UNIQUE(institution,year)`, CHECK de anos com 2021 —
+só faz sentido com EAJ; IFRN-2021 segue sem linha —, `cn_count`/`ch_count`
+DEFAULT 0; `duration_minutes`/`has_essay` já por edição desde a V1, EAJ usa
+180/`FALSE` na C.3; forward-only, padrão do projeto) + entidade `Exam`,
+`ExamRepository` (métodos legados por ano mantidos; `findByInstitutionAndYear`
+e `findAllByOrderByInstitutionAscYearAsc` novos; religação na E.1), DTOs
+(`institution`/`cnCount`/`chCount` aditivos) e `ExamService` atualizados.
+Provas em PG16 scratch: seed IFRN intacto (6× IFRN, 240/40/20/20/0/0),
+dup `(IFRN,2022)` rejeitada, `(EAJ,2022)` e `(EAJ,2021)` aceitas,
+`'XXX'`/`cn_count=-1` rejeitados; `mvn -f backend/pom.xml test` 257/257;
+boot real com `ddl-auto: validate` verde + smoke (`GET /editions` com
+`institution`/`cnCount`/`chCount`).
+Fases A–B revalidadas e intactas (`check_eaj_md` 0, `extract_eaj --check` 0,
+`link_eaj_keys --check` 0, `check_figures` 0, `extract_passages --check` 0;
+carimbos regenerados revertidos).
+Observação fora de escopo (pré-existente, não gate da C.1): migração do zero
+via Flyway/adopt sem histórico tropeça na V2 (`ON CONFLICT (year)`, válido
+só na ordem V1→V2) e a V6 exige questões importadas enquanto o importador
+atual exige schema ≥ V12 — cadeia incremental (como a prod) segue íntegra.
 
 Entregas:
 

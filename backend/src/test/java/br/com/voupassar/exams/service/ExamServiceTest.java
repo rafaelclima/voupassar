@@ -60,12 +60,15 @@ class ExamServiceTest {
   private Exam exam(int year, String edital) {
     Exam e = new Exam();
     ReflectionTestUtils.setField(e, "id", (long) year);
+    ReflectionTestUtils.setField(e, "institution", "IFRN");
     ReflectionTestUtils.setField(e, "year", (short) year);
     ReflectionTestUtils.setField(e, "edital", edital);
     ReflectionTestUtils.setField(e, "durationMinutes", (short) 240);
     ReflectionTestUtils.setField(e, "objectiveCount", (short) 40);
     ReflectionTestUtils.setField(e, "lpCount", (short) 20);
     ReflectionTestUtils.setField(e, "matCount", (short) 20);
+    ReflectionTestUtils.setField(e, "cnCount", (short) 0);
+    ReflectionTestUtils.setField(e, "chCount", (short) 0);
     ReflectionTestUtils.setField(e, "hasEssay", true);
     ReflectionTestUtils.setField(e, "scoringRule", null);
     return e;
@@ -114,8 +117,11 @@ class ExamServiceTest {
 
     assertEquals(2, out.size());
     assertEquals(2025, out.get(0).year());
+    assertEquals("IFRN", out.get(0).institution());
     assertEquals("23/2024", out.get(0).edital());
     assertEquals(40, out.get(0).objectiveCount());
+    assertEquals(0, out.get(0).cnCount());
+    assertEquals(0, out.get(0).chCount());
     assertNull(out.get(0).scoringRule());
     assertEquals(2L, out.get(1).documentCount());
   }

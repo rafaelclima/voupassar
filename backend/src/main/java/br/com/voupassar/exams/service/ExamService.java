@@ -73,11 +73,14 @@ public class ExamService {
       out.add(
           new EditionSummaryResponse(
               e.getYear().intValue(),
+              e.getInstitution(),
               e.getEdital(),
               e.getDurationMinutes().intValue(),
               e.getObjectiveCount().intValue(),
               e.getLpCount().intValue(),
               e.getMatCount().intValue(),
+              e.getCnCount().intValue(),
+              e.getChCount().intValue(),
               Boolean.TRUE.equals(e.getHasEssay()),
               e.getScoringRule(),
               versions.countByExamYear(e.getYear()),
@@ -128,11 +131,14 @@ public class ExamService {
 
     return new EditionDetailResponse(
         exam.getYear().intValue(),
+        exam.getInstitution(),
         exam.getEdital(),
         exam.getDurationMinutes().intValue(),
         exam.getObjectiveCount().intValue(),
         exam.getLpCount().intValue(),
         exam.getMatCount().intValue(),
+        exam.getCnCount().intValue(),
+        exam.getChCount().intValue(),
         Boolean.TRUE.equals(exam.getHasEssay()),
         exam.getScoringRule(),
         versionDtos,
@@ -188,6 +194,7 @@ public class ExamService {
 
     return new EditionStatsResponse(
         exam.getYear().intValue(),
+        exam.getInstitution(),
         exam.getEdital(),
         exam.getObjectiveCount().intValue(),
         imported,
@@ -227,6 +234,10 @@ public class ExamService {
     return switch (disciplineCode) {
       case "LINGUA_PORTUGUESA" -> exam.getLpCount().intValue();
       case "MATEMATICA" -> exam.getMatCount().intValue();
+      // C.2 semeia CIENCIAS_NATUREZA/CIENCIAS_HUMANAS; até lá caem no default 0
+      // (sem disciplinas CN/CH no banco, sem linha esperada — nunca inventar).
+      case "CIENCIAS_NATUREZA" -> exam.getCnCount().intValue();
+      case "CIENCIAS_HUMANAS" -> exam.getChCount().intValue();
       default -> 0;
     };
   }
