@@ -75,9 +75,10 @@ public class SimulationController {
   }
 
   @Operation(summary = "Criar e iniciar simulado real por edição (caderno integral em ordem original, IN_PROGRESS).",
-      description = "Reproduz a estrutura da edição selecionada (configuração da própria edição, nunca regra universal). "
+      description = "Reproduz a estrutura da edição (institution,year) selecionada (configuração da própria edição, nunca regra universal). "
           + "Posições 1..N seguem a numeração original, incluindo anuladas (fora do aproveitamento). "
-          + "Edição inexistente retorna 404 EDITION_NOT_FOUND (2021 ausente do dataset); "
+          + "institution ausente = IFRN (compatibilidade); EAJ-2021 = 50Q 15/15/12/8, EAJ-2022/2025 = 40Q 20/20. "
+          + "Edição inexistente retorna 404 EDITION_NOT_FOUND (IFRN 2021 ausente; EAJ só 2021/2022/2025); "
           + "banco divergente da capa retorna 409 INCOMPLETE_EDITION.")
   @ApiResponses({
     @ApiResponse(responseCode = "201", description = "Simulado real criado e iniciado."),

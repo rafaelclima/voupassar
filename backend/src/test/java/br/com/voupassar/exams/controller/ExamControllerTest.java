@@ -44,7 +44,7 @@ class ExamControllerTest {
 
   @Test
   void listReturnsSummaries() throws Exception {
-    when(service.listEditions())
+    when(service.listEditions(null))
         .thenReturn(
             List.of(
                 new EditionSummaryResponse(
@@ -62,8 +62,24 @@ class ExamControllerTest {
   }
 
   @Test
+  void listWithInstitutionFilterForwards() throws Exception {
+    when(service.listEditions("EAJ"))
+        .thenReturn(
+            List.of(
+                new EditionSummaryResponse(
+                    2021, "EAJ", "DESCONHECIDO", 180, 50, 15, 15, 12, 8, false, null, 1, 2)));
+
+    mvc().perform(get("/api/v1/editions").param("institution", "EAJ"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].institution").value("EAJ"))
+        .andExpect(jsonPath("$[0].year").value(2021))
+        .andExpect(jsonPath("$[0].objectiveCount").value(50));
+  }
+
+  @Test
   void getReturnsDetail() throws Exception {
-    when(service.getEdition(2026))
+    when(service.getEdition(2026, null))
         .thenReturn(
             new EditionDetailResponse(
                 2026, "IFRN", "48/2025", 240, 40, 20, 20, 0, 0, true, null, List.of(), null));
@@ -77,7 +93,7 @@ class ExamControllerTest {
 
   @Test
   void get2021Returns404EnvelopeWithoutLeak() throws Exception {
-    when(service.getEdition(2021))
+    when(service.getEdition(2021, null))
         .thenThrow(
             new ResourceNotFoundException(
                 "EDITION_NOT_FOUND", "Edição 2021 não encontrada: ausente do dataset inicial."));
@@ -91,7 +107,7 @@ class ExamControllerTest {
 
   @Test
   void documentsReturnMetadataOnly() throws Exception {
-    when(service.listDocuments(2026))
+    when(service.listDocuments(2026, null))
         .thenReturn(
             List.of(
                 new ExamDocumentResponse(
@@ -114,7 +130,7 @@ class ExamControllerTest {
 
   @Test
   void statsReturnsExpectedVsImported() throws Exception {
-    when(service.getStats(2026))
+    when(service.getStats(2026, null))
         .thenReturn(
             new EditionStatsResponse(
                 2026,
@@ -140,5 +156,19 @@ class ExamControllerTest {
         .andExpect(jsonPath("$.annulled").value(1))
         .andExpect(jsonPath("$.perDiscipline.length()").value(2))
         .andExpect(jsonPath("$.scoringRuleKnown").value(false));
+  }
+
+  @Test
+  void getWithInstitutionEajForwards() throws Exception {
+    when(service.getEdition(2022, "EAJ"))
+        .thenReturn(
+            new EditionDetailResponse(
+                2022, "EAJ", "DESCONHECIDO", 180, 40, 20, 20, 0, 0, false, null, List.of(), null));
+
+    mvc().perform(get("/api/v1/editions/2022").param("institution", "EAJ"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.institution").value("EAJ"))
+        .andExpect(jsonPath("$.year").value(2022))
+        .andExpect(jsonPath("$.durationMinutes").value(180));
   }
 }

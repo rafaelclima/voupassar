@@ -781,9 +781,9 @@ class SimulationServiceTest {
   }
 
   private void stubEdition(Exam exam, List<Question> board) {
-    when(exams.findByYear(exam.getYear())).thenReturn(Optional.of(exam));
-    when(questions.findByEditionYearOrdered(exam.getYear())).thenReturn(board);
-    when(essayPrompts.findByExamYear(exam.getYear())).thenReturn(Optional.empty());
+    when(exams.findByInstitutionAndYear("IFRN", exam.getYear())).thenReturn(Optional.of(exam));
+    when(questions.findByEditionOrdered("IFRN", exam.getYear())).thenReturn(board);
+    when(essayPrompts.findByExamInstitutionAndYear("IFRN", exam.getYear())).thenReturn(Optional.empty());
   }
 
   private void stubCreationIds(long simulationId, long attemptId) {
@@ -879,13 +879,13 @@ class SimulationServiceTest {
     List<Question> board = List.of(
         editionQuestion(101L, lp(), 2026, 1, "A", false),
         editionQuestion(102L, mat(), 2026, 2, "B", false));
-    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
-    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(board);
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2026)).thenReturn(Optional.of(exam));
+    when(questions.findByEditionOrdered("IFRN", (short) 2026)).thenReturn(board);
     ExamEssayPrompt prompt = new ExamEssayPrompt();
     ReflectionTestUtils.setField(prompt, "genre", "artigo de opinião");
     ReflectionTestUtils.setField(prompt, "theme", "mudanças climáticas");
     ReflectionTestUtils.setField(prompt, "pseudonym", "Amazonino Belém");
-    when(essayPrompts.findByExamYear((short) 2026)).thenReturn(Optional.of(prompt));
+    when(essayPrompts.findByExamInstitutionAndYear("IFRN", (short) 2026)).thenReturn(Optional.of(prompt));
     stubCreationIds(8L, 58L);
 
     var out = service.createByEdition(1L, new CreateEditionSimulationRequest(2026, "ESTUDO"));
@@ -896,7 +896,7 @@ class SimulationServiceTest {
   @Test
   void createByEditionUnknownYearIs404() {
     activeUser();
-    when(exams.findByYear((short) 2030)).thenReturn(Optional.empty());
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2030)).thenReturn(Optional.empty());
 
     ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
         () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2030, "PROVA")));
@@ -906,7 +906,7 @@ class SimulationServiceTest {
   @Test
   void createByEditionMissing2021ExplainsAbsence() {
     activeUser();
-    when(exams.findByYear((short) 2021)).thenReturn(Optional.empty());
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2021)).thenReturn(Optional.empty());
 
     ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
         () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2021, "PROVA")));
@@ -918,9 +918,9 @@ class SimulationServiceTest {
   void createByEditionWithIncompleteBoardIs409() {
     activeUser();
     Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
-    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2026)).thenReturn(Optional.of(exam));
     // Total divergente da capa.
-    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(List.of(
+    when(questions.findByEditionOrdered("IFRN", (short) 2026)).thenReturn(List.of(
         editionQuestion(101L, lp(), 2026, 1, "A", false),
         editionQuestion(102L, lp(), 2026, 2, "B", false),
         editionQuestion(103L, mat(), 2026, 3, "C", false)));
@@ -934,9 +934,9 @@ class SimulationServiceTest {
   void createByEditionWithNumberGapIs409() {
     activeUser();
     Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
-    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2026)).thenReturn(Optional.of(exam));
     // Falta a questão 3 (lacuna na numeração).
-    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(List.of(
+    when(questions.findByEditionOrdered("IFRN", (short) 2026)).thenReturn(List.of(
         editionQuestion(101L, lp(), 2026, 1, "A", false),
         editionQuestion(102L, lp(), 2026, 2, "B", false),
         editionQuestion(103L, mat(), 2026, 4, "C", false),
@@ -951,9 +951,9 @@ class SimulationServiceTest {
   void createByEditionWithDisciplineMismatchIs409() {
     activeUser();
     Exam exam = editionExam(9L, 2026, "48/2025", 4, 2, 2);
-    when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam));
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2026)).thenReturn(Optional.of(exam));
     // 3 LP + 1 MAT contra 2 + 2 da capa.
-    when(questions.findByEditionYearOrdered((short) 2026)).thenReturn(List.of(
+    when(questions.findByEditionOrdered("IFRN", (short) 2026)).thenReturn(List.of(
         editionQuestion(101L, lp(), 2026, 1, "A", false),
         editionQuestion(102L, lp(), 2026, 2, "B", false),
         editionQuestion(103L, lp(), 2026, 3, "C", false),
@@ -974,6 +974,104 @@ class SimulationServiceTest {
         () -> service.createByEdition(1L, new CreateEditionSimulationRequest(null, "PROVA")));
     assertThrows(BadRequestException.class,
         () -> service.createByEdition(1L, new CreateEditionSimulationRequest(1999, "PROVA")));
+  }
+
+  // ---- TASK E.1: simulado real por (institution, year) ----
+
+  private static Exam eajEditionExam(
+      long id, int year, int objective, int lp, int mat, int cn, int ch) {
+    Exam e = new Exam();
+    ReflectionTestUtils.setField(e, "id", id);
+    ReflectionTestUtils.setField(e, "institution", "EAJ");
+    ReflectionTestUtils.setField(e, "year", (short) year);
+    ReflectionTestUtils.setField(e, "edital", "DESCONHECIDO");
+    ReflectionTestUtils.setField(e, "objectiveCount", (short) objective);
+    ReflectionTestUtils.setField(e, "lpCount", (short) lp);
+    ReflectionTestUtils.setField(e, "matCount", (short) mat);
+    ReflectionTestUtils.setField(e, "cnCount", (short) cn);
+    ReflectionTestUtils.setField(e, "chCount", (short) ch);
+    ReflectionTestUtils.setField(e, "durationMinutes", (short) 180);
+    ReflectionTestUtils.setField(e, "hasEssay", false);
+    ReflectionTestUtils.setField(e, "scoringRule", null);
+    return e;
+  }
+
+  private static Discipline cn() {
+    return discipline(3L, "CIENCIAS_NATUREZA", "Ciências da Natureza");
+  }
+
+  private static Discipline ch() {
+    return discipline(4L, "CIENCIAS_HUMANAS", "Ciências Humanas");
+  }
+
+  @Test
+  void createByEditionEaj2022DiffersFromIfrn2022() {
+    activeUser();
+    Exam fullExam = eajEditionExam(20L, 2022, 40, 20, 20, 0, 0);
+    List<Question> full = new ArrayList<>();
+    for (int n = 1; n <= 40; n++) {
+      full.add(editionQuestion(200L + n, n <= 20 ? lp() : mat(), 2022, n, "A", false));
+    }
+    when(exams.findByInstitutionAndYear("EAJ", (short) 2022)).thenReturn(Optional.of(fullExam));
+    when(questions.findByEditionOrdered("EAJ", (short) 2022)).thenReturn(full);
+    stubCreationIds(8L, 60L);
+
+    var out = service.createByEdition(1L, new CreateEditionSimulationRequest(2022, "PROVA", "EAJ"));
+
+    assertEquals(40, out.questionCount());
+    assertTrue(out.title().contains("EAJ 2022"));
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("EAJ 2022")));
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("TRANSCRIBED_FROM_MD")));
+  }
+
+  @Test
+  void createByEditionEaj2021With50In4Areas() {
+    activeUser();
+    Exam eaj2021 = eajEditionExam(21L, 2021, 50, 15, 15, 12, 8);
+    List<Question> full = new ArrayList<>();
+    for (int n = 1; n <= 50; n++) {
+      Discipline d = n <= 15 ? lp() : n <= 30 ? mat() : n <= 42 ? cn() : ch();
+      full.add(editionQuestion(300L + n, d, 2021, n, "A", false));
+    }
+    when(exams.findByInstitutionAndYear("EAJ", (short) 2021)).thenReturn(Optional.of(eaj2021));
+    when(questions.findByEditionOrdered("EAJ", (short) 2021)).thenReturn(full);
+    stubCreationIds(8L, 61L);
+
+    var out = service.createByEdition(1L, new CreateEditionSimulationRequest(2021, "ESTUDO", "EAJ"));
+
+    assertEquals(50, out.questionCount());
+    assertTrue(out.title().contains("EAJ 2021"));
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("CN 12 + CH 8")));
+  }
+
+  @Test
+  void createByEditionEaj2023IsNotFound() {
+    activeUser();
+    when(exams.findByInstitutionAndYear("EAJ", (short) 2023)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2023, "PROVA", "EAJ")));
+    assertEquals("EDITION_NOT_FOUND", ex.getCode());
+    assertTrue(ex.getMessage().contains("EAJ 2023"));
+  }
+
+  @Test
+  void createByEditionIfrn2021PointsToEaj() {
+    activeUser();
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2021)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2021, "PROVA", "IFRN")));
+    assertEquals("EDITION_NOT_FOUND", ex.getCode());
+    assertTrue(ex.getMessage().contains("EAJ-2021"));
+  }
+
+  @Test
+  void createByEditionInvalidInstitutionIs400() {
+    activeUser();
+
+    assertThrows(BadRequestException.class,
+        () -> service.createByEdition(1L, new CreateEditionSimulationRequest(2022, "PROVA", "XXX")));
   }
 
   @Test

@@ -24,4 +24,24 @@ public interface ExamDocumentRepository extends JpaRepository<ExamDocument, Long
 
   @Query("SELECT COUNT(d) FROM ExamDocument d WHERE d.version.exam.year = :year")
   long countByExamYear(@Param("year") Short year);
+
+  /**
+   * Documentos por edição composta (TASK E.1): {@code (institution, year)}.
+   * Ano sozinho nunca decide a edição (EAJ-2022 ≠ IFRN-2022).
+   */
+  @Query("""
+      SELECT d FROM ExamDocument d
+      JOIN FETCH d.version v JOIN FETCH v.exam e
+      WHERE e.institution = :institution AND e.year = :year
+      ORDER BY v.versionCode ASC, d.kind ASC, d.fileName ASC
+      """)
+  List<ExamDocument> findByExamInstitutionAndYear(
+      @Param("institution") String institution, @Param("year") Short year);
+
+  @Query("""
+      SELECT COUNT(d) FROM ExamDocument d
+      WHERE d.version.exam.institution = :institution AND d.version.exam.year = :year
+      """)
+  long countByExamInstitutionAndYear(
+      @Param("institution") String institution, @Param("year") Short year);
 }

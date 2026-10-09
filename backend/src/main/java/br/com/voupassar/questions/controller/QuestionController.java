@@ -67,12 +67,14 @@ public class QuestionController {
           @RequestParam(required = false) Long topicId,
       @Parameter(description = "Filtro por subassunto (id).", example = "25")
           @RequestParam(required = false) Long subtopicId,
-      @Parameter(description = "Filtro por edição-fonte (ano).", example = "2026")
+      @Parameter(description = "Filtro por edição-fonte (ano). Ano sozinho nunca decide a edição (EAJ-2022 ≠ IFRN-2022).", example = "2026")
           @RequestParam(required = false) Integer year,
+      @Parameter(description = "Filtro por processo seletivo: IFRN ou EAJ (TASK E.1). Ausente = ambas.", example = "EAJ")
+          @RequestParam(required = false) String institution,
       @Parameter(description = "Filtro por dificuldade estimada.", example = "MEDIA")
           @RequestParam(required = false) String difficulty,
       @Parameter(
-              description = "Filtro por origem. OFFICIAL = prova real do IFRN.",
+              description = "Filtro por origem. OFFICIAL = prova real (IFRN ou EAJ/UFRN).",
               example = "OFFICIAL")
           @RequestParam(required = false) String sourceType,
       @Parameter(description = "Página 0-based.", example = "0")
@@ -82,7 +84,7 @@ public class QuestionController {
       @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
     return service.searchForUser(
         requireAuth(principal),
-        disciplineCode, topicId, subtopicId, year, difficulty, sourceType, page, size);
+        disciplineCode, topicId, subtopicId, year, institution, difficulty, sourceType, page, size);
   }
 
   @Operation(

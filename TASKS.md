@@ -517,7 +517,26 @@ Critérios:
 
 > Depende de C + D. Não mudar comportamento IFRN sem teste de regressão.
 
-## TASK E.1 — Edições e questões com `institution`
+## TASK E.1 — Edições e questões com `institution` [DONE 2026-10-09]
+
+Execução 2026-10-09: religação por `(institution,year)` em todo o backend
+(V19 §9 resolvido) — `ExamRepository.findByInstitutionOrderByYearAsc` novo;
+`ExamVersion/Document/EssayPrompt` + `QuestionRepository` com variantes por
+instituição (`search` ganha `institution`; `findByEditionOrdered`,
+`countByDisciplineForInstitution` novos; legados por ano mantidos só para
+anos sem colisão); `ExamService.listEditions(?institution=)` (ausente = ambas
+`EAJ+IFRN` ordenadas, com rótulo) + detalhe/documents/stats por
+`(institution,year)` (ausente = `IFRN` compatível); `QuestionService.search`
+com `?institution=` (ano sozinho = ambas, nunca decide) + `institution` em
+`QuestionResponse` e nota de origem EAJ; `POST /by-edition` com `institution?`
+(ausente = IFRN) + validação LP/MAT/CN/CH por edição + título/`filter_json`
+com processo + `institution` em `CadernoItem/ResultItem/StudyFeedback`;
+`docs/api-provas.md`, `api-questoes.md`, `api-simulado-edicao.md`
+(+ nota em `api-simulados.md`) atualizados. Provas: `mvn test` 279/279
+(257 regressão + 22 novos E.1: EAJ-2022 ≠ IFRN-2022 em editions/questions/
+simulado; EAJ-2021 50Q 15/15/12/8 em 4 áreas; `EDITION_NOT_FOUND` para
+`(EAJ,2023)` e `(IFRN,2021)` com mensagem honesta apontando o processo
+existente).
 
 Entregas:
 

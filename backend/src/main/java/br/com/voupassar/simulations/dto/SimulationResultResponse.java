@@ -45,6 +45,8 @@ public record SimulationResultResponse(
       @Schema(example = "12") long questionId,
       @Schema(example = "MATEMATICA") String disciplineCode,
       @Schema(example = "2026", nullable = true) Integer sourceYear,
+      @Schema(example = "IFRN", nullable = true, description = "Processo seletivo da questão: IFRN ou EAJ (TASK E.1).")
+      String institution,
       @Schema(example = "17", nullable = true) Integer sourceQuestionNumber,
       @Schema(nullable = true, description = "Última resposta (NULL = não respondida).")
       String selectedOption,

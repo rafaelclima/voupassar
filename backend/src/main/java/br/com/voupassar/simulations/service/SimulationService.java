@@ -252,17 +252,18 @@ public class SimulationService {
     User user = requireActiveUser(userId);
     int year = requireEditionYear(req == null ? null : req.editionYear());
     String mode = normalizeMode(req == null ? null : req.mode());
-    Exam exam = requireExam(year);
+    String institution = normalizeInstitutionOrDefault(req == null ? null : req.institution());
+    Exam exam = requireExam(institution, year);
 
-    List<Question> board = questions.findByEditionYearOrdered((short) year);
+    List<Question> board = questions.findByEditionOrdered(institution, (short) year);
     validateEditionBoard(exam, board);
 
     Simulation simulation = new Simulation();
     simulation.setOwner(user);
     simulation.setType("REAL_EDITION");
     simulation.setExamId(exam.getId());
-    simulation.setFilterJson(filterJsonEdition(year, mode));
-    simulation.setTitle(titleEdition(year, board.size(), mode));
+    simulation.setFilterJson(filterJsonEdition(institution, year, mode));
+    simulation.setTitle(titleEdition(institution, year, board.size(), mode));
     simulations.save(simulation);
 
     SimulationAttempt attempt = new SimulationAttempt();
@@ -290,11 +291,11 @@ public class SimulationService {
       byId.put(q.getId(), q);
     }
     SimulationAttemptResponse base = toAttemptResponse(attempt, simulation, rows, byId, Map.of(), false);
-    List<String> notes = new ArrayList<>(base.notes().size() + 4);
-    notes.addAll(editionNotes(exam, year));
+    List<String> notes = new ArrayList<>(base.notes().size() + 6);
+    notes.addAll(editionNotes(exam, institution, year));
     notes.addAll(base.notes());
-    log.info("simulado real criado user_id={} attempt_id={} edition={} count={} mode={}",
-        userId, attempt.getId(), year, board.size(), mode);
+    log.info("simulado real criado user_id={} attempt_id={} edition={} {} count={} mode={}",
+        userId, attempt.getId(), institution, year, board.size(), mode);
     return new SimulationAttemptResponse(
         base.attemptId(), base.simulationId(), base.type(), base.title(),
         base.disciplineCode(), base.disciplineName(), base.mode(), base.status(),
@@ -491,6 +492,7 @@ public class SimulationService {
         attempt.getId(), position, question.getId(),
         question.getDiscipline().getCode(), question.getDiscipline().getName(),
         question.getSourceYear() == null ? null : question.getSourceYear().intValue(),
+        question.getExam() != null ? question.getExam().getInstitution() : null,
         question.getSourceQuestionNumber() == null ? null : question.getSourceQuestionNumber().intValue(),
         last.getSelectedOption(), isCorrect, wasAnnulled,
         row.getFrozenAnswerKey(),
@@ -608,36 +610,63 @@ public class SimulationService {
     return year;
   }
 
-  private Exam requireExam(int year) {
+  private Exam requireExam(String institution, int year) {
     Short y = (short) year;
-    return exams.findByYear(y).orElseThrow(() -> {
-      if (year == 2021) {
+    return exams.findByInstitutionAndYear(institution, y).orElseThrow(() -> {
+      if ("IFRN".equals(institution) && year == 2021) {
         return new ResourceNotFoundException(
             "EDITION_NOT_FOUND",
-            "Edição 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3).");
+            "Edição IFRN 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3)."
+                + " EAJ-2021 existe (50Q em 4 áreas) — informe institution=EAJ.");
+      }
+      if ("EAJ".equals(institution)) {
+        return new ResourceNotFoundException(
+            "EDITION_NOT_FOUND",
+            "Edição EAJ " + year + " não encontrada: EAJ possui apenas 2021/2022/2025 no dataset"
+                + " (nunca interpolar edições inexistentes).");
       }
       return new ResourceNotFoundException(
-          "EDITION_NOT_FOUND", "Edição " + year + " não encontrada.");
+          "EDITION_NOT_FOUND", "Edição " + institution + " " + year + " não encontrada.");
     });
   }
 
   /**
+   * Normaliza {@code institution} do simulado real (TASK E.1):
+   * ausente = {@code IFRN} (compatibilidade); senão IFRN|EAJ, senão 400.
+   */
+  private static String normalizeInstitutionOrDefault(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return "IFRN";
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "INVALID_INSTITUTION",
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
+  /**
    * Garante fidelidade do caderno real: total, numeração 1..N sem lacunas e
-   * divisão por disciplina iguais aos da configuração da edição.
+   * divisão por disciplina iguais aos da configuração daquela edição
+   * (TASK E.1: EAJ-2021 = 50Q 15/15/12/8; EAJ-2022/2025 = 40Q 20/20).
    */
   private static void validateEditionBoard(Exam exam, List<Question> board) {
+    String institution = exam.getInstitution() == null ? "IFRN" : exam.getInstitution();
     int year = exam.getYear().intValue();
+    String tag = institution + " " + year;
     int expected = exam.getObjectiveCount().intValue();
     if (board.isEmpty()) {
       throw new ConflictException(
           "INCOMPLETE_EDITION",
-          "Edição " + year + " sem questões importadas (esperadas " + expected
+          "Edição " + tag + " sem questões importadas (esperadas " + expected
               + " pela capa): NECESSITA REVISÃO antes de publicar simulado real.");
     }
     if (board.size() != expected) {
       throw new ConflictException(
           "INCOMPLETE_EDITION",
-          "Edição " + year + " incompleta: esperadas " + expected
+          "Edição " + tag + " incompleta: esperadas " + expected
               + " objetivas (capa) × importadas " + board.size()
               + ": NECESSITA REVISÃO antes de publicar simulado real.");
     }
@@ -651,13 +680,40 @@ public class SimulationService {
       if (!numbers.contains(n)) {
         throw new ConflictException(
             "INCOMPLETE_EDITION",
-            "Edição " + year + " com numeração incompleta (ausente a questão " + n
+            "Edição " + tag + " com numeração incompleta (ausente a questão " + n
                 + "): NECESSITA REVISÃO antes de publicar simulado real.");
       }
     }
     int lpExpected = exam.getLpCount() == null ? 0 : exam.getLpCount().intValue();
     int matExpected = exam.getMatCount() == null ? 0 : exam.getMatCount().intValue();
-    if (lpExpected + matExpected == expected) {
+    int cnExpected = exam.getCnCount() == null ? 0 : exam.getCnCount().intValue();
+    int chExpected = exam.getChCount() == null ? 0 : exam.getChCount().intValue();
+    if (lpExpected + matExpected + cnExpected + chExpected == expected) {
+      long lp = 0;
+      long mat = 0;
+      long cn = 0;
+      long ch = 0;
+      for (Question q : board) {
+        String code = q.getDiscipline() == null ? "" : q.getDiscipline().getCode();
+        if ("LINGUA_PORTUGUESA".equals(code)) {
+          lp++;
+        } else if ("MATEMATICA".equals(code)) {
+          mat++;
+        } else if ("CIENCIAS_NATUREZA".equals(code)) {
+          cn++;
+        } else if ("CIENCIAS_HUMANAS".equals(code)) {
+          ch++;
+        }
+      }
+      if (lp != lpExpected || mat != matExpected || cn != cnExpected || ch != chExpected) {
+        throw new ConflictException(
+            "INCOMPLETE_EDITION",
+            "Edição " + tag + " com divisão disciplinar divergente: esperado LP "
+                + lpExpected + " + MAT " + matExpected + " + CN " + cnExpected + " + CH " + chExpected
+                + " × importado LP " + lp + " + MAT " + mat + " + CN " + cn + " + CH " + ch
+                + ": NECESSITA REVISÃO antes de publicar simulado real.");
+      }
+    } else if (lpExpected + matExpected == expected) {
       long lp = 0;
       long mat = 0;
       for (Question q : board) {
@@ -671,7 +727,7 @@ public class SimulationService {
       if (lp != lpExpected || mat != matExpected) {
         throw new ConflictException(
             "INCOMPLETE_EDITION",
-            "Edição " + year + " com divisão disciplinar divergente: esperado LP "
+            "Edição " + tag + " com divisão disciplinar divergente: esperado LP "
                 + lpExpected + " + MAT " + matExpected + " × importado LP " + lp
                 + " + MAT " + mat + ": NECESSITA REVISÃO antes de publicar simulado real.");
       }
@@ -679,27 +735,44 @@ public class SimulationService {
   }
 
   private List<String> editionNotes(Exam exam, int year) {
-    List<String> notes = new ArrayList<>(4);
-    notes.add("Simulado real da edição " + year + " (edital " + exam.getEdital() + "): caderno integral "
-        + "em ordem original (posições 1.." + exam.getObjectiveCount()
+    String institution = exam.getInstitution() == null ? "IFRN" : exam.getInstitution();
+    return editionNotes(exam, institution, year);
+  }
+
+  private List<String> editionNotes(Exam exam, String institution, int year) {
+    List<String> notes = new ArrayList<>(6);
+    notes.add("Simulado real da edição " + institution + " " + year + " (edital " + exam.getEdital()
+        + "): caderno integral em ordem original (posições 1.." + exam.getObjectiveCount()
         + ", incluindo anuladas nas posições originais) — sem sorteio e sem filtro de dificuldade.");
-    notes.add("Estrutura dirigida pela configuração desta edição (LP " + exam.getLpCount()
-        + " + MAT " + exam.getMatCount() + " objetivas"
+    int cn = exam.getCnCount() == null ? 0 : exam.getCnCount().intValue();
+    int ch = exam.getChCount() == null ? 0 : exam.getChCount().intValue();
+    String structure = "LP " + exam.getLpCount() + " + MAT " + exam.getMatCount();
+    if (cn + ch > 0) {
+      structure += " + CN " + cn + " + CH " + ch;
+    }
+    notes.add("Estrutura dirigida pela configuração desta edição (" + structure + " objetivas"
         + (Boolean.TRUE.equals(exam.getHasEssay()) ? " + 1 produção textual" : "")
-        + ") — nunca regra universal.");
+        + ", " + exam.getDurationMinutes() + " min)"
+        + " — nunca regra universal.");
     if (Boolean.TRUE.equals(exam.getHasEssay())) {
-      String essay = essayPrompts.findByExamYear((short) year)
+      String essay = essayPrompts.findByExamInstitutionAndYear(institution, (short) year)
           .map(p -> p.getGenre() + " — " + p.getTheme() + " (pseudônimo " + p.getPseudonym() + ")")
           .orElse(null);
       notes.add(essay == null
           ? "Produção textual desta edição como referência (sem correção automática: pontuação DESCONHECIDA)."
           : "Produção textual desta edição como referência (" + essay
               + ") — sem correção automática (pontuação DESCONHECIDA, fora do MVP).");
+    } else if ("EAJ".equals(institution)) {
+      notes.add("Edição EAJ sem produção textual (has_essay FALSE nas 3 edições observadas).");
     }
     if (exam.getScoringRule() == null) {
       notes.add("scoring_rule DESCONHECIDA: anuladas fora do aproveitamento; regra de pontuação sem fonte oficial.");
     }
-    notes.add("Questões com revisão humana PENDENTE (TASK 12.2): classificação pedagógica nunca é verdade oficial do IFRN.");
+    if ("EAJ".equals(institution)) {
+      notes.add("Gabarito EAJ = transcrição da curadoria (TRANSCRIBED_FROM_MD, sem PDF oficial no repo — ver docs/blockers.md).");
+    }
+    notes.add("Questões com revisão humana PENDENTE (TASK 12.2): classificação pedagógica nunca é verdade oficial do "
+        + ("EAJ".equals(institution) ? "EAJ/UFRN (Comperve)." : "IFRN."));
     return notes;
   }
 
@@ -724,13 +797,22 @@ public class SimulationService {
         + (difficulty == null ? "" : " " + difficulty) + " [" + mode + "]";
   }
 
+  private static String titleEdition(String institution, int year, int count, String mode) {
+    return "Simulado Edição " + institution + " " + year + " — " + count
+        + (count == 1 ? " questão" : " questões") + " [" + mode + "]";
+  }
+
   private static String titleEdition(int year, int count, String mode) {
-    return "Simulado Edição " + year + " — " + count + (count == 1 ? " questão" : " questões")
-        + " [" + mode + "]";
+    return titleEdition("IFRN", year, count, mode);
+  }
+
+  private static String filterJsonEdition(String institution, int year, String mode) {
+    return "{\"type\":\"REAL_EDITION\",\"institution\":\"" + institution
+        + "\",\"editionYear\":" + year + ",\"mode\":\"" + mode + "\"}";
   }
 
   private static String filterJsonEdition(int year, String mode) {
-    return "{\"type\":\"REAL_EDITION\",\"editionYear\":" + year + ",\"mode\":\"" + mode + "\"}";
+    return filterJsonEdition("IFRN", year, mode);
   }
 
   private static String filterJson(
@@ -914,6 +996,7 @@ public class SimulationService {
           q.getId(),
           q.getDiscipline().getCode(),
           q.getSourceYear() == null ? null : q.getSourceYear().intValue(),
+          q.getExam() != null ? q.getExam().getInstitution() : null,
           q.getSourceQuestionNumber() == null ? null : q.getSourceQuestionNumber().intValue(),
           answered,
           reveal ? row.getFrozenAnswerKey() : null,
@@ -954,6 +1037,7 @@ public class SimulationService {
           q.getId(),
           q.getDiscipline().getCode(),
           q.getSourceYear() == null ? null : q.getSourceYear().intValue(),
+          q.getExam() != null ? q.getExam().getInstitution() : null,
           q.getSourceQuestionNumber() == null ? null : q.getSourceQuestionNumber().intValue(),
           p.last == null ? null : p.last.getSelectedOption(),
           p.isCorrect,

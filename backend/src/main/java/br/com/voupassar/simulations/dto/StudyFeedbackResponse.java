@@ -28,6 +28,8 @@ public record StudyFeedbackResponse(
     @Schema(example = "MATEMATICA") String disciplineCode,
     @Schema(example = "Matemática") String disciplineName,
     @Schema(example = "2026", nullable = true) Integer sourceYear,
+    @Schema(example = "IFRN", nullable = true, description = "Processo seletivo da questão: IFRN ou EAJ (TASK E.1).")
+    String institution,
     @Schema(example = "17", nullable = true) Integer sourceQuestionNumber,
     @Schema(example = "C", description = "Última resposta vinculada a esta execução.")
     String selectedOption,

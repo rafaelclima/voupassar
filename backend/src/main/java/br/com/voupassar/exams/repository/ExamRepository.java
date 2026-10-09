@@ -12,6 +12,8 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 
   List<Exam> findAllByOrderByInstitutionAscYearAsc();
 
+  List<Exam> findByInstitutionOrderByYearAsc(String institution);
+
   Optional<Exam> findByYear(Short year);
 
   /**

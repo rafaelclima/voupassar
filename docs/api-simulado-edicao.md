@@ -1,4 +1,4 @@
-# API do Simulado Real por Edição — TASK 5.5 (reproduzir a estrutura da edição)
+# API do Simulado Real por Edição — TASK 5.5 + multi-processo E.1
 
 > Selecionar uma edição real e reproduzir a estrutura **daquela edição**:
 > caderno integral em ordem original sobre `simulations`
@@ -11,19 +11,25 @@
 > 5.2 sem endpoint novo; a ocultação do Modo Prova é a da TASK 5.3.
 > A discursiva sai só como referência em notas (correção automática
 > DESCONHECIDA / fora do MVP).
+>
+> TASK E.1: edição composta `(institution,year)` — EAJ-2021 (50Q 15/15/12/8),
+> EAJ-2022/2025 (40Q 20/20), IFRN (40Q 20/20). Ano sozinho nunca decide
+> (EAJ-2022 ≠ IFRN-2022).
 
 ## Endpoint (autenticado)
 
 | Rota | Descrição |
 |---|---|
-| `POST /api/v1/simulations/by-edition` | criar e iniciar: `{editionYear! 2000–2100, mode! ESTUDO/PROVA}` → `201` com caderno integral em ordem original (gabarito oculto) |
+| `POST /api/v1/simulations/by-edition` | criar e iniciar: `{editionYear! 2000–2100, mode! ESTUDO/PROVA, institution? IFRN\|EAJ}` → `201` com caderno integral em ordem original (gabarito oculto). `institution` ausente = IFRN (compatibilidade); título e `filter_json` carregam o processo (`Simulado Edição EAJ 2022 — 40 questões [PROVA]`) |
 
 Sem token → `401 {"code":"UNAUTHORIZED",…}` em envelope (secure-by-default,
 igual às TASKs 3.2–5.4). Edição inexistente → `404 EDITION_NOT_FOUND`
-(**2021** registra explicitamente a ausência do dataset, AGENTS.md §3, nunca
+(`IFRN 2021` aponta EAJ-2021; `EAJ 2023` registra só 2021/2022/2025 — nunca
 dados inventados); ano fora de 2000–2100 → `400` (`VALIDATION_ERROR` na borda,
 `INVALID_EDITION_YEAR` no serviço); modo malformado → `400`
-(`VALIDATION_ERROR` na borda, `INVALID_MODE` no serviço); banco divergente da
+(`VALIDATION_ERROR` na borda, `INVALID_MODE` no serviço);
+`institution` inválida → `400` (`VALIDATION_ERROR` na borda,
+`INVALID_INSTITUTION` no serviço); banco divergente da
 capa → `409 INCOMPLETE_EDITION` com esperado × importado explícitos (nunca
 caderno parcial silencioso). Tudo no envelope `{code, message, details,
 traceId, timestamp, path}`, sem stack trace; `traceId` também no header
@@ -31,30 +37,39 @@ traceId, timestamp, path}`, sem stack trace; `traceId` também no header
 
 ## Regras de evidência
 
-* **Configuração por edição, nunca universal:** total, divisão LP/MAT e
-  discursiva lidos de `exams` (+ `exam_essay_prompts`) daquela edição. Todas
-  as 6 capas observadas declaram 20 LP + 20 MAT + 1 textual
-  (`docs/provas-inventario.md §1`), mas o código não hardcoda esses números —
+* **Configuração por edição, nunca universal:** total, divisão LP/MAT/CN/CH,
+  duração e discursiva lidos de `exams` (+ `exam_essay_prompts`) daquela
+  edição. IFRN: 6 capas com 20 LP + 20 MAT + 1 textual
+  (`docs/provas-inventario.md §1`); EAJ: 2021 = 50Q (15/15/12/8, 180 min, sem
+  discursiva), 2022/2025 = 40Q (20/20, 180 min, sem discursiva)
+  (`docs/provas-inventario-eaj.md`, V19) — o código não hardcoda esses números,
   a validação confronta o banco contra a linha da edição.
 * **Fidelidade do caderno:** sem sorteio e sem filtro de dificuldade;
   posições 1..N seguem `source_question_number`; a criação falha com `409`
   quando o total diverge do `objective_count` da capa, quando há lacuna na
-  numeração 1..N ou quando a divisão LP/MAT importada diverge da capa.
+  numeração 1..N ou quando a divisão disciplinar importada diverge da capa
+  (LP/MAT/CN/CH quando a soma fecha; LP/MAT no legado IFRN).
 * **Anuladas nas posições originais:** ao contrário da seleção por disciplina
   (TASK 5.1, que exclui anuladas), aqui elas participam do caderno
   (`frozen_answer_key='X'`) e ficam fora do aproveitamento (`isCorrect` NULL,
-  pontuação DESCONHECIDA, TASK 1.3 §4).
+  pontuação DESCONHECIDA, TASK 1.3 §4). Q23-2025 (X) participa; Q22/Q39-2025
+  excluídas na D.3 falham com `409 INCOMPLETE_EDITION` até retranscrição.
 * **Caderno misto:** o cabeçalho da execução/resultado não carrega disciplina
-  única (`disciplineCode/Name` NULL); cada posição mantém a sua. Título e
-  `filter_json` determinísticos: `Simulado Edição {ano} — {N} questões
-  [{modo}]` / `{"type":"REAL_EDITION","editionYear":…,"mode":…}`.
+  única (`disciplineCode/Name` NULL); cada posição mantém a sua **+**
+  `institution` (EAJ-2022 ≠ IFRN-2022). Título e `filter_json`
+  determinísticos: `Simulado Edição {IFRN|EAJ} {ano} — {N} questões [{modo}]` /
+  `{"type":"REAL_EDITION","institution":…,"editionYear":…,"mode":…}`.
+  Ritmo de referência = duração daquela edição (EAJ 180 min ≈ 3h; IFRN 240 min
+  ≈ 4h) — só exibição no frontend, nunca regra de correção.
 * **Reuso do ciclo (sem endpoint novo):** respostas via `POST /attempts` com
   `simulationAttemptId` (TASK 3.7, ocultas em PROVA pela TASK 5.3); `GET`
   (retomar, gabarito oculto), `POST /submit` / `POST /abandon` (placar do
   servidor), `GET /result` e `GET /feedback/{position}` (TASK 5.2; em PROVA
-  só após encerrar) funcionam sem mudança.
+  só após encerrar) funcionam sem mudança (posições agora com `institution`).
 * **Curadoria:** questões `PENDING/PENDENTE_REVISAO` participam com nota de
-  revisão pendente (TASK 12.2) — nunca verdade oficial do IFRN.
+  revisão pendente (TASK 12.2) — nunca verdade oficial do IFRN/EAJ.
+  Gabarito EAJ = transcrição (`TRANSCRIBED_FROM_MD`, sem PDF oficial —
+  `docs/blockers.md`).
 * **Fora de escopo (não inventados):** correção da discursiva, tempo limite
   por simulado (coluna inexistente no DDL), embaralhamento de alternativas,
   múltiplos cadernos por edição (ofertas 2023 NÃO CONFIRMADAS — se

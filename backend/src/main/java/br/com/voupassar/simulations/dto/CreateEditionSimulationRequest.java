@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Pattern;
  * anuladas nas posições originais (fora do aproveitamento).
  */
 public record CreateEditionSimulationRequest(
-    @Schema(example = "2026", description = "Ano da edição real (2021 ausente do dataset).")
+    @Schema(example = "2026", description = "Ano da edição real (IFRN-2021 ausente; EAJ: só 2021/2022/2025).")
         @NotNull(message = "Ano da edição é obrigatório.")
         @Min(value = 2000, message = "Ano da edição inválido.")
         @Max(value = 2100, message = "Ano da edição inválido.")
@@ -27,4 +27,17 @@ public record CreateEditionSimulationRequest(
         @Pattern(
             regexp = "(?i)ESTUDO|PROVA",
             message = "Modo deve ser ESTUDO ou PROVA.")
-        String mode) {}
+        String mode,
+    @Schema(
+            example = "IFRN",
+            description = "Processo seletivo: IFRN ou EAJ (TASK E.1). Ausente = IFRN (compatibilidade); ano sozinho nunca decide (EAJ-2022 ≠ IFRN-2022).")
+        @Pattern(
+            regexp = "(?i)IFRN|EAJ",
+            message = "Processo seletivo inválido (permitido IFRN, EAJ).")
+        String institution) {
+
+  /** Compatibilidade: corpo antigo sem {@code institution} = IFRN. */
+  public CreateEditionSimulationRequest(Integer editionYear, String mode) {
+    this(editionYear, mode, null);
+  }
+}

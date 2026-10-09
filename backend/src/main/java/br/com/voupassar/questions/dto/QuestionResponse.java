@@ -28,6 +28,8 @@ public record QuestionResponse(
         String sourceType,
     @Schema(example = "2020", description = "Ano-fonte; nulo quando a origem não é uma edição.")
         Integer examYear,
+    @Schema(example = "IFRN", description = "Processo seletivo da edição-fonte: IFRN ou EAJ (TASK E.1); nulo fora de OFFICIAL.")
+        String institution,
     @Schema(example = "1", description = "Número na prova-fonte; nulo fora de OFFICIAL.")
         Integer questionNumber,
     DisciplineRef discipline,

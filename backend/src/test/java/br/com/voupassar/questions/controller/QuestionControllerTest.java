@@ -69,6 +69,7 @@ class QuestionControllerTest {
         1L,
         "OFFICIAL",
         2026,
+        "IFRN",
         21,
         new DisciplineRef("MATEMATICA", "Matemática"),
         "Quanto é 2 + 2?",
@@ -101,7 +102,7 @@ class QuestionControllerTest {
   @Test
   void listReturnsPage() throws Exception {
     authenticate();
-    when(service.searchForUser(eq(1L), eq("MATEMATICA"), eq(null), eq(null), eq(null), eq(null), eq(null), eq(0), eq(20)))
+    when(service.searchForUser(eq(1L), eq("MATEMATICA"), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(0), eq(20)))
         .thenReturn(new PageResponse<>(List.of(item()), 0, 20, 120, 6, true, false));
 
     mvc().perform(get("/api/v1/questions").param("disciplineCode", "MATEMATICA"))
@@ -117,18 +118,18 @@ class QuestionControllerTest {
   @Test
   void listForwardsDefaults() throws Exception {
     authenticate();
-    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(0), eq(20)))
+    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(0), eq(20)))
         .thenReturn(new PageResponse<>(List.of(), 0, 20, 0, 0, true, true));
 
     mvc().perform(get("/api/v1/questions")).andExpect(status().isOk());
 
-    verify(service).searchForUser(1L, null, null, null, null, null, null, 0, 20);
+    verify(service).searchForUser(1L, null, null, null, null, null, null, null, 0, 20);
   }
 
   @Test
   void listInvalidFilterReturns400Envelope() throws Exception {
     authenticate();
-    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(null), eq("HARD"), eq(null), eq(0), eq(20)))
+    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(null), eq(null), eq("HARD"), eq(null), eq(0), eq(20)))
         .thenThrow(new BadRequestException("Dificuldade inválida: HARD."));
 
     mvc().perform(get("/api/v1/questions").param("difficulty", "HARD"))
@@ -141,12 +142,24 @@ class QuestionControllerTest {
   @Test
   void listUnknownEditionReturns404Envelope() throws Exception {
     authenticate();
-    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(2021), eq(null), eq(null), eq(0), eq(20)))
+    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(2021), eq(null), eq(null), eq(null), eq(0), eq(20)))
         .thenThrow(new ResourceNotFoundException("EDITION_NOT_FOUND", "Edição 2021 não encontrada."));
 
     mvc().perform(get("/api/v1/questions").param("year", "2021"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code").value("EDITION_NOT_FOUND"));
+  }
+
+  @Test
+  void listWithInstitutionEajForwards() throws Exception {
+    authenticate();
+    when(service.searchForUser(eq(1L), eq(null), eq(null), eq(null), eq(null), eq("EAJ"), eq(null), eq(null), eq(0), eq(20)))
+        .thenReturn(new PageResponse<>(List.of(), 0, 20, 0, 0, true, true));
+
+    mvc().perform(get("/api/v1/questions").param("institution", "EAJ"))
+        .andExpect(status().isOk());
+
+    verify(service).searchForUser(1L, null, null, null, null, "EAJ", null, null, 0, 20);
   }
 
   @Test
@@ -179,7 +192,7 @@ class QuestionControllerTest {
   void detailHiddenDuringProvaHasNullKey() throws Exception {
     authenticate();
     QuestionResponse hidden = new QuestionResponse(
-        1L, "OFFICIAL", 2026, 21,
+        1L, "OFFICIAL", 2026, "IFRN", 21,
         new DisciplineRef("MATEMATICA", "Matemática"),
         "Quanto é 2 + 2?",
         List.of(

@@ -156,6 +156,27 @@ class SimulationControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"editionYear\":1999,\"mode\":\"PROVA\"}"))
         .andExpect(status().isBadRequest());
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"editionYear\":2022,\"mode\":\"PROVA\",\"institution\":\"XXX\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void createByEditionWithEajReturns201() throws Exception {
+    authenticate();
+    when(service.createByEdition(anyLong(), any())).thenReturn(new SimulationAttemptResponse(
+        60L, 8L, "REAL_EDITION", "Simulado Edição EAJ 2022 — 40 questões [PROVA]",
+        null, null, "PROVA", "IN_PROGRESS", 40,
+        OffsetDateTime.parse("2026-10-01T10:00:00Z"), null,
+        List.of(), null, List.of()));
+
+    mvc().perform(post("/api/v1/simulations/by-edition")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"editionYear\":2022,\"mode\":\"PROVA\",\"institution\":\"EAJ\"}"))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.attemptId").value(60))
+        .andExpect(jsonPath("$.type").value("REAL_EDITION"));
   }
 
   @Test
@@ -194,7 +215,7 @@ class SimulationControllerTest {
   void feedbackReturns200() throws Exception {
     authenticate();
     when(service.getStudyFeedback(1L, 55L, 1)).thenReturn(new StudyFeedbackResponse(
-        55L, 1, 21L, "MATEMATICA", "Matemática", 2026, 17,
+        55L, 1, 21L, "MATEMATICA", "Matemática", 2026, "IFRN", 17,
         "C", true, false, "C",
         3L, "PORCENTAGEM", "Porcentagem", 11L, "CALCULO_PERCENTUAL", "Cálculo percentual",
         "ALTA", "v1.1", List.of("nota")));

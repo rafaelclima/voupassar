@@ -9,11 +9,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * Agregados somente-leitura para {@code GET /editions/{year}/stats}.
+ * Agregados somente-leitura para {@code GET /editions/{year}/stats} (TASK 3.2)
+ * e filtro por processo (TASK E.1).
  *
  * <p>Contagens derivadas de {@code questions} (importador TASK 2.3).
  * Anuladas contam como conteúdo que apareceu na prova; regra de pontuação de
  * anuladas é DESCONHECIDA (TASK 1.3 §4) — aqui só contamos, nunca pontuamos.
+ *
+ * <p>Ano sozinho nunca decide a edição (EAJ-2022 ≠ IFRN-2022): os métodos
+ * legados por ano seguem para compatibilidade em anos sem colisão; o caminho
+ * E.1 usa sempre {@code (institution, year)}.
  */
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
@@ -22,6 +27,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
   long countByExamYearAndAnnulledTrue(Short year);
 
   long countByDisciplineCode(String disciplineCode);
+
+  long countByExamInstitutionAndExamYear(String institution, Short year);
+
+  long countByExamInstitutionAndExamYearAndAnnulledTrue(String institution, Short year);
 
   /**
    * Retorna linhas {@code [code(String), name(String), total(Long), annulled(Long)]}.
@@ -36,7 +45,22 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
   List<Object[]> countByDiscipline(@Param("year") Short year);
 
   /**
-   * Busca paginada do banco de questões (TASK 3.4).
+   * Mesmo agregado por edição composta (TASK E.1): {@code (institution, year)}.
+   *
+   * <p>Retorna linhas {@code [code(String), name(String), total(Long), annulled(Long)]}.
+   */
+  @Query("""
+      SELECT d.code, d.name, COUNT(q),
+             SUM(CASE WHEN q.annulled = true THEN 1 ELSE 0 END)
+      FROM Question q JOIN q.discipline d
+      WHERE q.exam.institution = :institution AND q.exam.year = :year
+      GROUP BY d.code, d.name
+      """)
+  List<Object[]> countByDisciplineForInstitution(
+      @Param("institution") String institution, @Param("year") Short year);
+
+  /**
+   * Busca paginada do banco de questões (TASK 3.4 + filtro {@code institution} na E.1).
    *
    * <p>Todos os filtros são opcionais ({@code null} = sem filtro). Filtros por
    * assunto/subassunto usam {@code EXISTS} sobre as classificações vigentes
@@ -44,6 +68,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
    * 2026-10-06). Ordem fixa e determinística:
    * ano-fonte crescente, número da questão, id — nunca inventar ordenação por
    * relevância sem algoritmo auditável (Fase 4).
+   *
+   * <p>Ano sozinho nunca decide a edição: {@code year} sem {@code institution}
+   * retorna ambas as instituições daquele ano (EAJ-2022 + IFRN-2022); com
+   * {@code institution} o recorte é por {@code (institution, year)}.
    */
   @Query(
       value = """
@@ -52,6 +80,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           LEFT JOIN q.exam e
           WHERE (:disciplineCode IS NULL OR d.code = :disciplineCode)
             AND (:year IS NULL OR e.year = :year)
+            AND (:institution IS NULL OR e.institution = :institution)
             AND (:difficulty IS NULL OR q.difficultyEstimate = :difficulty)
             AND (:sourceType IS NULL OR q.sourceType = :sourceType)
             AND (:topicId IS NULL OR EXISTS (
@@ -68,6 +97,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           LEFT JOIN q.exam e
           WHERE (:disciplineCode IS NULL OR d.code = :disciplineCode)
             AND (:year IS NULL OR e.year = :year)
+            AND (:institution IS NULL OR e.institution = :institution)
             AND (:difficulty IS NULL OR q.difficultyEstimate = :difficulty)
             AND (:sourceType IS NULL OR q.sourceType = :sourceType)
             AND (:topicId IS NULL OR EXISTS (
@@ -82,6 +112,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       @Param("topicId") Long topicId,
       @Param("subtopicId") Long subtopicId,
       @Param("year") Short year,
+      @Param("institution") String institution,
       @Param("difficulty") String difficulty,
       @Param("sourceType") String sourceType,
       Pageable pageable);
@@ -126,6 +157,22 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
       ORDER BY q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
       """)
   List<Question> findByEditionYearOrdered(@Param("year") Short year);
+
+  /**
+   * Caderno integral por edição composta (TASK E.1): {@code (institution, year)}.
+   *
+   * <p>Estrutura dirigida pelos dados daquela edição (EAJ-2021: 50Q 15/15/12/8;
+   * EAJ-2022/2025: 40Q 20/20; IFRN: 40Q 20/20): total, divisão por área e
+   * discursiva lidos de {@code exams}, nunca de regra universal.
+   */
+  @Query("""
+      SELECT q FROM Question q
+      JOIN q.exam e
+      WHERE e.institution = :institution AND e.year = :year
+      ORDER BY q.sourceQuestionNumber ASC NULLS LAST, q.id ASC
+      """)
+  List<Question> findByEditionOrdered(
+      @Param("institution") String institution, @Param("year") Short year);
 
   long countByAnnulledTrue();
 

@@ -1,4 +1,4 @@
-# API de Provas — TASK 3.2
+# API de Provas — TASK 3.2 + multi-processo E.1
 
 > Primeira API real do backend. Somente leitura sobre `exams`,
 > `exam_versions`, `exam_documents`, `exam_essay_prompts` (DDL TASK 2.2,
@@ -6,20 +6,25 @@
 > Enunciados, alternativas e gabaritos **não** saem aqui (TASK 3.4).
 > PDFs-fonte **não** são redistribuídos: documentos saem como metadados
 > (nome literal + SHA-256 + páginas), nunca como binário (AGENTS.md §12).
+>
+> TASK E.1 (Programa EAJ): dimensão `institution` (IFRN|EAJ) em todas as
+> rotas. Ano sozinho nunca decide a edição (EAJ-2022 ≠ IFRN-2022).
 
 ## Endpoints (todos autenticados até a TASK 3.5 emitir tokens)
 
 | Rota | Descrição |
 |---|---|
-| `GET /api/v1/editions` | listar edições (ano crescente): ano, edital, duração, contagens LP/MAT, `has_essay`, `scoring_rule`, nº de versões/documentos |
-| `GET /api/v1/editions/{year}` | detalhe: versões + documentos + prompt da discursiva |
-| `GET /api/v1/editions/{year}/documents` | documentos-fonte (metadados auditáveis) |
-| `GET /api/v1/editions/{year}/stats` | estatísticas: **esperado** (capa) × **importado** (banco), por disciplina |
+| `GET /api/v1/editions?institution=` | listar edições (ordem: instituição, ano): ano, `institution`, edital, duração, contagens LP/MAT/CN/CH, `has_essay`, `scoring_rule`, nº de versões/documentos. Sem filtro = ambas (IFRN+EAJ, com rótulo — compatível com clientes antigos); com `?institution=IFRN\|EAJ` = só aquele processo |
+| `GET /api/v1/editions/{year}?institution=` | detalhe: versões + documentos + prompt da discursiva da edição `(institution,year)`. Ausente = IFRN (compatibilidade) |
+| `GET /api/v1/editions/{year}/documents?institution=` | documentos-fonte (metadados auditáveis) de `(institution,year)` |
+| `GET /api/v1/editions/{year}/stats?institution=` | estatísticas: **esperado** (capa) × **importado** (banco), por disciplina, de `(institution,year)` |
 
 Sem token → `401 {"code":"UNAUTHORIZED",…}` em envelope (secure-by-default).
-Ano fora de 2000–2100 → `400`. Edição inexistente → `404
-{"code":"EDITION_NOT_FOUND",…}` — para **2021** a mensagem registra
-explicitamente a ausência do dataset (AGENTS.md §3), nunca dados inventados.
+Ano fora de 2000–2100 → `400`. `?institution=` inválido → `400`.
+Edição inexistente → `404 {"code":"EDITION_NOT_FOUND",…}`:
+`IFRN 2021` registra a ausência do dataset IFRN e aponta EAJ-2021 (50Q);
+`EAJ 2023` (e 2020/2024/2026) registra que EAJ possui só 2021/2022/2025 —
+nunca dados inventados, nunca interpolação.
 
 ## Regras de evidência
 

@@ -1,4 +1,4 @@
-# API de Simulados — TASK 5.1 (por disciplina)
+# API de Simulados — TASK 5.1 (por disciplina) + nota multi-processo E.1
 
 > Primeira API real da Fase 5. Cria e executa simulados do tipo
 > `BY_DISCIPLINE` sobre `simulations` (definição) + `simulation_attempts`
@@ -7,7 +7,14 @@
 >
 > Permite: escolher disciplina, quantidade e dificuldade; iniciar; retomar
 > (pausa = manter `IN_PROGRESS`); concluir; abandonar; visualizar resultado.
-> O simulado de edição real é a TASK 5.5 (fora desta API).
+> O simulado de edição real é a TASK 5.5 (`docs/api-simulado-edicao.md`,
+> com `(institution,year)` na E.1).
+>
+> Nota E.1: `POST /by-discipline` segue sem filtro `institution` (candidatas
+> de ambas — IFRN+EAJ — quando a disciplina existe nos dois; CN/CH só têm
+> EAJ). O recorte por processo chega no frontend F.1 / trilha E.2; o
+> caderno/respostas já carregam `institution` por posição para distinguir
+> EAJ-2022 ≠ IFRN-2022.
 
 ## Endpoints (todos autenticados)
 

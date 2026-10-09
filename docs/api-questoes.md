@@ -12,30 +12,34 @@
 
 | Rota | Descrição |
 |---|---|
-| `GET /api/v1/questions?disciplineCode=&topicId=&subtopicId=&year=&difficulty=&sourceType=&page=&size=` | listar paginado (ordem fixa: ano-fonte, número, id): enunciado + alternativas + gabarito + proveniência + assunto + notas de evidência |
-| `GET /api/v1/questions/{id}` | detalhe integral da questão |
+| `GET /api/v1/questions?disciplineCode=&topicId=&subtopicId=&year=&institution=&difficulty=&sourceType=&page=&size=` | listar paginado (ordem fixa: ano-fonte, número, id): enunciado + alternativas + gabarito + proveniência (`institution` E.1) + assunto + notas de evidência. `year` sem `institution` = ambas (EAJ-2022+IFRN-2022); com `institution` = recorte `(institution,year)` |
+| `GET /api/v1/questions/{id}` | detalhe integral da questão (com `institution` da edição-fonte; `AUTHORAL` = nulo) |
 
 Sem token → `401 {"code":"UNAUTHORIZED",…}` em envelope (secure-by-default).
 Filtros para disciplina/assunto/subassunto/edição inexistentes →
 `404 {"code":"DISCIPLINE/TOPIC/SUBTOPIC/EDITION_NOT_FOUND",…}` (nunca página
-vazia silenciosa); para **2021** a mensagem registra explicitamente a
-ausência do dataset (AGENTS.md §3). Questão inexistente →
+vazia silenciosa); `IFRN 2021` registra a ausência e aponta EAJ-2021;
+`EAJ 2023` registra que EAJ possui só 2021/2022/2025. Questão inexistente →
 `404 {"code":"QUESTION_NOT_FOUND",…}`. Filtro/paginação malformados → `400`
 (`page` 0-based; `size` em `[1, 100]`; `difficulty` em
 `FACIL/MEDIA/DIFICIL`; `sourceType` em
-`OFFICIAL/AUTHORAL/ADAPTED/INTERNAL_REVIEW/EXPERIMENTAL`).
+`OFFICIAL/AUTHORAL/ADAPTED/INTERNAL_REVIEW/EXPERIMENTAL`; `institution` em
+`IFRN/EAJ`).
 
 ## Regras de evidência
 
-* `OFFICIAL` = prova real do IFRN; qualquer outro `sourceType` nunca é do
-  IFRN e sai identificado como tal (AGENTS.md §11). Hoje o banco tem 240
-  `OFFICIAL` (40 × 6 edições, importador TASK 2.3) + 60 `AUTHORAL` (lote
-  piloto, TASK 15.2/15.3).
-* Toda questão traz **nota fixa de origem** em `notes[]` (TASK 15.4):
-  oficial cita a edição (`Questão oficial do IFRN (edição 2026).`); autoral
-  declara-se (`Questão autoral criada pelo VouPassar… — não é uma questão
-  oficial do IFRN.`). É proveniência, não gabarito: segue visível no Modo
-  Prova.
+* `OFFICIAL` = prova real (IFRN **ou** EAJ/UFRN — ver `institution` na E.1);
+  qualquer outro `sourceType` nunca é oficial e sai identificado como tal
+  (AGENTS.md §11). IFRN: 240 `OFFICIAL` (40 × 6 edições, TASK 2.3);
+  EAJ: 128 `OFFICIAL` (D.3: 50/40/38 + Q23-2025 X; Q22/Q39-2025 excluídas) +
+  60 `AUTHORAL` (lote piloto, TASK 15.2/15.3).
+* Toda questão traz **nota fixa de origem** em `notes[]` (TASK 15.4 + E.1):
+  oficial cita processo e edição (`Questão oficial do IFRN (edição 2026).` /
+  `Questão oficial do EAJ/UFRN (edição 2022).`); autoral declara-se
+  (`Questão autoral criada pelo VouPassar… — não é uma questão oficial do
+  IFRN nem do EAJ/UFRN.`). É proveniência, não gabarito: segue visível no
+  Modo Prova. Resposta `institution` = processo da edição-fonte (nulo fora de
+  `OFFICIAL`).
 * `answerKey = "X"` ⟺ anulada (5 no banco): sai normalmente, conta como
   conteúdo que apareceu na prova, nunca pontua aqui; cada item anulado traz
   a nota explícita (regra de pontuação DESCONHECIDA, TASK 1.3 §4).

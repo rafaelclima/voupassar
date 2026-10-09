@@ -65,9 +65,24 @@ public class ExamService {
     this.questions = questions;
   }
 
-  /** Lista as edições presentes no banco, em ordem crescente de ano. */
+  /** Lista as edições presentes no banco (ordem: instituição, ano). */
   public List<EditionSummaryResponse> listEditions() {
-    List<Exam> all = exams.findAllByOrderByYearAsc();
+    return listEditions(null);
+  }
+
+  /**
+   * Lista as edições com filtro opcional por processo (TASK E.1).
+   *
+   * <p>Sem filtro = ambas (IFRN + EAJ), com rótulo {@code institution} —
+   * compatível com clientes antigos (que veem 9 linhas em vez de 6, cada uma
+   * rotulada). Com filtro = só aquele processo.
+   */
+  public List<EditionSummaryResponse> listEditions(String institution) {
+    String instNorm = normalizeInstitutionFilter(institution);
+    List<Exam> all =
+        instNorm == null
+            ? exams.findAllByOrderByInstitutionAscYearAsc()
+            : exams.findByInstitutionOrderByYearAsc(instNorm);
     List<EditionSummaryResponse> out = new ArrayList<>(all.size());
     for (Exam e : all) {
       out.add(
@@ -83,18 +98,32 @@ public class ExamService {
               e.getChCount().intValue(),
               Boolean.TRUE.equals(e.getHasEssay()),
               e.getScoringRule(),
-              versions.countByExamYear(e.getYear()),
-              documents.countByExamYear(e.getYear())));
+              versions.countByExamInstitutionAndExamYear(e.getInstitution(), e.getYear()),
+              documents.countByExamInstitutionAndYear(e.getInstitution(), e.getYear())));
     }
     return out;
   }
 
   /** Detalhe de uma edição com versões, documentos e prompt da discursiva. */
   public EditionDetailResponse getEdition(int year) {
-    Exam exam = requireExam(year);
+    return getEdition(year, "IFRN");
+  }
+
+  /**
+   * Detalhe por edição composta (TASK E.1): {@code (institution, year)}.
+   *
+   * <p>{@code institution} ausente = {@code IFRN} (compatibilidade com clientes
+   * antigos; anos sem colisão comportam-se como antes). Clientes novos devem
+   * informar sempre {@code institution}: ano sozinho nunca decide a edição
+   * (EAJ-2022 ≠ IFRN-2022).
+   */
+  public EditionDetailResponse getEdition(int year, String institution) {
+    String instNorm = normalizeInstitutionOrDefault(institution);
+    Exam exam = requireExam(instNorm, year);
     Short y = toYear(year);
-    List<ExamVersion> vers = versions.findByExamYearOrderByVersionCodeAsc(y);
-    List<ExamDocument> docs = documents.findByExamYear(y);
+    List<ExamVersion> vers =
+        versions.findByExamInstitutionAndExamYearOrderByVersionCodeAsc(instNorm, y);
+    List<ExamDocument> docs = documents.findByExamInstitutionAndYear(instNorm, y);
 
     Map<Long, List<ExamDocumentResponse>> byVersion = new LinkedHashMap<>();
     for (ExamVersion v : vers) {
@@ -117,7 +146,7 @@ public class ExamService {
 
     EssayPromptResponse essay =
         essayPrompts
-            .findByExamYear(y)
+            .findByExamInstitutionAndYear(instNorm, y)
             .map(
                 p ->
                     new EssayPromptResponse(
@@ -147,20 +176,40 @@ public class ExamService {
 
   /** Documentos-fonte de uma edição (nomes literais + SHA-256 auditável). */
   public List<ExamDocumentResponse> listDocuments(int year) {
-    requireExam(year);
-    return documents.findByExamYear(toYear(year)).stream().map(this::toDocument).toList();
+    return listDocuments(year, "IFRN");
+  }
+
+  /**
+   * Documentos por edição composta (TASK E.1): {@code (institution, year)}.
+   * Ausente = {@code IFRN} (compatibilidade).
+   */
+  public List<ExamDocumentResponse> listDocuments(int year, String institution) {
+    String instNorm = normalizeInstitutionOrDefault(institution);
+    requireExam(instNorm, year);
+    return documents.findByExamInstitutionAndYear(instNorm, toYear(year)).stream()
+        .map(this::toDocument)
+        .toList();
   }
 
   /** Estatísticas: esperado (capa) × importado (banco). */
   public EditionStatsResponse getStats(int year) {
-    Exam exam = requireExam(year);
+    return getStats(year, "IFRN");
+  }
+
+  /**
+   * Estatísticas por edição composta (TASK E.1): {@code (institution, year)}.
+   * Ausente = {@code IFRN} (compatibilidade).
+   */
+  public EditionStatsResponse getStats(int year, String institution) {
+    String instNorm = normalizeInstitutionOrDefault(institution);
+    Exam exam = requireExam(instNorm, year);
     Short y = toYear(year);
-    long imported = questions.countByExamYear(y);
-    long annulled = questions.countByExamYearAndAnnulledTrue(y);
+    long imported = questions.countByExamInstitutionAndExamYear(instNorm, y);
+    long annulled = questions.countByExamInstitutionAndExamYearAndAnnulledTrue(instNorm, y);
     long confirmed = imported - annulled;
 
     Map<String, long[]> byDiscipline = new LinkedHashMap<>();
-    for (Object[] row : questions.countByDiscipline(y)) {
+    for (Object[] row : questions.countByDisciplineForInstitution(instNorm, y)) {
       String code = (String) row[0];
       long total = ((Number) row[2]).longValue();
       Object ann = row[3];
@@ -201,8 +250,8 @@ public class ExamService {
         confirmed,
         annulled,
         perDiscipline,
-        documents.countByExamYear(y),
-        versions.countByExamYear(y),
+        documents.countByExamInstitutionAndYear(instNorm, y),
+        versions.countByExamInstitutionAndExamYear(instNorm, y),
         Boolean.TRUE.equals(exam.getHasEssay()),
         exam.getScoringRule() != null,
         List.copyOf(notes));
@@ -213,21 +262,62 @@ public class ExamService {
   }
 
   private Exam requireExam(int year) {
+    return requireExam("IFRN", year);
+  }
+
+  private Exam requireExam(String institution, int year) {
     if (year < 2000 || year > 2100) {
       throw new BadRequestException("Ano de edição inválido: " + year + ".");
     }
     return exams
-        .findByYear(toYear(year))
-        .orElseThrow(
-            () -> {
-              if (year == 2021) {
-                return new ResourceNotFoundException(
-                    "EDITION_NOT_FOUND",
-                    "Edição 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3).");
-              }
-              return new ResourceNotFoundException(
-                  "EDITION_NOT_FOUND", "Edição " + year + " não encontrada.");
-            });
+        .findByInstitutionAndYear(institution, toYear(year))
+        .orElseThrow(() -> editionNotFound(institution, year));
+  }
+
+  private static ResourceNotFoundException editionNotFound(String institution, int year) {
+    if ("IFRN".equals(institution) && year == 2021) {
+      return new ResourceNotFoundException(
+          "EDITION_NOT_FOUND",
+          "Edição IFRN 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3)."
+              + " EAJ-2021 existe (50Q em 4 áreas) — informe institution=EAJ para consultá-la.");
+    }
+    if ("EAJ".equals(institution) && (year == 2023 || year == 2020 || year == 2024 || year == 2026)) {
+      return new ResourceNotFoundException(
+          "EDITION_NOT_FOUND",
+          "Edição EAJ " + year + " não encontrada: EAJ possui apenas 2021/2022/2025 no dataset"
+              + " (nunca interpolar edições inexistentes).");
+    }
+    if ("EAJ".equals(institution)) {
+      return new ResourceNotFoundException(
+          "EDITION_NOT_FOUND", "Edição EAJ " + year + " não encontrada.");
+    }
+    return new ResourceNotFoundException(
+        "EDITION_NOT_FOUND", "Edição " + institution + " " + year + " não encontrada.");
+  }
+
+  /**
+   * Normaliza o filtro {@code ?institution=} (TASK E.1): {@code null}/em-branco =
+   * sem filtro (ambas); senão {@code IFRN} ou {@code EAJ}, senão 400.
+   */
+  static String normalizeInstitutionFilter(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
+  }
+
+  /**
+   * Normaliza {@code institution} para detalhe por edição (TASK E.1):
+   * ausente = {@code IFRN} (compatibilidade com clientes antigos).
+   */
+  static String normalizeInstitutionOrDefault(String institution) {
+    String norm = normalizeInstitutionFilter(institution);
+    return norm == null ? "IFRN" : norm;
   }
 
   private int expectedFor(String disciplineCode, Exam exam) {

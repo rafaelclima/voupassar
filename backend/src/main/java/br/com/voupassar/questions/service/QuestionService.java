@@ -133,6 +133,8 @@ public class QuestionService {
    * @param topicId id do assunto
    * @param subtopicId id do subassunto
    * @param year ano da edição-fonte
+   * @param institution processo seletivo ({@code IFRN} ou {@code EAJ}; TASK E.1;
+   *     {@code null} = ambas — ano sozinho nunca decide a edição)
    * @param difficulty {@code FACIL}, {@code MEDIA} ou {@code DIFICIL}
    * @param sourceType {@code OFFICIAL}, {@code AUTHORAL}, {@code ADAPTED},
    *     {@code INTERNAL_REVIEW} ou {@code EXPERIMENTAL}
@@ -144,6 +146,7 @@ public class QuestionService {
       Long topicId,
       Long subtopicId,
       Integer year,
+      String institution,
       String difficulty,
       String sourceType,
       int page,
@@ -157,12 +160,15 @@ public class QuestionService {
     String discNorm = requireDisciplineFilter(disciplineCode);
     Long topicNorm = requireTopicFilter(topicId);
     Long subNorm = requireSubtopicFilter(subtopicId);
-    Short yearNorm = requireYearFilter(year);
+    String instNorm = normalizeInstitution(institution);
+    Short yearNorm = requireYearFilter(year, instNorm);
     String diffNorm = normalizeDifficulty(difficulty);
     String srcNorm = normalizeSourceType(sourceType);
 
     Page<Question> result =
-        questions.search(discNorm, topicNorm, subNorm, yearNorm, diffNorm, srcNorm, PageRequest.of(page, size));
+        questions.search(
+            discNorm, topicNorm, subNorm, yearNorm, instNorm, diffNorm, srcNorm,
+            PageRequest.of(page, size));
 
     List<Long> ids = result.stream().map(Question::getId).toList();
     Map<Long, List<QuestionOption>> optionsByQuestion = Map.of();
@@ -228,12 +234,13 @@ public class QuestionService {
       Long topicId,
       Long subtopicId,
       Integer year,
+      String institution,
       String difficulty,
       String sourceType,
       int page,
       int size) {
     PageResponse<QuestionResponse> result =
-        search(disciplineCode, topicId, subtopicId, year, difficulty, sourceType, page, size);
+        search(disciplineCode, topicId, subtopicId, year, institution, difficulty, sourceType, page, size);
     if (userId == null || caderno == null || result.content().isEmpty()) {
       return result;
     }
@@ -291,7 +298,7 @@ public class QuestionService {
     notes.add("Gabarito oculto durante a execução no Modo Prova "
         + "(questão em simulado PROVA em andamento): conclua ou abandone para ver a correção.");
     return new QuestionResponse(
-        r.id(), r.sourceType(), r.examYear(), r.questionNumber(),
+        r.id(), r.sourceType(), r.examYear(), r.institution(), r.questionNumber(),
         r.discipline(), r.statement(), r.options(),
         null, r.annulled(), r.difficultyEstimate(),
         r.pageStart(), r.pageEnd(), r.hasFigure(),
@@ -300,6 +307,22 @@ public class QuestionService {
         List.copyOf(notes),
         r.figures() != null ? r.figures() : java.util.List.of(),
         r.passages() != null ? r.passages() : java.util.List.of());
+  }
+
+  /**
+   * Filtro {@code institution} (TASK E.1): {@code IFRN} ou {@code EAJ}.
+   * {@code null}/em-branco = ambas (sem filtro — ano sozinho nunca decide).
+   */
+  static String normalizeInstitution(String institution) {
+    if (institution == null || institution.isBlank()) {
+      return null;
+    }
+    String normalized = institution.trim().toUpperCase();
+    if (!"IFRN".equals(normalized) && !"EAJ".equals(normalized)) {
+      throw new BadRequestException(
+          "Processo seletivo inválido: " + institution + " (permitido IFRN, EAJ).");
+    }
+    return normalized;
   }
 
   private String requireDisciplineFilter(String code) {
@@ -351,7 +374,7 @@ public class QuestionService {
     return subtopicId;
   }
 
-  private Short requireYearFilter(Integer year) {
+  private Short requireYearFilter(Integer year, String institution) {
     if (year == null) {
       return null;
     }
@@ -359,15 +382,47 @@ public class QuestionService {
       throw new BadRequestException("Ano de edição inválido: " + year + ".");
     }
     Short y = year.shortValue();
-    if (exams.findByYear(y).isEmpty()) {
-      if (year == 2021) {
-        throw new ResourceNotFoundException(
-            "EDITION_NOT_FOUND",
-            "Edição 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3).");
+    if (institution != null) {
+      if (exams.findByInstitutionAndYear(institution, y).isEmpty()) {
+        throw editionNotFound(institution, year);
       }
-      throw new ResourceNotFoundException("EDITION_NOT_FOUND", "Edição " + year + " não encontrada.");
+      return y;
+    }
+    // Sem institution: ano sozinho nunca decide — aceita se QUALQUER processo
+    // possui a edição (EAJ-2021 existe; IFRN-2021 segue ausente).
+    boolean ifrn = exams.findByInstitutionAndYear("IFRN", y).isPresent();
+    boolean eaj = exams.findByInstitutionAndYear("EAJ", y).isPresent();
+    if (!ifrn && !eaj) {
+      // Fallback legado (banco sem dimensão): preserva mensagem honesta.
+      if (exams.findByYear(y).isEmpty()) {
+        if (year == 2021) {
+          throw new ResourceNotFoundException(
+              "EDITION_NOT_FOUND",
+              "Edição 2021 não encontrada no processo IFRN: ausente do dataset inicial"
+                  + " (AGENTS.md §3). EAJ-2021 existe (50Q em 4 áreas) — informe institution=EAJ.");
+        }
+        throw new ResourceNotFoundException("EDITION_NOT_FOUND", "Edição " + year + " não encontrada.");
+      }
+      return y;
     }
     return y;
+  }
+
+  private static ResourceNotFoundException editionNotFound(String institution, int year) {
+    if ("IFRN".equals(institution) && year == 2021) {
+      return new ResourceNotFoundException(
+          "EDITION_NOT_FOUND",
+          "Edição IFRN 2021 não encontrada: ausente do dataset inicial (AGENTS.md §3)."
+              + " EAJ-2021 existe (50Q em 4 áreas) — informe institution=EAJ para consultá-la.");
+    }
+    if ("EAJ".equals(institution) && (year == 2023 || year == 2024 || year == 2026 || year == 2020)) {
+      return new ResourceNotFoundException(
+          "EDITION_NOT_FOUND",
+          "Edição EAJ " + year + " não encontrada: EAJ possui apenas 2021/2022/2025 no dataset"
+              + " (nunca interpolar edições inexistentes).");
+    }
+    return new ResourceNotFoundException(
+        "EDITION_NOT_FOUND", "Edição " + institution + " " + year + " não encontrada.");
   }
 
   private static String normalizeDifficulty(String difficulty) {
@@ -473,18 +528,26 @@ public class QuestionService {
             ? null
             : new SubtopicRef(subtopic.getId(), subtopic.getCode(), subtopic.getName());
 
+    String institution =
+        q.getExam() != null ? q.getExam().getInstitution() : null;
     List<String> notes = new ArrayList<>();
-    // Origem fixa (TASK 15.4): toda questão declara o que é — oficial de
-    // que edição, ou autoral (nunca do IFRN). É dado de proveniência, não
-    // gabarito: segue visível também no Modo Prova (via maskForProva).
+    // Origem fixa (TASK 15.4 + E.1): toda questão declara o que é — oficial de
+    // que processo/edição, ou autoral (nunca do IFRN/EAJ). É dado de
+    // proveniência, não gabarito: segue visível também no Modo Prova (via maskForProva).
     if ("AUTHORAL".equals(q.getSourceType())) {
       notes.add(
           "Questão autoral criada pelo VouPassar a partir do perfil das provas"
-              + " — não é uma questão oficial do IFRN.");
+              + " — não é uma questão oficial do IFRN nem do EAJ/UFRN.");
     } else if ("OFFICIAL".equals(q.getSourceType())) {
-      notes.add(q.getSourceYear() == null
-          ? "Questão oficial de prova do IFRN."
-          : "Questão oficial do IFRN (edição " + q.getSourceYear() + ").");
+      if (q.getSourceYear() == null) {
+        notes.add("EAJ".equals(institution)
+            ? "Questão oficial de prova do EAJ/UFRN."
+            : "Questão oficial de prova do IFRN.");
+      } else {
+        notes.add("EAJ".equals(institution)
+            ? "Questão oficial do EAJ/UFRN (edição " + q.getSourceYear() + ")."
+            : "Questão oficial do IFRN (edição " + q.getSourceYear() + ").");
+      }
     } else {
       notes.add("Questão não oficial.");
     }
@@ -522,6 +585,7 @@ public class QuestionService {
         q.getId(),
         q.getSourceType(),
         q.getSourceYear() == null ? null : q.getSourceYear().intValue(),
+        institution,
         q.getSourceQuestionNumber() == null ? null : q.getSourceQuestionNumber().intValue(),
         new DisciplineRef(d.getCode(), d.getName()),
         q.getStatement(),
@@ -539,5 +603,38 @@ public class QuestionService {
         List.copyOf(notes),
         java.util.List.of(), // figuras: vazio até sync_figures.py preencher
         List.copyOf(questionPassages == null ? List.of() : questionPassages));
+  }
+
+  /**
+   * Sobrecarga legada sem {@code institution} (compatibilidade): equivale a
+   * {@code institution = null} (ambas — ano sozinho nunca decide).
+   */
+  public PageResponse<QuestionResponse> search(
+      String disciplineCode,
+      Long topicId,
+      Long subtopicId,
+      Integer year,
+      String difficulty,
+      String sourceType,
+      int page,
+      int size) {
+    return search(disciplineCode, topicId, subtopicId, year, null, difficulty, sourceType, page, size);
+  }
+
+  /**
+   * Sobrecarga legada sem {@code institution} (compatibilidade).
+   */
+  public PageResponse<QuestionResponse> searchForUser(
+      Long userId,
+      String disciplineCode,
+      Long topicId,
+      Long subtopicId,
+      Integer year,
+      String difficulty,
+      String sourceType,
+      int page,
+      int size) {
+    return searchForUser(
+        userId, disciplineCode, topicId, subtopicId, year, null, difficulty, sourceType, page, size);
   }
 }

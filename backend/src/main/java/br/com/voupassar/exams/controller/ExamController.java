@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(path = "/api/v1/editions", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Edições", description = "Provas IFRN: edições, documentos e estatísticas.")
+@Tag(name = "Edições", description = "Provas IFRN + EAJ/UFRN: edições, documentos e estatísticas (TASK E.1).")
 public class ExamController {
 
   private final ExamService service;
@@ -39,17 +40,27 @@ public class ExamController {
     this.service = service;
   }
 
-  @Operation(summary = "Listar edições presentes no banco (ordem crescente de ano).")
+  @Operation(
+      summary = "Listar edições presentes no banco (ordem: instituição, ano).",
+      description =
+          "Sem filtro = IFRN + EAJ, cada uma com rótulo institution (compatível com clientes antigos). "
+              + "Com ?institution=IFRN|EAJ = só aquele processo.")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Lista das edições."),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Processo seletivo inválido.",
+        content = @Content(schema = @Schema(implementation = ApiError.class))),
     @ApiResponse(
         responseCode = "401",
         description = "Sem autenticação.",
         content = @Content(schema = @Schema(implementation = ApiError.class)))
   })
   @GetMapping
-  public List<EditionSummaryResponse> list() {
-    return service.listEditions();
+  public List<EditionSummaryResponse> list(
+      @Parameter(description = "Filtro por processo: IFRN ou EAJ. Ausente = ambas.", example = "EAJ")
+          @RequestParam(required = false) String institution) {
+    return service.listEditions(institution);
   }
 
   @Operation(summary = "Consultar uma edição (versões, documentos, prompt da discursiva).")
@@ -66,8 +77,13 @@ public class ExamController {
   })
   @GetMapping("/{year}")
   public EditionDetailResponse get(
-      @Parameter(description = "Ano da edição.", example = "2026") @PathVariable int year) {
-    return service.getEdition(year);
+      @Parameter(description = "Ano da edição.", example = "2026") @PathVariable int year,
+      @Parameter(
+              description =
+                  "Processo seletivo: IFRN ou EAJ. Ausente = IFRN (compatibilidade); ano sozinho nunca decide (EAJ-2022 ≠ IFRN-2022).",
+              example = "EAJ")
+          @RequestParam(required = false) String institution) {
+    return service.getEdition(year, institution);
   }
 
   @Operation(summary = "Consultar documentos-fonte de uma edição (metadados, sem binário).")
@@ -80,8 +96,10 @@ public class ExamController {
   })
   @GetMapping("/{year}/documents")
   public List<ExamDocumentResponse> documents(
-      @Parameter(description = "Ano da edição.", example = "2026") @PathVariable int year) {
-    return service.listDocuments(year);
+      @Parameter(description = "Ano da edição.", example = "2026") @PathVariable int year,
+      @Parameter(description = "Processo seletivo: IFRN ou EAJ. Ausente = IFRN.", example = "EAJ")
+          @RequestParam(required = false) String institution) {
+    return service.listDocuments(year, institution);
   }
 
   @Operation(
@@ -97,7 +115,9 @@ public class ExamController {
   })
   @GetMapping("/{year}/stats")
   public EditionStatsResponse stats(
-      @Parameter(description = "Ano da edição.", example = "2026") @PathVariable int year) {
-    return service.getStats(year);
+      @Parameter(description = "Ano da edição.", example = "2026") @PathVariable int year,
+      @Parameter(description = "Processo seletivo: IFRN ou EAJ. Ausente = IFRN.", example = "EAJ")
+          @RequestParam(required = false) String institution) {
+    return service.getStats(year, institution);
   }
 }

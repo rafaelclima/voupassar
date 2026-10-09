@@ -134,7 +134,7 @@ class QuestionServiceTest {
   @Test
   void searchWithoutFiltersAssemblesPage() {
     Question q = question(1L, 21, "A", false);
-    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
+    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
         .thenReturn(new PageImpl<>(List.of(q), PageRequest.of(0, 20), 240));
     when(options.findByQuestionIdsOrdered(List.of(1L)))
         .thenReturn(
@@ -205,7 +205,7 @@ class QuestionServiceTest {
     when(subtopics.findByIdWithTopic(25L)).thenReturn(Optional.of(equacoes));
     Exam exam2026 = new Exam();
     when(exams.findByYear((short) 2026)).thenReturn(Optional.of(exam2026));
-    when(questions.search(any(), any(), any(), any(), any(), any(), any()))
+    when(questions.search(any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
 
     service.search("lingua_portuguesa", 5L, 25L, 2026, "media", "official", 0, 20);
@@ -216,6 +216,7 @@ class QuestionServiceTest {
             eq(5L),
             eq(25L),
             eq((short) 2026),
+            eq(null),
             eq("MEDIA"),
             eq("OFFICIAL"),
             eq(PageRequest.of(0, 20)));
@@ -294,7 +295,7 @@ class QuestionServiceTest {
 
   @Test
   void searchEmptyPageSkipsBatchLoads() {
-    when(questions.search(any(), any(), any(), any(), any(), any(), any()))
+    when(questions.search(any(), any(), any(), any(), any(), any(), any(), any()))
         .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
 
     PageResponse<QuestionResponse> out =
@@ -429,7 +430,7 @@ class QuestionServiceTest {
   void searchForUserMasksOnlyProvaQuestions() {
     Question q1 = question(1L, 21, "A", false);
     Question q2 = question(2L, 22, "B", false);
-    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
+    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
         .thenReturn(new PageImpl<>(List.of(q1, q2), PageRequest.of(0, 20), 2));
     when(options.findByQuestionIdsOrdered(List.of(1L, 2L)))
         .thenReturn(
@@ -510,7 +511,7 @@ class QuestionServiceTest {
   void searchWithoutPassageRepoReturnsEmpty() {
     // Construtor sem repositório (compat): nunca falha, só lista vazia.
     Question q = question(1L, 21, "A", false);
-    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
+    when(questions.search(eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), eq(null), any()))
         .thenReturn(new PageImpl<>(List.of(q), PageRequest.of(0, 20), 1));
     when(options.findByQuestionIdsOrdered(List.of(1L))).thenReturn(List.of(option(q, "A", "4")));
     when(classifications.findActiveByQuestionIds(List.of(1L)))
@@ -521,5 +522,88 @@ class QuestionServiceTest {
 
     assertNotNull(out.content().get(0).passages());
     assertTrue(out.content().get(0).passages().isEmpty());
+  }
+
+  // ---- TASK E.1: filtro institution ----
+
+  @Test
+  void searchWithInstitutionForwardsToRepository() {
+    Exam eaj2022 = new Exam();
+    ReflectionTestUtils.setField(eaj2022, "institution", "EAJ");
+    when(exams.findByInstitutionAndYear("EAJ", (short) 2022)).thenReturn(Optional.of(eaj2022));
+    when(questions.search(any(), any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
+
+    service.search(null, null, null, 2022, "EAJ", null, null, 0, 20);
+
+    verify(questions)
+        .search(
+            eq(null), eq(null), eq(null), eq((short) 2022), eq("EAJ"), eq(null), eq(null),
+            eq(PageRequest.of(0, 20)));
+  }
+
+  @Test
+  void searchYearWithoutInstitutionAcceptsEitherProcess() {
+    Exam ifrn2022 = new Exam();
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2022)).thenReturn(Optional.of(ifrn2022));
+    when(questions.search(any(), any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
+
+    // Ano com colisão sem institution = ambas (nunca decide): não lança 404.
+    service.search(null, null, null, 2022, null, null, null, 0, 20);
+
+    verify(questions)
+        .search(
+            eq(null), eq(null), eq(null), eq((short) 2022), eq(null), eq(null), eq(null),
+            eq(PageRequest.of(0, 20)));
+  }
+
+  @Test
+  void searchEaj2023IsNotFound() {
+    when(exams.findByInstitutionAndYear("EAJ", (short) 2023)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException ex =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> service.search(null, null, null, 2023, "EAJ", null, null, 0, 20));
+
+    assertEquals("EDITION_NOT_FOUND", ex.getCode());
+    assertTrue(ex.getMessage().contains("EAJ 2023"));
+  }
+
+  @Test
+  void searchIfrn2021PointsToEaj() {
+    when(exams.findByInstitutionAndYear("IFRN", (short) 2021)).thenReturn(Optional.empty());
+
+    ResourceNotFoundException ex =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> service.search(null, null, null, 2021, "IFRN", null, null, 0, 20));
+
+    assertEquals("EDITION_NOT_FOUND", ex.getCode());
+    assertTrue(ex.getMessage().contains("EAJ-2021"));
+  }
+
+  @Test
+  void searchInvalidInstitutionIs400() {
+    assertThrows(
+        BadRequestException.class,
+        () -> service.search(null, null, null, null, "XXX", null, null, 0, 20));
+  }
+
+  @Test
+  void detailCarriesInstitutionFromExam() {
+    Question q = question(1L, 21, "A", false);
+    Exam eaj = new Exam();
+    ReflectionTestUtils.setField(eaj, "institution", "EAJ");
+    ReflectionTestUtils.setField(q, "exam", eaj);
+    when(questions.findById(1L)).thenReturn(Optional.of(q));
+    when(options.findByQuestionIdOrdered(1L)).thenReturn(List.of(option(q, "A", "4")));
+    when(classifications.findActiveByQuestionId(1L)).thenReturn(List.of(classification(q)));
+
+    QuestionResponse out = service.getById(1L);
+
+    assertEquals("EAJ", out.institution());
+    assertTrue(out.notes().stream().anyMatch(n -> n.contains("EAJ/UFRN")));
   }
 }
