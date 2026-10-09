@@ -1,0 +1,55 @@
+{
+  "importer": "scripts/db/import_questions.py",
+  "importer_version": "2.1.0",
+  "taxonomy_version": "v1.1",
+  "institution": "EAJ",
+  "provenance": "TRANSCRIBED_FROM_MD",
+  "provenance_note": "respostas = gabarito TRANSCRITO nos .md (decisão 2026-10-09); nunca oficial; sem PDF de gabarito no repo — ver docs/blockers.md",
+  "started_at_utc": "2026-10-09T19:40:18.591325+00:00",
+  "check_only": true,
+  "allow_needs_visual_check": false,
+  "visual_note": "trava D.3: Q22/Q39-2025 NEEDS_VISUAL_CHECK BLOQUEADAS até conferência visual no PDF; sem a flag, não entram",
+  "source_files": 9,
+  "candidates_total": 130,
+  "candidates_importable": 128,
+  "blocked_needs_visual_check": [
+    {
+      "institution": "EAJ",
+      "edition": "2025",
+      "number": 22,
+      "status": "NEEDS_VISUAL_CHECK",
+      "answer_key": "D",
+      "reason": "nota de OCR agrupado transcrita na alternativa B (`*(nota: OCR agrupou alternativas)*`); conferir no PDF renderizado antes de importar (trava D.3)."
+    },
+    {
+      "institution": "EAJ",
+      "edition": "2025",
+      "number": 39,
+      "status": "NEEDS_VISUAL_CHECK",
+      "answer_key": "C",
+      "reason": "razão `[1/2]` interpolada com incerteza + nota de mancha gráfica transcrita no enunciado; conferir no PDF renderizado antes de importar (trava D.3)."
+    }
+  ],
+  "candidates": 128,
+  "to_insert": 0,
+  "already_present": 128,
+  "divergences": [],
+  "db_state": {
+    "questions": 128,
+    "options": 512,
+    "sources": 256,
+    "classifications": 128,
+    "has_figure": 0,
+    "checksum_mismatches": [],
+    "checksums_distinct": true,
+    "by_discipline": {
+      "LINGUA_PORTUGUESA": 55,
+      "MATEMATICA": 53,
+      "CIENCIAS_NATUREZA": 12,
+      "CIENCIAS_HUMANAS": 8
+    }
+  },
+  "safe_ok_128": true,
+  "status": "BLOCKED_NEEDS_VISUAL_CHECK",
+  "finished_at_utc": "2026-10-09T19:40:19.482017+00:00"
+}

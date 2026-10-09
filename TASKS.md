@@ -440,25 +440,65 @@ Critérios:
 * Totais batem 130; anulada Q23-2025 conta como conteúdo que apareceu;
   tendências marcadas DESCRITIVAS (3 edições); script reexecutável.
 
-## TASK D.3 — Importação das 130 questões (idempotente)
+## TASK D.3 — Importação das 130 questões (idempotente) [DONE 2026-10-09 — 128 + 2 excluídas por decisão]
+
+Execução 2026-10-09: `database/migrations/V20__eaj_taxonomy_cn_ch.sql`
+(11 topics + 19 subtopics CN/CH só o observado D.1; `OUTRO` Q40 como
+`subtopic_id` NULL; DROP `chk_questions_official_pages` — EAJ NULL =
+DESCONHECIDO) + `import_questions.py` 2.1.0 (`--institution EAJ`,
+`--allow-needs-visual-check`; `PRIMARY`+`GABARITO` no mesmo `.md` com nota
+`TRANSCRIBED_FROM_MD`/`GABARITO_TRANSCRITO`; `OUTRO`→NULL; páginas NULL;
+trava Q22/Q39 exit 2) — importados 128 (50/40/38: LP 55, MAT 53, CN 12,
+CH 8; 512 opções, 256 sources, 128 classificações, checksums 130/130
+distintos, `has_figure` EAJ 0; Q23-2025 como anulada `X`) + Q22/Q39-2025
+`NEEDS_VISUAL_CHECK` EXCLUÍDAS do escopo por decisão do responsável
+(auditoria preservada em `docs/blockers.md`: B/C da Q22 e soma/razão da Q39
+divergem do PDF — importar gravaria opções falsas; flag proibida até
+retranscrição + revalidação B.1/B.2/D.1). Provas em PG16 scratch
+(V1–V5,V8–V20 sem V6/V7, mesma trava do zero das C.1–C.3): 128/512/256/128
+sem divergências; 2ª execução 0 a inserir (idempotente, exit 2 pela trava);
+IFRN 240 intacto lado a lado (368 totais, sem colisão 2022/2025);
+`validate_classification` 370/370; A–B revalidados; `mvn test` 257/257.
+Decisão 2026-10-09 (responsável): D.3 DONE com 128; os "129/518+/130" do
+plano valem para o pós-retranscrição (130/520/260/130 com flag).
 
 Entregas:
 
 * `import_questions.py` estendido (namespace EAJ, 50Q, CN/CH, fonte
   `TRANSCRIBED_FROM_MD`, `question_sources` PRIMARY=`questoes.md` +
-  GABARITO_TRANSCRITO): importa 129 + Q23-2025 como anulada (`X`);
-  **Q22/Q39-2025 BLOQUEADAS até conferência visual** (importador recusa com
-  exit 2 listando-as, salvo flag explícita de curadoria após a conferência).
-* `--check` + `--report` em `data/import/report-eaj.json`.
+  GABARITO_TRANSCRITO): importa 128 + Q23-2025 como anulada (`X`);
+  **Q22/Q39-2025 EXCLUÍDAS até retranscrição** (importador recusa com
+  exit 2 listando-as, salvo flag explícita de curadoria após conferência +
+  correção do `.md`).
+* `--check` + `--report` em `data/import/report-eaj.json`
+  (`BLOCKED_NEEDS_VISUAL_CHECK`, `safe_ok_128` true).
 
 Critérios:
 
-* Contagens: 130 `questions` (OFFICIAL, `institution=EAJ`), 518+ opções
-  (129×4 + Q23 sem efeito de pontuação — alternativas presentes),
-  classificações 130, checksums distintos 130; 2ª execução idempotente
-  (exit 0, 0 a inserir); suíte backend verde.
+* Contagens: 128 `questions` (OFFICIAL, `institution=EAJ`), 512 opções
+  (128×4; Q23 sem efeito de pontuação — alternativas presentes),
+  classificações 128, checksums distintos 130/130 (128 + 2 bloqueadas);
+  2ª execução idempotente (0 a inserir; exit 2 pela trava documentada);
+  suíte backend verde.
 
-## TASK D.4 — Sync figuras + passagens EAJ
+## TASK D.4 — Sync figuras + passagens EAJ [DONE 2026-10-09]
+
+Execução 2026-10-09: `sync_figures.py` estendido (`EAJ-<ano>-<n>`,
+refs por `(institution,year,number)`, `page` DESCONHECIDA→NULL; questão
+ausente = pular com aviso) + `import_passages.py` estendido
+(`data/passages/eaj/*.json`, refs por `(institution,year)`, vínculo com
+questão ausente = pular com aviso — D.3 Q22). Provas em PG16 scratch
+(IFRN 240 + EAJ 128; V20 §4 com `passages.page_*` NULL): figures 94/95
+(IFRN 37 + EAJ 57; pulada EAJ-2025-22 sem questão, mesmo comportamento
+IFRN); passages 42/42 (IFRN 31 + EAJ 11; vínculos 198, pulado
+EAJ-2025 Q22←TEXTO-3 com aviso — `TEXTO-3` preservada com `questions:[22]`
+na fonte, sem vínculo no banco até Q22 existir); 2ª execução idempotente;
+`--check` verde nos dois; `mvn test` 257/257. Entidade `Passage`
+(`page_start/end` NULL em EAJ) atualizada para `ddl-auto: validate` verde.
+Vínculo Q22 é a imagem `Q21_Q22_Q23` (Texto 3 queimadas): atendido como
+figura (`eaj/2025/Q22.webp` no manifest; sem questão no banco, sync pula —
+`QuestionResponse.figures[]` resolve `eaj/<ano>/Q<NN>.webp` quando a
+questão existir).
 
 Entregas:
 

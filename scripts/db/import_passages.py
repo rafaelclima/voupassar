@@ -85,50 +85,64 @@ def checksum(p: dict) -> str:
     return hashlib.sha256(norm(base).encode("utf-8")).hexdigest()
 
 
-def load_files() -> list[dict]:
+def load_files(institution: str = "ALL") -> list[dict]:
+    """IFRN: data/passages/*.json; EAJ: data/passages/eaj/*.json (D.4)."""
     items = []
-    for f in sorted(PASSAGES_DIR.glob("*.json")):
-        d = json.loads(f.read_text(encoding="utf-8"))
-        for p in d.get("passages", []):
-            items.append({"edition": d["edition"], **p})
+    if institution in ("ALL", "IFRN"):
+        for f in sorted(PASSAGES_DIR.glob("*.json")):
+            d = json.loads(f.read_text(encoding="utf-8"))
+            for p in d.get("passages", []):
+                items.append({"institution": "IFRN",
+                              "edition": d["edition"], **p})
+    if institution in ("ALL", "EAJ"):
+        for f in sorted((PASSAGES_DIR / "eaj").glob("*.json")):
+            d = json.loads(f.read_text(encoding="utf-8"))
+            for p in d.get("passages", []):
+                items.append({"institution": "EAJ",
+                              "edition": d["edition"], **p})
     return items
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Importador idempotente de textos-base")
     ap.add_argument("--check", action="store_true", help="valida sem escrever")
+    ap.add_argument("--institution", default="ALL",
+                    choices=["ALL", "IFRN", "EAJ"],
+                    help="filtra passagens por processo (default ALL)")
     args = ap.parse_args()
 
-    items = load_files()
+    items = load_files(args.institution)
     if not items:
         print("nada a importar: data/passages/*.json ausente ou vazio")
         return 1
 
     env_vars = load_dotenv(REPO_ROOT)
-    exams = {}
-    for row in psql(env_vars, "SELECT id, year FROM exams;").strip().splitlines():
+    exams: dict[tuple[str, int], int] = {}
+    for row in psql(env_vars,
+                     "SELECT institution, year, id FROM exams;").strip().splitlines():
         if row.strip():
-            eid, yr = row.split("|")
-            exams[int(yr)] = int(eid)
-    qids: dict[tuple[int, int], int] = {}
+            inst, yr, eid = row.split("|")
+            exams[(inst, int(yr))] = int(eid)
+    qids: dict[tuple[str, int, int], int] = {}
     for row in psql(
         env_vars,
-        "SELECT source_year, source_question_number, id FROM questions "
-        "WHERE source_type = 'OFFICIAL';",
+        "SELECT e.institution, q.source_year, q.source_question_number, q.id "
+        "FROM questions q JOIN exams e ON e.id = q.exam_id "
+        "WHERE q.source_type = 'OFFICIAL';",
     ).strip().splitlines():
         if row.strip():
-            yr, num, qid = row.split("|")
-            qids[(int(yr), int(num))] = int(qid)
+            inst, yr, num, qid = row.split("|")
+            qids[(inst, int(yr), int(num))] = int(qid)
 
-    existing: dict[tuple[int, str], str] = {}
+    existing: dict[tuple[str, int, str], str] = {}
     for row in psql(
         env_vars,
-        "SELECT e.year, p.passage_key, p.checksum FROM passages p "
+        "SELECT e.institution, e.year, p.passage_key, p.checksum FROM passages p "
         "JOIN exams e ON e.id = p.exam_id;",
     ).strip().splitlines():
         if row.strip():
-            yr, key, chk = row.split("|")
-            existing[(int(yr), key)] = chk
+            inst, yr, key, chk = row.split("|")
+            existing[(inst, int(yr), key)] = chk
     existing_links: set[tuple[int, int]] = set()
     for row in psql(
         env_vars, "SELECT question_id, passage_id FROM question_passages;"
@@ -138,22 +152,31 @@ def main() -> int:
             existing_links.add((int(q), int(pg)))
 
     to_insert, to_link, divergences = [], [], []
-    passage_ids: dict[tuple[int, str], int] = {}
+    skipped_links: list[str] = []
+    passage_ids: dict[tuple[str, int, str], int] = {}
     for it in items:
-        yr = it["edition"]
-        if yr not in exams:
-            print(f"ERRO: edição {yr} inexistente na tabela exams", file=sys.stderr)
+        inst, yr = it["institution"], it["edition"]
+        if (inst, yr) not in exams:
+            print(f"ERRO: edição ({inst},{yr}) inexistente na tabela exams",
+                  file=sys.stderr)
             return 1
-        key = (yr, it["key"])
+        key = (inst, yr, it["key"])
         chk = checksum(it)
         if key in existing:
             if existing[key] != chk:
-                divergences.append(f"{yr}:{it['key']}")
+                divergences.append(f"{inst}-{yr}:{it['key']}")
             continue
         to_insert.append(it)
         for qn in it.get("questions", []):
-            qid = qids.get((yr, qn))
+            qid = qids.get((inst, yr, qn))
             if qid is None:
+                # D.4: EAJ-2025 Q22 excluída na D.3 — pular vínculo com aviso
+                # (nunca erro, nunca vínculo inventado; ver docs/blockers.md).
+                if inst == "EAJ":
+                    skipped_links.append(f"{inst}-{yr} Q{qn} ← {it['key']}")
+                    print(f"vínculo pulado (questão ausente no banco): "
+                          f"{inst}-{yr} Q{qn} ← {it['key']}")
+                    continue
                 print(f"ERRO: questão {yr} Q{qn} inexistente", file=sys.stderr)
                 return 1
 
@@ -164,13 +187,19 @@ def main() -> int:
         return 2
 
     if args.check:
+        n_links = sum(len(i.get('questions', [])) for i in to_insert)
         print(f"OK (--check): {len(to_insert)} passagens a inserir, "
-              f"{sum(len(i.get('questions', [])) for i in to_insert)} vínculos; "
+              f"{n_links} vínculos; "
               f"{len(existing)} já presentes, 0 divergências")
+        if skipped_links:
+            print(f"vínculos pulados (questão ausente): {skipped_links}")
         return 0
 
+    def sql_int(v) -> str:
+        return "NULL" if v is None else str(int(v))
+
     for it in to_insert:
-        eid = exams[it["edition"]]
+        eid = exams[(it["institution"], it["edition"])]
         cols = ("exam_id", "passage_key", "label", "kind", "title", "byline",
                 "subtitle", "intro", "content", "visual_description",
                 "format_note", "source_note", "page_start", "page_end", "checksum")
@@ -179,34 +208,42 @@ def main() -> int:
                 esc(it.get("intro")), esc(it.get("content")),
                 esc(it.get("visual_description")), esc(it.get("format_note")),
                 esc(it.get("source_note")),
-                str(it["page_start"]), str(it["page_end"]), esc(checksum(it)))
+                sql_int(it.get("page_start")), sql_int(it.get("page_end")),
+                esc(checksum(it)))
         out = psql(
             env_vars,
             f"INSERT INTO passages ({', '.join(cols)}) VALUES ({', '.join(vals)}) "
             f"ON CONFLICT (exam_id, passage_key) DO NOTHING RETURNING id;",
         ).strip()
         if out:
-            passage_ids[(it["edition"], it["key"])] = int(out.splitlines()[0])
+            passage_ids[(it["institution"], it["edition"], it["key"])] = int(
+                out.splitlines()[0])
 
     # Resolve ids (inclui recém-inseridos) e insere vínculos.
-    idmap: dict[tuple[int, str], int] = {}
+    idmap: dict[tuple[str, int, str], int] = {}
     for row in psql(
         env_vars,
-        "SELECT e.year, p.passage_key, p.id FROM passages p "
+        "SELECT e.institution, e.year, p.passage_key, p.id FROM passages p "
         "JOIN exams e ON e.id = p.exam_id;",
     ).strip().splitlines():
         if row.strip():
-            yr, key, pid = row.split("|")
-            idmap[(int(yr), key)] = int(pid)
-    links = 0
+            inst, yr, key, pid = row.split("|")
+            idmap[(inst, int(yr), key)] = int(pid)
+    links, skipped = 0, 0
     for it in items:
-        pid = idmap.get((it["edition"], it["key"]))
+        pid = idmap.get((it["institution"], it["edition"], it["key"]))
         if pid is None:
             continue
         pos = 0
         for qn in it.get("questions", []):
             pos += 1
-            qid = qids[(it["edition"], qn)]
+            qid = qids.get((it["institution"], it["edition"], qn))
+            if qid is None:
+                # Mesmo pulo do --check (D.4, Q22 ausente).
+                print(f"vínculo pulado (questão ausente no banco): "
+                      f"{it['institution']}-{it['edition']} Q{qn} ← {it['key']}")
+                skipped += 1
+                continue
             if (qid, pid) in existing_links:
                 continue
             psql(
@@ -217,7 +254,8 @@ def main() -> int:
             )
             links += 1
 
-    print(f"OK: {len(to_insert)} passagens inseridas, {links} vínculos novos; "
+    print(f"OK: {len(to_insert)} passagens inseridas, {links} vínculos novos "
+          f"(pulados sem questão: {skipped}); "
           f"{len(existing)} já presentes, 0 divergências")
     return 0
 

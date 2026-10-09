@@ -68,10 +68,12 @@ public class Passage {
   @Column(name = "source_note")
   private String sourceNote;
 
-  @Column(name = "page_start", nullable = false)
+  // NULL em EAJ (V20/D.4: .md sem página; NULL = DESCONHECIDO, nunca inventar).
+  @Column(name = "page_start")
   private Short pageStart;
 
-  @Column(name = "page_end", nullable = false)
+  // NULL em EAJ (ver acima).
+  @Column(name = "page_end")
   private Short pageEnd;
 
   public Passage() {}

@@ -415,3 +415,77 @@ para uma prova real e sugere erro de transcrição ou placeholder da
 curadoria. `scripts/analysis/check_eaj_md.py` emite aviso (não falha) e a
 conferência fica pendente do gabarito oficial (Fase G). Nunca "corrigir"
 as respostas por inferência.
+
+---
+
+## Programa EAJ — importação D.3 (2026-10-09, parcial segura 128/130)
+
+**Estado:** `scripts/db/import_questions.py --institution EAJ` (v2.1.0) importa
+128 (50/40/38: LP 55, MAT 53, CN 12, CH 8; 512 opções, 256 sources, 128
+classificações, checksums 130/130 distintos, `has_figure` EAJ 0) + Q23-2025
+como anulada `X` (alternativas presentes, sem efeito de pontuação).
+Q22/Q39-2025 `NEEDS_VISUAL_CHECK` BLOQUEADAS (trava D.3: exit 2 sem
+`--allow-needs-visual-check`; 2ª execução idempotente, 0 a inserir).
+Relatório: `data/import/report-eaj.json` (`BLOCKED_NEEDS_VISUAL_CHECK`,
+`safe_ok_128` true; gerado em scratch PG16 V1–V5,V8–V20 sem V6/V7, mesma
+trava do zero das C.1–C.3; cadeia incremental V19→V20 íntegra).
+Migração: `V20__eaj_taxonomy_cn_ch.sql` (11 topics + 19 subtopics CN/CH só o
+observado D.1; `OUTRO` de 2025 Q40 como `subtopic_id` NULL justificado, sem
+linha nova; DROP de `chk_questions_official_pages` — EAJ `NULL` =
+`DESCONHECIDO`, IFRN segue `NOT NULL` por dados no importador).
+`question_sources` EAJ: `PRIMARY` = `.md` (extração) + `GABARITO` = mesmo
+`.md` (tabela compilada transcrita — `GABARITO_TRANSCRITO`, nunca oficial).
+
+**Discrepância de contagem (NÃO gate, documentada):** o plano D.3 cita "129 +
+Q23" e "518+ opções / 130 questions". O apurado nos arquivos é 130 totais =
+128 importáveis sem flag (127 `CONFIRMED_TRANSCRIBED` + Q23 `ANNULLED`) + 2
+bloqueadas (MAT 53 sem flag; 55 com flag). Sem flag: 128/512/256/128.
+Com flag (pós-conferência + correção do `.md`): 130/520/260/130. Nenhum
+número foi "corrigido" por inferência — a flag segue proibida até a
+retranscrição.
+
+**Auditoria visual no PDF ( MBA, 2026-10-09, `eaj_2025.pdf` pp. 8/12,
+render PyMuPDF 150dpi — auditoria, nunca fonte de extração):**
+
+* Q22: `.md` traz B) `15/45` e C) `10/18` (iguais às frações da Q23 —
+  agrupamento/arrasto de OCR). No PDF: A) `13/200`, B) `13/2`, C) `13/20`
+  (com vírgula de ruído `1,3/20` no render), D) `13/20`. Resposta D (`13/20`
+  = 65%) confere, mas B/C transcritas estão erradas — importar como está
+  gravaria opções falsas. Trava MANTIDA; `--allow-needs-visual-check` NÃO
+  deve ser usada sem retranscrever B/C no `.md` + revalidar B.1/B.2/D.1.
+* Q39: `.md` traz soma `3/5` + razão `[1/2]` interpolada (resposta C=12).
+  No PDF: soma `2/3` + razão `3/5` (resposta A=10: 40 = 15+25, dif. 10).
+  Ambas as frações transcritas divergem — trava MANTIDA pelo mesmo motivo.
+* Q23 (NÃO bloqueada, mas NÃO CONFIRMADA): `.md` ordena `6/54, 15/45, 10/18`
+  (Mata/Cerrado/Caatinga → nenhuma opção casa → NULA). No PDF a ordem lida
+  é `15/45, 10/18, 6/54` (Mata=1/3, Cerrado=5/9, Caatinga=1/9 → A
+  "Cerrado, Mata, Caatinga" casaria). A NULA transcrita segue importada como
+  `X` por regra (fonte = `.md`), mas a ordem das frações fica NÃO
+  CONFIRMADA até a curadoria cotejar o `.md` com o PDF linha a linha
+  (Fase G, com gabarito oficial). Fora da pontuação de todo modo
+  (critério global), sem dano de scoring.
+
+**Destino:** curadoria deve retranscrever Q22 B/C e Q39 (soma + razão) no
+`data/provas/EAJ/2025/questoes.md` a partir do PDF renderizado, re-rodar
+`check_eaj_md` + `extract_eaj --check` + `link_eaj_keys --check` +
+`validate_classification` (370/370) e só então usar a flag para os 130.
+
+---
+
+## Programa EAJ — D.4 figuras + passagens (2026-10-09, DONE com vínculo pulado)
+
+**Decisão do responsável:** pular o vínculo EAJ-2025 Q22←TEXTO-3 (Q22 fora
+do banco na D.3); auditoria preservada acima; passagem `TEXTO-3` mantida com
+`questions:[22]` na fonte (`data/passages/eaj/2025.json`), sem vínculo no
+banco até Q22 existir. Vínculo da Q22 é a imagem `Q21_Q22_Q23`
+(Texto 3 queimadas): atendido como figura (`frontend/assets/figures/eaj/2025/Q22.webp`
+no manifest B.3; `page` DESCONHECIDA→NULL; sync pula sem questão, com aviso
+— mesmo comportamento IFRN para questão ausente).
+
+**Provas em scratch:** figures 94/95 (IFRN 37 + EAJ 57; pulada EAJ-2025-22);
+passages 42/42 (IFRN 31 + EAJ 11; vínculos 198 + 1 pulado Q22←TEXTO-3);
+`--check` verde (`sync_figures --check`: 95 entradas IFRN 37/EAJ 58;
+`import_passages --check`: 0 a inserir, 42 presentes); 2ª execução
+idempotente. Migração V20 §4 (`passages.page_*` NULL) + entidade `Passage`
+atualizada. Sem recorte = aviso + referência ao caderno (B.3), nunca imagem
+inventada.
