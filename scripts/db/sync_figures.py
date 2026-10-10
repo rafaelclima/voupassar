@@ -164,6 +164,24 @@ def main() -> int:
         inserted += 1
     print(f"sincronizado: {inserted} figuras (de {len(wanted)} no manifest; "
           f"puladas sem questão: {skipped})")
+    # Backfill G.2: recorte publicado ⇒ figura existe no PDF-fonte (fato B.3).
+    # Sem ele, questions.has_figure=false esconde o recorte no frontend
+    # (renderFigure só consulta o manifest quando has_figure=true): EAJ tinha
+    # 57 recortes com flag 0; IFRN tinha 8 (figuras compartilhadas que a
+    # extração não sinalizou). UPDATE só liga a flag, nunca desliga;
+    # idempotente (2ª execução = 0 linhas).
+    psql(env_vars,
+        "UPDATE questions SET has_figure = TRUE WHERE id IN "
+        "(SELECT DISTINCT question_id FROM question_figures) "
+        "AND has_figure IS DISTINCT FROM TRUE;")
+    # Conta o efeito de forma auditável (-q suprime o "UPDATE n").
+    flagged = psql(env_vars,
+        "SELECT count(*) FROM questions WHERE has_figure;").strip()
+    drift = psql(env_vars,
+        "SELECT count(*) FROM questions WHERE has_figure "
+        "AND id NOT IN (SELECT DISTINCT question_id FROM question_figures);")
+    print(f"has_figure: {flagged} questões com flag (só com recorte "
+          f"publicado); com flag sem recorte: {drift.strip()}")
     return 0
 
 

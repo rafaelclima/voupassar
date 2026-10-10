@@ -3,6 +3,9 @@ package br.com.voupassar.review.controller;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -67,11 +70,24 @@ class ReviewControllerTest {
   @Test
   void queueIs200() throws Exception {
     authenticate();
-    when(service.getQueue(anyLong(), any(), any(), any(), anyBoolean())).thenReturn(empty());
+    when(service.getQueue(anyLong(), any(), any(), any(), anyBoolean(), isNull()))
+        .thenReturn(empty());
 
     mvc().perform(get("/api/v1/review/queue"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.items").isArray())
         .andExpect(jsonPath("$.notes[0]").exists());
+  }
+
+  @Test
+  void institutionEajReachesService() throws Exception {
+    authenticate();
+    when(service.getQueue(anyLong(), any(), any(), any(), anyBoolean(), eq("EAJ")))
+        .thenReturn(empty());
+
+    mvc().perform(get("/api/v1/review/queue").param("institution", "EAJ"))
+        .andExpect(status().isOk());
+
+    verify(service).getQueue(anyLong(), any(), any(), any(), anyBoolean(), eq("EAJ"));
   }
 }

@@ -690,7 +690,36 @@ Critérios:
 * Nenhum doc promete endpoint, coluna ou fluxo inexistente; cada doc cita
   arquivo:linha do código vigente.
 
-## TASK G.2 — Checklist ponta a ponta (trilha EAJ + regressão IFRN)
+## TASK G.2 — Checklist ponta a ponta (trilha EAJ + regressão IFRN) [DONE 2026-10-10]
+
+Execução 2026-10-10 (detalhes e pendências em `docs/blockers.md`, seção
+G.2; decisão de escopo: 2021+2022 em fluxo integral + 2025 com a guarda
+`409 INCOMPLETE_EDITION` verificada — o fluxo real 2025 integral aguarda a
+retranscrição Q22/Q39):
+
+* Banco local: importação EAJ executada (128: 50/40/38; 512 opções, 256
+  sources, 128 classificações; idempotente) + figures 57 + passages 11/33
+  vínculos — 368 questões, 98 figuras, 42 passagens; usuários scratch
+  removidos (só pré-existentes).
+* Regressão herdada da E.2 reparada (só testes): 13 stubs de controller
+  migrados para `(…, institution)` + 5 passthrough `?institution=EAJ`;
+  `mvn -f backend/pom.xml test` **284/284**.
+* Achado funcional + correção: figuras EAJ não renderizavam com dados
+  reais (`has_figure=false` × gate do `figure.js`); `sync_figures.py`
+  backfilla a flag em questão com recorte publicado (98 flags, 0 sem
+  recorte).
+* API 55/55 (`/tmp/opencode/g2_checklist.py` + `g2_results.json`): trilha
+  EAJ integral (roteiro `v2.1-institution` com evidência 2021/2022/2025,
+  4 áreas, by-edition 50/40Q com notas 180 min + Q23-2025 `X` fora da
+  pontuação, 2025 em 409) + regressão IFRN (9 edições, 240Q, 404 honestos)
+  + segurança (401 sem stacktrace, CORS, 400).
+* Navegador real headless (sem MCP na sessão) 20/20 (`pwtest/g2-e2e.cjs`):
+  seletor, guarda, cadastro, estudos EAJ, figuras/passagens com Comperve,
+  hub 2021 · EAJ, regressão IFRN, mobile 360px, teclado, console limpo.
+* Segurança/backup: CORS restrito, `.env` fora do Git, `pg_dump -Fc` →
+  restore 368/368 (scratch removido).
+* Correções de status E.2 (sem código): wizard wired à trilha,
+  `v2.1-institution` aplicado, dashboard/perfil = global legado.
 
 Entregas:
 

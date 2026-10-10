@@ -624,3 +624,127 @@ inventada.
   remoção/correção de titular é registrado aqui com data, escopo e ação, e
   o conteúdo afetado é removido/corrigido sem apagar a trilha de auditoria.
   Nenhum pedido pendente nesta data.
+
+---
+
+## Programa EAJ — G.2 checklist ponta a ponta (2026-10-10)
+
+> Decisão de escopo (responde à pendência da G.1 §3): a G.2 cobre
+> **2021+2022 em fluxo integral** + **2025 com a guarda `409
+> INCOMPLETE_EDITION` verificada** (contrato em
+> `docs/api-simulado-edicao.md:46-56`). O fluxo real 2025 integral aguarda a
+> retranscrição Q22/Q39 + revalidação B.1/B.2/D.1 (G.1 §2, trava em
+> `scripts/db/import_questions.py:744`). Nada silenciado: o 409 verificado
+> abaixo é o comportamento especificado, não ausência de teste.
+
+### 1. Importação EAJ no banco local (DONO G.2, herdado da F.1 — RESOLVIDO)
+
+* Executado 2026-10-10: `import_questions.py --institution EAJ` → 128
+  (50/40/38; LP 55, MAT 53, CN 12, CH 8; 512 opções, 256 sources, 128
+  classificações); 2ª execução 0 a inserir (idempotente); `sync_figures.py`
+  57 figuras (pulada EAJ-2025-22, sem questão); `import_passages.py` 11
+  passagens + 33 vínculos (pulado Q22←TEXTO-3). Banco local: 368 questões
+  (240 IFRN intactas + 128 EAJ), 98 figuras (41 IFRN + 57 EAJ), 42 passagens.
+* Usuários scratch da G.2 (`g2_*`, `probe*`, `g2browser*` — 19 contas)
+  removidos com o padrão documentado (trigger `trg_attempts_immutable`
+  desligado só para o `DELETE` em cascata e religado); restam só as 4 contas
+  pré-existentes (2026-10-03/08) + 9 tentativas delas. Dump de backup da
+  G.2 apagado após o restore (mesma higiene da 22.3).
+
+### 2. Reparo de regressão herdada da E.2 (13 testes de controller vermelhos)
+
+* Achado G.2: a E.2 trocou as assinaturas para `(…, institution)` nos
+  controllers (`RecommendationController.java:57-59`,
+  `DiagnosisController.java:41-43`, `ReviewController.java:51-53`,
+  `ContentController.java:58-165`,
+  `SimulationController.java:74-76`) sem atualizar os stubs dos testes —
+  13 falhas `500` em `mvn test` (9 Content + 1 Diagnosis + 1 Review +
+  1 Simulation + 1 Recommendation). Reparo **só em testes** (nenhuma regra
+  de produção alterada): stubs migrados para o overload com `institution`
+  + 5 testes novos de passthrough `?institution=EAJ`.
+* Resultado: `mvn -f backend/pom.xml test` **284/284** (279 E.1 + 5 G.2).
+  Projeto compila com `release 21`; suíte rodada com JDK 27 do ambiente
+  (únicos JDKs locais: 17/27 — sem 21; compilação e execução OK).
+
+### 3. Correções de status E.2 apuradas na G.2 (sem mudança de código)
+
+* **Wizard "Descubra seu nível" está wired à trilha** (a nota E.2 dizia
+  "aplicação no wizard ainda pendente"): `diagnostico.js:115-120` (bloco
+  LP), `simulado.js:1261-1262` (bloco MAT) e `simulado.js:1289-1291`
+  (`generatePlan(institution)` + redirect com `&institution=`) passam a
+  trilha nas 3 etapas.
+* **`v2.1-institution` está aplicado** (a nota E.2 dizia "não aplicado
+  ainda"): `POST /recommendations?institution=EAJ` devolve
+  `algorithmVersion: v2.1-institution` com `evidenceJson` EAJ
+  (`editions [2021,2022,2025]`, `sampleLabels` "EAJ …Q…" auditáveis);
+  `?institution=IFRN` devolve o mesmo algoritmo na trilha IFRN (6 edições).
+* **Dashboard/perfil seguem panorama global legado** (contrato E.2:
+  `institution` ausente = global): `dashboard.js:301,408,1185,1201` e
+  `perfil.js` chamam sem `institution`; estudos/simulado/diagnóstico/
+  revisão filtram por trilha. Observação, não gate (mudar o default
+  deslocaria usuários — decisão F.1).
+
+### 4. Achado funcional G.2 + correção (figuras EAJ não renderizavam)
+
+* Causa: `renderFigure` (`frontend/js/components/figure.js:126`) só
+  consulta o manifest quando `hasFigure=true`; a importação EAJ deixou
+  `has_figure=false` nas 128 (relatório D.3). A F.2 validou o componente
+  com sintéticos (`hasFigure=true`) — com dados reais do banco, nenhum dos
+  57 recortes EAJ renderizava (só o aviso). Mesmo efeito em 8 questões
+  IFRN de figuras compartilhadas (flag 33 × 41 recortes).
+* Correção (G.2, sem inventar dado): `scripts/db/sync_figures.py` agora
+  backfilla `has_figure=TRUE` em questão com recorte publicado (fato B.3;
+  só liga, idempotente; documentado em `docs/figuras-estrategia.md:125`).
+  Local: 98 flags (41 IFRN + 57 EAJ), 0 sem recorte. Navegador pós-fix:
+  `eaj/2022/Q08.webp` e `eaj/2021/Q11.webp` carregam com legenda Comperve;
+  regressão `2022/Q15.webp` intacta.
+* Paridade observada (não gate): `QuestionResponse.figures[]` sai `[]`
+  nos dois processos (`QuestionService.java:604`); o frontend resolve 100%
+  via manifest — IFRN e EAJ idênticos.
+
+### 5. Evidências do checklist (scripts em `/tmp/opencode/`, fora do repo)
+
+* API (`g2_checklist.py`): **55/55** — cadastro → diagnóstico DESCONHECIDO
+  → roteiro PROVISORIO EAJ (`v2.1-institution`, edições 2021/2022/2025) →
+  questões 128 (55/53/12/8; 2021: 50; 2022: 40; 2025: 38) → stats
+  50/40/40×38 → Q23-2025 `X` + nota → ESTUDO imediato 4 áreas → anulada
+  `wasAnnulled/isCorrect NULL` → diagnóstico 5 total/4 pontuáveis →
+  roteiro PESSOAL → revisão (ERRO_SEM_ACERTO primeiro) → by-discipline EAJ
+  PROVA (gabarito oculto, submit, placar) → by-edition EAJ-2021 50Q
+  (split 15/15/12/8, notas 180 min + TRANSCRIBED + DESCONHECIDA) e EAJ-2022
+  40Q (submit + resultado) → by-edition EAJ-2025 **409
+  INCOMPLETE_EDITION** (esperadas 40 × importadas 38) → perfil/stats/
+  performance/overview/plan 200 → regressão IFRN (9 edições, IFRN 6, 240Q,
+  ano 2022 = 80 ambas, 404 honestos IFRN-2021/EAJ-2023, by-edition
+  IFRN-2026 40Q com anulada X) → 401 sem stacktrace ×4, `institution=XXX`
+  → 400. Resultado em `/tmp/opencode/g2_results.json`.
+* Navegador real (`pwtest/g2-e2e.cjs`, Chromium headless — sem handlers
+  MCP nesta sessão, mesmo padrão das fases anteriores): **20/20** —
+  landing (seletor persiste `voupassar.institution=EAJ`; 240 + 128) →
+  guarda sem sessão → cadastro UI → estudos EAJ (selo EAJ; CN 12/CH 8/LP
+  55/MAT 53) → Q8-2022 (passagem TRECHO + figura + Comperve) → Q11-2021
+  (tirinha) → Q1-2021 (TEXTO-1) → hub com 2021 · EAJ → regressão Q15-2022
+  → desktop/mobile 360px overflow 0 → teclado → console só com o 404
+  benigno do plano em conta nova (padrão das fases anteriores).
+* Estática: `node --check` (5 componentes), `check_frontend.py` OK
+  (72 arquivos), serve 200 (index/estudos/manifest), pipeline EAJ verde
+  (`check_eaj_md`, `extract_eaj --check`, `link_eaj_keys --check`,
+  `validate_classification` 370/370, `extract_passages --check`,
+  `check_figures` 37 IFRN + 58 EAJ).
+* Segurança: CORS restrito (8081 → `Access-Control-Allow-Origin`;
+  origem estranha → 403); 401 em envelope + `X-Trace-Id`, sem stacktrace;
+  `.env` fora do Git e ignorado; segredos via env. Rate limit: filtro
+  inalterado desde a 22.3 (cobertura `AuthRateLimitFilterTest` 7 na suíte
+  284; rajada 65×→429 evidenciada na VPS em 22.3 — não reexecutada
+  localmente).
+* Backup/restore: `pg_dump -Fc` do banco local (368Q) → restore em
+  `voupassar_g2_restore` com 368/368 questões; scratch dropado e dump
+  apagado em seguida.
+
+### 6. Pendências restantes (donas das próximas tasks, nunca silenciadas)
+
+1. **Retranscrição Q22/Q39-2025** (G.1 §2, inalterada): sem ela, o
+   simulado real EAJ-2025 segue 409 e as questões seguem fora do banco.
+2. **Gabaritos oficiais EAJ** (G.1 §1, inalterada).
+3. **Figuras futuras**: `EAJ-2025-22` no manifest sem questão (sync pula
+   com aviso); entra com a Q22 pós-retranscrição.

@@ -10,7 +10,13 @@
 > O simulado de edição real é a TASK 5.5 (`docs/api-simulado-edicao.md`,
 > com `(institution,year)` na E.1).
 >
-> Nota E.1: `POST /by-discipline` segue sem filtro `institution` (candidatas
+> Nota E.2 (corrige a Nota E.1 abaixo): `POST /by-discipline` aceita
+> `?institution=IFRN|EAJ` (ausente = global legado, comportamento pré-E.2;
+> código em `backend/src/main/java/br/com/voupassar/simulations/controller/SimulationController.java:74-76`).
+> O recorte por processo vive nas candidatas; caderno/respostas já carregam
+> `institution` por posição para distinguir EAJ-2022 ≠ IFRN-2022.
+>
+> Nota E.1 (superada pela E.2 — mantida por histórico): `POST /by-discipline` segue sem filtro `institution` (candidatas
 > de ambas — IFRN+EAJ — quando a disciplina existe nos dois; CN/CH só têm
 > EAJ). O recorte por processo chega no frontend F.1 / trilha E.2; o
 > caderno/respostas já carregam `institution` por posição para distinguir
@@ -20,7 +26,7 @@
 
 | Rota | Descrição |
 |---|---|
-| `POST /api/v1/simulations/by-discipline` | criar e iniciar: `{disciplineCode!, questionCount! 1–100, difficulty?, mode! ESTUDO/PROVA}` → `201` com caderno congelado (gabarito oculto) |
+| `POST /api/v1/simulations/by-discipline?institution=` | criar e iniciar: `{disciplineCode!, questionCount! 1–100, difficulty?, mode! ESTUDO/PROVA}` → `201` com caderno congelado (gabarito oculto). `?institution=EAJ\|IFRN` recorta as candidatas (E.2); ausente = global legado |
 | `GET /api/v1/simulations/attempts?page=&size=` | listar execuções do dono (mais recentes primeiro, `page` 0-based, `size` 1–100) |
 | `GET /api/v1/simulations/attempts/{id}` | consultar execução: em andamento (só progresso) ou encerrada (gabarito + resumo) |
 | `POST /api/v1/simulations/attempts/{id}/submit` | concluir: `IN_PROGRESS → SUBMITTED` com placar do servidor |

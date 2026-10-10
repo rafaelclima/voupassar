@@ -3,6 +3,8 @@ package br.com.voupassar.studyplan.controller;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -87,8 +89,8 @@ class RecommendationControllerTest {
   @Test
   void ownerGeneratesAndReadsOwnPlan() throws Exception {
     authenticate(1L);
-    when(service.generatePlan(1L)).thenReturn(planOf(1L));
-    when(service.getPlan(1L)).thenReturn(planOf(1L));
+    when(service.generatePlan(eq(1L), isNull())).thenReturn(planOf(1L));
+    when(service.getPlan(eq(1L), isNull())).thenReturn(planOf(1L));
 
     mvc().perform(post("/api/v1/recommendations"))
         .andExpect(status().isOk())
@@ -99,6 +101,17 @@ class RecommendationControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.userId").value(1))
         .andExpect(jsonPath("$.algorithmVersion").value("v2-deterministico"));
+  }
+
+  @Test
+  void institutionEajReachesService() throws Exception {
+    authenticate(1L);
+    when(service.generatePlan(eq(1L), eq("EAJ"))).thenReturn(planOf(1L));
+
+    mvc().perform(post("/api/v1/recommendations").param("institution", "EAJ"))
+        .andExpect(status().isOk());
+
+    verify(service).generatePlan(eq(1L), eq("EAJ"));
   }
 
   @Test

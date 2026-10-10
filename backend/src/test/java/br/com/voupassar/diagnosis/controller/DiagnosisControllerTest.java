@@ -1,6 +1,9 @@
 package br.com.voupassar.diagnosis.controller;
 
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -67,11 +70,22 @@ class DiagnosisControllerTest {
   @Test
   void diagnoseIs200() throws Exception {
     authenticate();
-    when(service.getDiagnosis(anyLong())).thenReturn(empty());
+    when(service.getDiagnosis(anyLong(), isNull())).thenReturn(empty());
 
     mvc().perform(get("/api/v1/diagnosis"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.overallLevel").value("DESCONHECIDO"))
         .andExpect(jsonPath("$.notes[0]").exists());
+  }
+
+  @Test
+  void institutionEajReachesService() throws Exception {
+    authenticate();
+    when(service.getDiagnosis(anyLong(), eq("EAJ"))).thenReturn(empty());
+
+    mvc().perform(get("/api/v1/diagnosis").param("institution", "EAJ"))
+        .andExpect(status().isOk());
+
+    verify(service).getDiagnosis(anyLong(), eq("EAJ"));
   }
 }

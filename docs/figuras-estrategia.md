@@ -124,6 +124,14 @@ Módulo único `frontend/js/components/figure.js`:
   `(ano, numero) → question_id` e insere/atualiza `question_figures`.
 * `hasFigure` continua existindo (sinal rápido): `TRUE` = depende de visual
   no PDF-fonte, tenha ou não recorte publicado.
+* Backfill G.2 (`scripts/db/sync_figures.py`): recorte publicado ⇒ figura
+  existe no PDF-fonte (fato B.3) — o sync liga `has_figure=TRUE` em toda
+  questão com linha em `question_figures` (só liga, nunca desliga;
+  idempotente). Motivo: o frontend (`js/components/figure.js:126`) só
+  consulta o manifest quando `hasFigure` é verdadeiro — sem o backfill, os
+  57 recortes EAJ (importação com `has_figure=0`) e 8 IFRN de figuras
+  compartilhadas jamais renderizavam. Após o backfill local: 98 flags
+  (41 IFRN + 57 EAJ), 0 sem recorte.
 
 ## 7. Validação
 

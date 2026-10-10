@@ -1,5 +1,8 @@
 package br.com.voupassar.content.controller;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,7 +53,7 @@ class ContentControllerTest {
 
   @Test
   void listDisciplinesReturnsSummaries() throws Exception {
-    when(service.listDisciplines())
+    when(service.listDisciplines(isNull()))
         .thenReturn(
             List.of(
                 new DisciplineSummaryResponse("LINGUA_PORTUGUESA", "Língua Portuguesa", 2, 120),
@@ -64,8 +67,22 @@ class ContentControllerTest {
   }
 
   @Test
+  void institutionEajReachesService() throws Exception {
+    when(service.listDisciplines(eq("EAJ")))
+        .thenReturn(
+            List.of(
+                new DisciplineSummaryResponse("LINGUA_PORTUGUESA", "Língua Portuguesa", 2, 55)));
+
+    mvc().perform(get("/api/v1/disciplines").param("institution", "EAJ"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].questionCount").value(55));
+
+    verify(service).listDisciplines(eq("EAJ"));
+  }
+
+  @Test
   void getDisciplineReturnsDetail() throws Exception {
-    when(service.getDiscipline("MATEMATICA"))
+    when(service.getDiscipline(eq("MATEMATICA"), isNull()))
         .thenReturn(
             new DisciplineDetailResponse(
                 "MATEMATICA",
@@ -85,7 +102,7 @@ class ContentControllerTest {
 
   @Test
   void getDisciplineUnknownReturns404Envelope() throws Exception {
-    when(service.getDiscipline("FISICA"))
+    when(service.getDiscipline(eq("FISICA"), isNull()))
         .thenThrow(new ResourceNotFoundException("DISCIPLINE_NOT_FOUND", "Disciplina FISICA não encontrada."));
 
     mvc().perform(get("/api/v1/disciplines/FISICA"))
@@ -97,7 +114,7 @@ class ContentControllerTest {
 
   @Test
   void listTopicsReturnsSummaries() throws Exception {
-    when(service.listTopics(null))
+    when(service.listTopics(isNull(), isNull()))
         .thenReturn(
             List.of(
                 new TopicSummaryResponse(
@@ -111,7 +128,7 @@ class ContentControllerTest {
 
   @Test
   void getTopicReturnsHistory() throws Exception {
-    when(service.getTopic(5L))
+    when(service.getTopic(eq(5L), isNull()))
         .thenReturn(
             new TopicDetailResponse(
                 5L,
@@ -136,7 +153,7 @@ class ContentControllerTest {
 
   @Test
   void getTopicUnknownReturns404Envelope() throws Exception {
-    when(service.getTopic(999L))
+    when(service.getTopic(eq(999L), isNull()))
         .thenThrow(new ResourceNotFoundException("TOPIC_NOT_FOUND", "Assunto 999 não encontrado."));
 
     mvc().perform(get("/api/v1/topics/999"))
@@ -146,7 +163,7 @@ class ContentControllerTest {
 
   @Test
   void listSubtopicsReturnsSummaries() throws Exception {
-    when(service.listSubtopics(null))
+    when(service.listSubtopics(isNull(), isNull()))
         .thenReturn(
             List.of(
                 new SubtopicSummaryResponse(
@@ -161,7 +178,7 @@ class ContentControllerTest {
 
   @Test
   void getSubtopicReturnsHistory() throws Exception {
-    when(service.getSubtopic(25L))
+    when(service.getSubtopic(eq(25L), isNull()))
         .thenReturn(
             new SubtopicDetailResponse(
                 25L,
@@ -186,7 +203,7 @@ class ContentControllerTest {
 
   @Test
   void contentStatsReturnsOverview() throws Exception {
-    when(service.getContentStats())
+    when(service.getContentStats(isNull()))
         .thenReturn(
             new ContentStatsResponse(
                 240L,

@@ -3,6 +3,9 @@ package br.com.voupassar.simulations.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -98,7 +101,7 @@ class SimulationControllerTest {
   @Test
   void createReturns201() throws Exception {
     authenticate();
-    when(service.createByDiscipline(anyLong(), any())).thenReturn(attempt());
+    when(service.createByDiscipline(anyLong(), any(), isNull())).thenReturn(attempt());
 
     mvc().perform(post("/api/v1/simulations/by-discipline")
             .contentType(MediaType.APPLICATION_JSON)
@@ -106,6 +109,20 @@ class SimulationControllerTest {
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.attemptId").value(55))
         .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+  }
+
+  @Test
+  void institutionEajReachesService() throws Exception {
+    authenticate();
+    when(service.createByDiscipline(anyLong(), any(), eq("EAJ"))).thenReturn(attempt());
+
+    mvc().perform(post("/api/v1/simulations/by-discipline")
+            .param("institution", "EAJ")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"disciplineCode\":\"MATEMATICA\",\"questionCount\":10,\"mode\":\"PROVA\"}"))
+        .andExpect(status().isCreated());
+
+    verify(service).createByDiscipline(anyLong(), any(), eq("EAJ"));
   }
 
   @Test
