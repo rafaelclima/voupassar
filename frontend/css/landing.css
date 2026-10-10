@@ -886,6 +886,85 @@ body.landing-page {
   font-weight: 700;
 }
 
+/* ============ Painel "Escolha sua prova" (#processo) ============
+ * Mesma linguagem dos cards da página (surface, borda line-200,
+ * radius-xl, faixa de acento no topo, shadow-sm): o seletor e os
+ * contadores deixam de flutuar soltos. NUNCA .hero-stats aqui — aquela
+ * classe tem cores fixas para o navy (número #fff some no claro). */
+.processo-panel {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-200);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  display: grid;
+  gap: var(--space-5);
+}
+
+.processo-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary-600), var(--color-accent-500));
+}
+
+.processo-panel__label {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-ink-700);
+  margin: 0 0 var(--space-2);
+}
+
+.processo-stats {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-5) 0 0;
+  border-top: 1px solid var(--color-line-200);
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.processo-stats li {
+  display: grid;
+  gap: 0.15rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.processo-stats strong {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: var(--tracking-tighter);
+  line-height: 1.1;
+  color: var(--color-ink-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.processo-stats__track {
+  font-weight: 800;
+  color: var(--color-ink-900);
+}
+
+.processo-stats__detail {
+  font-size: var(--text-sm);
+  color: var(--color-ink-700);
+  line-height: 1.4;
+}
+
+[data-theme="dark"] .processo-panel {
+  border-color: var(--color-line-300);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.35);
+}
+
 .landing-actions--section {
   margin-top: var(--space-6);
 }
@@ -963,6 +1042,16 @@ body.landing-page {
 @media (min-width: 48rem) {
   .landing-cards {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .processo-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4) var(--space-6);
+  }
+
+  .processo-stats li + li {
+    border-left: 1px solid var(--color-line-200);
+    padding-left: var(--space-6);
   }
 
   .landing-modes {

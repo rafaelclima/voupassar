@@ -156,8 +156,13 @@ em `base.css`:
   seletor persistente (`js/components/process-selector.js` sobre
   `js/state/process.js`, default IFRN) + `#processo-stats` com o acervo
   classificado: **240 IFRN** (6 edições 2020, 2022–2026, seed V2) +
-  **128 EAJ** (3 edições 2021/2022/2025, `data/import/report-eaj.json`;
-  Q22/Q39-2025 fora até retranscrição — ver `docs/blockers.md`).
+  **130 EAJ** (3 edições 2021/2022/2025, pós go-live VPS com Q22/Q39-2025
+  retranscritas — ver `docs/blockers.md`).
+* Seletor e contadores vivem num `.processo-panel` (painel na linguagem
+  dos cards: surface, borda `line-200`, `radius-xl`, faixa de acento no
+  topo, `shadow-sm`); os números usam `.processo-stats` em tokens da
+  seção (`ink-900`/`ink-700`, divisor `line-200`). NUNCA `.hero-stats`
+  aqui: aquela classe tem cores fixas do navy (`#fff` some no claro).
 * `GET /editions` exige sessão, por isso a landing usa essas contagens
   estáticas verificadas em vez de fetch anônimo (nada inventado: somam
-  368 = 240 + 128, cada parcela rastreável).
+  370 = 240 + 130, cada parcela rastreável).

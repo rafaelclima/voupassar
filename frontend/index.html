@@ -193,24 +193,32 @@
       </div>
     </section>
 
-    <!-- PROCESSO: seletor IFRN/EAJ. Contadores com o acervo classificado;
-         texto estático honesto sem JS. -->
+    <!-- PROCESSO: seletor IFRN/EAJ num painel na linguagem dos cards da
+         página; contadores estáticos honestos sem JS, em tokens da seção
+         (nunca .hero-stats aqui: cores fixas do navy somem no claro). -->
     <section class="landing-section" id="processo" aria-labelledby="processo-t">
       <div class="container">
         <p class="section-eyebrow">Escolha sua prova</p>
         <h2 id="processo-t">IFRN ou EAJ/UFRN: estude na trilha certa</h2>
         <p class="section-lead" id="processo-counts">Duas trilhas com acervo real classificado — selecione e todo o app filtra por ela.</p>
-        <div id="process-selector-mount"></div>
-        <ul class="hero-stats mt-4" id="processo-stats" aria-label="Acervo por processo">
-          <li>
-            <strong>240</strong>
-            <span>Questões IFRN (6 edições: 2020, 2022–2026)</span>
-          </li>
-          <li>
-            <strong>128</strong>
-            <span>Questões EAJ/UFRN (3 edições: 2021, 2022, 2025)</span>
-          </li>
-        </ul>
+        <div class="processo-panel">
+          <div>
+            <p class="processo-panel__label">Trilha ativa</p>
+            <div id="process-selector-mount"></div>
+          </div>
+          <ul class="processo-stats" id="processo-stats" aria-label="Acervo por processo">
+            <li>
+              <strong>240</strong>
+              <span class="processo-stats__track">IFRN</span>
+              <span class="processo-stats__detail">Questões · 6 edições (2020, 2022–2026)</span>
+            </li>
+            <li>
+              <strong>130</strong>
+              <span class="processo-stats__track">EAJ/UFRN</span>
+              <span class="processo-stats__detail">Questões · 3 edições (2021, 2022, 2025)</span>
+            </li>
+          </ul>
+        </div>
         <p class="landing-note"><a href="./estudos.html">Estudar</a> · <a href="./simulado.html">Simulados</a> · <a href="./diagnostico.html">Descobrir meu nível</a> — todos respeitam a trilha escolhida.</p>
       </div>
     </section>
