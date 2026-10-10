@@ -78,6 +78,31 @@ docker service update --image voupassar-backend:<TAG> voupassar-api
   leitura pelo código antigo: só adicionam coluna `study_plans.status` com
   default e um marker; downgrade de código não desfaz DDL).
 
+## 3c. Deploy 2026-10-10 (EAJ go-live: V17–V22 + 130 questões)
+
+- Imagens `voupassar-backend:prod-20261010` (código `fe9e53f`: E.1/E.2/F.1/F.2,
+  G.1/G.2) e `prod-20261010-v22` (vigente; adiciona só a V22). Backups `-Fc`:
+  `voupassar-20261010-preEAJ.dump` e `voupassar-20261010-preV22.dump`.
+- Flyway aplicou V17–V22 limpas no start (`eaj institution`, `50Q + CN/CH`,
+  `seed EAJ`, `taxonomy CN/CH`, `study_plans.institution`, `retranscrição
+  2025`). A V22 foi validada antes em dry-run transacional na VPS
+  (`UPDATE 1` + `ROLLBACK`) e dupla aplicação em scratch.
+- Import EAJ: `import_questions.py --institution EAJ
+  --allow-needs-visual-check` → 130/520/260/130 (LP 55, MAT 55, CN 12, CH 8;
+  relatório `data/import/report-eaj.json`, `status OK`). Banco: 430 questões
+  (240 IFRN intactas + 130 EAJ 50/40/40).
+- `sync_figures.py --institution EAJ` → 58 figuras (0 puladas; `has_figure`
+  99 = 41 IFRN + 58 EAJ). `import_passages.py --institution EAJ` → 11
+  passagens + 34 vínculos (0 pulados; Q22←TEXTO-3 ligado).
+- Smoke público 7/7 (conta scratch removida após, com `trg_attempts_immutable`
+  religado): EAJ 130Q, EAJ-2021 50Q, EAJ-2025 40Q (sem `409`), IFRN 240Q +
+  IFRN-2026 40Q. Nota: o edge devolve 403 para UA `python-urllib` (curl/UA de
+  navegador passam) — comportamento da borda, não da API.
+- Rollback (se necessário):
+  `docker service update --image voupassar-backend:prod-20261007 voupassar-api`
+  (nota: V17–V22 no banco permanecem; código antigo não conhece `institution`
+  — downgrade só como ponte até forward-fix).
+
 ## 4. Smoke executado em 2026-10-03 (todos OK)
 
 - `GET /actuator/health` → `{"status":"UP"}` (interno e via domínio).
