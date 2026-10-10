@@ -793,3 +793,16 @@ Nunca apresentar transcrição como documento oficial; nunca interpolar ediçõe
   e reexecutar o importador para que as 130 EAJ entrem integralmente (2025:
   40Q, Q23 `X` fora da pontuação, Q22/Q39 com `needs_visual_check` se ainda
   aplicável após a retranscrição — decisão de escopo mantida).
+
+## Resolução 2026-10-10 — go-live EAJ na VPS (pós G.2)
+
+* `database/migrations/V22__eaj_2025_retranscricao.sql`: o `.md`
+  pós-retranscrição mudou de sha e a V19 ficou obsoleta (importador travava
+  em fail-high); V22 reconcilia o `OUTRO` (EAJ,2025) para `c59416d0…`.
+* Deploy `voupassar-backend:prod-20261010-v22`: Flyway aplicou V17–V22;
+  import com `--allow-needs-visual-check` → 130/520/260/130; figuras 58
+  (`has_figure` 99); passagens 11 + 34 vínculos (0 pulados); banco 430Q.
+* Smoke público 7/7 (EAJ-2021 50Q, EAJ-2025 40Q sem `409`, regressão IFRN).
+  Detalhes em `docs/deploy-vps.md` §3c e `docs/blockers.md`.
+* A "pendência V20 no banco local" acima referia-se à máquina de
+  desenvolvimento em 2026-10-09 — na VPS está resolvida.

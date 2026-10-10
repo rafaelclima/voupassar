@@ -277,11 +277,12 @@ de página, mesmo padrão das edições anteriores).
 * **Páginas EAJ:** `page_start/end` = `NULL` (`DESCONHECIDO`) — `.md` não traz página; nunca preencher por inferência.
 * **Vínculo Q22←TEXTO-3:** pulo documentado (`Passage.java`: `questions:[22]` na fonte, sem vínculo no banco até Q22 existir; `Data/Passages` preservada). A imagem (`eaj/2025/Q22.webp`) é figura, não passagem vinculada.
 * **Edição 2021 (E.1):** só existe com `institution = 'EAJ'` (`EAJ-2021`, 50Q 15/15/12/8). `IFRN-2021` segue ausente (`EDITION_NOT_FOUND` honesto). Nenhum `exams` inventado.
+* **Resolução 2026-10-10 (go-live VPS):** retranscrição Q22/Q39 aplicada (`fe9e53f`) + V22 + import com `--allow-needs-visual-check` → 130 EAJ (2025 40Q); flag autorizada pela Fase G concluída (retranscrição + revalidação B.1/B.2/D.1). Q23 segue `X`; 2022 40×A, ordem das frações Q23 e passagens 2022 Texto 02/03 seguem NÃO CONFIRMADOS. Vínculo Q22←TEXTO-3 criado (34 vínculos, 0 pulados).
 
 ## Programa EAJ — passagens (TASK B.4, 2026-10-09)
 
 * **Entregas:** `data/passages/eaj/{2021,2022,2025}.json` (11 passagens, 34 vínculos) + `scripts/db/extract_passages.py` estendido ao namespace `eaj/`. Regra de vínculo idêntica à IFRN: `Texto N` = rótulo com número; `Trecho` = intervalo `intro`; páginas `NULL` + `DESCONHECIDO`. Importação reutiliza `import_passages.py` (D.4).
-* **Vínculo Q22:** pulado (questão sem linha no banco, D.3). Passagem `TEXTO-3` preservada com `questions:[22]` na fonte; sem vínculo no banco. A imagem (`eaj/2025/Q22.webp`) resolve como figura quando Q22 existir.
+* **Vínculo Q22:** pulado (questão sem linha no banco, D.3). Passagem `TEXTO-3` preservada com `questions:[22]` na fonte; sem vínculo no banco. A imagem (`eaj/2025/Q22.webp`) resolve como figura quando Q22 existir. (Resolvido na VPS em 2026-10-10: Q22 importada; vínculo criado — 34 vínculos, 0 pulados.)
 * **Textos 02/03 de 2022:** viraram `PASSAGEM` (sem bloco transcrito no `.md`, só visual nos PNGs agrupados B.3). `visual_description` curada (assinatura + fonte do Texto 02 = `NÃO CONFIRMADO`). Nenhum conteúdo inventado.
 
 ---
@@ -557,7 +558,7 @@ inventada.
 * **Destino:** anexar os gabaritos oficiais quando existirem e revalidar
   `data/linked/eaj/*.json` + B.1/B.2/D.1 (NÃO bloqueia A–F; herdada da A.2).
 
-### 2. Q22/Q39-2025 `NEEDS_VISUAL_CHECK` (ABERTAS — excluídas do banco)
+### 2. Q22/Q39-2025 `NEEDS_VISUAL_CHECK` (RESOLVIDAS 2026-10-10 — importadas na VPS com flag)
 
 * **Estado:** 128 importadas de 130 candidatas; bloqueadas —
   `data/import/report-eaj.json:13-14` (motivos em
@@ -575,6 +576,12 @@ inventada.
   (flag proibida até lá). Sem retranscrição, o simulado real EAJ-2025 falha
   com `409 INCOMPLETE_EDITION` — contrato em
   `docs/api-simulado-edicao.md:46-56`.
+* **Resolução 2026-10-10 (go-live VPS):** retranscrição executada (`fe9e53f`:
+  Q22 B=`13/2`, C=`1,3/20`; Q39 soma=`2/3`, razão=`3/5`, gabarito `A`) +
+  revalidação B.1/B.2/D.1 + V22 (`c59416d0…`) + import com flag → 130 EAJ,
+  2025 com 40Q (Q23 `X` fora da pontuação), smoke 7/7 incl. by-edition
+  EAJ-2025 sem `409`. Fontes mantêm `NEEDS_VISUAL_CHECK` (decisão do
+  pipeline); Q23 (ordem das frações) e 2022 40×A seguem NÃO CONFIRMADOS.
 
 ### 3. E2E autenticado por trilha + importação EAJ no banco local (ABERTAS — donas da G.2)
 
@@ -745,9 +752,11 @@ inventada.
 
 1. **Retranscrição Q22/Q39-2025** (G.1 §2, inalterada): sem ela, o
    simulado real EAJ-2025 segue 409 e as questões seguem fora do banco.
+   (Resolvida 2026-10-10: `fe9e53f` + V22 + import com flag na VPS → 2025 40Q.)
 2. **Gabaritos oficiais EAJ** (G.1 §1, inalterada).
 3. **Figuras futuras**: `EAJ-2025-22` no manifest sem questão (sync pula
    com aviso); entra com a Q22 pós-retranscrição.
+   (Resolvido 2026-10-10 na VPS: Q22 importada; sync 58 figuras, 0 puladas.)
 
 ## Retranscrição Q22/Q39-2025 — auditoria visual PDF (2026-10-09, Fase G.2)
 
@@ -770,3 +779,8 @@ inventada.
 * Nenhuma inferência aplicada; `TRANSCRIBED_FROM_MD` preservado em todos os
   documentos; crédito + fonte em todo conteúdo EAJ servido (AGENTS.md §12);
   takedown reativo documentado, sem gate de publicação.
+* **Resolução 2026-10-10 (go-live VPS):** V17–V22 aplicadas pelo Flyway no
+  boot (`prod-20261010-v22`); import com flag → 130/520/260/130; figuras 58
+  e passagens 11+34 vínculos; banco com 430 questões; smoke público 7/7.
+  O "banco local 368Q" acima refere-se à máquina de desenvolvimento em
+  2026-10-09 — a VPS está completa.
