@@ -55,6 +55,61 @@ export function sourceTypeLabel(value, officialLabel = "Oficial do IFRN") {
   return SOURCE_TYPES[value] || "Questão não oficial";
 }
 
+/* Selo "Oficial" por processo (TASK F.2): EAJ nunca aparece como IFRN
+ * (AGENTS.md §4). IFRN mantém o rótulo legado; EAJ usa o paralelo
+ * "Oficial do EAJ"; instituição ausente/DESCONHECIDA usa o neutro. */
+export function officialLabelFor(institution) {
+  const v = String(institution || "").trim().toUpperCase();
+  if (v === "EAJ") return "Oficial do EAJ";
+  if (v === "IFRN") return "Oficial do IFRN";
+  return "Oficial (processo desconhecido)";
+}
+
+/* Sufixo de não-oficial sem atribuir processo errado: autoral nunca é de
+ * processo algum (backend: "nem do IFRN nem do EAJ/UFRN"). */
+export function nonOfficialSuffix(institution) {
+  const v = String(institution || "").trim().toUpperCase();
+  if (v === "EAJ") return "— não é questão do EAJ";
+  if (v === "IFRN") return "— não é questão do IFRN";
+  return "— não é questão oficial";
+}
+
+/* Rótulo de origem completo p/ selos (selo único, sem duplicar lógica). */
+export function originLabel(q) {
+  const label = sourceTypeLabel(q?.sourceType, officialLabelFor(q?.institution));
+  if (!q?.sourceType || q.sourceType === "OFFICIAL") return label;
+  return `${label} ${nonOfficialSuffix(q?.institution)}`;
+}
+
+/* Referência de edição sem ambiguidade ano=edição (2022/2025 existem nos
+ * dois processos): EAJ prefixa o processo; IFRN mantém o legado. */
+export function editionRef(q, fallback = "Origem ainda não registrada") {
+  if (q?.examYear && q?.questionNumber) {
+    const v = String(q?.institution || "").trim().toUpperCase();
+    if (v === "EAJ") return `EAJ-${q.examYear} · Q${q.questionNumber}`;
+    return `${q.examYear} · Q${q.questionNumber}`;
+  }
+  return fallback;
+}
+
+/* Título curto p/ cabeçalhos de cartão/questão (mesma regra do editionRef). */
+export function questionRef(q, fallbackId = null) {
+  if (q?.examYear && q?.questionNumber) {
+    const v = String(q?.institution || "").trim().toUpperCase();
+    if (v === "EAJ") return `EAJ ${q.examYear} Q${q.questionNumber}`;
+    return `${q.examYear} Q${q.questionNumber}`;
+  }
+  if (q?.questionNumber) return `Q${q.questionNumber}`;
+  return fallbackId ?? "Questão";
+}
+
+/* Nota de anulada sem atribuir a banca errada (EAJ Q23-2025 existe). */
+export function annulledNote(institution) {
+  const v = String(institution || "").trim().toUpperCase();
+  if (v === "EAJ") return "Questão anulada (gabarito X): conta como conteúdo e fica fora do aproveitamento — a banca não informa como pontuar anuladas.";
+  return "Questão anulada pelo IFRN: você pode responder, mas ela não entra no seu aproveitamento — o IFRN não publica como pontuar anuladas.";
+}
+
 /** Dificuldade estimada. O "(estimativa)" fica explícito: não é dado do IFRN. */
 const DIFFICULTIES = {
   FACIL: "Fácil",

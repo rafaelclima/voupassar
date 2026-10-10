@@ -737,6 +737,42 @@ def main() -> int:
     if "process-selector" not in comp:
         fail("components.css sem .process-selector (TASK F.1)")
 
+    # TASK F.2 — figuras e passagens EAJ: manifest namespaced, crédito
+    # EAJ/Comperve + página, sem selo IFRN em questão EAJ.
+    fig = (FRONT / "js" / "components" / "figure.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "figure.js").exists() else ""
+    for token in ["EAJ-${", "figureInstitution", "figureCredit", "figureNotice",
+                  "DESCONHECIDA", "EAJ/UFRN (Comperve)", "resolveKey"]:
+        if token not in fig:
+            fail(f"js/components/figure.js sem {token!r} (TASK F.2 — namespace EAJ)")
+    pas = (FRONT / "js" / "components" / "passage.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "passage.js").exists() else ""
+    for token in ["passageCreditFallback", "EAJ/UFRN (Comperve)", "DESCONHECIDA",
+                  "renderPassages"]:
+        if token not in pas:
+            fail(f"js/components/passage.js sem {token!r} (TASK F.2 — crédito EAJ)")
+    voc = (FRONT / "js" / "vocab.js").read_text(encoding="utf-8") if (FRONT / "js" / "vocab.js").exists() else ""
+    for token in ["officialLabelFor", "Oficial do EAJ", "originLabel",
+                  "questionRef", "annulledNote"]:
+        if token not in voc:
+            fail(f"js/vocab.js sem {token!r} (TASK F.2 — selo por processo)")
+    for name, token in [("questao.js", "originLabel"),
+                        ("estudos.js", "originLabel"),
+                        ("simulado.js", "originLabel")]:
+        v = (FRONT / "js" / "views" / name).read_text(encoding="utf-8") if (FRONT / "js" / "views" / name).exists() else ""
+        if v and token not in v:
+            fail(f"js/views/{name} sem {token!r} (TASK F.2 — selo por processo)")
+    # Nenhum selo IFRN fixo em questão EAJ: os textos com "do IFRN" restam
+    # só no fallback default do vocab e nos comentários/trilha IFRN.
+    for name in ["questao.js", "simulado.js", "estudos.js"]:
+        v = (FRONT / "js" / "views" / name).read_text(encoding="utf-8") if (FRONT / "js" / "views" / name).exists() else ""
+        code = "\n".join(
+            line for line in v.splitlines()
+            if line.strip() and not line.strip().startswith(("*", "//"))
+        )
+        for bad in ['não é questão do IFRN', 'anulada pelo IFRN', 'O IFRN não informa',
+                     'o IFRN não diz', 'O IFRN não publica']:
+            if bad in code:
+                fail(f"js/views/{name} com texto fixo {bad!r} (TASK F.2 — usar vocab institution-aware)")
+
     if errors:
         print(f"check_frontend: {len(errors)} falha(s):")
         for e in errors:

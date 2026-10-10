@@ -621,7 +621,27 @@ Critérios:
   misturar 2022/2025 entre processos; conta nova vê vazio honesto na trilha
   EAJ; `node --check` + `check_frontend.py` + serve 200.
 
-## TASK F.2 — Figuras e passagens EAJ na UI
+## TASK F.2 — Figuras e passagens EAJ na UI [DONE 2026-10-10]
+
+Execução 2026-10-10: `js/components/figure.js` namespaced
+(`figureInstitution`/`resolveKey` EAJ→`EAJ-<ano>-<n>`, IFRN legado intacto;
+`figureCredit`/`figureNotice` com fallback EAJ/Comperve + DESCONHECIDA) +
+`js/components/passage.js` (`passageCreditFallback` EAJ/Comperve +
+DESCONHECIDA, mesmo `<details>`; TIRINHA/CHARGE→"Mostrar imagem") +
+`js/vocab.js` (`officialLabelFor`/`originLabel`/`questionRef`/`editionRef`/
+`annulledNote`: `Oficial do EAJ`, `EAJ 2022 Q8`, `EAJ-2022 · Q8`, anulada sem
+banca errada) aplicado em questão/estudos/simulado (+ revisão neutra) +
+`check_frontend.py` (regra F.2 nova + ban a IFRN fixo nas views).
+Provas: `node --check` 7 arquivos, `check_frontend.py` OK (72 arquivos),
+serve 200 (5 páginas + manifest + 3 webp EAJ), navegador real (Playwright):
+amostra EAJ-2021-Q11/EAJ-2022-Q8/EAJ-2025-Q30 com figura (img carrega
+`eaj/<ano>/Q<NN>.webp` + legenda Comperve) e passagem (crédito Comperve +
+DESCONHECIDA), IFRN 2022-Q15 regressão intacta, EAJ sem recorte com aviso
+honesto, mobile 360px overflow 0, console 0 erros. `check_figures`,
+`extract_passages --check` e `check_eaj_md` intactos. Pendente p/ G.2
+(herdado da F.1): E2E autenticado por trilha e importação EAJ no banco
+local (validação aqui com dados sintéticos + manifest real, sem backend
+EAJ; ver `docs/blockers.md`).
 
 Entregas:
 

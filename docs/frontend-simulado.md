@@ -136,3 +136,11 @@ OK; `check_frontend.py` OK estendido com cobertura simulado; navegação
   `INSTITUTION-YEAR`): `2021 · EAJ` existe só no EAJ; criações passam
   `institution` (`POST /simulations/by-discipline?institution=` e
   `by-edition {institution}`); gancho do wizard usa `currentInstitution()`.
+
+## 13. Figuras e passagens EAJ no caderno (Programa EAJ, F.2)
+
+* Cartões (`positionTitle`, `renderSimCard`): referência `EAJ <ano> Q<n>`
+  via `questionRef` (usa `item.institution` do `CadernoItem` ou o detalhe);
+  selo via `originLabel`; textos-base e "Mostrar figura" idênticos aos de
+  Estudos (visíveis também no Modo Prova); notas de anulada/placar neutras
+  quanto à banca (Q23-2025 é EAJ, fora da pontuação).

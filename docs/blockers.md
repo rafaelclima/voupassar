@@ -490,6 +490,29 @@ render PyMuPDF 150dpi — auditoria, nunca fonte de extração):**
 
 ---
 
+## Programa EAJ — F.2 figuras e passagens na UI (2026-10-10, DONE com E2E autenticado pendente)
+
+**Validação executada (AGENTS.md §31, navegador real via Playwright):**
+`figure.js` namespaced (`EAJ-2022-8`→`eaj/2022/Q08.webp`, fallback + aviso
+DESCONHECIDA) e `passage.js` (crédito EAJ/Comperve + DESCONHECIDA) verificados
+em página servida localmente (`python3 -m http.server`, 200 em 5 páginas +
+manifest + 3 webp EAJ) com questões sintéticas no formato `QuestionResponse`
++ manifest real: amostras EAJ-2021-Q11 (TIRINHA→"Mostrar imagem"),
+EAJ-2022-Q8 (TRECHO) e EAJ-2025-Q30 (TRECHO) — 3/3 com `details.passage`,
+figura (`img` carrega, legenda Comperve) e crédito de passagem Comperve;
+regressão IFRN 2022-Q15 intacta (`2022/Q15.webp` + crédito IFRN); EAJ sem
+recorte (Q1) com aviso honesto + crédito fallback; mobile 360px overflow 0;
+console 0 erros; `node --check` (7 arquivos) + `check_frontend.py` OK
+(72 arquivos, regra F.2 nova).
+
+**Limite honesto desta validação:** sem backend EAJ no banco local
+(só IFRN-240 lá — pendência herdada da F.1), os painéis foram exercitados
+com transcrições sintéticas curtas no formato da API + arquivos/manifest
+reais, não com `GET /questions` EAJ autenticado. O E2E autenticado por
+trilha (conta nova na trilha EAJ: cards + questão dedicada + simulado com
+figuras/passagens reais do banco) segue pendente para a G.2, junto da
+importação EAJ no banco local.
+
 ## Programa EAJ — D.4 figuras + passagens (2026-10-09, DONE com vínculo pulado)
 
 **Decisão do responsável:** pular o vínculo EAJ-2025 Q22←TEXTO-3 (Q22 fora

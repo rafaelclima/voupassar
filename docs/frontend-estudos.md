@@ -248,3 +248,12 @@ timeout 20 python3 -m http.server 8899 --directory frontend
   query; `?institution=EAJ` sincronizado na URL (IFRN omitido, default).
 * Disciplinas CN/CH vêm do backend quando EAJ (sem lista fixa no JS);
   origem `Oficiais da trilha` (rótulo neutro, ex-`Oficiais do IFRN`).
+
+## 13. Figuras e passagens EAJ nos cards (Programa EAJ, F.2)
+
+* Cards (`js/views/estudos.js` `renderQuestionCard`): `renderPassages`
+  (painéis Texto/Trecho EAJ com crédito EAJ/Comperve + DESCONHECIDA) +
+  `mountExpandableFigure` ("Mostrar figura" → `eaj/<ano>/Q<NN>.webp`);
+  selo via `originLabel` (`Oficial do EAJ`, nunca IFRN) e título
+  `EAJ <ano> Q<n>` (`questionRef`); resumo do recorte traduz a origem na
+  trilha (`officialLabelFor`); feedback de anulada neutro quanto à banca.

@@ -1,4 +1,4 @@
-/* VouPassar — componente de texto-base (TASK 6.9 + docs/passagens-estrategia.md)
+/* VouPassar — componente de texto-base (TASK 6.9 + docs/passagens-estrategia.md + F.2 EAJ)
  * Renderiza os textos-base de uma questão oficial (q.passages[] da API)
  * como painéis expansíveis (<details> nativo: teclado + leitor de tela
  * sem JS extra, sem animação — respeita prefers-reduced-motion por
@@ -6,6 +6,9 @@
  * Sem textContent inventado: só transcrição literal da API; quando a
  * passagem é puramente visual, exibe a descrição verificada + fonte.
  * Parte do enunciado: aparece nos modos Estudo, Prova e Revisão.
+ * Trilha EAJ (F.2): as passagens EAJ chegam no mesmo formato (B.4/D.4),
+ * mas sem source_note/páginas no `.md` (página DESCONHECIDA, §4) — o
+ * crédito usa fallback honesto EAJ/UFRN (Comperve) em vez de omitir a fonte.
  */
 
 import { el } from "./ui.js";
@@ -22,6 +25,23 @@ function pageRef(p) {
   return p.pageEnd && p.pageEnd !== p.pageStart
     ? `páginas ${p.pageStart}–${p.pageEnd} do caderno`
     : `página ${p.pageStart} do caderno`;
+}
+
+/* Processo da questão (mesma regra do figure.js): EAJ em qualquer caixa,
+ * default IFRN para registros legados sem institution. */
+function passageInstitution(q) {
+  const v = String(q?.institution || "").trim().toUpperCase();
+  return v === "EAJ" ? "EAJ" : "IFRN";
+}
+
+/* Crédito de fallback quando a API não traz sourceNote nem páginas
+ * (caso das passagens EAJ: `.md` sem página, B.4 — nunca inventar número).
+ * IFRN mantém o comportamento legado (sem linha quando sem fonte);
+ * EAJ exibe a fonte honesta com página DESCONHECIDA. Exportado p/ teste. */
+export function passageCreditFallback(q) {
+  if (passageInstitution(q) !== "EAJ") return null;
+  const year = q?.examYear ?? "—";
+  return `EAJ/UFRN (Comperve) — Caderno EAJ-${year}, página DESCONHECIDA`;
 }
 
 function appendParas(body, content) {
@@ -59,7 +79,9 @@ export function renderPassages(q, container) {
     if (p.formatNote) body.appendChild(el("p", { className: "muted", text: `No caderno: ${p.formatNote}` }));
     const ref = pageRef(p);
     const credit = [p.sourceNote, ref ? `(${ref})` : null].filter(Boolean).join(" ");
+    const fallback = !credit ? passageCreditFallback(q) : null;
     if (credit) body.appendChild(el("p", { className: "passage__credit muted", text: `Fonte: ${credit}` }));
+    else if (fallback) body.appendChild(el("p", { className: "passage__credit muted", text: `Fonte: ${fallback}` }));
     details.appendChild(body);
     wrap.appendChild(details);
   }

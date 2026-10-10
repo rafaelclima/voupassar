@@ -39,7 +39,7 @@ import {
   fetchPlan,
 } from "../api/estudos.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { sourceTypeLabel, difficultyLabel, statusLabel, choiceLabel } from "../vocab.js";
+import { sourceTypeLabel, difficultyLabel, statusLabel, choiceLabel, originLabel, questionRef, officialLabelFor } from "../vocab.js";
 import { parseEvidence, evidenceLine, revisaoHref, sampleHref } from "../components/plan-evidence.js";
 import { summarizeResult, renderResultNext } from "../components/result-next.js";
 import { createSession } from "../api/review.js";
@@ -747,8 +747,9 @@ function renderRecorte() {
   }
   const diffLabel = difficultyLabel(state.filters.difficulty);
   if (diffLabel) parts.push(diffLabel);
-  // Origem no resumo (TASK 15.4): traduzida via vocab, nunca o enum cru.
-  if (state.filters.sourceType) parts.push(sourceTypeLabel(state.filters.sourceType));
+  // Origem no resumo (TASK 15.4 + F.2): traduzida via vocab com o processo
+  // da trilha (EAJ nunca como IFRN), nunca o enum cru.
+  if (state.filters.sourceType) parts.push(sourceTypeLabel(state.filters.sourceType, officialLabelFor(state.institution)));
   recorteResumo.textContent = parts.length > 0
     ? `Recorte atual: ${parts.join(" · ")}.`
     : "Recorte atual: todos os conteúdos.";
@@ -1195,10 +1196,8 @@ function renderQuestions(data) {
 }
 
 function questionTitle(q) {
-  const parts = [];
-  if (q.examYear && q.questionNumber) parts.push(`${q.examYear} Q${q.questionNumber}`);
-  else if (q.questionNumber) parts.push(`Q${q.questionNumber}`);
-  else parts.push(`Questão #${q.id}`);
+  // TASK F.2: EAJ prefixa o processo (2022/2025 colidem com o IFRN).
+  const parts = [questionRef(q, `Questão #${q.id}`)];
   if (q.discipline?.name) parts.push(q.discipline.name);
   return parts.join(" · ");
 }
@@ -1209,7 +1208,7 @@ function renderQuestionCard(q) {
   head.appendChild(el("span", { className: "question-card__id", text: questionTitle(q), attrs: { id: `q-${q.id}-t` } }));
   head.appendChild(el("span", {
     className: "badge",
-    text: sourceTypeLabel(q.sourceType),
+    text: originLabel(q),
   }));
   if (q.annulled) {
     head.appendChild(el("span", { className: "badge badge--warning", text: "Anulada" }));
@@ -1387,7 +1386,7 @@ function showFeedback(box, question, attempt, choice) {
   if (attempt?.wasAnnulled || question.annulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choiceText}. O gabarito oficial marcou esta questão como anulada. O IFRN não informa como pontuar questões anuladas.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceText}. O gabarito oficial marcou esta questão como anulada. A banca não informa como pontuar questões anuladas.` }));
   } else if (attempt?.isCorrect === true) {
     box.dataset.tone = "success";
     box.appendChild(el("strong", { text: `Você acertou — alternativa ${correct}.` }));

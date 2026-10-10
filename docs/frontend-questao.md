@@ -98,3 +98,19 @@ auth com `?next=` seguro; correção do servidor com `Tentar/Responder
 novamente`; `?id=` + `?voltar=` whitelisted; link estudos → dedicada;
 `node --check` OK; 200 no serve; `check_frontend.py` OK estendido com
 cobertura questão.
+
+## 6. Trilha EAJ — figuras, passagens e selo por processo (Programa EAJ, F.2)
+
+* Figura: `js/components/figure.js` (`resolveKey`, `figureInstitution`)
+  resolve `EAJ-<ano>-<n>` → `eaj/<ano>/Q<NN>.webp` (B.3); sem recorte =
+  aviso + referência ao caderno com página DESCONHECIDA (§4), nunca imagem
+  inventada; legenda usa o `credit` do manifest (EAJ/Comperve) com fallback
+  honesto por processo (`figureCredit`/`figureNotice`).
+* Passagem: `js/components/passage.js` (`renderPassages`,
+  `passageCreditFallback`) renderiza os textos EAJ (B.4/D.4) nos mesmos
+  painéis `<details>`; sem `sourceNote`/página, o crédito exibe
+  `EAJ/UFRN (Comperve) — Caderno EAJ-<ano>, página DESCONHECIDA`.
+* Selo/título: `js/vocab.js` (`officialLabelFor`, `originLabel`,
+  `questionRef`, `editionRef`, `annulledNote`) — EAJ aparece como
+  `Oficial do EAJ` / `EAJ 2022 Q8` / `EAJ-2022 · Q8`; IFRN mantém o legado;
+  notas de anulada sem atribuir a banca errada (Q23-2025 é EAJ).

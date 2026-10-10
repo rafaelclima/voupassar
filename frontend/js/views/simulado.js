@@ -62,7 +62,7 @@ import { currentInstitution, setInstitution } from "../state/process.js";
 import { mountProcessSelector, editionOptionLabel } from "../components/process-selector.js";
 import { summarizeResult, renderResultNext } from "../components/result-next.js";
 import { summarizePace, executionElapsedSeconds } from "../components/pace.js";
-import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, sourceTypeLabel } from "../vocab.js";
+import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, originLabel, questionRef } from "../vocab.js";
 
 const PAGE_SIZE = 20;
 
@@ -725,10 +725,13 @@ async function loadCaderno(attempt) {
 }
 
 function positionTitle(item, detail) {
+  // TASK F.2: usa a institution do item (CadernoItem) ou do detalhe para
+  // desambiguar 2022/2025 entre processos (EAJ prefixa o processo).
+  const inst = item?.institution || detail?.institution || null;
   const ref = item.sourceYear && item.sourceQuestionNumber
-    ? `${item.sourceYear} Q${item.sourceQuestionNumber}`
+    ? questionRef({ examYear: item.sourceYear, questionNumber: item.sourceQuestionNumber, institution: inst }, `Questão #${item.questionId}`)
     : (detail?.examYear && detail?.questionNumber
-      ? `${detail.examYear} Q${detail.questionNumber}`
+      ? questionRef(detail, `Questão #${item.questionId}`)
       : `Questão #${item.questionId}`);
   // disciplineLabel evita que o código cru (LP, MAT, MATEMATICA) apareça
   // como texto no cartão da questão.
@@ -752,10 +755,9 @@ function renderSimCard(item, detail) {
   // é. Metadado de proveniência, não gabarito — visível também no Modo
   // Prova (mesmo critério de textos-base e figuras).
   if (detail?.sourceType) {
-    const origin = sourceTypeLabel(detail.sourceType);
     head.appendChild(el("span", {
       className: "badge",
-      text: detail.sourceType === "OFFICIAL" ? origin : `${origin} — não é questão do IFRN`,
+      text: originLabel(detail),
     }));
   }
   if (item.wasAnnulled || detail?.annulled) {
@@ -913,7 +915,7 @@ function showHiddenFeedback(box, choice, attempt) {
   if (attempt?.wasAnnulled) {
     box.dataset.tone = "warning";
     box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-    box.appendChild(el("p", { text: `Você marcou ${choiceLabel(choice)}. o IFRN não diz como pontuar questões anuladas.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceLabel(choice)}. A banca não informa como pontuar questões anuladas.` }));
     return;
   }
   box.appendChild(el("p", { text: `Resposta ${choiceLabel(choice)} registrada — resultado oculto durante a prova. Conclua para ver a correção.` }));
@@ -927,7 +929,7 @@ async function showStudyFeedback(card, fieldset, box, item, detail, choice) {
     if (fb.wasAnnulled) {
       box.dataset.tone = "warning";
       box.appendChild(el("strong", { text: "Questão anulada — fora do aproveitamento." }));
-      box.appendChild(el("p", { text: `Você marcou ${choiceLabel(fb.selectedOption)}. o IFRN não diz como pontuar questões anuladas.` }));
+      box.appendChild(el("p", { text: `Você marcou ${choiceLabel(fb.selectedOption)}. A banca não informa como pontuar questões anuladas.` }));
     } else if (fb.isCorrect === true) {
       box.dataset.tone = "success";
       box.appendChild(el("strong", { text: `Você acertou — alternativa ${fb.correctAnswer}.` }));
@@ -1129,7 +1131,7 @@ function renderScoreGrid(res) {
   const note = el("p", { className: "muted mt-2" });
   note.appendChild(
     el("small", {
-      text: "O placar considera sua última resposta em cada questão. Questão anulada pelo IFRN não entra no aproveitamento.",
+      text: "O placar considera sua última resposta em cada questão. Questão anulada não entra no aproveitamento.",
     }),
   );
   resultBox.appendChild(note);
@@ -1168,7 +1170,7 @@ function renderResultItems(res) {
     }
     const row = el("div", { className: `sim-result-item ${tone}` });
     const title = it.sourceYear && it.sourceQuestionNumber
-      ? `Posição ${it.position} · ${it.sourceYear} Q${it.sourceQuestionNumber}`
+      ? `Posição ${it.position} · ${questionRef({ examYear: it.sourceYear, questionNumber: it.sourceQuestionNumber, institution: it.institution }, "")}`
       : `Posição ${it.position}`;
     row.appendChild(el("strong", { text: title }));
     row.appendChild(el("span", { className: badgeClass, text: badgeText }));

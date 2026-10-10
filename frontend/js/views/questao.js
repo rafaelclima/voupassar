@@ -23,7 +23,7 @@ import { logout } from "../api/auth.js";
 import { sanitizeBack, renderAuthGuard, requireSessionOrGuard } from "./auth-shared.js";
 import { fetchQuestion, openStudySession, submitAttempt } from "../api/questao.js";
 import { el, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
-import { sourceTypeLabel, difficultyLabel, confidenceLabel, choiceLabel } from "../vocab.js";
+import { difficultyLabel, confidenceLabel, choiceLabel, originLabel, questionRef, editionRef, annulledNote } from "../vocab.js";
 import { renderFigure } from "../components/figure.js";
 import { renderPassages } from "../components/passage.js";
 import { expressionNode } from "../components/math.js";
@@ -195,19 +195,17 @@ function appendErrorExit() {
 /* ---------- render: leitura ---------- */
 
 function questionTitle(q) {
-  const parts = [];
-  if (q.examYear && q.questionNumber) parts.push(`${q.examYear} Q${q.questionNumber}`);
-  else if (q.questionNumber) parts.push(`Q${q.questionNumber}`);
-  else parts.push(`Questão #${q.id}`);
+  // TASK F.2: EAJ prefixa o processo (2022/2025 colidem com o IFRN);
+  // IFRN mantém o formato legado.
+  const parts = [questionRef(q, `Questão #${q.id}`)];
   if (q.discipline?.name) parts.push(q.discipline.name);
   return parts.join(" · ");
 }
 
 function sourceLabel(q) {
-  const label = sourceTypeLabel(q.sourceType);
-  if (!q.sourceType) return label;
-  // A distinção que importa para o aluno é oficial x não oficial.
-  return q.sourceType === "OFFICIAL" ? label : `${label} — não é questão do IFRN`;
+  // A distinção que importa para o aluno é oficial x não oficial,
+  // com o processo correto (EAJ nunca como IFRN — §4).
+  return originLabel(q);
 }
 
 function renderAll(q) {
@@ -215,8 +213,10 @@ function renderAll(q) {
   titleEl.textContent = questionTitle(q);
 
   const metaBits = [];
-  if (q.examYear && q.questionNumber) metaBits.push(`Prova ${q.examYear}, questão ${q.questionNumber}`);
-  else metaBits.push(`Registro #${q.id}`);
+  if (q.examYear && q.questionNumber) {
+    const inst = String(q.institution || "").trim().toUpperCase();
+    metaBits.push(inst === "EAJ" ? `Prova EAJ-${q.examYear}, questão ${q.questionNumber}` : `Prova ${q.examYear}, questão ${q.questionNumber}`);
+  } else metaBits.push(`Registro #${q.id}`);
   if (q.discipline?.name) metaBits.push(q.discipline.name);
   if (typeof q.pageStart === "number") {
     metaBits.push(q.pageEnd && q.pageEnd !== q.pageStart ? `páginas ${q.pageStart}–${q.pageEnd} do PDF-fonte` : `página ${q.pageStart} do PDF-fonte`);
@@ -296,7 +296,7 @@ function renderOptions(q) {
   }
   if (q.annulled) {
     fieldset.appendChild(
-      el("p", { className: "muted", text: "Questão anulada pelo IFRN: você pode responder, mas ela não entra no seu aproveitamento — o IFRN não publica como pontuar anuladas." }),
+      el("p", { className: "muted", text: annulledNote(q.institution) }),
     );
     btnSubmit.disabled = true;
     btnBlank.disabled = true;
@@ -465,7 +465,7 @@ function renderSource(q) {
   dl.appendChild(
     sourceRow(
       "Edição / número",
-      q.examYear && q.questionNumber ? `${q.examYear} · Q${q.questionNumber}` : "Origem ainda não registrada",
+      editionRef(q),
     ),
   );
   dl.appendChild(sourceRow("Disciplina", q.discipline?.name || q.discipline?.code || "Ainda sem classificação"));

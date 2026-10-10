@@ -368,7 +368,7 @@ function paintFeedback(box, fieldset, { verdict, selected, letter, topicLine }) 
   const head = verdict.title;
   if (verdict.badge === "Anulada") {
     box.appendChild(el("strong", { text: head }));
-    box.appendChild(el("p", { text: `Você marcou ${choiceLabel(selected)}. o IFRN não diz como pontuar questões anuladas.` }));
+    box.appendChild(el("p", { text: `Você marcou ${choiceLabel(selected)}. A banca não informa como pontuar questões anuladas.` }));
   } else if (verdict.badge === "Acertou") {
     box.appendChild(el("strong", { text: letter ? `Você acertou — alternativa ${letter}.` : head }));
     box.appendChild(el("p", { text: `Sua resposta: ${choiceLabel(selected)}.` }));
@@ -675,7 +675,7 @@ function renderReviewScore(box, res) {
   box.appendChild(grid);
   const note = el("p", { className: "muted mt-2" });
   note.appendChild(el("small", {
-    text: "Vale a última resposta em cada questão. Questão anulada pelo IFRN não entra no aproveitamento.",
+    text: "Vale a última resposta em cada questão. Questão anulada não entra no aproveitamento.",
   }));
   box.appendChild(note);
 }
