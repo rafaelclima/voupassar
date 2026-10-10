@@ -4,9 +4,13 @@
 > `docs/architecture.md §4`, evidências da Fase 1 (`docs/provas-inventario.md`,
 > `docs/gabaritos-validation.md`, `data/extracted/*.json`, `data/linked/*.json`,
 > `docs/content-analysis/taxonomy.md + summary.md + content-map.md`).
-> Status: **projeto, nada implementado** — a implementação física (DDL/Flyway) é a TASK 2.2.
+> Status: **projeto vigente multi-processo (G.1)** — o núcleo IFRN abaixo
+> (§§2–10) descreve o desenho original; a implementação física DDL/Flyway
+> evoluiu até a V21 e os deltas EAJ vigentes estão no **§11 Adendo
+> multi-processo** (cada afirmação com arquivo:linha do código vigente).
 > O que não pôde ser comprovado está marcado como `DESCONHECIDO` / `NÃO CONFIRMADO` /
-> `NECESSITA REVISÃO`. Nenhum assunto/dificuldade aqui é fato oficial do IFRN.
+> `NECESSITA REVISÃO`. Nenhum assunto/dificuldade aqui é fato oficial do IFRN
+> nem do EAJ/UFRN (gabarito EAJ = transcrição, nunca oficial — ver §11).
 
 ## 0. Convenções (valem para a TASK 2.2)
 
@@ -497,7 +501,185 @@ Documentos identificados por `sha256` (gabaritos auditados em
 
 ## 9. O que foi deliberadamente NÃO modelado / DESCONHECIDO
 
-* **2021**: sem linha em `exams` (fonte ausente; séries pulam 2021).
+* **2021**: sem linha em `exams` **IFRN** (fonte ausente; séries IFRN pulam
+  2021). EAJ-2021 EXISTE (ver §11 — só faz sentido com `institution='EAJ'`).
+* **Regra de pontuação de anuladas e da discursiva**: `exams.scoring_rule` NULL
+  (pendência TASK 1.3 §4; capa 2020/2023 com valores NÃO CONFIRMADOS;
+  EAJ com `scoring_rule` NULL nas 3 edições — ver §11.3).
+* **Múltiplos cadernos por edição** (ofertas 2023 págs. 1–2): NÃO CONFIRMADO —
+  se confirmado, vira nova `exam_versions` + `exam_documents`, sem mudar o ERD.
+* **Correção automática da discursiva**: fora do modelo (só prompt + critérios;
+  EAJ sem discursiva — `has_essay FALSE` — ver §11.3).
+* **Versão exata de Postgres/extensões e tipos físicos**: decisão da TASK 2.2
+  contra documentação oficial vigente.
+
+## 10. Pendências para a TASK 2.2
+
+1. DDL Flyway (`V1__…`) + `docker-compose.yml` com volume, healthcheck e backup.
+2. Decisão física: `is_current` vs índice parcial UNIQUE para classificação vigente.
+3. Trigger `updated_at` + trigger "4 options por objetiva".
+4. Seed: `roles`, `disciplines`, `topics/subtopics` v1.1, `exams` (6) + `exam_documents`
+   (12+ hashes) — questões só via importador 2.3, nunca seed manual.
+5. ADRs em `docs/decisions/` (TEXT+CHECK vs ENUM, BIGINT vs UUID, pg_trgm).
+
+## 11. Adendo multi-processo EAJ — vigente (G.1, 2026-10-10)
+
+> Cada afirmação abaixo cita arquivo:linha do código vigente (critério G.1).
+> Nada aqui promete endpoint, coluna ou fluxo inexistente; contratos de API
+> por rota estão em `docs/api-provas.md`, `docs/api-questoes.md`,
+> `docs/api-simulado-edicao.md`, `docs/api-diagnostico.md`,
+> `docs/api-revisao.md`, `docs/api-roteiro.md` e `docs/api-recomendacao.md`.
+> Regras do programa: `TASKS.md` (Programa EAJ, regra 3 namespace por ano +
+> regra 4 estrutura por edição); proveniência/direitos AGENTS.md §12;
+> nunca inventar AGENTS.md §4.
+
+### 11.1 `exams.institution` + contagens por área (C.1)
+
+* `exams.institution TEXT NOT NULL DEFAULT 'IFRN' CHECK (institution IN
+  ('IFRN','EAJ'))` com backfill IFRN nas 6 edições existentes —
+  `database/migrations/V17__eaj_institution.sql:32-37`.
+* `UNIQUE(year)` → `UNIQUE(institution,year)` (`uq_exams_institution_year`;
+  ano sozinho nunca identifica a edição: EAJ-2022 ≠ IFRN-2022) —
+  `database/migrations/V17__eaj_institution.sql:40-42` + entidade
+  `backend/src/main/java/br/com/voupassar/exams/entity/Exam.java:24-27`
+  (javadoc `backend/src/main/java/br/com/voupassar/exams/entity/Exam.java:18-21`).
+* CHECK de anos ampliado para incluir 2021 (só faz sentido com EAJ;
+  IFRN-2021 segue ausente) —
+  `database/migrations/V17__eaj_institution.sql:45-47` +
+  `backend/src/main/java/br/com/voupassar/exams/entity/Exam.java:41`.
+* `cn_count/ch_count SMALLINT NOT NULL DEFAULT 0` por edição (0 nas 6 IFRN;
+  só LP/MAT) —
+  `database/migrations/V17__eaj_institution.sql:50-53` +
+  `backend/src/main/java/br/com/voupassar/exams/entity/Exam.java:64-68`.
+* `duration_minutes`/`has_essay` já variavam por edição desde a V1; EAJ usa
+  180/`FALSE` (capa: três horas, sem discursiva — vale só para o EAJ
+  observado) — `database/migrations/V17__eaj_institution.sql:20-22`.
+
+### 11.2 Questões até 50 + CN/CH (C.2)
+
+* Oficiais 1–40 (V1) → 1–50 com CHECK condicional documentado
+  (`chk_questions_official_number_range`; IFRN segue 40/edição por dados via
+  regra de aplicação no importador IFRN; EAJ-2021 usa 41–50) —
+  `database/migrations/V18__eaj_questions_50_and_cn_ch.sql:64-70`
+  (comentário da regra em
+  `database/migrations/V18__eaj_questions_50_and_cn_ch.sql:14-33`).
+* Seed `disciplines` `CIENCIAS_NATUREZA`/`CIENCIAS_HUMANAS` (sem tópicos aqui;
+  nascem só da evidência D.1) —
+  `database/migrations/V18__eaj_questions_50_and_cn_ch.sql:73-76` +
+  javadoc `backend/src/main/java/br/com/voupassar/exams/entity/Discipline.java:10-15`.
+
+### 11.3 Seed edições e documentos EAJ (C.3)
+
+* 3 `exams` EAJ (`2021: 50Q 15/15/12/8`; `2022/2025: 40Q 20/20/0/0`;
+  `edital='DESCONHECIDO'`, `duration 180`, `has_essay FALSE`,
+  `scoring_rule NULL` = DESCONHECIDA) —
+  `database/migrations/V19__seed_eaj.sql:62-67` (fail-high da tupla exata em
+  `database/migrations/V19__seed_eaj.sql:71-95`).
+* Uma `exam_versions` `UNICA` por edição (só há um caderno no repo;
+  `UNICA` ≠ `FINAL`/`DEFINITIVO`: sem PDF de gabarito oficial EAJ) —
+  `database/migrations/V19__seed_eaj.sql:98-108`.
+* 6 `exam_documents`: caderno `eaj_*.pdf` (`CADERNO`, papel AUDITORIA) +
+  `questoes.md` (`OUTRO`, FONTE DE EXTRAÇÃO da transcrição) com SHAs das
+  linhas vigentes —
+  `database/migrations/V19__seed_eaj.sql:111-135` (decisões de honestidade em
+  `database/migrations/V19__seed_eaj.sql:24-39`; coexistência
+  `(EAJ,2022)/(EAJ,2025)` sem colisão em
+  `database/migrations/V19__seed_eaj.sql:41-45`).
+
+### 11.4 Taxonomia CN/CH + páginas DESCONHECIDAS (D.3/D.4)
+
+* 11 `topics` + 19 `subtopics` CN/CH só para o observado nas 20 questões
+  CN/CH do EAJ-2021 (D.1; `OUTRO` de 2025 Q40 como `subtopic_id` NULL,
+  sem linha nova) —
+  `database/migrations/V20__eaj_taxonomy_cn_ch.sql:38-53` e
+  `database/migrations/V20__eaj_taxonomy_cn_ch.sql:56-81`
+  (fail-high em `database/migrations/V20__eaj_taxonomy_cn_ch.sql:84-96`;
+  regra OUTRO em `database/migrations/V20__eaj_taxonomy_cn_ch.sql:21-24`).
+* Páginas oficiais NULL = DESCONHECIDO no EAJ (`.md` sem página; nunca
+  inventar): DROP de `chk_questions_official_pages` + comentário do limite
+  por edição no importador —
+  `database/migrations/V20__eaj_taxonomy_cn_ch.sql:98-105`; entidade lê
+  `page_start/end` anuláveis em
+  `backend/src/main/java/br/com/voupassar/exams/entity/Question.java:66-71`.
+* `passages.page_start/end` anuláveis (NULL = DESCONHECIDO no EAJ; IFRN
+  segue NOT NULL por dados) —
+  `database/migrations/V20__eaj_taxonomy_cn_ch.sql:107-113` +
+  `backend/src/main/java/br/com/voupassar/exams/entity/Passage.java:71-77`.
+
+### 11.5 `study_plans.institution` — uma trilha por processo (E.2)
+
+* `study_plans.institution TEXT NOT NULL DEFAULT 'IFRN'` + UNIQUE parcial
+  `(user_id, institution) WHERE is_active` (um roteiro vigente por trilha;
+  gerar o EAJ não desativa o IFRN) —
+  `database/migrations/V21__study_plans_institution.sql:18-27`; contrato em
+  `docs/api-roteiro.md:23-33` (schema `evidence_json` com `institution` +
+  `editions[]`/`sampleLabels[]` só do processo em
+  `docs/api-roteiro.md:48-73`).
+
+### 11.6 Proveniência EAJ no banco (nunca oficial)
+
+* `question_sources` EAJ: `PRIMARY` = `.md` (extração) + `GABARITO` = mesmo
+  `.md` (tabela compilada transcrita — `GABARITO_TRANSCRITO`, nunca oficial;
+  páginas NULL) —
+  `scripts/db/import_questions.py:632-643` (gate de proveniência em
+  `scripts/db/import_questions.py:281-284`; trava D.3 Q22/Q39 em
+  `scripts/db/import_questions.py:744`).
+* Contagens vigentes em scratch D.3: 128 `questions` (50/40/38: LP 55,
+  MAT 53, CN 12, CH 8), 512 opções, 256 sources, 128 classificações,
+  Q23-2025 anulada `X`, Q22/Q39-2025 bloqueadas —
+  `data/import/report-eaj.json:33-54` (`provenance` em
+  `data/import/report-eaj.json:6`; trava em
+  `data/import/report-eaj.json:11`).
+
+### 11.7 Crédito + fonte em todo conteúdo servido (AGENTS.md §12)
+
+* API carrega origem em cada resposta: nota fixa de processo/edição em
+  `QuestionResponse.notes[]` + `institution` na resposta —
+  `backend/src/main/java/br/com/voupassar/questions/service/QuestionService.java:547-549`
+  (variante sem ano em
+  `backend/src/main/java/br/com/voupassar/questions/service/QuestionService.java:543-545`;
+  campo em
+  `backend/src/main/java/br/com/voupassar/questions/dto/QuestionResponse.java:31-32`,
+  notas em
+  `backend/src/main/java/br/com/voupassar/questions/dto/QuestionResponse.java:49`).
+* Simulado de edição real prefixa processo/estrutura/transcrição nas notas
+  (EAJ sem discursiva; gabarito = transcrição sem PDF oficial) —
+  `backend/src/main/java/br/com/voupassar/simulations/service/SimulationService.java:768-780`,
+  `backend/src/main/java/br/com/voupassar/simulations/service/SimulationService.java:789-790` e
+  `backend/src/main/java/br/com/voupassar/simulations/service/SimulationService.java:795-796`.
+* Frontend nunca serve EAJ sem crédito: figuras com `EAJ/UFRN (Comperve)` +
+  página DESCONHECIDA e aviso com referência ao caderno —
+  `frontend/js/components/figure.js:105-114` (página em
+  `frontend/js/components/figure.js:94-101`; chave namespaced em
+  `frontend/js/components/figure.js:35-44`); passagens com fallback
+  `EAJ/UFRN (Comperve)` + `DESCONHECIDA` no mesmo `<details>` —
+  `frontend/js/components/passage.js:41-45` (render em
+  `frontend/js/components/passage.js:80-84`); selo/título/anulada por
+  processo sem atribuir a banca errada —
+  `frontend/js/vocab.js:61-66`, `frontend/js/vocab.js:78-93` e
+  `frontend/js/vocab.js:107-111`.
+* PDFs-fonte nunca redistribuídos como binário: documentos saem como
+  metadados (nome + SHA + páginas) — contrato em `docs/api-provas.md:7-8`.
+  Proteção por takedown reativo documentado (sem gate de publicação, sem
+  bloqueio silencioso, sem redistribuição sem fonte) — ver
+  `docs/blockers.md` (seção G.1) e `docs/api-questoes.md:8-9`.
+
+### 11.8 O que segue DESCONHECIDO / NÃO CONFIRMADO (AGENTS.md §4)
+
+* `exams.scoring_rule` NULL nas 3 EAJ (pontuação de anuladas DESCONHECIDA;
+  Q23-2025 fora do aproveitamento de todo modo) —
+  `database/migrations/V19__seed_eaj.sql:68`.
+* `exams.edital='DESCONHECIDO'` nas 3 EAJ (banca Comperve ≠ número de
+  edital) — `database/migrations/V19__seed_eaj.sql:62-67` + nota em
+  `database/migrations/V19__seed_eaj.sql:24-29`.
+* Respostas EAJ = transcrição (`TRANSCRIBED_FROM_MD`), nunca oficial; sem
+  PDF de gabarito no repo — `data/import/report-eaj.json:6-7` +
+  `docs/provas-inventario-eaj.md:13-17`; Q22/Q39-2025 excluídas até
+  retranscrição + revalidação B.1/B.2/D.1 —
+  `data/import/report-eaj.json:15-31`; 2022 40/40 `A` NÃO CONFIRMADO e
+  ordem das frações da Q23 NÃO CONFIRMADA — ver `docs/blockers.md`.
+* Dificuldade palpite global BAIXA; classificações derivadas sem carimbo
+  humano (confiança = veredito do pipeline) — ver §7 vigente.
 * **Regra de pontuação de anuladas e da discursiva**: `exams.scoring_rule` NULL
   (pendência TASK 1.3 §4; capa 2020/2023 com valores NÃO CONFIRMADOS).
 * **Múltiplos cadernos por edição** (ofertas 2023 págs. 1–2): NÃO CONFIRMADO —

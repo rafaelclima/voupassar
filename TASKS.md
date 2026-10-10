@@ -659,7 +659,22 @@ Critérios:
 
 # FASE G — FECHAMENTO E PRÉ-LANÇAMENTO EAJ
 
-## TASK G.1 — Docs, direitos e pendências
+## TASK G.1 — Docs, direitos e pendências [DONE 2026-10-10]
+
+Execução 2026-10-10 (docs-only, sem mudança de código/frontend/backend):
+`docs/database-erd.md §11` novo (institution/50Q/CN-CH + study_plans +
+proveniência + crédito/fonte + DESCONHECIDOS, tudo com arquivo:linha
+vigente; §§9–10 preservados com ponteiro EAJ); `README.md` multi-processo
+(tabela 240 IFRN + 128 EAJ de `data/import/report-eaj.json:33-54`, estrutura
+por edição da V19, crédito/fonte por camada, limitações EAJ + banco local
+só IFRN-240); `docs/blockers.md` seção G.1 (gabaritos oficiais EAJ
+pendentes, Q22/Q39-2025 abertas com destino de retranscrição, E2E por trilha
++ importação local donas da G.2, MCP §31, takedown reativo sem gate).
+Provas: `check_frontend.py` OK (72 arquivos), `node --check` 7 JS,
+serve 200 (5 páginas + manifest), `check_eaj_md` + `extract_passages
+--check` verdes; `git status` só docs (sem regressão de código).
+Pendente p/ G.2 (herdado): E2E autenticado por trilha e importação EAJ no
+banco local.
 
 Entregas:
 

@@ -530,3 +530,97 @@ passages 42/42 (IFRN 31 + EAJ 11; vínculos 198 + 1 pulado Q22←TEXTO-3);
 idempotente. Migração V20 §4 (`passages.page_*` NULL) + entidade `Passage`
 atualizada. Sem recorte = aviso + referência ao caderno (B.3), nunca imagem
 inventada.
+
+---
+
+## Programa EAJ — G.1 docs, direitos e pendências (2026-10-10)
+
+> Consolidação exigida pela TASK G.1 (cada afirmação cita arquivo:linha do
+> código vigente; nada promete endpoint, coluna ou fluxo inexistente).
+> Detalhes históricos preservados nas seções acima; abaixo só o estado
+> vigente + destino.
+
+### 1. Gabaritos oficiais EAJ pendentes de anexação (ABERTA)
+
+* **Estado:** nenhum PDF de gabarito oficial EAJ/UFRN (Comperve) no repo; só
+  os cadernos `data/provas/EAJ/{2021,2022,2025}/eaj_*.pdf` — ver
+  `docs/provas-inventario-eaj.md:13-17` (aviso de proveniência) e
+  `docs/provas-inventario-eaj.md:28-36` (3 edições presentes, 130 candidatas).
+* **Fonte vigente:** transcrição da curadoria nos 3 `questoes.md` (decisão
+  2026-10-09) com `provenance: TRANSCRIBED_FROM_MD` —
+  `data/import/report-eaj.json:6-7` (gate em
+  `scripts/db/import_questions.py:281-284`; papéis `PRIMARY` +
+  `GABARITO_TRANSCRITO` em `scripts/db/import_questions.py:632-643`).
+* **Regra:** nunca apresentar a transcrição como "gabarito oficial confirmado
+  por PDF"; a API declara a transcrição nas notas do simulado EAJ —
+  `backend/src/main/java/br/com/voupassar/simulations/service/SimulationService.java:795-796`.
+* **Destino:** anexar os gabaritos oficiais quando existirem e revalidar
+  `data/linked/eaj/*.json` + B.1/B.2/D.1 (NÃO bloqueia A–F; herdada da A.2).
+
+### 2. Q22/Q39-2025 `NEEDS_VISUAL_CHECK` (ABERTAS — excluídas do banco)
+
+* **Estado:** 128 importadas de 130 candidatas; bloqueadas —
+  `data/import/report-eaj.json:13-14` (motivos em
+  `data/import/report-eaj.json:15-31`; trava com exit 2 em
+  `scripts/db/import_questions.py:744`).
+* **Auditoria visual no PDF ( MBA, 2026-10-09, auditoria — nunca fonte):**
+  Q22 B/C transcritas divergem do PDF (importar gravaria opções falsas);
+  Q39 soma + razão transcritas divergem (resposta transcrita C=12 vs PDF
+  A=10); Q23 NULA importada como `X` mas ordem das frações NÃO CONFIRMADA —
+  ver seção "Programa EAJ — importação D.3" acima.
+* **Destino:** curadoria deve retranscrever Q22 B/C e Q39 no
+  `data/provas/EAJ/2025/questoes.md` a partir do PDF renderizado, re-rodar
+  `check_eaj_md` + `extract_eaj --check` + `link_eaj_keys --check` +
+  `validate_classification` e só então usar `--allow-needs-visual-check`
+  (flag proibida até lá). Sem retranscrição, o simulado real EAJ-2025 falha
+  com `409 INCOMPLETE_EDITION` — contrato em
+  `docs/api-simulado-edicao.md:46-56`.
+
+### 3. E2E autenticado por trilha + importação EAJ no banco local (ABERTAS — donas da G.2)
+
+* **Estado:** banco local com só IFRN-240; EAJ-128 validado em scratch (D.3:
+  `data/import/report-eaj.json:33-54`) e com sintéticos + manifest real
+  (F.2) — limite honesto em "Programa EAJ — F.2" acima.
+* **Destino (G.2):** importar EAJ no banco local; fluxo EAJ ponta a ponta
+  (cadastro → diagnóstico → roteiro com evidência EAJ → questões 4 áreas →
+  simulado edição real 50/40Q → ritmo 3h → resultado com Q23-2025 fora da
+  pontuação → revisão → perfil → novas recomendações) + regressão IFRN
+  (2020–2026, 240Q). Sem DONE sem evidência.
+
+### 4. Navegador real / MCP (AGENTS.md §31) — estado da G.1
+
+* **G.1 é docs-only** (sem tela nova/alterada): validação estática vigente é
+  `node --check` + `scripts/analysis/check_frontend.py` (regras F.1 em
+  `scripts/analysis/check_frontend.py:706-738`, F.2 em
+  `scripts/analysis/check_frontend.py:740-774`) + serve 200.
+* Quando a sessão dispõe do MCP `chrome-devtools`/Playwright, telas do
+  `frontend/` exigem navegador real (guarda sem sessão, fluxo principal,
+  loading/vazio/erro, mobile + desktop, console sem erros); quando o MCP
+  está indisponível, registra-se a pendência aqui e segue-se com a validação
+  estática — nenhuma tela EAJ da F.2 foi revalidada em navegador nesta G.1
+  (sem mudança de frontend para revalidar).
+
+### 5. Direitos EAJ — crédito + fonte + takedown reativo (VIGENTE, sem gate)
+
+* Todo conteúdo EAJ servido carrega crédito + fonte (AGENTS.md §12):
+  nota de origem por questão —
+  `backend/src/main/java/br/com/voupassar/questions/service/QuestionService.java:547-549`
+  (`institution` em
+  `backend/src/main/java/br/com/voupassar/questions/dto/QuestionResponse.java:31-32`);
+  figuras `EAJ/UFRN (Comperve)` + página DESCONHECIDA —
+  `frontend/js/components/figure.js:105-114` (aviso em
+  `frontend/js/components/figure.js:118-123`); passagens com fallback
+  Comperve + DESCONHECIDA — `frontend/js/components/passage.js:41-45`
+  (render em `frontend/js/components/passage.js:80-84`); selo/título/anulada
+  por processo — `frontend/js/vocab.js:61-66`,
+  `frontend/js/vocab.js:86-93`, `frontend/js/vocab.js:107-111`;
+  simulado EAJ com notas de processo/estrutura/transcrição —
+  `backend/src/main/java/br/com/voupassar/simulations/service/SimulationService.java:768-780`
+  e `backend/src/main/java/br/com/voupassar/simulations/service/SimulationService.java:795-796`.
+* PDFs-fonte nunca redistribuídos como binário (só metadados nome + SHA +
+  páginas) — `docs/api-provas.md:7-8`.
+* Proteção = takedown reativo documentado (nunca bloqueio silencioso, nunca
+  redistribuição sem fonte, sem gate de publicação): qualquer pedido de
+  remoção/correção de titular é registrado aqui com data, escopo e ação, e
+  o conteúdo afetado é removido/corrigido sem apagar a trilha de auditoria.
+  Nenhum pedido pendente nesta data.
