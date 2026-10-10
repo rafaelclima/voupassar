@@ -240,8 +240,8 @@ D) 1.703,15.
 
 **22.** Segundo o texto 3, o cerrado e a floresta amazônica representam a maior parte da área afetada pelo fogo, com 65% da vegetação nativa sendo atingida. A fração equivalente a esse percentual é:
 A) $\frac{13}{200}$
-B) $\frac{15}{45}$ *(nota: OCR agrupou alternativas)*
-C) $\frac{10}{18}$
+B) $\frac{13}{2}$ *(retranscrito do PDF p.10 — auditoria visual 2026-10-09: alternativa original `15/45` e `10/18` divergiam; PDF confirma `13/2` e `1,3/20`)*
+C) $\frac{1{,}3}{20}$ *(retranscrito do PDF p.10 — vírgula conforme render; não equivale a 65%)*
 D) $\frac{13}{20}$
 **Análise:** A porcentagem $65\%$ equivale à fração $\frac{65}{100}$. Simplificando por 5, temos $\frac{13}{20}$.
 **Gabarito: D**
@@ -431,18 +431,14 @@ D) 42 cm.
   O perímetro desse quadrado maior é $4 \times 6 = 24 \text{ cm}$.
 **Gabarito: C**
 
-**39.** Francisco tem 60 anos de idade. A soma das idades dos seus dois filhos, Pedro e Paulo, corresponde a $\frac{3}{5}$ da idade do pai. Sabendo-se que as idades dos filhos estão na razão [1/2]**, a diferença, em módulo, das idades deles é de**
-*(Nota: A fração que define a razão não apareceu claramente transcrita no OCR original da prova na frente da palavra "razão", porém os testes confirmam que a proporção 1/2 gera uma resposta contida nas opções.)
+**39.** Francisco tem 60 anos de idade. A soma das idades dos seus dois filhos, Pedro e Paulo, corresponde a $\frac{2}{3}$ da idade do pai. Sabendo-se que as idades dos filhos estão na razão $\frac{3}{5}$, a diferença, em módulo, das idades deles é de
+*(Nota: retranscrição corrigida a partir do PDF renderizado p.14 — auditoria 2026-10-09; `.md` anterior trazia `3/5` e `[1/2]` interpolada, ambos divergentes do PDF; fonte vigente = transcrição corrigida, nunca oficial.)
 A) 10 anos.
 B) 5 anos.
 C) 12 anos.
 D) 15 anos.
-**Análise:** A soma das idades = $\frac{3}{5} \times 60 = 36$ anos.
-  Para se chegar a uma diferença entre as opções listadas, a razão omitida na mancha gráfica do texto só pode ser $\frac{1}{2}$. 
-  Se razão é $\frac{1}{2}$, então idades são $x$ e $2x$. 
-  $x + 2x = 36 \Rightarrow 3x = 36 \Rightarrow x = 12$ anos e $y = 24$ anos.
-  A diferença é de $24 - 12 = 12$ anos.
-**Gabarito: C**
+**Análise:** A soma das idades = $\frac{2}{3} \times 60 = 40$ anos. Razão $\frac{3}{5}$: idades $3k$ e $5k$; $8k = 40 \Rightarrow k = 5$; idades $15$ e $25$. Diferença $= 25 - 15 = 10$ anos. (Dados do PDF renderizado p.14; `.md` anterior divergente corrigido na auditoria 2026-10-09.)
+**Gabarito: A**
 
 **40.** A terça parte do replemento de um ângulo supera em $40^{\circ}$ o complemento desse ângulo. Sendo assim, o suplemento do ângulo mede
 A) $165^{\circ}$
@@ -503,5 +499,5 @@ D) $15^{\circ}$
 | **36** | B |
 | **37** | D |
 | **38** | C |
-| **39** | C |
+| **39** | A | *(retranscrição corrigida — auditoria PDF p.14 2026-10-09)*
 | **40** | A |

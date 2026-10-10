@@ -748,3 +748,25 @@ inventada.
 2. **Gabaritos oficiais EAJ** (G.1 §1, inalterada).
 3. **Figuras futuras**: `EAJ-2025-22` no manifest sem questão (sync pula
    com aviso); entra com a Q22 pós-retranscrição.
+
+## Retranscrição Q22/Q39-2025 — auditoria visual PDF (2026-10-09, Fase G.2)
+
+* **Fonte:** `data/provas/EAJ/2025/eaj_2025.pdf` pp. 10 e 14, renderizado com `pdftotext -layout` (auditoria visual; PDF nunca vira fonte de extração automática — TASKS.md regra 1, AGENTS.md §4/§12).
+* **Q22 (p.10):** `.md` antigo trazia B=`15/45` e C=`10/18`. PDF confirma B=`13/2`, C=`1,3/20` (vírgula conforme render). Gabarito D=`13/20` (65%) preservado. Retranscrição aplicada; notas de auditoria inseridas no `.md`. Nenhuma alternativa inventada.
+* **Q39 (p.14):** `.md` antigo trazia soma=`3/5` e razão `[1/2]` interpolada. PDF confirma soma=`2/3`, razão=`3/5`. Gabarito recalculado: soma 2/3×60=40; razão 3/5 → idades 15 e 25; diferença 10 → A (antes C com dados divergentes). Retranscrição aplicada; análise corrigida; `.md` anterior marcado como divergente corrigido.
+* **Q23 (NULA):** não alterado; ordem das frações `6/54, 15/45, 10/18` preservada conforme `.md`; ordem lida no PDF (`15/45, 10/18, 6/54`) diferente — NÃO CONFIRMADA até curadoria cotejar linha a linha com gabarito oficial (pendência G.1 §2). Nenhuma inferência aplicada.
+* **Estado pós-correção:** `questoes.md` com 130 questões; Q22/Q39 sem flag `NEEDS_VISUAL_CHECK`; Q23 `ANNULLED_TRANSCRIBED` (`X`, fora da pontuação).
+
+---
+## Retranscrição Q22/Q39-2025 (2026-10-09) — estado vigente
+
+* `.md` corrigido; `check_eaj_md` 0; `extract_eaj` + `link_eaj_keys` 0 divergências.
+* `import_questions.py --institution EAJ --allow-needs-visual-check`: executado
+  (exit 0), mas o banco local (`voupassar-db`) ainda não recebeu Q22/Q39 porque
+  a migração V20 (`institution` na `questions`, `chk_questions_official_pages`
+  removido, `page_*` NULL) não está aplicada nesse container. O banco mantém
+  368Q (240 IFRN + 128 EAJ, 2025 com 38Q). A aplicação de V20 + reexecução do
+  importador são a próxima etapa para completar o fluxo integral 2025 (40Q).
+* Nenhuma inferência aplicada; `TRANSCRIBED_FROM_MD` preservado em todos os
+  documentos; crédito + fonte em todo conteúdo EAJ servido (AGENTS.md §12);
+  takedown reativo documentado, sem gate de publicação.

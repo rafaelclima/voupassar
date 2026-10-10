@@ -770,3 +770,26 @@ REVISÃO → PERFIL → NOVAS RECOMENDAÇÕES
 
 Nunca sacrificar a confiabilidade do conteúdo para entregar interface mais rapidamente.
 Nunca apresentar transcrição como documento oficial; nunca interpolar edições inexistentes.
+
+## Atualização 2026-10-09 — retranscrição Q22/Q39-2025 (Fase G.2)
+
+* `data/provas/EAJ/2025/questoes.md` corrigido a partir do PDF renderizado
+  pp. 10 (Q22 B=`13/2`, C=`1,3/20`) e p. 14 (Q39 soma=`2/3`, razão=`3/5`,
+  gabarito `A` — corrigido de `C` com dados divergentes).
+* Auditoria visual registrada em `docs/blockers.md` (sem inventar; PDF nunca
+  vira fonte de extração — TASKS.md regra 1, AGENTS.md §4).
+* `check_eaj_md` 0 (130/130, Q22/Q39 mantêm `NEEDS_VISUAL_CHECK` por decisão
+  do pipeline; `.md` corrigido, tabela compilada consistente).
+* `extract_eaj` e `link_eaj_keys` revalidados (130 vinculadas, 0 divergências,
+  SHA atualizado, `NEEDS_VISUAL_CHECK` preservado para Q22/Q39).
+* `validate_classification` 370/370.
+* `import_questions.py --institution EAJ --allow-needs-visual-check`: executado
+  (exit 0). `data/import/report-eaj.json` mostra `blocked_needs_visual_check: 2`
+  (Q22, Q39) e `candidates: 128`; o banco local (`voupassar-db`) mantém 368
+  questões (240 IFRN + 128 EAJ) com 2025 em 38Q (sem 22/39) porque a migração
+  V20 (`institution` na `questions`) ainda não está aplicada naquele container
+  (observação documentada nas C.1/C.2/C.3 — não gate da G.2).
+* Pendência aberta (nunca silenciada): aplicar V20 no banco local (`voupassar-db`)
+  e reexecutar o importador para que as 130 EAJ entrem integralmente (2025:
+  40Q, Q23 `X` fora da pontuação, Q22/Q39 com `needs_visual_check` se ainda
+  aplicável após a retranscrição — decisão de escopo mantida).

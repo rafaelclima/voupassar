@@ -2,7 +2,7 @@
   "institution": "EAJ",
   "extractor": "scripts/analysis/extract_eaj.py",
   "extractor_version": "1.0.0",
-  "generated_at_utc": "2026-10-09T18:07:47.232311+00:00",
+  "generated_at_utc": "2026-10-10T01:33:27.134071+00:00",
   "editions": [
     {
       "institution": "EAJ",
@@ -39,7 +39,7 @@
       "institution": "EAJ",
       "edition": "2025",
       "source_document": "data/provas/EAJ/2025/questoes.md",
-      "source_sha256": "abbcf1015285a3f7fd33b6357220fea4315497cc753b39d67891c47f9cff9527",
+      "source_sha256": "c59416d048f51479519d686e4eca9ac3ae72f9c478c9909d5a6c7b5376b766c5",
       "n_objective": 40,
       "n_complete_options": 40,
       "n_nula_transcribed": 1,
@@ -48,13 +48,13 @@
         39
       ],
       "answer_distribution": {
-        "A": 8,
+        "A": 9,
         "B": 10,
-        "C": 11,
+        "C": 10,
         "D": 10,
         "NULA": 1
       },
-      "n_warnings": 0
+      "n_warnings": 1
     }
   ],
   "totals": {
@@ -62,7 +62,8 @@
     "objective_questions": 130
   },
   "warnings": [
-    "EAJ-2022: EAJ-2022: distribuição degenerada — 40/40 respostas = A (transcrição preservada; NÃO CONFIRMADO até o gabarito oficial; ver docs/blockers.md)"
+    "EAJ-2022: EAJ-2022: distribuição degenerada — 40/40 respostas = A (transcrição preservada; NÃO CONFIRMADO até o gabarito oficial; ver docs/blockers.md)",
+    "EAJ-2025: EAJ-2025 Q22: nota transcrita de NEEDS_VISUAL_CHECK nao localizada no bloco (deriva do `.md`?)"
   ],
   "note": "Namespace EAJ (EAJ-2022 ≠ IFRN-2022, EAJ-2025 ≠ IFRN-2025). Respostas TRANSCRITAS do `.md`, nunca documento oficial."
 }
