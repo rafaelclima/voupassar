@@ -232,3 +232,19 @@ timeout 20 python3 -m http.server 8899 --directory frontend
 # filtros disciplina/só-erros; Iniciar → 201 → ?review= com resumo; hub em
 # modo Revisão → ?aba=revisao; mobile 360px + console limpo.
 ```
+
+## 12. Trilha IFRN/EAJ (Programa EAJ, F.1)
+
+* `#study-process-mount` (`js/components/process-selector.js`, default
+  IFRN): trocar de trilha limpa disciplina/assunto/ano e recarrega
+  catálogo, questões, diagnóstico, roteiro e revisão na trilha
+  (`GET /disciplines?institution=`, `/topics`, `/subtopics`,
+  `/questions?institution=`, `/diagnosis`, `/recommendations/plan`,
+  `/review/queue` — `js/views/estudos.js` + `js/views/revisao.js`
+  `refreshReviewForInstitution`).
+* Filtro de edição com valores compostos `INSTITUTION-YEAR`
+  (`splitEditionValue`): rótulos `2022 · EAJ` / `2022 · IFRN` nunca
+  misturam anos colidentes; edição composta vence a trilha global na
+  query; `?institution=EAJ` sincronizado na URL (IFRN omitido, default).
+* Disciplinas CN/CH vêm do backend quando EAJ (sem lista fixa no JS);
+  origem `Oficiais da trilha` (rótulo neutro, ex-`Oficiais do IFRN`).

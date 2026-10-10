@@ -58,6 +58,8 @@ import { loadReviewExecution } from "./review-exec.js";
 import { createSession } from "../api/review.js";
 import { generatePlan } from "../api/dashboard.js";
 import { el, renderEmpty, renderErrorSummary, setButtonLoading, toast } from "../components/ui.js";
+import { currentInstitution, setInstitution } from "../state/process.js";
+import { mountProcessSelector, editionOptionLabel } from "../components/process-selector.js";
 import { summarizeResult, renderResultNext } from "../components/result-next.js";
 import { summarizePace, executionElapsedSeconds } from "../components/pace.js";
 import { disciplineLabel, modeLabel, statusLabel, difficultyLabel, choiceLabel, simulationTitle, plural, sourceTypeLabel } from "../vocab.js";
@@ -113,6 +115,8 @@ const confirmNo = document.getElementById("sim-confirm-no");
 
 const state = {
   user: null,
+  /* Trilha IFRN/EAJ (TASK F.1): default IFRN; hub, caderno e wizard seguem ela. */
+  institution: "IFRN",
   attemptId: null,
   attempt: null,
   details: new Map(),
@@ -134,6 +138,7 @@ async function main() {
     return;
   }
   state.user = user;
+  state.institution = readInstitutionParam();
   preloadManifest().catch(() => null);
   subtitle.textContent = `Olá, ${user.displayName || "estudante"} — monte por disciplina ou reproduza uma edição real, responda como em prova e receba a correção ao final.`;
   showLogoutButtons();
@@ -224,6 +229,19 @@ function readReviewId() {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+/* Trilha efetiva (TASK F.1): ?institution= vence o persistido e persiste. */
+function readInstitutionParam() {
+  let raw = "";
+  try {
+    raw = new URLSearchParams(window.location.search).get("institution") || "";
+  } catch {
+    raw = "";
+  }
+  const v = String(raw).trim().toUpperCase();
+  if (v === "EAJ" || v === "IFRN") return setInstitution(v);
+  return currentInstitution();
+}
+
 /* ================= HUB ================= */
 
 async function loadHub() {
@@ -231,7 +249,13 @@ async function loadHub() {
   content.hidden = true;
   errorBox.textContent = "";
   try {
-    const settled = await Promise.allSettled([fetchDisciplines(), fetchEditions()]);
+    mountProcessSelector(document.getElementById("sim-process-mount"), {
+      onChange: async (next) => {
+        state.institution = next;
+        await loadHub();
+      },
+    });
+    const settled = await Promise.allSettled([fetchDisciplines(state.institution), fetchEditions(state.institution)]);
     const [discR, edR] = settled;
     if (discR.status === "rejected") throw discR.reason;
     if (edR.status === "rejected") throw edR.reason;
@@ -280,15 +304,20 @@ function fillDisciplines(items) {
 
 function fillEditions(items) {
   selEd.textContent = "";
-  const years = items.map((e) => e.year).sort((a, b) => a - b);
-  if (years.length === 0) {
+  const sorted = [...items].sort((a, b) =>
+    String(a.institution || "").localeCompare(String(b.institution || "")) || (a.year - b.year),
+  );
+  if (sorted.length === 0) {
     selEd.appendChild(el("option", { text: "Nenhuma edição", attrs: { value: "" } }));
     return;
   }
   selEd.appendChild(el("option", { text: "Escolha…", attrs: { value: "" } }));
-  for (const e of items) {
-    const label = `${e.year} — ${e.objectiveCount} questões${e.hasEssay ? " + texto" : ""}`;
-    selEd.appendChild(el("option", { text: label, attrs: { value: String(e.year) } }));
+  for (const e of sorted) {
+    // Rótulo com processo (TASK F.1): "2022 · EAJ — 40 questões".
+    // 2021 existe só no EAJ (nunca IFRN-2021 — AGENTS.md §3).
+    const label = `${editionOptionLabel(e)} — ${e.objectiveCount} questões${e.hasEssay ? " + texto" : ""}`;
+    const value = `${String(e.institution || state.institution).toUpperCase()}-${e.year}`;
+    selEd.appendChild(el("option", { text: label, attrs: { value } }));
   }
 }
 
@@ -330,6 +359,7 @@ function bindHubForms() {
           // OFFICIAL quando ausente. Edição real não tem este campo.
           sourceType: selDiscOrigin?.value || "OFFICIAL",
           mode: selDiscMode.value || "PROVA",
+          institution: state.institution,
         });
         window.location.href = `./simulado.html?id=${encodeURIComponent(String(created.attemptId))}`;
       } catch (err) {
@@ -354,7 +384,11 @@ function bindHubForms() {
     formEd.dataset.bound = "1";
     formEd.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const editionYear = Number.parseInt(selEd.value || "", 10);
+      // Valor composto "INSTITUTION-YEAR" (TASK F.1); ano sozinho nunca
+      // decide a edição (legado assume a trilha atual).
+      const parts = String(selEd.value || "").split("-");
+      const editionInstitution = parts.length === 2 ? parts[0] : state.institution;
+      const editionYear = Number.parseInt(parts.length === 2 ? parts[1] : parts[0], 10);
       if (!Number.isFinite(editionYear)) {
         toast("Escolha uma edição.", "info");
         selEd.focus();
@@ -372,6 +406,7 @@ function bindHubForms() {
         const created = await createByEdition({
           editionYear,
           mode: selEdMode.value || "PROVA",
+          institution: editionInstitution,
         });
         window.location.href = `./simulado.html?id=${encodeURIComponent(String(created.attemptId))}`;
       } catch (err) {
@@ -1188,7 +1223,7 @@ function readDiagStep() {
 }
 
 async function resolveDiagCode(want) {
-  const raw = await fetchDisciplines();
+  const raw = await fetchDisciplines(currentInstitution());
   const list = Array.isArray(raw) ? raw : (raw?.content || raw?.items || []);
   const norm = (s) => String(s || "").toLowerCase();
   for (const d of list) {
@@ -1221,7 +1256,7 @@ function renderDiagWizardStep(mount, res) {
           toast("Não encontrei Matemática no catálogo — tente de novo.", "info");
           return;
         }
-        const institution = window.localStorage.getItem("voupassar.institution") || null;
+        const institution = currentInstitution();
         const created = await createByDiscipline({ disciplineCode: code, questionCount: 6, mode: "PROVA", institution });
         const id = created?.attemptId ?? created?.id;
         if (!id) {
@@ -1249,7 +1284,7 @@ function renderDiagWizardStep(mount, res) {
     finish.addEventListener("click", async () => {
       setButtonLoading(finish, true, "Montando seu roteiro…");
       try {
-        const institution = window.localStorage.getItem("voupassar.institution") || null;
+        const institution = currentInstitution();
         await generatePlan(institution);
         window.location.href = `./dashboard.html?origem=diagnostico${institution ? `&institution=${encodeURIComponent(institution)}` : ""}`;
       } catch (err) {

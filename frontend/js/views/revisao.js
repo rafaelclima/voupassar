@@ -48,6 +48,9 @@ const btnIniciar = document.getElementById("revisao-iniciar");
 const state = {
   bound: false,
   ready: false,
+  /* Trilha do processo (TASK F.1): repassada a GET /review/queue e a
+   * fetchTopics; null = legado global (nunca misturar na exibição). */
+  institution: null,
   disciplines: [],
   topicsOfDisc: [],
   filters: { discipline: "", topicId: "", onlyErrors: false, fromHub: false },
@@ -56,8 +59,9 @@ const state = {
 };
 
 /* Chamado pelo estudos.js após auth + conteúdo visível. Idempotente. */
-export async function initReviewSection({ disciplines = [] } = {}) {
+export async function initReviewSection({ disciplines = [], institution = null } = {}) {
   if (!section || !form) return;
+  state.institution = institution || null;
   state.disciplines = Array.isArray(disciplines) ? disciplines : [];
   if (!state.bound) {
     state.bound = true;
@@ -70,6 +74,22 @@ export async function initReviewSection({ disciplines = [] } = {}) {
   applyFiltersToForm();
   await refreshTopicSelect();
   await loadQueue({ scroll: state.filters.fromHub });
+}
+
+/* Troca de trilha IFRN↔EAJ (TASK F.1): atualiza catálogo da seção e
+ * recarrega a fila sem mexer nos filtros que continuam válidos. */
+export async function refreshReviewForInstitution({ disciplines = [], institution = null } = {}) {
+  if (!section || !form) return;
+  state.institution = institution || null;
+  state.disciplines = Array.isArray(disciplines) ? disciplines : [];
+  if (state.filters.discipline && !state.disciplines.some((d) => d.code === state.filters.discipline)) {
+    state.filters.discipline = "";
+    state.filters.topicId = "";
+  }
+  fillDisciplineSelect();
+  applyFiltersToForm();
+  await refreshTopicSelect();
+  await loadQueue();
 }
 
 function bindEvents() {
@@ -148,7 +168,7 @@ function readUrlIntoReview() {
 async function resolveDisciplineForTopic() {
   if (!state.filters.topicId || state.filters.discipline) return;
   try {
-    const data = await fetchTopics();
+    const data = await fetchTopics(undefined, state.institution || undefined);
     const all = Array.isArray(data) ? data : (data?.content ?? []);
     const hit = all.find((t) => String(t.id) === String(state.filters.topicId));
     if (hit?.disciplineCode && state.disciplines.some((d) => d.code === hit.disciplineCode)) {
@@ -187,7 +207,7 @@ async function refreshTopicSelect() {
     return;
   }
   try {
-    const data = await fetchTopics(disc);
+    const data = await fetchTopics(disc, state.institution || undefined);
     state.topicsOfDisc = Array.isArray(data) ? data : (data?.content ?? []);
   } catch {
     state.topicsOfDisc = [];
@@ -217,6 +237,7 @@ async function loadQueue({ scroll = false } = {}) {
       ...(f.discipline ? { discipline: f.discipline } : {}),
       ...(f.topicId ? { topicId: f.topicId } : {}),
       ...(f.onlyErrors ? { onlyErrors: true } : {}),
+      ...(state.institution ? { institution: state.institution } : {}),
     });
     state.queue = queue;
     state.items = Array.isArray(queue?.items) ? queue.items : [];

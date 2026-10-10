@@ -9,12 +9,16 @@
 
 import { request } from "./client.js";
 
-export function fetchDisciplines() {
-  return request("/api/v1/disciplines");
+export function fetchDisciplines(institution) {
+  return request("/api/v1/disciplines", {
+    query: institution ? { institution } : {},
+  });
 }
 
-export function fetchEditions() {
-  return request("/api/v1/editions");
+export function fetchEditions(institution) {
+  return request("/api/v1/editions", {
+    query: institution ? { institution } : {},
+  });
 }
 
 export function createByDiscipline({ disciplineCode, questionCount, difficulty, sourceType, mode, institution }) {

@@ -11,7 +11,8 @@
  * texto exibido): casa por nome contendo "portugues" ou "matemat".
  */
 
-import { currentInstitution } from "../state/process.js";
+import { currentInstitution, setInstitution } from "../state/process.js";
+import { mountProcessSelector } from "../components/process-selector.js";
 import { ApiError, friendlyMessage } from "../api/client.js";
 import { logout } from "../api/auth.js";
 import { createByDiscipline, fetchDisciplines } from "../api/simulado.js";
@@ -33,6 +34,20 @@ async function main() {
   const user = await requireSessionOrGuard(showGuard);
   if (!user) return;
   showLogoutButtons();
+  // Seletor de trilha (TASK F.1): ?institution= vence o persistido e persiste.
+  try {
+    const raw = new URLSearchParams(window.location.search).get("institution") || "";
+    const v = raw.trim().toUpperCase();
+    if (v === "EAJ" || v === "IFRN") setInstitution(v);
+  } catch { /* mantém a trilha persistida */ }
+  const note = document.getElementById("diag-process-note");
+  mountProcessSelector(document.getElementById("diag-process-mount"), {
+    onChange: (next) => {
+      if (note) note.textContent = `O diagnóstico monta 12 questões da trilha ${next === "EAJ" ? "EAJ/UFRN" : "IFRN"}.`;
+    },
+  });
+  const inst = currentInstitution();
+  if (note) note.textContent = `O diagnóstico monta 12 questões da trilha ${inst === "EAJ" ? "EAJ/UFRN" : "IFRN"}.`;
   loadingBox.hidden = true;
   content.hidden = false;
 }

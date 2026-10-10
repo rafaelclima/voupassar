@@ -67,13 +67,16 @@ REQUIRED_FILES = [
     "js/api/perfil.js",
     "js/state/store.js",
     "js/state/session.js",
+    "js/state/process.js",
     "js/components/ui.js",
+    "js/components/process-selector.js",
     "js/components/plan-evidence.js",
     "js/components/result-next.js",
     "js/components/pace.js",
     "js/components/figure.js",
     "js/components/passage.js",
     "js/main.js",
+    "js/views/landing.js",
     "js/views/auth-shared.js",
     "js/views/login.js",
     "js/views/cadastro.js",
@@ -699,6 +702,40 @@ def main() -> int:
     for token in ['"topico"', "resolveDisciplineForTopic"]:
         if token not in rev183:
             fail(f"js/views/revisao.js sem {token!r} (TASK 18.3 — fila filtrada por assunto via ?topico=)")
+
+    # TASK F.1 — seletor IFRN/EAJ: montado na landing, estudos, simulado
+    # e diagnóstico; trilha via ?institution= no backend, persistida em
+    # js/state/process.js; edições rotuladas "ano · processo" na UI.
+    f1 = (FRONT / "js" / "components" / "process-selector.js").read_text(encoding="utf-8") if (FRONT / "js" / "components" / "process-selector.js").exists() else ""
+    for token in ["mountProcessSelector", "state/process.js", "aria-pressed", "editionOptionLabel"]:
+        if token not in f1:
+            fail(f"js/components/process-selector.js sem {token!r} (TASK F.1)")
+    for page, mount in [("index.html", "process-selector-mount"),
+                        ("estudos.html", "study-process-mount"),
+                        ("simulado.html", "sim-process-mount"),
+                        ("diagnostico.html", "diag-process-mount")]:
+        html = (FRONT / page).read_text(encoding="utf-8") if (FRONT / page).is_file() else ""
+        if html and mount not in html:
+            fail(f"{page} sem montagem do seletor #{mount} (TASK F.1)")
+    for name in ["estudos.js", "simulado.js", "diagnostico.js", "landing.js"]:
+        v = (FRONT / "js" / "views" / name).read_text(encoding="utf-8") if (FRONT / "js" / "views" / name).exists() else ""
+        if v and "process-selector.js" not in v:
+            fail(f"js/views/{name} sem seletor de processo (TASK F.1)")
+    for name, token in [("estudos.js", "splitEditionValue"),
+                        ("simulado.js", "editionOptionLabel"),
+                        ("revisao.js", "refreshReviewForInstitution")]:
+        v = (FRONT / "js" / "views" / name).read_text(encoding="utf-8") if (FRONT / "js" / "views" / name).exists() else ""
+        if v and token not in v:
+            fail(f"js/views/{name} sem {token!r} (TASK F.1)")
+    study_html = (FRONT / "estudos.html").read_text(encoding="utf-8") if (FRONT / "estudos.html").exists() else ""
+    for opt in ["IFRN-2020", "EAJ-2021", "EAJ-2022", "EAJ-2025", "2022 · EAJ"]:
+        if opt not in study_html:
+            fail(f"estudos.html sem edição rotulada {opt!r} (TASK F.1)")
+    landing_html = (FRONT / "index.html").read_text(encoding="utf-8") if (FRONT / "index.html").exists() else ""
+    if landing_html and "processo-stats" not in landing_html:
+        fail("index.html sem contadores por processo #processo-stats (TASK F.1)")
+    if "process-selector" not in comp:
+        fail("components.css sem .process-selector (TASK F.1)")
 
     if errors:
         print(f"check_frontend: {len(errors)} falha(s):")

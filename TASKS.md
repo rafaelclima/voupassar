@@ -583,7 +583,27 @@ Entregas E.2 implementadas:
 > senão `node --check` + `check_frontend.py` + serve 200 e pendência em
 > `blockers.md`).
 
-## TASK F.1 — Seletor IFRN/EAJ + filtros estendidos
+## TASK F.1 — Seletor IFRN/EAJ + filtros estendidos [DONE 2026-10-10]
+
+Execução 2026-10-10: `js/components/process-selector.js` novo
+(segmented IFRN/EAJ sobre `state/process.js`, default IFRN,
+`aria-pressed`, `editionOptionLabel`) + montagem na landing
+(`#processo`, `js/views/landing.js`), estudos (`#study-process-mount`),
+simulado-hub (`#sim-process-mount`) e diagnóstico (`#diag-process-mount`).
+Estudos: catálogo/questões/diagnóstico/roteiro/revisão com `institution`
+(`splitEditionValue` p/ filtro `INSTITUTION-YEAR` rotulado `2022 · EAJ`,
+`?institution=EAJ` na URL, `refreshReviewForInstitution`); CN/CH via
+backend sem lista fixa; origem `Oficiais da trilha`. Simulado: hub por
+trilha + edições `INSTITUTION-YEAR` (`2021 · EAJ` só EAJ) + criações com
+`institution`; wizard usa `currentInstitution()`. Landing: `#processo-stats`
+240 IFRN (banco local) + 128 EAJ (`data/import/report-eaj.json`,
+Q22/Q39-2025 fora). Provas: `node --check` 7 arquivos, `check_frontend.py`
+OK (72 arquivos, regra F.1 nova), serve 200 nas 4 páginas + 2 JS,
+Playwright (landing: seletor renderiza, 0 erros console, clique EAJ
+persiste `voupassar.institution=EAJ`; estudos `?institution=EAJ` sem
+sessão → guarda, 0 erros). Pendente p/ G.2: E2E autenticado por trilha
+(conta nova na trilha EAJ) e importação EAJ no banco local (só IFRN-240
+lá; EAJ validado em scratch na D.3).
 
 Entregas:
 

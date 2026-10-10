@@ -126,3 +126,13 @@ confirmação e placar do servidor; resultado com correção por posição;
 histórico retoma/revê; guarda de auth com `?next=` seguro; `node --check`
 OK; `check_frontend.py` OK estendido com cobertura simulado; navegação
 (Dashboard, Estudos, Questão) linka o Simulado.
+
+## 12. Trilha IFRN/EAJ (Programa EAJ, F.1)
+
+* `#sim-process-mount` (seletor persistente, default IFRN): o hub recarrega
+  disciplinas e edições na trilha (`GET /disciplines?institution=`,
+  `GET /editions?institution=` — `js/api/simulado.js`).
+* Edições rotuladas `ano · processo` (`editionOptionLabel`, valor
+  `INSTITUTION-YEAR`): `2021 · EAJ` existe só no EAJ; criações passam
+  `institution` (`POST /simulations/by-discipline?institution=` e
+  `by-edition {institution}`); gancho do wizard usa `currentInstitution()`.

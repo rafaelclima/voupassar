@@ -80,6 +80,12 @@
       </div>
 
       <div id="study-content" hidden>
+        <!-- 0. TRILHA — seletor IFRN/EAJ: todo o recorte segue a trilha. -->
+        <section aria-labelledby="sec-trilha-t" class="study-sec">
+          <h2 id="sec-trilha-t" class="visually-hidden">Processo seletivo</h2>
+          <div id="study-process-mount"></div>
+        </section>
+
         <!-- 1. CONTINUE DE ONDE PAROU — hero de destaque -->
         <section aria-labelledby="sec-agora-t" class="study-sec">
           <h2 id="sec-agora-t" class="visually-hidden">O que estudar agora</h2>
@@ -149,7 +155,7 @@
           <div class="perf-shell__head">
             <div class="perf-shell__title">
               <h2 id="sec-filtros-t" tabindex="-1">Filtrar questões</h2>
-              <p>Ordem fixa das questões (ano-fonte, número). A edição de 2021 não existe no acervo e não aparece como opção.</p>
+              <p>Ordem fixa das questões (ano-fonte, número). As edições listadas trazem o processo (IFRN ou EAJ).</p>
             </div>
             <div class="perf-shell__tools">
               <span class="health-pill" id="study-recorte" hidden>
@@ -181,12 +187,15 @@
               <label class="field__label" for="f-ano">Edição</label>
               <select class="select" id="f-ano" name="ano">
                 <option value="">Todas</option>
-                <option value="2020">2020</option>
-                <option value="2022">2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
+                <option value="IFRN-2020">2020 · IFRN</option>
+                <option value="IFRN-2022">2022 · IFRN</option>
+                <option value="IFRN-2023">2023 · IFRN</option>
+                <option value="IFRN-2024">2024 · IFRN</option>
+                <option value="IFRN-2025">2025 · IFRN</option>
+                <option value="IFRN-2026">2026 · IFRN</option>
+                <option value="EAJ-2021">2021 · EAJ</option>
+                <option value="EAJ-2022">2022 · EAJ</option>
+                <option value="EAJ-2025">2025 · EAJ</option>
               </select>
             </div>
             <div class="field">
@@ -202,7 +211,7 @@
               <label class="field__label" for="f-origem">Origem</label>
               <select class="select" id="f-origem" name="fonte">
                 <option value="">Todas</option>
-                <option value="OFFICIAL">Oficiais do IFRN</option>
+                <option value="OFFICIAL">Oficiais da trilha</option>
                 <option value="AUTHORAL">Criadas pelo VouPassar</option>
               </select>
             </div>
@@ -218,7 +227,7 @@
           <div class="section-head section-head--row">
             <div>
               <h2 id="sec-conteudo-t">Conteúdo</h2>
-              <p>Assuntos que aparecem nas provas do IFRN, com a classificação derivada do pipeline.</p>
+              <p id="study-browser-lead">Assuntos observados nas provas da trilha, com a classificação derivada do pipeline.</p>
             </div>
             <span class="stat-label" id="study-browser-count" role="status"></span>
           </div>

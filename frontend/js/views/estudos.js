@@ -44,7 +44,9 @@ import { parseEvidence, evidenceLine, revisaoHref, sampleHref } from "../compone
 import { summarizeResult, renderResultNext } from "../components/result-next.js";
 import { createSession } from "../api/review.js";
 import { generatePlan } from "../api/dashboard.js";
-import { initReviewSection } from "./revisao.js";
+import { initReviewSection, refreshReviewForInstitution } from "./revisao.js";
+import { currentInstitution, getInstitution, setInstitution } from "../state/process.js";
+import { mountProcessSelector } from "../components/process-selector.js";
 
 const PAGE_SIZE = 10;
 const SESSION_KEY = "voupassar.studySessionId";
@@ -82,6 +84,10 @@ const planBox = document.getElementById("study-plan");
 
 const state = {
   user: null,
+  /* Trilha IFRN/EAJ (TASK F.1): default IFRN; URL ?institution= vence o
+   * persistido (ver currentInstitution). Tudo — catálogo, questões,
+   * diagnóstico, roteiro, revisão — segue esta trilha. */
+  institution: "IFRN",
   disciplines: [],
   allTopics: [],
   topicsOfDisc: [],
@@ -118,10 +124,14 @@ async function main() {
     return;
   }
   state.user = user;
+  readUrlIntoFilters();
+  const selector = mountProcessSelector(document.getElementById("study-process-mount"), {
+    onChange: (next) => onInstitutionChange(next),
+  });
+  selector.refresh();
   preloadManifest().catch(() => null);
   subtitle.textContent = `Olá, ${user.displayName || "estudante"} — escolha disciplina e assunto, pratique com correção imediata e veja seu progresso no recorte.`;
   showLogoutButtons();
-  readUrlIntoFilters();
   bindFilterEvents();
   bindAjustarFiltros();
   state.studySessionId = readStoredSession();
@@ -162,6 +172,11 @@ function showGuard() {
 
 function readUrlIntoFilters() {
   const q = new URLSearchParams(window.location.search);
+  const instRaw = (q.get("institution") || "").trim().toUpperCase();
+  if (instRaw === "EAJ" || instRaw === "IFRN") {
+    state.institution = instRaw;
+    setInstitution(instRaw);
+  } else state.institution = currentInstitution();
   state.filters.disciplineCode = (q.get("disciplina") || "").trim().toUpperCase();
   state.filters.topicId = (q.get("topico") || "").trim();
   state.filters.subtopicId = (q.get("subtopico") || "").trim();
@@ -182,12 +197,37 @@ function syncUrl() {
   if (f.year) q.set("ano", f.year);
   if (f.difficulty) q.set("dificuldade", f.difficulty);
   if (f.sourceType) q.set("fonte", f.sourceType);
+  if (state.institution && state.institution !== "IFRN") q.set("institution", state.institution);
   if (f.page > 0) q.set("pagina", String(f.page));
   // A origem ("painel") não volta para a URL: ela descreve como o aluno
   // chegou, não o recorte atual. Manter na URL faria o hero dizer
   // "escolhido no painel" mesmo depois de o aluno filtrar por conta própria.
   const qs = q.toString();
   window.history.replaceState(null, "", qs ? `./estudos.html?${qs}` : "./estudos.html");
+}
+
+/* ---------- troca de trilha (TASK F.1) ---------- */
+
+/* Edição composta "INSTITUTION-YEAR" do select (ex. "EAJ-2022"):
+ * separa processo e ano; valor legado só-ano assume a trilha atual. */
+export function splitEditionValue(raw, fallbackInstitution) {
+  const v = String(raw || "").trim().toUpperCase();
+  const m = v.match(/^(IFRN|EAJ)-(\d{4})$/);
+  if (m) return { institution: m[1], year: m[2] };
+  if (/^\d{4}$/.test(v)) return { institution: fallbackInstitution, year: v };
+  return { institution: fallbackInstitution, year: "" };
+}
+
+async function onInstitutionChange(next) {
+  if (next === state.institution) return;
+  state.institution = next;
+  // Trilha nova, recorte novo: limpa disciplina/assunto/ano (podem não
+  // existir na outra trilha) e recarrega tudo nela.
+  state.filters = { disciplineCode: "", topicId: "", subtopicId: "", year: "", difficulty: state.filters.difficulty, sourceType: state.filters.sourceType, page: 0 };
+  state.origin = "";
+  state.browserLimits = {};
+  await loadAll();
+  await refreshReviewForInstitution({ disciplines: state.disciplines, institution: state.institution });
 }
 
 /* ---------- carga inicial ---------- */
@@ -198,11 +238,11 @@ async function loadAll() {
   errorBox.textContent = "";
   try {
     const settled = await Promise.allSettled([
-      fetchDisciplines(),
-      fetchTopics(),
+      fetchDisciplines(state.institution),
+      fetchTopics(undefined, state.institution),
       fetchOverview(),
-      fetchDiagnosis(),
-      fetchPlan(),
+      fetchDiagnosis(state.institution),
+      fetchPlan(state.institution),
     ]);
     const [discR, topicsR, overR, diagR, planR] = settled;
 
@@ -262,7 +302,7 @@ async function loadAll() {
     // Revisão guiada (TASK 17.2): seção própria com dono próprio. Só inicia
     // após auth + conteúdo (a guarda acima já barrou sem-sessão; 401 aqui
     // vira erro com retry dentro da seção, nunca guarda duplicada).
-    initReviewSection({ disciplines: state.disciplines }).catch((err) => {
+    initReviewSection({ disciplines: state.disciplines, institution: state.institution }).catch((err) => {
       console.error("[estudos] falha na seção de revisão:", err);
     });
   } catch (err) {
@@ -314,9 +354,14 @@ function applyFiltersToForm() {
     state.filters.sourceType = "";
   }
   selOrigem.value = state.filters.sourceType || "";
-  if (state.filters.year && !["2020", "2022", "2023", "2024", "2025", "2026"].includes(state.filters.year)) {
+  if (state.filters.year && !/^(IFRN|EAJ)-\d{4}$/.test(state.filters.year) && !/^\d{4}$/.test(state.filters.year)) {
     state.filters.year = "";
     selYear.value = "";
+  }
+  // Valor legado só-ano na URL vira composto da trilha atual.
+  if (/^\d{4}$/.test(state.filters.year || "")) {
+    state.filters.year = `${state.institution}-${state.filters.year}`;
+    selYear.value = state.filters.year;
   }
 }
 
@@ -511,7 +556,7 @@ async function refreshDependentSelects() {
   let topics = state.allTopics;
   if (disc) {
     try {
-      const data = await fetchTopics(disc);
+      const data = await fetchTopics(disc, state.institution);
       topics = Array.isArray(data) ? data : (data?.content ?? []);
     } catch {
       topics = state.allTopics.filter((t) => t.disciplineCode === disc);
@@ -549,7 +594,7 @@ async function refreshDependentSelects() {
     return;
   }
   try {
-    const data = await fetchSubtopics(topicId);
+    const data = await fetchSubtopics(topicId, state.institution);
     const subs = Array.isArray(data) ? data : (data?.content ?? []);
     state.subtopicsOfTopic = subs;
     for (const s of subs) {
@@ -696,7 +741,10 @@ function renderRecorte() {
   if (topicName) parts.push(topicName);
   const subName = currentSubtopicName();
   if (subName) parts.push(subName);
-  if (state.filters.year) parts.push(`Edição ${state.filters.year}`);
+  if (state.filters.year) {
+    const ed = splitEditionValue(state.filters.year, state.institution);
+    parts.push(ed.year ? `Edição ${ed.year} · ${ed.institution}` : `Edição ${state.filters.year}`);
+  }
   const diffLabel = difficultyLabel(state.filters.difficulty);
   if (diffLabel) parts.push(diffLabel);
   // Origem no resumo (TASK 15.4): traduzida via vocab, nunca o enum cru.
@@ -1063,11 +1111,15 @@ function renderQuestionsIdle() {
 
 function questionQuery() {
   const f = state.filters;
+  const ed = splitEditionValue(f.year, state.institution);
   return {
     ...(f.disciplineCode ? { disciplineCode: f.disciplineCode } : {}),
     ...(f.topicId ? { topicId: f.topicId } : {}),
     ...(f.subtopicId ? { subtopicId: f.subtopicId } : {}),
-    ...(f.year ? { year: f.year } : {}),
+    ...(ed.year ? { year: ed.year } : {}),
+    // Trilha sempre explícita: ano sozinho nunca decide a edição (E.1);
+    // a edição composta do filtro vence a trilha global quando divergem.
+    institution: ed.year ? ed.institution : state.institution,
     ...(f.difficulty ? { difficulty: f.difficulty } : {}),
     ...(f.sourceType ? { sourceType: f.sourceType } : {}),
     page: f.page,

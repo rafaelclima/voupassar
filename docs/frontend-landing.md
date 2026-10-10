@@ -149,3 +149,15 @@ em `base.css`:
 * `.eyebrow` passou a `--color-primary-700`: `-600` rendia 4,33:1 no
   dark (abaixo de 4,5:1). `-700` é mais escuro no claro e mais claro no
   escuro, então os dois temas ganham.
+
+## 9. Seletor IFRN/EAJ + contadores por processo (Programa EAJ, F.1)
+
+* Seção `#processo` (`frontend/index.html` + `js/views/landing.js`):
+  seletor persistente (`js/components/process-selector.js` sobre
+  `js/state/process.js`, default IFRN) + `#processo-stats` com o acervo
+  classificado: **240 IFRN** (6 edições 2020, 2022–2026, seed V2) +
+  **128 EAJ** (3 edições 2021/2022/2025, `data/import/report-eaj.json`;
+  Q22/Q39-2025 fora até retranscrição — ver `docs/blockers.md`).
+* `GET /editions` exige sessão, por isso a landing usa essas contagens
+  estáticas verificadas em vez de fetch anônimo (nada inventado: somam
+  368 = 240 + 128, cada parcela rastreável).

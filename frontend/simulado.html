@@ -101,6 +101,12 @@
 
         <!-- HUB: criar + histórico (sem ?id= nem ?review=) -->
         <div id="sim-hub" hidden>
+          <!-- 0. TRILHA — seletor IFRN/EAJ -->
+          <section aria-labelledby="sec-trilha-t" class="sim-sec">
+            <h2 id="sec-trilha-t" class="visually-hidden">Processo seletivo</h2>
+            <div id="sim-process-mount"></div>
+          </section>
+
           <!-- 1. HERO — convite à prova -->
           <section aria-labelledby="sec-hero-t" class="sim-sec">
             <h2 id="sec-hero-t" class="visually-hidden">Treine como no dia da prova</h2>
@@ -151,7 +157,7 @@
                 <div class="field">
                   <label class="field__label" for="s-disc-origem">Origem das questões</label>
                   <select class="select" id="s-disc-origem" name="origem">
-                    <option value="OFFICIAL" selected>Oficiais do IFRN</option>
+                    <option value="OFFICIAL" selected>Oficiais da trilha</option>
                     <option value="AUTHORAL">Criadas pelo VouPassar</option>
                     <option value="ALL">Todas (misto)</option>
                   </select>
@@ -174,7 +180,7 @@
               <div class="panel__head">
                 <div>
                   <h2 id="sec-ed-t">Edição real</h2>
-                  <p>Caderno integral em ordem original daquela edição, incluindo anuladas nas posições originais. A edição de 2021 não existe no acervo.</p>
+                  <p>Caderno integral em ordem original daquela edição, incluindo anuladas nas posições originais. As edições trazem o processo (IFRN ou EAJ); 2021 existe só na trilha EAJ.</p>
                 </div>
                 <span class="panel__icon" aria-hidden="true">▣</span>
               </div>
