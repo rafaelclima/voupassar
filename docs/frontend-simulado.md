@@ -144,3 +144,24 @@ OK; `check_frontend.py` OK estendido com cobertura simulado; navegação
   selo via `originLabel`; textos-base e "Mostrar figura" idênticos aos de
   Estudos (visíveis também no Modo Prova); notas de anulada/placar neutras
   quanto à banca (Q23-2025 é EAJ, fora da pontuação).
+
+## 14. Prova-IA (esqueleto E.2 — DRAFT VPS, frontend pendente DEV/D)
+
+> Nenhuma tela abaixo existe no repo (TASKs D.1/D.2, DEV-only). Este é o
+> esqueleto do contrato de UI para a DEV implementar contra
+> `POST /api/v1/simulations/ai-generated` (`docs/api-simulados.md:110-160`):
+>
+> * Entrada "Gerar prova com IA (experimental)" no hub: seletor de
+>   processo (IFRN/EAJ), seletor de edição-modelo (só presentes no banco,
+>   rotuladas `ano · processo`), seletor de modo (ESTUDO/PROVA), aviso de
+>   tempo (~2 min) e de cota (3/dia); criação via `POST .../ai-generated`,
+>   redirect para execução (`?id=` + marcador IA).
+> * Execução reaproveitando os componentes do simulado: selo "gerada por
+>   IA — não oficial" por questão + banner no topo; feedback imediato só
+>   em ESTUDO; PROVA oculta até encerrar; sem painel de passagem, sem
+>   figura, sem explanation.
+> * Resultado: placar contra o gabarito-IA congelado + banner "sem
+>   validade de prova real"; raio-X "o que fazer agora" DESLIGADO para
+>   prova-IA (isolamento B.1); histórico com selo experimental.
+> * Erros `401/400/404/409/422/429/502` viram mensagens honestas com
+>   `traceId` (AGENTS.md §31: navegador real quando disponível).

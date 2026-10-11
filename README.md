@@ -83,6 +83,27 @@ Motor pronto no backend (`GET /review/queue`, `POST /review/sessions`,
 nível" (12Q) são trilha local com navegador real (TASKS.md Fases 17/20.2);
 raio-X pós-atividade e ritmo de simulado idem (19.x/21.1).
 
+## Prova-IA experimental (esqueleto E.2 — DRAFT VPS)
+
+Geração de provas inéditas com questões criadas por IA no formato
+IFRN/EAJ (TASKS.md Programa Prova-IA; contrato em
+`docs/ai-prova-schema.md`, prompt `ai-prova-v1` em
+`backend/src/main/resources/ai/prompts/ai-prova-v1.txt`).
+
+Vigente no repo: `POST /api/v1/simulations/ai-generated`
+(`backend/src/main/java/br/com/voupassar/aiprova/controller/AiSimulationController.java:43-72`)
+com provedor mockado + ciclo sobre caderno-IA congelado em tabelas
+próprias (`database/migrations/V23__ai_generations.sql`), documentado em
+`docs/api-simulados.md:110-160`. Selo obrigatório por questão e no
+placar ("gerada por IA — sem validade de prova real"); nada-IA alimenta
+o motor educacional (`docs/blockers.md:790-800`).
+
+Pendentes (não prometidos aqui): provedor real OpenRouter
+(`docs/ai-provedor.md` — modelo/limites DESCONHECIDOS até confirmação),
+cota 3/dia (`docs/ai-cota.md` — janela a fixar na DEV), telas do hub/
+execução/resultado (TASKs D.1/D.2, DEV-only). Checklist ponta a ponta +
+regressão IFRN/EAJ com evidências = DEV-only (E.2).
+
 ## Limitações conhecidas
 
 - Dificuldade é palpite global BAIXA com peso limitado (+50%) — calibração
