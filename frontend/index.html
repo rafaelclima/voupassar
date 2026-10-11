@@ -58,11 +58,13 @@
   </header>
 
   <main id="conteudo" class="landing-main">
-    <!-- HERO em palco contido: o canvas navy ocupa 100% da viewport em
-         qualquer largura; o conteúdo trava em 88rem centralizado (ver
-         landing.css). Copy à esquerda sobre o navy, arte à direita em
-         card com proporção fixa. No mobile (<64rem) a arte some
-         (display:none + source com media) e o fundo vira gradiente navy. -->
+    <!-- HERO full-bleed total (referência home_hero_example.png): a imagem
+         ocupa 100% da viewport atrás de TUDO (header + textos flutuam sobre
+         ela); copy à esquerda sobre a parte escura, cena à direita. Até
+         1920px a hero é o primeiro viewport; acima de 120rem vira palco
+         contido com arte de fundo transparente (ver landing.css). No
+         mobile (<64rem) a arte some (display:none + source com media) e o
+         fundo vira gradiente navy. -->
     <section class="landing-hero" aria-labelledby="hero-t">
       <div class="hero-card">
         <div class="hero-card__copy">
@@ -99,19 +101,28 @@
           </p>
         </div>
 
-        <!-- Arte em CARD contido à direita (hero_full.png 1672×1081:
-              esquerda vazia em navy, cena à direita). Derivados por largura;
-              o <source> com media impede o mobile de baixar os arquivos
-              grandes. O contraste do texto vem do navy do canvas — sem
-              sombra sobre a cena. Alt vazio: decorativa, a mensagem está
-              no H1 + CTAs. -->
+        <!-- Arte em TELA CHEIA atrás de tudo até 120rem (hero_full.png
+             1672×1081: 16:9 gerada para este cenário + 140px de céu navy no
+             topo para o cronômetro sair de trás do header; esquerda vazia
+             em navy, cena à direita). Acima de 120rem entra a variante de
+             fundo transparente (mestre frontend/assets/hero_nobg.png
+             1678×937, derivados hero-nobg-*.webp recortados na cena) em
+             palco contido. Derivados por largura; o <source> com media
+             impede o mobile de baixar os arquivos grandes. Sombra sutil à
+             esquerda (CSS) garante a leitura do texto sem tocar na cena.
+             Alt vazio: decorativa, a mensagem está no H1 + CTAs. -->
         <div class="landing-visual" id="hero-visual" aria-hidden="true">
           <picture>
+            <source
+              media="(min-width: 120rem)"
+              type="image/webp"
+              srcset="./assets/landing/hero-nobg-768.webp 768w, ./assets/landing/hero-nobg-1024.webp 1024w"
+              sizes="40rem" />
             <source
               media="(min-width: 64rem)"
               type="image/webp"
               srcset="./assets/landing/hero-960.webp 960w, ./assets/landing/hero-1280.webp 1280w, ./assets/landing/hero-1672.webp 1672w"
-              sizes="(min-width: 64rem) 42vw, 100vw" />
+              sizes="100vw" />
             <img
               class="hero-art"
               src="./assets/landing/hero-960.webp"

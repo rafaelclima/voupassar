@@ -14,17 +14,41 @@ ffmpeg -y -i hero_full.png -vf "scale=1672:-2" -c:v libwebp -quality 82 frontend
 cp frontend/assets/landing/hero-1280.webp frontend/assets/landing/hero.webp  # fallback / compat
 ```
 
-O HTML usa `<picture>` com `media="(min-width: 64rem)"` + `srcset`/`sizes`
-(`(min-width: 64rem) 42vw, 100vw`): o mobile nem baixa os arquivos
-grandes e cada viewport recebe resolução próxima da sua densidade. A arte
-entra em **card contido** à direita (`aspect-ratio: 4/3`, `cover` dentro
-do card, `object-position: 65% 50%` com viés à cena direita).
-`check_frontend.py` exige os 4 arquivos (`hero.webp` + 3 derivados).
+O HTML usa `<picture>` com dois `source`: `media="(min-width: 120rem)"`
+para a variante transparente (`hero-nobg-768/1024.webp`, `sizes="40rem"`,
+só acima de 1920px) e `media="(min-width: 64rem)"` para a opaca
+(`hero-960/1280/1672.webp`, `sizes="100vw"`, full-bleed até 120rem).
+O mobile nem baixa os arquivos grandes e cada viewport recebe resolução
+próxima da sua densidade. A opaca entra em **tela cheia**
+(`absolute inset-0`, `cover`) atrás de tudo, com sombra sutil só à
+esquerda via CSS (texto legível, cena intacta); a transparente entra em
+**palco contido** à direita (`contain`, `drop-shadow`, sem card/borda).
+`check_frontend.py` exige os 4 arquivos opacos (`hero.webp` + 3 derivados).
 
-Nota: a mestre tem 1672px e o visual ocupa ~42% de um palco de 88rem
-(≤ ~650px de largura de renderização) — os derivados 960/1280/1672
-cobrem DPR 1–2 sem upscale visível nesta arte vetorial sem texto. Se um
-dia houver mestre 2560+, basta acrescentar o derivado e o `srcset`.
+Nota: a mestre opaca tem 1672px — em viewport 1920 (DPR 1) há upscale
+leve de ~1,15×, imperceptível nesta arte vetorial sem texto. A coluna do
+palco ultrawide renderiza ~630px — os derivados 768/1024 cobrem DPR 1–2
+(sem upscale visível até DPR 1,6).
+### Variante transparente — ultrawide > 1920px (EM USO)
+
+Mestre `frontend/assets/hero_nobg.png` (1678×937 RGBA, esquerda vazia
+transparente, cena à direita). Derivados recortados na cena útil
+(bbox do canal alfa + 24px de margem = 1024×936, proporção ~1,09):
+
+```bash
+python3 - <<'EOF'
+from PIL import Image
+master = Image.open("frontend/assets/hero_nobg.png").convert("RGBA")
+crop = master.crop((613, 1, 1637, 937))  # bbox alfa + margem
+crop.save("frontend/assets/landing/hero-nobg-1024.webp", quality=82, method=6)
+crop.resize((768, 702), Image.LANCZOS).save("frontend/assets/landing/hero-nobg-768.webp", quality=82, method=6)
+EOF
+```
+
+~122 KB + ~83 KB, só baixados acima de 120rem (`media` no `source`).
+Se a mestre for substituída, recalcular o bbox do alfa e atualizar o
+`aspect-ratio` em `landing.css` + `sizes` no `index.html`.
+
 Histórico: a variante retrato (`hero_portrait_45.jpg` + derivados
 768/1100/1600/1856) foi removida quando a paisagem chegou — metade
 direita prendia a arte numa coluna em vez da tela toda.
