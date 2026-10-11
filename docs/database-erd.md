@@ -4,10 +4,11 @@
 > `docs/architecture.md §4`, evidências da Fase 1 (`docs/provas-inventario.md`,
 > `docs/gabaritos-validation.md`, `data/extracted/*.json`, `data/linked/*.json`,
 > `docs/content-analysis/taxonomy.md + summary.md + content-map.md`).
-> Status: **projeto vigente multi-processo (G.1)** — o núcleo IFRN abaixo
-> (§§2–10) descreve o desenho original; a implementação física DDL/Flyway
-> evoluiu até a V21 e os deltas EAJ vigentes estão no **§11 Adendo
-> multi-processo** (cada afirmação com arquivo:linha do código vigente).
+> Status: **projeto vigente multi-processo (G.1) + caderno-IA efêmero (A.2)**
+> — o núcleo IFRN abaixo (§§2–10) descreve o desenho original; a
+> implementação física DDL/Flyway evoluiu até a V23; os deltas EAJ vigentes
+> estão no **§11 Adendo multi-processo** e o caderno-IA efêmero (Programa
+> Prova-IA) no **§12** (cada afirmação com arquivo:linha do código vigente).
 > O que não pôde ser comprovado está marcado como `DESCONHECIDO` / `NÃO CONFIRMADO` /
 > `NECESSITA REVISÃO`. Nenhum assunto/dificuldade aqui é fato oficial do IFRN
 > nem do EAJ/UFRN (gabarito EAJ = transcrição, nunca oficial — ver §11).
@@ -67,6 +68,10 @@ erDiagram
     SIMULATION_ATTEMPTS ||--o{ QUESTION_ATTEMPTS : "agrupa"
     SIMULATIONS ||--o{ SIMULATION_ATTEMPTS : "1:N execuções"
     SIMULATION_ATTEMPTS ||--o{ SIMULATION_QUESTIONS : "congela"
+    USERS ||--o{ AI_GENERATIONS : "gera (IA)"
+    AI_GENERATIONS ||--o{ AI_GENERATION_QUESTIONS : "congela (IA)"
+    SIMULATION_ATTEMPTS ||--o{ AI_GENERATION_ANSWERS : "agrupa (IA)"
+    SIMULATIONS ||--o| AI_GENERATIONS : "executa caderno-IA"
 
     TOPICS ||--o{ STUDENT_TOPIC_PERFORMANCE : "agrega"
     SUBTOPICS ||--o{ STUDENT_TOPIC_PERFORMANCE : "agrega"
@@ -77,7 +82,8 @@ erDiagram
 
 Tabelas de apoio omitidas do desenho por legibilidade: `user_roles`
 (join `users ↔ roles`). `student_topic_performance` também referencia `users`
-(N:1, ver §2.8).
+(N:1, ver §2.8). Sem aresta entre `AI_*` e `QUESTIONS`/`QUESTION_ATTEMPTS`
+(isolamento do caderno-IA, §12).
 
 ## 2. Entidades (finalidade + colunas de domínio)
 
@@ -335,9 +341,10 @@ contagem.
 |---|---|
 | id | PK |
 | owner_user_id → users | NULL = template público; `ON DELETE SET NULL` |
-| type | `CHECK (type IN ('BY_DISCIPLINE','REAL_EDITION'))` |
-| exam_id → exams | NOT NULL quando `REAL_EDITION` (estrutura daquela edição); NULL no por-disciplina |
-| filter_json | JSONB NOT NULL (disciplina, tópicos, dificuldade, quantidade — validado contra o banco disponível) |
+| type | `CHECK (type IN ('BY_DISCIPLINE','REAL_EDITION','AI_GENERATED_EDITION'))` (V23; §12) |
+| exam_id → exams | NOT NULL quando `REAL_EDITION` (estrutura daquela edição); NULL no por-disciplina e no IA |
+| ai_generation_id → ai_generations | NULL exceto `AI_GENERATED_EDITION` (vínculo simulation ↔ geração-IA; `ON DELETE CASCADE`; `chk_simulations_link` na V23) |
+| filter_json | JSONB NOT NULL (disciplina, tópicos, dificuldade, quantidade — validado contra o banco disponível; na IA carrega `{type, institution, editionModel, mode, promptVersion, model, experimental: true}` — §12) |
 | title | TEXT NOT NULL |
 
 **`simulation_attempts`** — uma execução por usuário (cabeçalho; detalhe em
@@ -428,6 +435,10 @@ evolução, domínio — sem pressão excessiva).
 | users : question_attempts | 1:N | fato imutável (sem UPDATE de resposta) |
 | simulations : simulation_attempts | 1:N | execução preserva definição |
 | simulation_attempts : simulation_questions | 1:N | caderno congelado |
+| ai_generations : ai_generation_questions | 1:N | caderno-IA congelado (PK composta; §12) |
+| ai_generations : ai_generation_answers | 1:N | respostas-IA (fato próprio, nunca `question_attempts`; §12) |
+| simulations : ai_generations | N:1 | execução-IA referencia a geração (só `AI_GENERATED_EDITION`; §12) |
+| simulation_attempts : ai_generation_answers | 1:N | respostas da execução-IA (§12) |
 | study_plans : study_plan_items | 1:N | item sempre cita `evidence_json` |
 
 ## 4. Índices (além dos UNIQUE/PK)
@@ -445,6 +456,8 @@ evolução, domínio — sem pressão excessiva).
 | question_attempts | `(question_id)` | calibração de dificuldade (Fase 4) |
 | student_topic_performance | `(user_id, accuracy)` | "assuntos mais fracos primeiro" |
 | simulation_questions | `(simulation_attempt_id, position)` | ordem do caderno |
+| ai_generations | `(user_id, created_at DESC)` + UNIQUE parcial `(user_id) WHERE GENERATING` | cota 3/dia (C.2) + 1 geração em voo por aluno |
+| ai_generation_answers | `(user_id, generation_id, answered_at DESC)`, `(simulation_attempt_id, position, answered_at DESC)` | histórico-IA + correção por posição |
 | study_plan_items | `(study_plan_id, priority)` | roteiro ordenado |
 | refresh_tokens | `(user_id, expires_at)` parcial `WHERE revoked_at IS NULL` | validação de refresh |
 | exam_documents | `(sha256)` UNIQUE | auditoria prova↔banco |
@@ -457,7 +470,7 @@ evolução, domínio — sem pressão excessiva).
 4. `question_options`: exatamente 4 linhas por objetiva (trigger `AFTER INSERT OR DELETE`, universal desde V12).
 5. `question_attempts`: imutável — `REVOKE UPDATE/DELETE` do role da API; correção só por nova tentativa; `is_correct` NULL quando `was_annulled`.
 6. `question_attempts`: `CHECK (study_session_id IS NOT NULL OR simulation_attempt_id IS NOT NULL)` — resposta órfã proibida.
-7. `simulations`: `CHECK ((type='REAL_EDITION' AND exam_id IS NOT NULL) OR (type='BY_DISCIPLINE'))`.
+7. `simulations`: `chk_simulations_type` (`type IN ('BY_DISCIPLINE','REAL_EDITION','AI_GENERATED_EDITION')`, V23) + `chk_simulations_link` (`REAL_EDITION` com `exam_id` + sem IA; `BY_DISCIPLINE` sem IA; `AI_GENERATED_EDITION` com `ai_generation_id` + `exam_id` NULL + dono NOT NULL) — `database/migrations/V23__ai_generations.sql:149-157` (CHECKs originais da V1 substituídas; §12).
 8. `question_classifications`: `CHECK (subtopic_id IS NULL OR subtopic→topic)` + vigente = maior `id` por questão (índice `(question_id, taxonomy_version)`).
 9. `users`: `email` CITEXT UNIQUE; `password_hash` nunca NULL/vazio.
 10. `study_plan_items`: `evidence_json` NOT NULL e não-vazio (plano sem evidência é inválido — AGENTS.md §8).
@@ -685,6 +698,83 @@ Documentos identificados por `sha256` (gabaritos auditados em
 * **Múltiplos cadernos por edição** (ofertas 2023 págs. 1–2): NÃO CONFIRMADO —
   se confirmado, vira nova `exam_versions` + `exam_documents`, sem mudar o ERD.
 * **Correção automática da discursiva**: fora do modelo (só prompt + critérios).
+
+## 12. Adendo caderno-IA efêmero (Programa Prova-IA, TASK A.2 — V23)
+
+> Estrutura própria para a prova gerada por IA, sem FK em `questions` /
+> `question_options` / `question_sources` (TASKS.md regras 2–3 do programa;
+> contrato do lote em `docs/ai-prova-schema.md`). Nada-IA alimenta
+> diagnóstico, roteiro, revisão, performance, estatísticas ou content-map
+> (trava de serviços na B.1); aqui trava-se a base no DDL.
+
+### 12.1 `ai_generations` — cabeçalho + auditoria sem PII
+
+* Dono + formato + modo: `user_id → users` (`ON DELETE CASCADE`),
+  `institution IN ('IFRN','EAJ')`, `edition_model` (só as 9 edições-modelo
+  presentes — `docs/ai-prova-schema.md §2`; o CHECK espelha
+  `AiProvaSpec.MODELS`, igualdade travada em teste), `mode IN
+  ('ESTUDO','PROVA')` —
+  `database/migrations/V23__ai_generations.sql:58-77`.
+* Auditoria sem PII (só formato/disciplina/tópicos saem para o provedor):
+  `prompt_version` (`ai-prova-v1`), `model`, `repair_attempts`, histórico
+  em `failure_reason` (classe do erro, nunca prompt/chave), `frozen_at`
+  (só em `READY`: `CHECK` de coerência status×`frozen_at` na mesma faixa).
+* Ciclo `GENERATING → READY | FAILED` + UNIQUE parcial
+  `uq_ai_generations_busy (user_id) WHERE GENERATING` (1 geração em voo
+  por aluno — base do `409` da C.2) + índice `(user_id, created_at)` para
+  a janela de 3/dia da C.2 —
+  `database/migrations/V23__ai_generations.sql:78-81`.
+
+### 12.2 `ai_generation_questions` — caderno congelado (PK `(generation_id, position)`)
+
+* Espelho de `simulation_questions`, sem dualidade com blob JSON:
+  `discipline` (4 códigos), `topic` (TEXT validado pré-freeze pelo
+  `AiProvaValidator` contra `AiProvaSpec::TOPICS` ou `DESCONHECIDO` — sem
+  FK na taxonomia para não duplicar a fonte do vocabulário), `stem`,
+  `options_json` (guarda estrutural no banco: exatamente A–D não-vazias),
+  `frozen_answer_key IN ('A','B','C','D')` (IA nunca tem anulada `X`, logo
+  sem `was_annulled`) —
+  `database/migrations/V23__ai_generations.sql:84-103`.
+* Congelado por construção (sem PUT/DELETE na API — a A.3 não expõe
+  mutação), mesmo padrão de `simulation_questions` (decisão V5 registrada
+  em `database/migrations/V5__review_session_questions.sql:31-35`).
+
+### 12.3 `ai_generation_answers` — fato próprio (nunca `question_attempts`)
+
+* Espelho de `question_attempts`: `user_id`, FK composta
+  `(generation_id, position) → ai_generation_questions` (resposta só para
+  posição congelada), `simulation_attempt_id → simulation_attempts`
+  (`ON DELETE CASCADE`), `selected_option IN ('A','B','C','D','BLANK')`,
+  `is_correct NOT NULL` (confronto com o congelado), `mode IN
+  ('ESTUDO','PROVA')`, `answered_at` —
+  `database/migrations/V23__ai_generations.sql:105-122`.
+* Fato imutável via `trg_ai_answers_immutable` (espelho de
+  `prevent_attempt_mutation`/V1); limpeza de manutenção desliga o trigger
+  (padrão G.2) —
+  `database/migrations/V23__ai_generations.sql:124-135`.
+
+### 12.4 Vínculo `simulation ↔ ai_generation` + prova de isolamento
+
+* `simulations.ai_generation_id → ai_generations` (`ON DELETE CASCADE` —
+  geração é por aluno; o wipe cascateia sem travar) + `chk_simulations_type`
+  / `chk_simulations_link` (IA exige geração + `exam_id` NULL + dono;
+  tipos oficiais exigem `ai_generation_id` NULL; linhas existentes passam
+  intactas) —
+  `database/migrations/V23__ai_generations.sql:144-157`.
+* `filter_json` da IA carrega `{type, institution, editionModel, mode,
+  promptVersion, model, experimental: true}` — convenção escrita pelo
+  serviço da A.3, não DDL.
+* Travas fail-high na própria migração (tabelas, CHECKs novas, ausência
+  de CHECK antiga sem IA, 1 FK simulation→geração, 0 FKs ai_*→acervo,
+  trigger e índice parcial) —
+  `database/migrations/V23__ai_generations.sql:159-217`.
+* Prova estrutural sem banco (8 testes): tabelas criadas, nenhum
+  `REFERENCES`/`INSERT INTO` no acervo, nenhum `question_id` nas
+  tabelas-IA, type/vínculo, congelado sem anulada, imutabilidade e
+  paridade `edition_model = AiProvaSpec.MODELS` —
+  `backend/src/test/java/br/com/voupassar/aiprova/AiProvaIsolationTest.java`.
+* Rollback: forward-only (padrão V3–V22); rollback = restore de backup
+  (`docs/deploy-vps.md`).
 * **Versão exata de Postgres/extensões e tipos físicos**: decisão da TASK 2.2
   contra documentação oficial vigente.
 

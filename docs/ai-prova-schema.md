@@ -181,8 +181,8 @@ Cobertura: `backend/src/test/java/br/com/voupassar/aiprova/AiProvaValidatorTest.
 ## 8. Selo, origem e isolamento (não-negociáveis, TASKS.md regras 1–3)
 
 * Origem lógica: `AI_GENERATED` (distinto de `OFFICIAL/AUTORAL/ADAPTED`;
-  DDL na A.2). Nunca citar edição real como origem da questão — o formato
-  é *inspirado em*, nunca *extraído de*.
+  DDL na V23 — ver abaixo). Nunca citar edição real como origem da questão
+  — o formato é *inspirado em*, nunca *extraído de*.
 * Selo obrigatório na API e na UI (fases A.3/D): por questão ("gerada por
   IA — não oficial") + no resultado ("placar sobre gabarito gerado por IA
   — sem validade de prova real").
@@ -209,8 +209,14 @@ testado via `AiProvaPrompts` (`PROMPT_VERSION=ai-prova-v1`).
 * Cota (3/dia), concorrência, `429/409`: TASK C.2 (DEV).
 * Endpoint, mock, selo em resposta, execução/submit/result: TASK A.3
   (DEV). `institution` inválida → `400`; modelo inexistente → `404`.
-* Tabela do caderno efêmero, `frozen_answer_key`, auditoria: TASK A.2
-  (migração após V22 vigente).
+* Tabela do caderno efêmero, `frozen_answer_key`, auditoria: TASK A.2 —
+  DONE DEV (`database/migrations/V23__ai_generations.sql`: `ai_generations`
+  + `ai_generation_questions` + `ai_generation_answers`, type
+  `AI_GENERATED_EDITION` em `simulations`; ERD §12). Decisão registrada:
+  **nenhum `source_type` novo em `questions`** — questão-IA nunca entra no
+  acervo, logo não precisa de código de origem lá; `AI_GENERATED` vive
+  como origem lógica no selo da API/UI (A.3/D) e no `filter_json` da
+  execução-IA.
 * Correção pedagógica do gabarito: limitação assumida (decisão 4) —
   documentar em `docs/blockers.md` na B.2; o validador cobre SÓ formato.
 
