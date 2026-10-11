@@ -1,5 +1,6 @@
 package br.com.voupassar.exception;
 
+import br.com.voupassar.aiprova.AiGenerationInvalidException;
 import br.com.voupassar.common.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -69,6 +70,13 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(TooManyRequestsException.class)
   public ResponseEntity<ApiError> tooManyRequests(TooManyRequestsException ex, HttpServletRequest req) {
     return build(HttpStatus.TOO_MANY_REQUESTS, ex.getCode(), ex.getMessage(), null, req);
+  }
+
+  @ExceptionHandler(AiGenerationInvalidException.class)
+  public ResponseEntity<ApiError> aiGenerationInvalid(
+      AiGenerationInvalidException ex, HttpServletRequest req) {
+    return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getCode(), ex.getMessage(),
+        ex.getDetails(), req);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

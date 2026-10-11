@@ -1,13 +1,22 @@
-# Schema da prova-IA — TASK A.1 (DRAFT VPS)
+# Prova-IA — schema do caderno gerado (`ai-prova-v1`)
 
-> **Status: DRAFT — não é DONE.**
-> Escopo VPS (sem testes): este documento + o prompt `ai-prova-v1`
-> (`docs/ai/prompts/ai-prova-v1.md`). Validador Java + `mvn test` = DEV-only.
-> DONE só na DEV após implementação + testes + validação (TASKS.md
-> `Paralelo DEV × VPS` + `Regras de execução`).
+> TASK A.1 (Programa Prova-IA, `TASKS.md`) — DONE na DEV.
+> Reconciliação 2026-10-11: merge do draft VPS
+> (`draft/a1-vps-schema-prompt`) com a implementação DEV. Conflitos de
+> contrato resolvidos pela DEV, dona do validador (regra do paralelo
+> DEV × VPS). Decisões DEV vs draft: **sem `subtopic` na v1** (o contrato
+> do TASKS.md A.1 e a tabela da A.2 não preveem o campo — lote com
+> `subtopic` é reprovado como campo fora do contrato); **9 modelos**
+> (todas as edições presentes — incorporado do draft); **regex final com
+> `quadro/tirinha/foto`, sem `mapa`/`textos` sem número** (justificativa
+> no §6); **prompt canônico único** em
+> `backend/src/main/resources/ai/prompts/ai-prova-v1.txt` (o draft em
+> `docs/ai/prompts/` foi incorporado e removido para não haver duas
+> fontes da verdade).
 >
-> Branch: `draft/a1-vps-schema-prompt`. Nenhum Java/SQL/JS de produção
-> neste draft.
+> O "sem garantia" da decisão 4 vale para a **correção pedagógica do
+> gabarito**, nunca para o formato — a validação estrutural abaixo é
+> obrigatória e fail-high (`422 AI_GENERATION_INVALID`).
 
 ## 0. Fontes (rastreabilidade, AGENTS.md §2/§4)
 
@@ -15,27 +24,21 @@
   (IFRN 6 edições: 20 LP + 20 MAT + discursiva, 4h) e
   `docs/provas-inventario-eaj.md §1–§2` (EAJ-2021: 50Q 15/15/12/8, 3h;
   EAJ-2022/2025: 40Q 20/20, 3h; sem discursiva detectada).
-* Vocabulário LP/MAT v1.1: `database/migrations/V2__seed.sql`
-  (10 topics + 42 subtopics) + `docs/content-map.md §3` +
-  `docs/content-analysis/taxonomy.md`.
+* Vocabulário LP/MAT v1.1: `database/migrations/V2__seed.sql:22-34`
+  (10 topics) + `docs/content-map.md §3`.
 * Vocabulário CN/CH (só EAJ-2021, só o observado):
-  `database/migrations/V20__eaj_taxonomy_cn_ch.sql`
-  (11 topics + 19 subtopics) + `docs/content-map-eaj.md §0–§3`.
-* Proibições v1 (passagem, figura, explanation): TASKS.md Programa
-  Prova-IA decisões 4–6 + decisão de produto 2026-10-04 (sem ensino passo
-  a passo) + `docs/passagens-estrategia.md §2` (regra de vínculo por
-  rótulo) + `docs/figuras-estrategia.md` + `docs/blockers.md`.
-* Selo + isolamento: TASKS.md regras 1–3 do programa
-  (`AI_GENERATED`, nunca oficial; nada-IA em `questions`/motor
-  educacional). `source_type` vigente no banco:
-  `docs/database-erd.md:238`
+  `database/migrations/V20__eaj_taxonomy_cn_ch.sql:38-81`
+  (11 topics) + `docs/content-map-eaj.md`.
+* Proibições v1 (passagem, figura, explanation): TASKS.md decisões 4–6 +
+  decisão de produto 2026-10-04 + `docs/passagens-estrategia.md §2` +
+  `docs/figuras-estrategia.md`.
+* Selo + isolamento: TASKS.md regras 1–3 do programa. `source_type`
+  vigente: `docs/database-erd.md:238`
   (`OFFICIAL/AUTHORAL/ADAPTED/INTERNAL_REVIEW/EXPERIMENTAL`) — valor
-  `AI_GENERATED` (ou equivalente) será criado na migração da TASK A.2
-  (DEV); até lá, este schema usa o nome lógico `AI_GENERATED` sem presumir
-  DDL.
+  `AI_GENERATED` (ou equivalente) criado na migração da TASK A.2 (DEV).
 
 O que não está nas fontes acima está marcado DESCONHECIDO/NÃO CONFIRMADO.
-Nada aqui promete "gabarito confiável" (TASKS.md decisão 4).
+Nada aqui promete "gabarito confiável" (decisão 4).
 
 ## 1. Envelope (contrato entre provedor e backend)
 
@@ -48,7 +51,6 @@ Nada aqui promete "gabarito confiável" (TASKS.md decisão 4).
       "n": 1,
       "discipline": "LINGUA_PORTUGUESA",
       "topic": "INTERPRETACAO_TEXTUAL",
-      "subtopic": "INFERENCIA",
       "stem": "…enunciado auto-contido…",
       "options": {"A": "…", "B": "…", "C": "…", "D": "…"},
       "answer": "B"
@@ -57,173 +59,162 @@ Nada aqui promete "gabarito confiável" (TASKS.md decisão 4).
 }
 ```
 
-Regras do envelope:
+| Campo | Tipo | Regra |
+|---|---|---|
+| `format` | string | Exatamente `IFRN` ou `EAJ`. Deve ser o prefixo de `editionModel`. |
+| `editionModel` | string | Um dos 9 modelos do §2 (só edições presentes — nunca inventar). |
+| `questions` | array | Tamanho **exato** do modelo + ordem `n` crescente (sem redução silenciosa). |
+| `n` | int | Posições `1..N` sem lacuna nem duplicata. |
+| `discipline` | string | Só as da edição-modelo, na contagem exata do §2. |
+| `topic` | string | Vocabulário do §4 **ou** `DESCONHECIDO` — nunca código inventado. |
+| `stem` | string | Enunciado auto-contido, não-vazio (§6). |
+| `options` | objeto | Exatamente `A,B,C,D`, não-vazias e **distintas** (trim + collapse de espaços). |
+| `answer` | string | Exatamente `A`, `B`, `C` ou `D`. |
 
-* `format`: `IFRN` | `EAJ`. Obrigatório.
-* `editionModel`: código da edição-modelo que dirige a estrutura
-  (§2). Obrigatório. Formato *inspirado em*, nunca *extraído de* — nunca
-  citar edição real como origem da questão (regra 1 do programa).
-* `questions`: array ordenado por `n`, sem lacuna, sem repetição (§3).
-* Por questão: `n` (1-based), `discipline` (§3), `topic` + `subtopic`
-  opcional (§4), `stem` não-vazio auto-contido (§6), `options` com
-  exatamente as chaves `A,B,C,D` não-vazias e distintas (§7/DEV),
-  `answer` ∈ `{A,B,C,D}`.
-* **Proibidos no schema v1:** `explanation`, `passage`/`texto_base`,
-  `figure`/`image`/`figureUrl`, `markdown` no corpo, qualquer campo fora
-  desta seção. Se o provedor enviar, o backend descarta sem usar e o
-  validador reprova o lote se houver marcador no texto (§6) — sem correção
-  silenciosa.
+**Proibidos na v1** (presença reprova o lote — nunca correção silenciosa):
+`explanation`, `subtopic`, `passage`, `texto_base`/`textBase`,
+`figure`/`figureUrl`/`image`, `markdown`, qualquer outro campo fora desta
+tabela. Decisão DEV: `subtopic` não existe no contrato do TASKS.md A.1
+nem na tabela da A.2 (`ai_generation_questions` tem `topic`, sem
+subtópico) — o prompt proíbe explicitamente o campo e o validador o
+rejeita como fora do contrato.
 
 ## 2. Edições-modelo vigentes (estrutura dirige N e disciplinas)
 
-| `editionModel` | Base em | Objetivas | Disciplinas por posição |
-|---|---|---|---|
-| `IFRN-2020` | `docs/provas-inventario.md §2` | 40 | 1–20 `LINGUA_PORTUGUESA`, 21–40 `MATEMATICA` |
-| `IFRN-2022` | idem | 40 | idem |
-| `IFRN-2023` | idem | 40 | idem |
-| `IFRN-2024` | idem | 40 | idem |
-| `IFRN-2025` | idem | 40 | idem |
-| `IFRN-2026` | idem | 40 | idem |
-| `EAJ-2021` | `docs/provas-inventario-eaj.md §2` (50Q 15/15/12/8, 3h) | 50 | 1–15 `LINGUA_PORTUGUESA`, 16–30 `MATEMATICA`, 31–42 `CIENCIAS_NATUREZA`, 43–50 `CIENCIAS_HUMANAS` |
-| `EAJ-2022` | idem (40Q 20/20, 3h) | 40 | 1–20 `LINGUA_PORTUGUESA`, 21–40 `MATEMATICA` |
-| `EAJ-2025` | idem (40Q 20/20, 3h) | 40 | idem |
+| `editionModel` | Objetivas | Mapa canônico de posições |
+|---|---|---|
+| `IFRN-2020` | 40 | 1–20 `LINGUA_PORTUGUESA`, 21–40 `MATEMATICA` |
+| `IFRN-2022` | 40 | idem |
+| `IFRN-2023` | 40 | idem |
+| `IFRN-2024` | 40 | idem |
+| `IFRN-2025` | 40 | idem |
+| `IFRN-2026` | 40 | idem |
+| `EAJ-2021` | 50 | 1–15 `LINGUA_PORTUGUESA`, 16–30 `MATEMATICA`, 31–42 `CIENCIAS_NATUREZA`, 43–50 `CIENCIAS_HUMANAS` |
+| `EAJ-2022` | 40 | 1–20 `LINGUA_PORTUGUESA`, 21–40 `MATEMATICA` |
+| `EAJ-2025` | 40 | idem |
 
-Ausências (nunca inventar): `IFRN-2021` AUSENTE
-(`docs/provas-inventario.md §0`); `EAJ-2023/2024/2026` AUSENTES
-(`docs/provas-inventario-eaj.md §0`). Pedido com `editionModel`
-inexistente → `404 EDITION_NOT_FOUND` (contrato da TASK A.3, DEV).
-Discursiva/produção textual NÃO faz parte do caderno-IA v1 (só objetivas).
-Duração oficial (IFRN 4h, EAJ 3h) é referência de ritmo da UI, não campo
-do schema.
+Ausências (nunca inventar): `IFRN-2021` AUSENTE; `EAJ-2020/2023/2024/2026`
+AUSENTES. Pedido com `editionModel` inexistente → `404 EDITION_NOT_FOUND`
+(contrato da TASK A.3, DEV). Discursiva/produção textual NÃO faz parte do
+caderno-IA v1 (só objetivas). Duração oficial (IFRN 4h, EAJ 3h) é
+referência de ritmo da UI, não campo do schema.
+
+O validador exige as **contagens** por disciplina, não a ordem (o mapa
+acima é a ordem canônica recomendada ao provedor via prompt).
 
 ## 3. N exato e disciplinas (fail-high)
 
-* N deve ser EXATO ao modelo: 40 (`IFRN-*`, `EAJ-2022`, `EAJ-2025`) ou 50
+* N EXATO do modelo: 40 (`IFRN-*`, `EAJ-2022`, `EAJ-2025`) ou 50
   (`EAJ-2021`). N a menor/maior → lote reprovado, sem caderno parcial
   (TASKS.md regra 5).
 * `n` cobre `1..N` sem lacuna e sem repetição.
 * `discipline` restrita às do modelo: `EAJ-2021` admite as 4 áreas;
-  demais modelos, SÓ `LINGUA_PORTUGUESA`/`MATEMATICA`. Disciplina fora do
-  modelo → lote reprovado.
-* Códigos de disciplina vigentes: `LINGUA_PORTUGUESA`, `MATEMATICA`
-  (V2) + `CIENCIAS_NATUREZA`, `CIENCIAS_HUMANAS` (V18/V20, só EAJ-2021).
-  Nenhum outro código é válido.
+  demais modelos, SÓ `LINGUA_PORTUGUESA`/`MATEMATICA`.
+* Códigos vigentes: `LINGUA_PORTUGUESA`, `MATEMATICA` (V2) +
+  `CIENCIAS_NATUREZA`, `CIENCIAS_HUMANAS` (V18/V20, só EAJ-2021).
 
-## 4. Vocabulário de `topic`/`subtopic` (restrito ou DESCONHECIDO)
+## 4. Vocabulário de `topic` (restrito ou DESCONHECIDO)
 
-`topic` é obrigatório; `subtopic` é opcional (EAJ-2025 Q40 mostra que
-`GEOMETRIA/OUTRO` existe no observado sem subcódigo — V20 §3: `NULL`
-justificado, sem linha nova). Valores fora do vocabulário abaixo são
-inválidos, EXCETO o literal `DESCONHECIDO` (quando a LLM não consegue
-mapear — nunca código inventado).
+| Disciplina | Códigos aceitos |
+|---|---|
+| `LINGUA_PORTUGUESA` | `GRAMATICA_NORMA`, `INTERPRETACAO_TEXTUAL`, `DESCONHECIDO` |
+| `MATEMATICA` | `RAZAO_PROPORCAO`, `ARITMETICA`, `ALGEBRA`, `GEOMETRIA`, `ESTATISTICA_DADOS`, `PORCENTAGEM`, `MATEMATICA_FINANCEIRA`, `GRANDEZAS_MEDIDAS`, `DESCONHECIDO` |
+| `CIENCIAS_NATUREZA` (só EAJ-2021) | `ECOLOGIA`, `NUTRICAO_SAUDE`, `AGROPECUARIA`, `BIOLOGIA_CELULAR`, `QUIMICA_GERAL`, `FISICA_GERAL`, `DESCONHECIDO` |
+| `CIENCIAS_HUMANAS` (só EAJ-2021) | `HISTORIA_BRASIL`, `CULTURA_SOCIEDADE`, `CARTOGRAFIA`, `GEOGRAFIA_BRASIL`, `GEOPOLITICA`, `DESCONHECIDO` |
 
-LP/MAT v1.1 (V2 + `docs/content-map.md §3`):
-
-* `GRAMATICA_NORMA`: `MORFOLOGIA`, `PONTUACAO`, `SEMANTICA_VOCABULARIO`,
-  `COESAO_REFERENCIA`, `SINTAXE_PERIODO`, `SINTAXE_FUNCAO`,
-  `NORMA_PADRAO`, `ACENTUACAO_GRAFICA`.
-* `INTERPRETACAO_TEXTUAL`: `INTENCAO_COMUNICATIVA`,
-  `INFORMACAO_EXPLICITA`, `INFERENCIA`,
-  `FUNCAO_ELEMENTO_PARAGRAFO`, `TIPO_TEXTUAL`, `GENERO_TEXTUAL`.
-* `RAZAO_PROPORCAO`: `RAZAO`, `REGRA_DE_TRES`, `ESCALA`,
-  `PROPORCIONALIDADE`.
-* `ARITMETICA`: `OPERACOES`, `FRACOES`, `NOTACAO_CIENTIFICA`,
-  `DIVISIBILIDADE_MMC_MDC`, `SISTEMAS_NUMERACAO`.
-* `ALGEBRA`: `FUNCAO_AFIM`, `EQUACOES`, `SISTEMAS`, `SEQUENCIAS`.
-* `GEOMETRIA`: `AREA_PLANA`, `PERIMETRO_COMPRIMENTO`, `POLIGONOS`,
-  `PITAGORAS_DISTANCIA`, `VOLUME`, `UNIDADES_MEDIDA`.
-* `ESTATISTICA_DADOS`: `MEDIA`, `LEITURA_GRAFICO_TABELA`,
-  `PROBABILIDADE`. (Demais subcódigos da taxonomia v1 sem ocorrência —
-  `MEDIANA_MODA`, `CONTAGEM_COMBINATORIA` — NÃO são válidos até migração
-  futura; ver V2 + `taxonomy.md §3`.)
-* `PORCENTAGEM`: `CALCULO_DIRETO`, `VARIACAO`, `REPRESENTACAO_FRACAO`.
-* `MATEMATICA_FINANCEIRA`: `JUROS_SIMPLES`. (`JUROS_COMPOSTOS`,
-  `DESCONTO` sem ocorrência — inválidos por ora.)
-* `GRANDEZAS_MEDIDAS`: `TEMPO`, `VOLUME_CAPACIDADE`.
-  (`MASSA_COMPRIMENTO` sem ocorrência — inválido por ora.)
-
-CN/CH — SÓ `EAJ-2021`, SÓ o observado (V20 + `docs/content-map-eaj.md`):
-
-* `ECOLOGIA`: `NIVEL_TROFICO`, `NUTRICAO_SERES_VIVOS`.
-* `NUTRICAO_SAUDE`: `ALIMENTOS_PROCESSADOS`.
-* `AGROPECUARIA`: `PRODUCAO_ALIMENTOS`.
-* `BIOLOGIA_CELULAR`: `RESPIRACAO_CELULAR`.
-* `QUIMICA_GERAL`: `FENOMENOS_QUIMICOS`, `POLARIDADE_MISTURAS`,
-  `RADIOATIVIDADE`.
-* `FISICA_GERAL`: `ENERGIA_CONSERVACAO`, `ESCALAS_TERMOMETRICAS`,
-  `LEIS_NEWTON`.
-* `HISTORIA_BRASIL`: `MIGRACOES_REPUBLICA`, `ECONOMIA_COLONIAL`,
-  `COLONIZACAO_CONTATO`.
-* `CULTURA_SOCIEDADE`: `CULTURA_AFRO_BRASILEIRA`.
-* `CARTOGRAFIA`: `ELEMENTOS_MAPA`.
-* `GEOGRAFIA_BRASIL`: `BIOMAS_IMPACTOS`.
-* `GEOPOLITICA`: `BLOCOS_ECONOMICOS`, `ORDEM_MUNDIAL`.
-
-`topic` CN/CH fora de `EAJ-2021` → lote reprovado.
+Subcódigos (subtopics) **não fazem parte do contrato v1** (decisão DEV
+acima); o vocabulário fino por tópico vive nas fontes do §0 (V2, V20,
+content-maps) para uso futuro, sem duplicação aqui. `topic` CN/CH fora de
+`EAJ-2021` → lote reprovado.
 
 ## 5. Proibições v1 (prompt proíbe, validador recusa)
 
-1. **Passagem/texto-base compartilhado** (`passagens-estrategia.md`):
-   questões-IA são auto-contidas. Sem `Texto N`, `trecho`, `textos`,
-   cabeçalho de bloco ou dependência de leitura externa.
-2. **Figura** (rota de texto não gera imagens; nenhuma ilustrativa/
-   inventada será servida): sem `figura`, `imagem`, `gráfico`, `tabela`,
-   `observe`, `conforme`, `abaixo`, `acima`, `charge`, `tirinha`, `mapa`,
-   `foto`, `ilustração`. Questão que cite figura é rejeitada.
-3. **Explanation** (decisão 2026-10-04: a plataforma testa, não ensina
-   passo a passo): sem `explanation`, `explicação`, `resolução`,
-   `passo a passo`, `comentário`. Se vier, o backend descarta e o front
-   nunca renderiza.
-4. Conteúdo ofensivo/identificador/PII: proibido no prompt; sem dado do
-   aluno no corpo (só formato/disciplina/tópicos — TASKS.md regra 4).
+1. **Passagem/texto-base compartilhado**: questões-IA auto-contidas. Sem
+   `Texto N`, `trecho`, cabeçalho de bloco ou dependência externa.
+2. **Figura**: sem `figura`, `imagem`, `gráfico`, `tabela`, `quadro`,
+   `tirinha`, `foto`, `observe`, `conforme`, `charge`, `ilustração`.
+3. **Explanation** (decisão 2026-10-04): sem `explanation` — o prompt
+   proíbe, o backend reprova se vier, o front nunca renderiza.
+4. Conteúdo ofensivo/identificador/PII: proibido no prompt; corpo sem
+   dado do aluno (só formato/disciplina/tópicos — TASKS.md regra 4).
 
-## 6. Enunciados auto-contidos + regex de recusa (draft para o validador DEV)
+## 6. Enunciados auto-contidos + regex de recusa (fixada na DEV, com testes)
 
-Todo `stem` + `options` deve ser resolvível sem texto/figura externa.
-Draft de marcadores (case-insensitive) que reprovam a posição — lista
-inicial derivada de `blockers.md` + `passagens-estrategia.md §2`; o DEV
-fixa a regex final com testes:
+Aplicada em `stem` + valores de `options` (case-insensitive, com acentos):
 
-```
-texto\s*\d|textos|trecho|passagem|figura|imagem|gr[áa]fico|tabela|
-quadro|charge|tirinha|mapa|foto|ilustra|observe|conforme|acima|abaixo|
-a\s*seguir|explanation|explica[çc][aã]o|resolu[çc][aã]o|passo\s*a\s*passo|coment[áa]rio
-```
+* **Figura**: `\bfigura\b`, `\bimagem\b`, `\bgr[áa]fico\b`, `\btabela\b`,
+  `\bquadro\b`, `\btirinha\b`, `\bfoto\b`, `\bilustra[çc][ãa]o\b`,
+  `\bobserve\b`, `\bconforme\b`, `\bcharge\b`.
+* **Passagem**: `\btexto\s*[0-9ivx]+\b`, `\btrecho\b`, `texto-base`,
+  `quest[õo]es?\s+\d+\s*(a|e|-)`.
 
-Casos da bateria B.2 que este draft já prevê (fixtures DEV-only):
-"observe a imagem", "gráfico abaixo", "tabela", "Texto 1", "trecho".
+Decisões DEV contra o draft VPS (registradas para auditoria): `mapa`
+NÃO foi incluído — questões auto-contidas de ESCALA usam "mapa"
+legitimamente (`RAZAO_PROPORCAO/ESCALA`); referências externas a mapa
+caem em `observe`/`conforme`/`Texto N`. `textos` sem número NÃO foi
+incluído — gênero/tipo textual citam "textos" legitimamente. Palavras
+como `resolução`/`passo a passo`/`comentário` NÃO viraram marcador de
+texto: a proibição de explanation é pelo **campo** (reprovado no §1),
+não por vocabulário do enunciado.
 
-## 7. Validador estrutural (DEV-only — resumo do contrato para a DEV)
+Implementação vigente:
+`backend/src/main/java/br/com/voupassar/aiprova/AiProvaValidator.java`.
 
-Implementação na TASK A.1-DEV (testável sem rede). Reprovação →
-`422 AI_GENERATION_INVALID` com motivo por posição (nunca correção
-silenciosa):
+## 7. Validador estrutural (DEV — testável sem rede)
 
-* JSON não-parseável ou com markdown;
+Reprovação → `422 AI_GENERATION_INVALID` com motivo por posição (nunca
+correção silenciosa, nunca caderno parcial):
+
+* JSON não-parseável ou com fences de markdown;
 * N ≠ N do modelo; `n` com lacuna/repetição/fora de `1..N`;
 * `options` sem exatamente `A–D`, com vazia ou duplicada;
 * `answer` ∉ `{A,B,C,D}`;
 * marcador de figura/passagem (§6) em `stem`/`options`;
-* campo `explanation` presente;
-* `discipline`/`topic`/`subtopic` fora do vocabulário do modelo
-  (exceto `DESCONHECIDO`).
+* campo proibido presente (§1);
+* `discipline`/`topic` fora do vocabulário do modelo (exceto
+  `DESCONHECIDO`); `format`/`editionModel` inconsistentes ou
+  desconhecidos.
 
-## 8. Selo, origem e isolamento (não-negociáveis)
+Cobertura: `backend/src/test/java/br/com/voupassar/aiprova/AiProvaValidatorTest.java`
++ envelope 422 em `GlobalExceptionHandlerTest`.
 
-* Origem lógica: `AI_GENERATED` (distinto de
-  `OFFICIAL/AUTORAL/ADAPTED` — TASKS.md regra 1; DDL na A.2). Nunca citar
-  edição real como origem da questão.
-* API e UI carregam selo obrigatório: "Questão gerada por IA — não é
-  questão oficial IFRN/EAJ" por questão + "placar sobre gabarito gerado
-  por IA — sem validade de prova real" no resultado.
-* Isolamento (TASKS.md regras 2–3): nada-IA entra em `questions`,
-  `question_options`, `question_sources`, mapa de conteúdo, diagnóstico,
-  roteiro, revisão, performance ou `GET /questions`. Caderno efêmero em
+## 8. Selo, origem e isolamento (não-negociáveis, TASKS.md regras 1–3)
+
+* Origem lógica: `AI_GENERATED` (distinto de `OFFICIAL/AUTORAL/ADAPTED`;
+  DDL na A.2). Nunca citar edição real como origem da questão — o formato
+  é *inspirado em*, nunca *extraído de*.
+* Selo obrigatório na API e na UI (fases A.3/D): por questão ("gerada por
+  IA — não oficial") + no resultado ("placar sobre gabarito gerado por IA
+  — sem validade de prova real").
+* Isolamento: nada-IA entra em `questions`, `question_options`,
+  `question_sources`, mapa de conteúdo, diagnóstico, roteiro, revisão,
+  performance ou `GET /questions` (trava da B.1, DEV). Caderno efêmero em
   estrutura própria (A.2); gabarito congelado imutável.
-* Auditoria da geração (prompt_version `ai-prova-v1`, modelo, timestamp,
+* Auditoria da geração (`prompt_version=ai-prova-v1`, modelo, timestamp,
   tentativas) sem PII — campos na A.2/C.2.
 
-## 9. Exemplo de envelope (excerto — N real é 40/50, §3)
+## 9. Prompt `ai-prova-v1` (canônico único)
+
+`backend/src/main/resources/ai/prompts/ai-prova-v1.txt` — estrutura por
+modelo via parâmetros (`INSTITUTION/EDITION_MODEL/N/MAPA_DE_POSICOES`),
+1 exemplo few-shot, proibições explícitas (§5 + sem `subtopic`), JSON
+estrito sem markdown, regra de variedade (soft, só prompt). Mudança de
+instrução exige `ai-prova-v2`, nunca edição silenciosa. Carregável e
+testado via `AiProvaPrompts` (`PROMPT_VERSION=ai-prova-v1`).
+
+## 10. Fora deste schema (não prometer aqui)
+
+* Modelo default, timeout, limites da rota free, segredos: TASK C.1
+  (`docs/ai-provedor.md`, DEV).
+* Cota (3/dia), concorrência, `429/409`: TASK C.2 (DEV).
+* Endpoint, mock, selo em resposta, execução/submit/result: TASK A.3
+  (DEV). `institution` inválida → `400`; modelo inexistente → `404`.
+* Tabela do caderno efêmero, `frozen_answer_key`, auditoria: TASK A.2
+  (migração após V22 vigente).
+* Correção pedagógica do gabarito: limitação assumida (decisão 4) —
+  documentar em `docs/blockers.md` na B.2; o validador cobre SÓ formato.
+
+## 11. Exemplo (excerto — N real é 40/50, §2)
 
 > Excerto ilustrativo de FORMA (2 de 40). Conteúdo sintético, NÃO é
 > questão oficial.
@@ -237,7 +228,6 @@ silenciosa):
       "n": 1,
       "discipline": "LINGUA_PORTUGUESA",
       "topic": "INTERPRETACAO_TEXTUAL",
-      "subtopic": "INFERENCIA",
       "stem": "EXEMPLO SINTÉTICO: …enunciado completo e auto-contido…",
       "options": {"A": "…", "B": "…", "C": "…", "D": "…"},
       "answer": "B"
@@ -246,7 +236,6 @@ silenciosa):
       "n": 2,
       "discipline": "MATEMATICA",
       "topic": "PORCENTAGEM",
-      "subtopic": "CALCULO_DIRETO",
       "stem": "EXEMPLO SINTÉTICO: …enunciado completo e auto-contido…",
       "options": {"A": "…", "B": "…", "C": "…", "D": "…"},
       "answer": "C"
@@ -255,26 +244,4 @@ silenciosa):
 }
 ```
 
-Exemplo completo de 1 questão few-shot no prompt:
-`docs/ai/prompts/ai-prova-v1.md`.
-
-## 10. Fora deste schema (não prometer aqui)
-
-* Modelo default, timeout, limites da rota free, segredos: TASK C.1
-  (`docs/ai-provedor.md`, DEV). Este schema não fixa modelo nem timeout.
-* Cota (3/dia), concorrência, `429/409`: TASK C.2 (DEV).
-* Endpoint, mock, selo em resposta, `GET` execução/submit/result:
-  TASK A.3 (DEV). `institution` inválida → `400`; modelo inexistente →
-  `404` (sem inventar estrutura).
-* Tabela do caderno efêmero, `frozen_answer_key`, auditoria: TASK A.2
-  (migração após V22 vigente).
-* Correção pedagógica do gabarito: limitação assumida (decisão 4) —
-  documentar em `docs/blockers.md` na B.2; o validador cobre SÓ formato.
-
-## 11. Pendências DEV (não bloqueiam este draft)
-
-* [ ] Validador Java + `mvn -f backend/pom.xml test` verde (critérios A.1).
-* [ ] Fixar caminho do prompt (candidatos no TASKS.md A.1) sem quebrar
-  este doc.
-* [ ] `source_type` `AI_GENERATED` criado na migração A.2.
-* [ ] Bateria B.2 executada contra o validador.
+Few-shot completo no prompt canônico (§9).

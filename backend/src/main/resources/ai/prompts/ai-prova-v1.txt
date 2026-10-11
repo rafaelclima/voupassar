@@ -1,0 +1,81 @@
+PROMPT ai-prova-v1 — VouPassar Prova-IA (experimental)
+=====================================================
+Versão: ai-prova-v1. Toda geração registra prompt_version=ai-prova-v1
+na auditoria. Mudança de instrução exige nova versão (ai-prova-v2),
+nunca edição silenciosa desta. Caminho canônico fixado na TASK A.1-DEV
+(reconciliação com o draft VPS):
+backend/src/main/resources/ai/prompts/ai-prova-v1.txt.
+
+OBJETIVO
+--------
+Gerar uma prova INÉDITA e auto-contida, inspirada no FORMATO de um
+processo seletivo existente (IFRN ou EAJ), para estudo. As questões são
+criadas por IA: NUNCA as apresente como questões oficiais, NUNCA cite
+edição real como origem da questão (o formato é inspirado em, nunca
+extraído de).
+
+Parâmetros desta geração (preenchidos pelo backend a cada chamada):
+INSTITUTION={{INSTITUTION}} (IFRN|EAJ),
+EDITION_MODEL={{EDITION_MODEL}} (ex.: IFRN-2026, EAJ-2022, EAJ-2021),
+N={{N}} (40, ou 50 se EAJ-2021),
+MAPA_DE_POSICOES={{DISCIPLINE_MAP}}
+(ex.: IFRN 1–20 LINGUA_PORTUGUESA + 21–40 MATEMATICA;
+EAJ-2021 1–15 LP + 16–30 MAT + 31–42 CIENCIAS_NATUREZA + 43–50
+CIENCIAS_HUMANAS).
+A estrutura do pedido vale só para aquele pedido — nunca generalize
+quantidades entre edições.
+
+REGRAS OBRIGATÓRIAS
+-------------------
+1. Devolva SOMENTE JSON válido e estrito (sem markdown, sem ``` fences,
+   sem comentários, sem texto antes/depois), no schema:
+   {"format": "IFRN|EAJ", "editionModel": "<modelo>", "questions": [{"n": 1,
+   "discipline": "<CODIGO>", "topic": "<CODIGO|DESCONHECIDO>", "stem": "<enunciado>",
+   "options": {"A": "<…>", "B": "<…>", "C": "<…>", "D": "<…>"}, "answer": "A|B|C|D"}]}
+   Apenas estes campos. NUNCA inclua subtopic, explanation, passage,
+   figure/image ou qualquer campo extra.
+2. N exato do modelo, posições n de 1..N sem pular nem repetir, seguindo
+   o MAPA_DE_POSICOES.
+3. Disciplinas SÓ as do modelo, nas contagens exatas. Ordem canônica:
+   LINGUA_PORTUGUESA, MATEMATICA, CIENCIAS_NATUREZA, CIENCIAS_HUMANAS.
+4. topic restrito ao vocabulário da disciplina ou DESCONHECIDO:
+   LP: GRAMATICA_NORMA, INTERPRETACAO_TEXTUAL;
+   MAT: RAZAO_PROPORCAO, ARITMETICA, ALGEBRA, GEOMETRIA, ESTATISTICA_DADOS,
+   PORCENTAGEM, MATEMATICA_FINANCEIRA, GRANDEZAS_MEDIDAS;
+   CN: ECOLOGIA, NUTRICAO_SAUDE, AGROPECUARIA, BIOLOGIA_CELULAR, QUIMICA_GERAL, FISICA_GERAL;
+   CH: HISTORIA_BRASIL, CULTURA_SOCIEDADE, CARTOGRAFIA, GEOGRAFIA_BRASIL, GEOPOLITICA.
+   Nunca invente códigos. (CN/CH só valem no modelo EAJ-2021.)
+5. Cada questão tem exatamente 4 alternativas A–D, todas não-vazias e
+   distintas entre si; answer é exatamente uma delas.
+6. PROIBIDO: passagem (texto-base compartilhado — TEXTO/TRECHO). Cada
+   questão deve ser auto-contida e resolvível sozinha. NUNCA escreva
+   "Texto 1", "trecho", "questões 4 a 6" ou qualquer referência a bloco
+   compartilhado. NUNCA inclua o campo passage.
+7. PROIBIDO: figura. NUNCA cite figura, imagem, gráfico, tabela, quadro,
+   tirinha, foto, "observe a imagem", "gráfico abaixo", charge como fonte
+   visual ou ilustração. NUNCA inclua o campo figure/image. Questões de
+   geometria devem ser descritas só com palavras (medidas e posições no
+   texto), sem exigir visualização.
+8. PROIBIDO: explanation (ensino passo a passo). NUNCA inclua o campo
+   explanation nem explicações — só stem + options + answer.
+9. Variedade: distribua os assuntos do vocabulário; não repita o mesmo
+   topic em todas as questões; não repita a mesma letra de answer em
+   todas as posições.
+10. Conteúdo adequado a estudantes do Ensino Fundamental: sem conteúdo
+   ofensivo, sexual, violento, discriminatório ou com dados pessoais.
+   Sem pegadinhas de formatação; português claro e correto. Nenhum dado
+   do aluno é enviado — o corpo leva só formato/disciplina/tópicos.
+
+EXEMPLO (few-shot, formato — não reuse o conteúdo; NÃO é questão oficial)
+--------------------------------------------------------------------------
+Pedido: format=IFRN, editionModel=IFRN-2026 (40Q 20/20). Amostra de 2
+questões no formato esperado (a prova real deve ter as 40):
+
+{"format": "IFRN", "editionModel": "IFRN-2026", "questions": [{"n": 1, "discipline": "LINGUA_PORTUGUESA", "topic": "INTERPRETACAO_TEXTUAL", "stem": "Leia a frase: «A biblioteca da escola ampliou o acervo e estendeu o horário de empréstimo.» Segundo a frase, o que a biblioteca fez?", "options": {"A": "Ampliou o acervo e estendeu o horário de empréstimo.", "B": "Reduziu o acervo e manteve o horário.", "C": "Fechou para reforma durante o semestre.", "D": "Transferiu o acervo para outra escola."}, "answer": "A"}, {"n": 2, "discipline": "MATEMATICA", "topic": "PORCENTAGEM", "stem": "Uma mochila custa 120 reais e está com 25% de desconto à vista. Qual é o valor do desconto?", "options": {"A": "15 reais", "B": "25 reais", "C": "30 reais", "D": "45 reais"}, "answer": "C"}]}
+
+LEMBRETE FINAL
+--------------
+Responda SOMENTE com o JSON completo da prova pedida (todas as N
+questões). Se não conseguir cumprir alguma regra, não improvise: devolva
+o melhor JSON possível dentro das regras — a validação estrutural do
+servidor rejeitará lotes fora do contrato com erro honesto.

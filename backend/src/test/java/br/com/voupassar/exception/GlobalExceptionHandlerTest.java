@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import br.com.voupassar.aiprova.AiGenerationInvalidException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,12 @@ class GlobalExceptionHandlerTest {
     @GetMapping("/limited")
     void limited() {
       throw new TooManyRequestsException("Muitas tentativas.");
+    }
+
+    @GetMapping("/ai-invalid")
+    void aiInvalid() {
+      throw new AiGenerationInvalidException("Lote de IA fora do contrato.",
+          java.util.List.of("q7: alternativa B vazia"));
     }
 
     @GetMapping("/boom")
@@ -112,8 +119,16 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void unexpectedNeverLeaksInternals() throws Exception {
-    mvc.perform(get("/probe/boom"))
+  void aiGenerationInvalidMapsTo422WithDetails() throws Exception {
+    mvc.perform(get("/probe/ai-invalid"))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.code").value("AI_GENERATION_INVALID"))
+        .andExpect(jsonPath("$.details[0]").value("q7: alternativa B vazia"))
+        .andExpect(jsonPath("$.stackTrace").doesNotExist());
+  }
+
+  @Test
+  void unexpectedNeverLeaksInternals() throws Exception {    mvc.perform(get("/probe/boom"))
         .andExpect(status().isInternalServerError())
         .andExpect(jsonPath("$.code").value("INTERNAL_ERROR"))
         .andExpect(jsonPath("$.message").value("Erro interno. Tente novamente."))
