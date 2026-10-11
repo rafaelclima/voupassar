@@ -784,3 +784,28 @@ inventada.
   e passagens 11+34 vínculos; banco com 430 questões; smoke público 7/7.
   O "banco local 368Q" acima refere-se à máquina de desenvolvimento em
   2026-10-09 — a VPS está completa.
+
+---
+
+## Programa Prova-IA — B.2 validação estrutural fail-high (DONE DEV 2026-10-11)
+
+**Limitação assumida do validador (TASKS.md decisão 4, nunca silenciada):**
+o validador estrutural da Prova-IA (A.1/B.2) cobre SÓ formato — JSON
+parseável e estrito, N exato do modelo, posições 1..N sem lacuna, A–D
+completas e distintas, `answer` em A–D, disciplinas/contagens do modelo,
+`topic` no vocabulário vigente ou `DESCONHECIDO`, sem marcadores de
+figura/passagem, sem `explanation`, sem `subtopic`, sem markdown. A
+**correção pedagógica do gabarito gerado por IA NÃO é verificada**: um
+lote aprovado pode conter resposta errada do ponto de vista do conteúdo.
+Por isso o placar-IA é experimental e sem validade de prova real (selo
+obrigatório na API e na UI, fases A.3/D), e nada-IA alimenta o motor
+educacional (isolamento B.1, base em V23/`docs/database-erd.md §12`).
+
+**Evidência da execução:** bateria `docs/ai-fixtures-b2.md` (draft VPS
+`draft/b2-vps-fixtures`, reconciliado pela DEV) executada em
+`backend/src/test/java/br/com/voupassar/aiprova/AiProvaAdversarialTest.java`
+(16/16 verdes) — B2-01–B2-13 rejeitados com `AI_GENERATION_INVALID`
+(mapeado para `422` com motivo por posição, sem caderno parcial); lote
+válido passa (A.1). Correção DEV registrada no próprio doc de fixtures:
+B2-09b ("conforme o trecho") cai na mensagem de figura (`conforme` é
+marcador de figura, checagem anterior à de passagem).

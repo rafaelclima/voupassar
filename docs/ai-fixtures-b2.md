@@ -10,6 +10,21 @@
 > (A.1-DEV, `59eaa18`); testes vigentes:
 > `backend/.../aiprova/AiProvaValidatorTest.java`.
 >
+> **Reconciliação DEV 2026-10-11 (dona do validador): DONE.**
+> Bateria executada em
+> `backend/src/test/java/br/com/voupassar/aiprova/AiProvaAdversarialTest.java`
+> (16/16 verdes): B2-01–B2-13 rejeitados com `AI_GENERATION_INVALID`
+> (422, mapeamento provado em `GlobalExceptionHandlerTest`) e motivo por
+> posição; lote válido passa (A.1); nenhum caso gera caderno parcial.
+> Correções contra o draft (conflito resolvido pela DEV, regra do
+> paralelo): **B2-09b** ("conforme o trecho") cai na mensagem de
+> **figura**, não de passagem — `conforme` é marcador de figura
+> (`docs/ai-prova-schema.md §6`) e a checagem de figura precede a de
+> passagem (`AiProvaValidator.java:230-238`); rejeição com posição
+> igualmente honesta, executada em `b209b_conformeTrechoFallsInFigureMessage`.
+> **B2-02** (N a maior) não tinha teste dedicado — coberto em
+> `b202_overCount` (N=40 + `q41: n fora de 1..40`).
+>
 > Convenção deste draft: cada fixture = **base válida + 1 mutação**.
 > Base: `AiProvaValidatorTest.validBatch("IFRN-2026")` (N=40, LP 1–20
 > `INTERPRETACAO_TEXTUAL`, MAT 21–40 `ALGEBRA`, `answer: "A"`, sem campo
@@ -77,10 +92,12 @@
 ## B2-09 — Menção a passagem (2 variantes)
 
 * B2-09a (stem): `… número 6 …` → `Segundo o Texto 1, responda a 6 …`
+  → `q6: menção a passagem/texto-base em stem`.
 * B2-09b (stem): `… número 7 …` → `… conforme o trecho apresentado …`
-* Motivo esperado: `qN: menção a passagem/texto-base em stem
-  (questão deve ser auto-contida)`.
-* Ref DEV: `passageMentionRejected`.
+  → `q7: menção a figura/imagem/gráfico/tabela em stem` (**correção DEV**:
+  `conforme` é marcador de figura e a checagem de figura é anterior;
+  rejeição com posição igualmente honesta).
+* Ref DEV: `passageMentionRejected` (09a), `b209b_conformeTrechoFallsInFigureMessage` (09b).
 
 ## B2-10 — `explanation` presente
 
