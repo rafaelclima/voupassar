@@ -124,31 +124,40 @@ body.landing-page {
   }
 }
 
-/* Header alinhado à hero full-bleed: mesma respiração lateral da copy,
- * então marca e H1 nascem na mesma linha vertical (como na referência). */
+/* Header alinhado ao palco contido: mesmo max-width e mesma respiração
+ * lateral da hero, então marca e H1 nascem na mesma linha vertical. O
+ * canvas navy ao redor sangra infinito — só o conteúdo trava. */
 @media (min-width: 64rem) {
   .landing-header > .container {
-    max-width: none;
-    padding-inline: max(var(--space-10), 6vw);
+    max-width: 88rem;
+    margin-inline: auto;
+    padding-inline: var(--space-8);
   }
 }
 
-/* ============ Hero em TELA CHEIA (referência home_hero_example.png) ============
- * A imagem ocupa 100% da hero atrás de TUDO: header + copy flutuam sobre
- * ela. Copy à esquerda (sobre a parte escura/vazia da arte), cena visível
- * à direita — texto nunca cobre os estudantes. Sem espelho.
+@media (min-width: 80rem) {
+  .landing-header > .container {
+    padding-inline: var(--space-10);
+  }
+}
+
+/* ============ Hero em palco contido sobre canvas infinito ============
+ * O navy (gradiente + anéis) ocupa 100% da viewport em qualquer largura;
+ * o conteúdo (.hero-card) trava em 88rem centralizado. Copy à esquerda
+ * sobre o navy, arte à direita em card com proporção fixa — texto nunca
+ * cobre os estudantes, sem espelho.
  *
  * Mobile (<64rem): SEM imagem — .landing-visual em display:none e o
  * <source> com media impede o download dos arquivos grandes. O fundo vira
  * um desenho em gradiente com as cores do projeto (navy + azul + um toque
  * de violeta contido, como no body).
  *
- * Sombra sutil: degradê navy só no terço esquerdo, sumindo antes da cena
- * (cronômetro/degraus/estudantes intactos) — garante o contraste do texto
- * sobre a foto nos dois temas (a hero é navy fixo).
+ * Sem overlay sobre a cena: o contraste do texto vem do navy do canvas,
+ * não de sombra sobre a foto (a copy não flutua mais sobre a arte).
  *
- * >1920px (120rem): laterais em navy sólido harmonizado; .hero-card (que
- * contém a imagem) trava em 120rem centralizado — nada vaza. */
+ * Ultrawide: nada de trava em 120rem nem laterais chapadas — o canvas já
+ * é infinito e o palco já é travado; telas maiores só ganham mais navy
+ * nas laterais, a composição segue intacta. */
 .landing-main {
   flex: 1;
   display: flex;
@@ -422,91 +431,79 @@ body.landing-page {
 }
 
 @media (min-width: 64rem) {
-  /* Tela cheia: a arte preenche a hero inteira (cover) atrás de tudo; a
-   * copy fica por cima, à esquerda, travada para não alcançar a cena. A
-   * mestre é 16:9 — em viewport 16:9 o crop é zero; em 16:10/21:9 o
-   * object-position 50% 60% protege o cronômetro (alto) e os pés. */
+  /* Palco contido sobre canvas infinito: o navy/gradiente/anéis ocupam
+   * 100% da viewport em qualquer largura (ultrawide incluído); só o
+   * conteúdo trava em 88rem centralizado. O visual deixa de ser
+   * full-bleed absoluto e vira card com proporção fixa — sem crop
+   * imprevisível, sem costura lateral, sem upscale além do srcset.
+   * Grid editorial 1.05fr/0.95fr: copy à esquerda, arte à direita. */
   .hero-card {
-    display: block;
-    align-content: unset;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--space-8);
+    align-items: center;
+    align-content: center;
+    max-width: 88rem;
+    margin-inline: auto;
+    padding: calc(var(--header-h) + var(--space-10)) var(--space-8) var(--space-12);
+    min-height: inherit;
   }
 
   .hero-card__copy {
-    max-width: 46rem;
-    padding: calc(var(--header-h) + var(--space-8)) var(--space-8) var(--space-12) max(var(--space-10), 6vw);
-    align-content: center;
-    min-height: inherit;
+    max-width: none;
+    padding: 0;
+    min-height: auto;
+    align-content: start;
   }
 
   .landing-visual {
     display: block;
-    position: absolute;
-    inset: 0;
+    position: relative;
+    inset: auto;
     z-index: 0;
+    min-width: 0;
   }
 
-  /* A foto atrás de tudo, sem véu sobre a cena. */
+  /* O card contém a arte: nada vaza para as bordas em tela grande. */
   .landing-visual picture {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    inset: auto;
     display: block;
   }
 
   .hero-art {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    object-position: 50% 60%;
+    /* A mestre tem navy vazio à esquerda e cena à direita: viés de 65%
+     * preserva estudantes/degraus/cronômetro no crop lateral do 4/3. */
+    object-position: 65% 50%;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    box-shadow: var(--shadow-lg);
+    background: var(--color-navy-900);
     pointer-events: none;
     user-select: none;
   }
-
-  /* Sombra sutil só à esquerda: navy que some até ~55% da largura, antes
-   * da cena. O texto ganha contraste; estudantes/degraus/cronômetro
-   * seguem intactos. */
-  .landing-visual::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      rgb(6 15 25 / 0.72) 0%,
-      rgb(6 15 25 / 0.45) 30%,
-      transparent 55%
-    );
-    pointer-events: none;
-  }
 }
 
-/* Telas maiores que 1080p (largura > 1920px): laterais em navy sólido
- * harmonizado; conteúdo travado em 120rem — nada vaza para as bordas. */
-@media (min-width: 120rem) {
-  .landing-hero {
-    background: var(--color-navy-900);
-    background-image: none;
-  }
-
+@media (min-width: 80rem) {
   .hero-card {
-    max-width: 120rem;
-    margin-inline: auto;
-    border-inline: 1px solid rgb(255 255 255 / 0.08);
-  }
-
-  .hero-card__copy {
-    padding-left: var(--space-10);
-  }
-
-  .landing-header > .container {
-    max-width: 120rem;
-    margin-inline: auto;
+    gap: var(--space-10);
     padding-inline: var(--space-10);
   }
 }
 
+/* Sem trava em 120rem de propósito: o canvas (gradiente + anéis) já é
+ * infinito e o palco (88rem) já é travado. Nenhum sólido chapado, nenhuma
+ * borda de ilha, nenhum número mágico por viewport — ultrawide só ganha
+ * mais navy nas laterais, a composição segue intacta. */
+
 /* ============ Mobile (<64rem, sem foto): hero redesenhada para celular ============
- * Escopo max-width de propósito: o desktop (>=64rem, com a arte em tela
- * cheia) segue intacto. No celular a hero era só o gradiente com o H1 em
+ * Escopo max-width de propósito: o desktop (>=64rem, com a arte em card
+ * contido) segue intacto. No celular a hero era só o gradiente com o H1 em
  * --text-display (~43px a 390px), stats em flex-wrap (2+1 desalinhado) e
  * anéis decorativos cruzando o texto. Aqui: tipo contido, stats em 3
  * colunas iguais, marca compacta e anéis empurrados para fora do texto. */

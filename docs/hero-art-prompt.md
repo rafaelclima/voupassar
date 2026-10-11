@@ -15,20 +15,21 @@ cp frontend/assets/landing/hero-1280.webp frontend/assets/landing/hero.webp  # f
 ```
 
 O HTML usa `<picture>` com `media="(min-width: 64rem)"` + `srcset`/`sizes`
-(`(min-width: 120rem) 120rem, 100vw`): o mobile nem baixa os arquivos
+(`(min-width: 64rem) 42vw, 100vw`): o mobile nem baixa os arquivos
 grandes e cada viewport recebe resolução próxima da sua densidade. A arte
-entra em **tela cheia** (`absolute inset-0`, `cover`) atrás de tudo, com
-sombra sutil só à esquerda via CSS (texto legível, cena intacta).
+entra em **card contido** à direita (`aspect-ratio: 4/3`, `cover` dentro
+do card, `object-position: 65% 50%` com viés à cena direita).
 `check_frontend.py` exige os 4 arquivos (`hero.webp` + 3 derivados).
 
-Nota: a mestre tem 1672px — em viewport 1920 (DPR 1) há upscale leve de
-~1,15×, imperceptível nesta arte vetorial sem texto. Se um dia houver
-mestre 2560+, basta acrescentar o derivado e o `srcset`.
+Nota: a mestre tem 1672px e o visual ocupa ~42% de um palco de 88rem
+(≤ ~650px de largura de renderização) — os derivados 960/1280/1672
+cobrem DPR 1–2 sem upscale visível nesta arte vetorial sem texto. Se um
+dia houver mestre 2560+, basta acrescentar o derivado e o `srcset`.
 Histórico: a variante retrato (`hero_portrait_45.jpg` + derivados
 768/1100/1600/1856) foi removida quando a paisagem chegou — metade
 direita prendia a arte numa coluna em vez da tela toda.
 
-## Variante atual: retrato full-bleed (EM USO)
+## Variante retrato (histórico — a hero atual usa a mestre paisagem em card contido, não full-bleed)
 
 A hero é um **cartão arredondado** (referência `assets/home_hero_example.png`):
 copy à esquerda, arte sangrando até as bordas direita/topo/fundo. No

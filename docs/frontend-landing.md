@@ -13,7 +13,7 @@
 |---|---|
 | Explicar propósito | `#hero-t` + lead ("com base em provas reais organizadas por assunto"), genérico por decisão de produto + `#o-que-e` (3 pilares com imagem) |
 | Transmitir confiança | `#hero-brand` (faixa com logo) + `#de-onde-vem` (foto de estudantes + texto honesto origem/visão) |
-| Demonstrar funcionalidades | `#hero-visual` (arte gerada em full-bleed, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
+| Demonstrar funcionalidades | `#hero-visual` (arte gerada em card contido, nenhum enunciado exibido) + `#como-praticar` (3 modos + 2 simulados) |
 | Apresentar proposta de valor | `#como-funciona` (cadeia prova real → organização → roteiro → evolução, AGENTS.md §32) |
 | Direcionar cadastro/login | CTAs "Começar agora" → `cadastro.html`, "Entrar" → `login.html` (hero + `#cta-final` + `#de-onde-vem`) |
 
@@ -34,14 +34,14 @@
 
 ## 3. Ofício visual
 
-O hero segue a referência `assets/home_hero_example.png` (PIXORA): **imagem
-em tela cheia** atrás de tudo — header + copy flutuam sobre a foto. Copy à
-esquerda (kicker pill, headline, lead, 2 CTAs, stats de formato, faixa de
-marca), cena visível à direita, texto nunca cobrindo os estudantes. Sombra
-sutil em degradê navy só no terço esquerdo (some antes da cena) garante a
-leitura sem véu sobre a arte. Sem espelho. Coluna única no mobile **sem
-imagem** (fundo em gradiente navy + azul + toque de violeta, com anéis
-decorativos).
+O hero é um palco contido sobre canvas infinito: o navy (gradiente +
+anéis) ocupa 100% da viewport em qualquer largura; o conteúdo trava em
+88rem centralizado. Copy à esquerda sobre o navy (kicker pill, headline,
+lead, 2 CTAs, stats de formato, faixa de marca), arte à direita em card
+com proporção fixa 4/3 — texto nunca cobre os estudantes. Sem overlay
+sobre a cena: o contraste vem do navy do canvas. Sem espelho. Coluna
+única no mobile **sem imagem** (fundo em gradiente navy + azul + toque de
+violeta, com anéis decorativos).
 
 Os stats da hero (`#hero-stats`) são só de **formato verificável** — 2
 disciplinas, 3 modos, 2 simulados. Sem contagens de acervo na landing: a
@@ -53,16 +53,18 @@ sobre o topo da hero (`position: absolute`), e a hero tem `min-height:
 100svh` (com fallback `100vh`) — abrir a página mostra exatamente
 header + hero, e a rolagem revela as seções claras abaixo. A copy tem
 `padding-top` calculado do `--header-h` para nunca ficar sob o header. No
-desktop a marca do header alinha à esquerda com o H1 (mesmo respiro
-`max(2.5rem, 6vw)`). Acima de 1920px de largura as laterais viram navy
-sólido (`navy-900`) e hero + header travam em 120rem centralizados.
+desktop a marca do header alinha à esquerda com o H1 (mesmo palco de
+88rem e mesmo respiro lateral). Ultrawide não tem tratamento especial:
+o canvas já é infinito e o palco já é travado — telas maiores só ganham
+mais navy nas laterais, sem costura, sem sólido chapado.
 
 A arte (família `hero-*.webp`, derivados responsivos da mestre
 `hero_full.png` 1672×941 16:9 gerada para este cenário via prompt em
 `docs/hero-art-prompt.md`: esquerda vazia em navy para o texto, cena à
-direita) entra em **tela cheia** (`absolute inset-0`, `cover`) atrás de
-tudo — em viewport 16:9 o crop é zero. `object-position: 50% 60%`
-protege o cronômetro (alto) e os pés em 16:10/21:9.
+direita) entra em **card contido** (`aspect-ratio: 4/3`, `cover` dentro
+do card, `border-radius-xl` + borda + sombra). `object-position: 65% 50%`
+protege a cena direita no crop lateral do 4/3; `sizes="(min-width: 64rem)
+42vw, 100vw"` reflete a coluna do visual.
 `alt` vazio (decorativa — a mensagem está no H1 + CTAs),
 `width`/`height` declarados (sem CLS), `fetchpriority="high"`.
 As seções abaixo são
