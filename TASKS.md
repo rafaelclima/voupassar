@@ -108,6 +108,24 @@ Nunca marcar uma task como concluída apenas porque o código foi criado.
    VPS 2026-10-10). Não reabrir sem motivo documentado; regressão
    IFRN/EAJ é verificada na Fase E.
 
+## Paralelo DEV × VPS (VPS sem ambiente de testes)
+
+Tag `[VPS]` = a task possui entrega parcial draftável sem rodar suíte
+(`mvn test`, `ddl-auto: validate`, `node --check`, `check_frontend.py`,
+navegador real). Regras:
+
+* VPS faz DRAFT (docs, schema, prompt, fixtures JSON, placeholders
+  `.env.example`, esqueleto de docs); nunca marca DONE.
+* DONE só na DEV, após implementação + testes + validação + critérios
+  de aceitação verdes (regra de execução acima, inalterada).
+* Tasks sem `[VPS]` (A.2, A.3, B.1, D.1, D.2, E.1) são DEV-only: exigem
+  código + suíte verde para qualquer entrega útil.
+* Tasks `[VPS]` com escopo parcial têm o escopo VPS delimitado no corpo
+  (`Escopo VPS:`); o restante é DEV-only.
+* Merge por PR/branch separado por task; VPS nunca commita Java/SQL/JS
+  de produção sem validação DEV; conflitos de contrato resolve-se pela
+  DEV (dona do validador A.1).
+
 ---
 
 # FASE A — CONTRATO + MOCK (pré-requisito de tudo)
@@ -116,7 +134,11 @@ Nunca marcar uma task como concluída apenas porque o código foi criado.
 > congelado, execução, resultado) nasce testável contra um provedor
 > mockado determinístico.
 
-## TASK A.1 — Schema da prova-IA + prompt `ai-prova-v1` versionado
+## TASK A.1 [VPS] — Schema da prova-IA + prompt `ai-prova-v1` versionado
+
+> Escopo VPS (sem testes): draft de `docs/ai-prova-schema.md` + arquivo
+> do prompt `ai-prova-v1` (texto + few-shot + proibições). Validador
+> Java + `mvn test` = DEV-only. DONE só na DEV.
 
 Entregas:
 
@@ -231,7 +253,12 @@ Critérios:
   diagnosis/studyplan/review/performance não leem as tabelas-IA;
 * suíte backend verde.
 
-## TASK B.2 — Validação estrutural fail-high + recusa de figura/passagem
+## TASK B.2 [VPS] — Validação estrutural fail-high + recusa de figura/passagem
+
+> Escopo VPS (sem testes): draft da bateria de fixtures adversárias
+> (JSONs inválidos por classe de defeito, a partir da lista do corpo).
+> Execução contra o validador + `422` por posição = DEV-only (depende do
+> validador A.1 pronto). DONE só na DEV.
 
 Entregas:
 
@@ -256,7 +283,12 @@ Critérios:
 > Depende de A + B. A troca mock → real não muda contrato, isolamento nem
 > validação (só a fonte dos bytes).
 
-## TASK C.1 — Cliente OpenRouter server-to-server
+## TASK C.1 [VPS] — Cliente OpenRouter server-to-server
+
+> Escopo VPS (sem testes): draft de `docs/ai-provedor.md` (modelo
+> default, timeout, limites da rota free apurados na doc vigente;
+> DESCONHECIDO se não confirmado). Cliente HTTP + testes com servidor
+> falso + varredura de segredo = DEV-only. DONE só na DEV.
 
 Entregas:
 
@@ -283,7 +315,12 @@ Critérios:
   limites da rota free, o que é/desde quando é pago — DESCONHECIDO se não
   confirmado na doc vigente).
 
-## TASK C.2 — Auditoria e limites de custo
+## TASK C.2 [VPS] — Auditoria e limites de custo
+
+> Escopo VPS (sem testes): draft dos placeholders em `.env.example`
+> (`OPENROUTER_API_KEY=`, `AI_TIMEOUT_*`, `AI_DAILY_QUOTA=3`) + texto da
+> regra de cota (janela UTC vs deslizante — propor, DEV fixa). Lógica de
+> cota/concorrência + testes `429/409` = DEV-only. DONE só na DEV.
 
 Entregas:
 
@@ -375,7 +412,13 @@ Critérios:
 * nenhum segredo no Git (`git status` + varredura de `OPENROUTER` nos
   arquivos versionados, exceto placeholder do `.env.example`).
 
-## TASK E.2 — Checklist ponta a ponta + regressão IFRN/EAJ
+## TASK E.2 [VPS] — Checklist ponta a ponta + regressão IFRN/EAJ
+
+> Escopo VPS (sem testes): esqueleto dos docs (`docs/api-simulados.md`,
+> `docs/frontend-simulado.md`, `README.md` experimental,
+> `docs/blockers.md` limitação do gabarito-IA, `.env.example` novas vars,
+> ERD/auditoria). Checklist + regressão + evidências = DEV-only. DONE só
+> na DEV.
 
 Entregas:
 
