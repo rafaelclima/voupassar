@@ -164,6 +164,14 @@ public class AttemptService {
       sim = simulations.findByIdAndUserId(req.simulationAttemptId(), userId)
           .orElseThrow(() -> new ResourceNotFoundException(
               "SIMULATION_ATTEMPT_NOT_FOUND", "Execução de simulado não encontrada."));
+      if (sim.getSimulation() != null
+          && "AI_GENERATED_EDITION".equals(sim.getSimulation().getType())) {
+        throw new BadRequestException(
+            "AI_ATTEMPT_EXCLUSIVE",
+            "Execução de prova-IA: responda pela rota de prova-IA (POST "
+                + "/api/v1/simulations/ai/attempts/" + sim.getId() + "/answers); "
+                + "POST /attempts serve só questões do acervo (isolamento).");
+      }
       if (!"IN_PROGRESS".equals(sim.getStatus())) {
         throw new ConflictException(
             "SIMULATION_CLOSED", "Simulado já encerrado (status " + sim.getStatus() + ").");

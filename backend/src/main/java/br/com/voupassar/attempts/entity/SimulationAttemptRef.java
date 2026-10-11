@@ -33,6 +33,10 @@ public class SimulationAttemptRef {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "simulation_id", nullable = false)
+  private br.com.voupassar.simulations.entity.Simulation simulation;
+
   @Column(name = "mode", nullable = false)
   private String mode;
 
@@ -47,6 +51,10 @@ public class SimulationAttemptRef {
 
   public User getUser() {
     return user;
+  }
+
+  public br.com.voupassar.simulations.entity.Simulation getSimulation() {
+    return simulation;
   }
 
   public String getMode() {

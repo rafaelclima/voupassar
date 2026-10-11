@@ -107,11 +107,57 @@ traceId, timestamp, path}`, sem stack trace; `traceId` também no header
   referência da edição YYYY: Y min/questão" (ou o aviso honesto). Encerrada
   congela no `submittedAt`.
 
+## Prova-IA experimental (TASK A.3 — Fase A, provedor mockado)
+
+> Gerar prova inédita com questões criadas por IA no formato de um processo
+> existente (IFRN/EAJ) e executar no ciclo de simulado sobre o caderno-IA
+> congelado. **Questão gerada por IA — não é questão oficial; placar sem
+> validade de prova real; nada-IA alimenta o motor educacional.**
+> Controller em
+> `backend/src/main/java/br/com/voupassar/aiprova/controller/AiSimulationController.java`,
+> serviço em `backend/src/main/java/br/com/voupassar/aiprova/AiSimulationService.java`.
+
+| Rota | Descrição |
+|---|---|
+| `POST /api/v1/simulations/ai-generated` | gerar e iniciar: `{institution! IFRN\|EAJ, editionModel? (ausente = mais recente da trilha no banco), mode! ESTUDO/PROVA}` → `201` com caderno-IA inline (gabarito oculto) e selo por questão |
+| `GET /api/v1/simulations/ai/attempts/{id}` | consultar execução-IA: em andamento (só progresso) ou encerrada (gabarito + resumo) |
+| `POST /api/v1/simulations/ai/attempts/{id}/answers` | responder posição: `{position! 1..N, selectedOption! A–D/BLANK, timeSpentSeconds?}` → fato próprio (ESTUDO revela; PROVA oculta até encerrar) |
+| `POST /api/v1/simulations/ai/attempts/{id}/submit` | concluir: `IN_PROGRESS → SUBMITTED` com placar do servidor contra o congelado |
+| `POST /api/v1/simulations/ai/attempts/{id}/abandon` | desistir: `IN_PROGRESS → ABANDONED` com placar parcial |
+| `GET /api/v1/simulations/ai/attempts/{id}/result` | visualizar resultado (só após encerrar; selo experimental no placar) |
+| `GET /api/v1/simulations/ai/attempts/{id}/feedback/{position}` | feedback imediato (ESTUDO sempre; PROVA só após encerrar) |
+
+Sem token → `401`; `institution` ausente/inválida → `400
+INVALID_INSTITUTION`; `mode` inválido → `400 INVALID_MODE`;
+`editionModel` desconhecido ou de outra trilha → `404 EDITION_NOT_FOUND`
+(nunca inventar estrutura); posição opcional → `400 INVALID_POSITION`,
+fora de 1..N → `404 SIMULATION_QUESTION_NOT_FOUND`; alternativa inválida
+→ `400 INVALID_OPTION`; execução inexistente, de outro aluno ou de
+simulado oficial → `404 SIMULATION_ATTEMPT_NOT_FOUND` (sem distinguir);
+encerrada → `409 SIMULATION_CLOSED`; resultado/feedback em PROVA em
+andamento → `409 SIMULATION_NOT_FINISHED` / `409
+STUDY_FEEDBACK_UNAVAILABLE`; posição sem resposta → `409
+FEEDBACK_NOT_AVAILABLE`; lote do provedor fora do contrato → `422
+AI_GENERATION_INVALID` sem caderno parcial (validação antes de qualquer
+escrita). `POST /attempts` com execução-IA → `400 AI_ATTEMPT_EXCLUSIVE`
+(traba de isolamento: rota oficial nunca escreve resposta vinculada a
+execução-IA). Cota (3/dia) e concorrência (`429`/`409`) são a TASK C.2,
+não desta rota.
+
+Regras próprias (diferenças honestas para o oficial): caderno INLINE
+(enunciado + alternativas geradas; sem `GET /questions` para IA);
+`filter_json` com `{type, institution, editionModel, mode, promptVersion,
+model, experimental: true}`; título `Prova-IA {modelo} (experimental)
+[{modo}]`; sem anuladas (`is_correct` sempre NOT NULL); `topic` é rótulo
+da geração (sem classificação curada, sem subassunto); `POST /attempts`
+oficial intacto para o acervo.
+
 ## OpenAPI
 
 Contrato em `GET /v3/api-docs` e UI em `GET /swagger-ui.html` (rotas de
 documentação públicas — só schemas, sem PII). Tag `Simulados`; escopo
-`/api/v1/**` já configurado (TASK 3.2).
+`/api/v1/**` já configurado (TASK 3.2). Prova-IA na tag `Prova-IA
+(experimental)` (7 paths; selo no schema por questão e no placar).
 
 ## Verificação (2026-10-01)
 

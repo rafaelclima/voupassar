@@ -757,10 +757,15 @@ Documentos identificados por `sha256` (gabaritos auditados em
 
 * `simulations.ai_generation_id → ai_generations` (`ON DELETE CASCADE` —
   geração é por aluno; o wipe cascateia sem travar) + `chk_simulations_type`
-  / `chk_simulations_link` (IA exige geração + `exam_id` NULL + dono;
-  tipos oficiais exigem `ai_generation_id` NULL; linhas existentes passam
+  / `chk_simulations_link` (IA exige geração + `exam_id` NULL; tipos
+  oficiais exigem `ai_generation_id` NULL; linhas existentes passam
   intactas) —
-  `database/migrations/V23__ai_generations.sql:144-157`.
+  `database/migrations/V23__ai_generations.sql:144-157`. Dono da
+  simulação-IA é obrigatório **pela aplicação** (A.3 sempre cria com o
+  aluno), não pelo CHECK: a V23 exigia `owner NOT NULL` e o wipe de
+  usuário quebrava (`SET NULL` antes do `CASCADE`; CHECKs não admitem
+  `DEFERRABLE` no Postgres — erro 0A000 apurado na A.3) —
+  `database/migrations/V25__simulations_link_owner.sql`.
 * `filter_json` da IA carrega `{type, institution, editionModel, mode,
   promptVersion, model, experimental: true}` — convenção escrita pelo
   serviço da A.3, não DDL.

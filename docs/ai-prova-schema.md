@@ -207,8 +207,14 @@ testado via `AiProvaPrompts` (`PROMPT_VERSION=ai-prova-v1`).
 * Modelo default, timeout, limites da rota free, segredos: TASK C.1
   (`docs/ai-provedor.md`, DEV).
 * Cota (3/dia), concorrência, `429/409`: TASK C.2 (DEV).
-* Endpoint, mock, selo em resposta, execução/submit/result: TASK A.3
-  (DEV). `institution` inválida → `400`; modelo inexistente → `404`.
+* Endpoint, mock, selo em resposta, execução/submit/result: TASK A.3 —
+  DONE DEV (mock determinístico `AiMockProvider` válido nos 9 modelos;
+  `POST /simulations/ai-generated` + execução/resposta/conclusão/abandono/
+  resultado/feedback sobre o caderno-IA com ocultação em PROVA; selo por
+  questão e no placar; `POST /attempts` recusa execução-IA com `400
+  AI_ATTEMPT_EXCLUSIVE`; suíte 362/362; contrato em
+  `docs/api-simulados.md`). `institution` inválida → `400`; modelo
+  inexistente → `404`.
 * Tabela do caderno efêmero, `frozen_answer_key`, auditoria: TASK A.2 —
   DONE DEV (`database/migrations/V23__ai_generations.sql`: `ai_generations`
   + `ai_generation_questions` + `ai_generation_answers`, type

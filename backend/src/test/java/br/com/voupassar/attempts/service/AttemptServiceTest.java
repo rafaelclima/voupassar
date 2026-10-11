@@ -318,8 +318,26 @@ class AttemptServiceTest {
   }
 
   @Test
-  void estudoPostStillRevealsImmediately() {
+  void officialPostOnAiAttemptIsRejected() {
+    // TASK A.3 (isolamento): POST /attempts nunca escreve resposta vinculada
+    // a execução-IA — a rota de prova-IA tem fato próprio.
     activeUser();
+    when(questions.findById(12L)).thenReturn(Optional.of(question(12L, "C", false)));
+    SimulationAttemptRef ref = sim(55L, "PROVA", "IN_PROGRESS");
+    br.com.voupassar.simulations.entity.Simulation aiSim =
+        new br.com.voupassar.simulations.entity.Simulation();
+    ReflectionTestUtils.setField(aiSim, "id", 77L);
+    aiSim.setType("AI_GENERATED_EDITION");
+    ReflectionTestUtils.setField(ref, "simulation", aiSim);
+    when(simulations.findByIdAndUserId(55L, 1L)).thenReturn(Optional.of(ref));
+
+    BadRequestException ex = assertThrows(BadRequestException.class, () -> service.submitAttempt(1L,
+        new CreateAttemptRequest(12L, "C", "PROVA", 30, null, 55L)));
+    assertEquals("AI_ATTEMPT_EXCLUSIVE", ex.getCode());
+  }
+
+  @Test
+  void estudoPostStillRevealsImmediately() {    activeUser();
     stubAttemptSave(102L);
     when(questions.findById(12L)).thenReturn(Optional.of(question(12L, "C", false)));
     when(sessions.findByIdAndUserId(7L, 1L))

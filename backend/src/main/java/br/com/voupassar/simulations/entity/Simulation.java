@@ -21,6 +21,12 @@ import org.hibernate.type.SqlTypes;
  * nunca é gerado aqui. Cada execução do aluno vive em {@link
  * SimulationAttempt} com o caderno congelado em {@link SimulationQuestion}.
  *
+ * <p>Programa Prova-IA (TASK A.3): o tipo {@code AI_GENERATED_EDITION}
+ * executa o caderno-IA congelado em {@code ai_generation_questions} via
+ * {@code ai_generation_id} (DDL V23) — sem {@code exam_id}, com dono
+ * obrigatório. Respostas-IA vivem em {@code ai_generation_answers}, nunca
+ * em {@code question_attempts}.
+ *
  * <p>Regras de evidência: {@code title} e {@code filter_json} são gerados
  * deterministicamente dos parâmetros validados (disciplina, quantidade,
  * dificuldade, modo) — nunca inventados; {@code filter_json} é auditável
@@ -43,6 +49,9 @@ public class Simulation {
 
   @Column(name = "exam_id")
   private Long examId;
+
+  @Column(name = "ai_generation_id")
+  private Long aiGenerationId;
 
   @Column(name = "filter_json", nullable = false)
   @JdbcTypeCode(SqlTypes.JSON)
@@ -79,6 +88,14 @@ public class Simulation {
 
   public void setExamId(Long examId) {
     this.examId = examId;
+  }
+
+  public Long getAiGenerationId() {
+    return aiGenerationId;
+  }
+
+  public void setAiGenerationId(Long aiGenerationId) {
+    this.aiGenerationId = aiGenerationId;
   }
 
   public String getFilterJson() {
